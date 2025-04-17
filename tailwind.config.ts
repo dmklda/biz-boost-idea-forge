@@ -52,6 +52,13 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+                // Custom colors for Ideia Forge
+                brand: {
+                    blue: '#1E40AF',
+                    green: '#10B981',
+                    purple: '#8B5CF6',
+                    light: '#F3F4F6',
+                },
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
