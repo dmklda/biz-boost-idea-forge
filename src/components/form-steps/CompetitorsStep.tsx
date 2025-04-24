@@ -1,0 +1,72 @@
+
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { FormData } from "@/types/form";
+
+interface CompetitorsStepProps {
+  formData: FormData;
+  updateFormData: (field: keyof FormData, value: string | number) => void;
+  onNext: () => void;
+  onPrev: () => void;
+}
+
+export const CompetitorsStep = ({ formData, updateFormData, onNext, onPrev }: CompetitorsStepProps) => {
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label className="text-base font-medium block mb-3">
+          Existem concorrentes ou soluções parecidas no mercado?
+        </Label>
+        <RadioGroup 
+          value={formData.hasCompetitors}
+          onValueChange={(value) => updateFormData("hasCompetitors", value)}
+          className="flex flex-col space-y-2"
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="sim" id="competitors-yes" />
+            <Label htmlFor="competitors-yes">Sim</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="nao" id="competitors-no" />
+            <Label htmlFor="competitors-no">Não</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="nao-sei" id="competitors-unknown" />
+            <Label htmlFor="competitors-unknown">Não sei</Label>
+          </div>
+        </RadioGroup>
+      </div>
+
+      <div>
+        <Label htmlFor="monetization" className="text-base font-medium">
+          Como você pretende ganhar dinheiro com essa ideia?
+        </Label>
+        <Textarea 
+          id="monetization"
+          placeholder="Descreva seus planos de monetização..."
+          className="mt-2 resize-none"
+          rows={3}
+          value={formData.monetization}
+          onChange={(e) => updateFormData("monetization", e.target.value)}
+          required
+        />
+      </div>
+
+      <div className="flex justify-between">
+        <Button type="button" variant="outline" onClick={onPrev}>
+          Voltar
+        </Button>
+        <Button 
+          type="button"
+          onClick={onNext}
+          disabled={!formData.hasCompetitors || formData.monetization.trim().length < 5}
+          className="bg-brand-green hover:bg-brand-green/90"
+        >
+          Próximo
+        </Button>
+      </div>
+    </div>
+  );
+};
