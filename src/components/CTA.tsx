@@ -4,7 +4,7 @@ import { ArrowRight, Rocket } from "lucide-react";
 
 const CTA = () => {
   return (
-    <section className="py-16 bg-gradient-to-br from-brand-blue to-brand-purple text-white">
+    <section className="py-20 bg-gradient-to-br from-brand-blue to-brand-purple text-white">
       <div className="container mx-auto px-4 text-center">
         <div className="max-w-4xl mx-auto">
           <Rocket className="h-12 w-12 mx-auto mb-6 text-white/80" />

@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,7 +9,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Startupideia - Transforme suas ideias em negócios viáveis</title>
     <meta name="description" content="Plataforma de validação de ideias de negócio - Descubra se sua ideia tem potencial!" />
-    <meta name="author" content="Lovable" />
+    <meta name="author" content="Startupideia" />
 
     <meta property="og:title" content="Startupideia - Validação de ideias de negócio" />
     <meta property="og:description" content="Descubra a viabilidade da sua ideia de negócio com análise avançada" />
@@ -17,8 +17,17 @@
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
+    <meta name="twitter:site" content="@startupideia" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    
+    <script>
+      // Script to apply the saved theme on initial page load
+      (function() {
+        const theme = localStorage.getItem('startupideia-theme');
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.classList.add(theme === 'system' ? systemTheme : theme || 'light');
+      })();
+    </script>
   </head>
 
   <body>

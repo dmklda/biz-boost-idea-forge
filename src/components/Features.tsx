@@ -55,11 +55,11 @@ const Features = () => {
   ];
 
   return (
-    <section id="beneficios" className="py-16 bg-white">
+    <section id="beneficios" className="py-20 bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold font-poppins mb-4">Valide sua ideia de forma completa</h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-inter">
+          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto font-inter">
             Nossa plataforma fornece uma análise completa da viabilidade 
             e potencial do seu conceito de negócio.
           </p>
@@ -69,13 +69,13 @@ const Features = () => {
           {features.map((feature, index) => (
             <div 
               key={index} 
-              className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm transition-all hover:shadow-md hover:border-brand-blue/20"
+              className="neo-card p-6"
             >
               <div className="mb-4">
                 {feature.icon}
               </div>
               <h3 className="text-xl font-semibold mb-3 font-poppins">{feature.title}</h3>
-              <p className="text-gray-600 font-inter">{feature.description}</p>
+              <p className="text-gray-600 dark:text-gray-400 font-inter">{feature.description}</p>
             </div>
           ))}
         </div>

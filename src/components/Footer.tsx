@@ -8,10 +8,10 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <h3 className="text-xl font-bold mb-4 bg-gradient-to-r from-brand-blue via-brand-purple to-brand-green bg-clip-text text-transparent">
-              IdeiaForge
+              Startupideia
             </h3>
             <p className="text-gray-400 mb-4">
-              Transforme suas ideias em negócios viáveis com análises impulsionadas por IA.
+              Transforme suas ideias em negócios viáveis com análises impulsionadas por tecnologia avançada.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
@@ -110,7 +110,7 @@ const Footer = () => {
         
         <div className="border-t border-gray-800 mt-12 pt-8 text-sm text-gray-400">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p>&copy; {new Date().getFullYear()} IdeiaForge. Todos os direitos reservados.</p>
+            <p>&copy; {new Date().getFullYear()} Startupideia. Todos os direitos reservados.</p>
             <div className="mt-4 md:mt-0">
               <a href="#" className="hover:text-white transition-colors">Política de Privacidade</a>
               <span className="mx-2">|</span>

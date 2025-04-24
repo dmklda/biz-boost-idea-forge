@@ -20,14 +20,14 @@ export const IdeaStep = ({ formData, updateFormData, onNext }: IdeaStepProps) =>
         <Textarea 
           id="idea"
           placeholder="Descreva sua ideia brevemente..."
-          className="mt-2 resize-none border-gray-200 focus:border-brand-blue focus:ring-brand-blue/20"
+          className="mt-2 resize-none border-gray-200 dark:border-gray-700 focus:border-brand-blue focus:ring-brand-blue/20"
           rows={4}
           maxLength={300}
           value={formData.idea}
           onChange={(e) => updateFormData("idea", e.target.value)}
           required
         />
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
           {formData.idea.length}/300 caracteres
         </p>
       </div>
@@ -36,7 +36,7 @@ export const IdeaStep = ({ formData, updateFormData, onNext }: IdeaStepProps) =>
           type="button" 
           onClick={onNext}
           disabled={formData.idea.trim().length < 10}
-          className="bg-brand-blue hover:bg-brand-blue/90"
+          className="bg-brand-blue hover:bg-brand-blue/90 text-white"
         >
           Próximo
         </Button>

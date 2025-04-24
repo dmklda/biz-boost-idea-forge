@@ -37,10 +37,10 @@ const IdeaForm = () => {
   };
 
   return (
-    <section id="form" className="py-16 bg-white">
+    <section id="form" className="py-20 bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
-          <Card className="border-0 shadow-lg overflow-hidden">
+          <Card className="overflow-hidden border-0 shadow-lg dark:bg-gray-800 dark:border-gray-700">
             <CardHeader className="bg-gradient-to-r from-brand-blue to-brand-purple rounded-t-lg">
               <CardTitle className="text-white text-2xl font-poppins">
                 Compartilhe sua ideia
