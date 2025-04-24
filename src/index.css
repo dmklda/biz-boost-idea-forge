@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -32,7 +33,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -99,4 +100,17 @@
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
   }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+  }
+}
+
+/* Custom animations */
+.hover-scale {
+  @apply transition-transform duration-200 hover:scale-105;
+}
+
+.text-gradient {
+  @apply bg-gradient-to-r from-brand-blue to-brand-purple bg-clip-text text-transparent;
 }

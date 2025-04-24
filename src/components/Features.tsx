@@ -40,7 +40,7 @@ const Features = () => {
     {
       icon: <Code className="h-8 w-8 text-brand-green" />,
       title: "Stack Recomendada",
-      description: "Para ideias de tecnologia, sugestão das melhores ferramentas e tecnologias para desenvolvimento."
+      description: "Sugestão das melhores ferramentas e tecnologias para desenvolvimento do seu projeto."
     },
     {
       icon: <DollarSign className="h-8 w-8 text-brand-blue" />,
@@ -58,9 +58,9 @@ const Features = () => {
     <section id="beneficios" className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Tudo que você precisa para validar sua ideia</h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Nossa plataforma utiliza IA avançada para fornecer uma análise completa da viabilidade 
+          <h2 className="text-3xl md:text-4xl font-bold font-poppins mb-4">Valide sua ideia de forma completa</h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-inter">
+            Nossa plataforma fornece uma análise completa da viabilidade 
             e potencial do seu conceito de negócio.
           </p>
         </div>
@@ -69,13 +69,13 @@ const Features = () => {
           {features.map((feature, index) => (
             <div 
               key={index} 
-              className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm transition-all hover:shadow-md"
+              className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm transition-all hover:shadow-md hover:border-brand-blue/20"
             >
               <div className="mb-4">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-              <p className="text-gray-600">{feature.description}</p>
+              <h3 className="text-xl font-semibold mb-3 font-poppins">{feature.title}</h3>
+              <p className="text-gray-600 font-inter">{feature.description}</p>
             </div>
           ))}
         </div>

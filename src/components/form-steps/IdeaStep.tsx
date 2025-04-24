@@ -20,7 +20,7 @@ export const IdeaStep = ({ formData, updateFormData, onNext }: IdeaStepProps) =>
         <Textarea 
           id="idea"
           placeholder="Descreva sua ideia brevemente..."
-          className="mt-2 resize-none"
+          className="mt-2 resize-none border-gray-200 focus:border-brand-blue focus:ring-brand-blue/20"
           rows={4}
           maxLength={300}
           value={formData.idea}

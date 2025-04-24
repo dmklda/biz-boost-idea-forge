@@ -40,13 +40,13 @@ const IdeaForm = () => {
     <section id="form" className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg overflow-hidden">
             <CardHeader className="bg-gradient-to-r from-brand-blue to-brand-purple rounded-t-lg">
-              <CardTitle className="text-white text-2xl">
+              <CardTitle className="text-white text-2xl font-poppins">
                 Compartilhe sua ideia
               </CardTitle>
-              <CardDescription className="text-white/80">
-                Nossa IA fornecerá uma análise detalhada do potencial de negócio
+              <CardDescription className="text-white/80 font-inter">
+                Preencha o formulário e receba uma análise detalhada do potencial de negócio
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6">

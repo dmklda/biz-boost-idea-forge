@@ -1,18 +1,21 @@
 
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { MenuIcon, X } from "lucide-react";
+import { MenuIcon, X, Lightbulb, Rocket } from "lucide-react";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="border-b border-gray-200 bg-white">
+    <header className="border-b border-gray-100 bg-white shadow-sm">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <div className="flex items-center">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-blue via-brand-purple to-brand-green bg-clip-text text-transparent">
-            IdeiaForge
-          </h1>
+          <div className="flex items-center">
+            <Rocket className="text-brand-blue h-6 w-6 mr-2" />
+            <h1 className="text-2xl font-bold font-poppins bg-gradient-to-r from-brand-blue via-brand-purple to-brand-green bg-clip-text text-transparent">
+              Startupideia
+            </h1>
+          </div>
         </div>
 
         {/* Desktop Navigation */}
