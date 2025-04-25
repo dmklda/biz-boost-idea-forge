@@ -1,8 +1,8 @@
-
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { MenuIcon, X, Rocket } from "lucide-react";
 import { ThemeToggle } from "./ui/theme-toggle";
+import { LanguageSwitcher } from "./ui/language-switcher";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -30,6 +30,7 @@ const Header = () => {
           <a href="#planos" className="text-gray-600 dark:text-gray-300 hover:text-brand-blue dark:hover:text-brand-blue transition-colors">
             Planos
           </a>
+          <LanguageSwitcher />
           <ThemeToggle />
           <Button 
             className="bg-brand-blue hover:bg-brand-blue/90 text-white"
@@ -44,6 +45,7 @@ const Header = () => {
 
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center gap-2">
+          <LanguageSwitcher />
           <ThemeToggle />
           <Button 
             variant="ghost" 
