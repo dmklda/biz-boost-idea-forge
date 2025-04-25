@@ -1,3 +1,4 @@
+
 import { Button } from "./ui/button";
 import { ArrowRight, Star } from "lucide-react";
 import { useTranslation } from 'react-i18next';
@@ -40,8 +41,11 @@ const Hero = () => {
       <div className="container mx-auto max-w-6xl">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <div className="inline-block px-4 py-2 bg-brand-light dark:bg-gray-800 rounded-full mb-6">
-              <p className="text-sm text-brand-purple font-medium animate-fade-in">
+            <div className="inline-block px-4 py-2 bg-brand-light dark:bg-gray-800 rounded-full mb-6 overflow-hidden h-10">
+              <p 
+                key={currentBadgeIndex}
+                className="text-sm text-brand-purple font-medium animate-slide-down"
+              >
                 {badges[currentBadgeIndex]}
               </p>
             </div>

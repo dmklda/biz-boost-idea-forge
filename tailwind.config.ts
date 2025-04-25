@@ -110,6 +110,16 @@ export default {
             opacity: '0.7'
           }
         },
+        'slide-down': {
+          '0%': { 
+            transform: 'translateY(-100%)',
+            opacity: '0'
+          },
+          '100%': { 
+            transform: 'translateY(0)',
+            opacity: '1'
+          }
+        },
         carousel: {
           from: { transform: 'translateX(0)' },
           to: { transform: 'translateX(-100%)' }
@@ -120,6 +130,7 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'fade-in': 'fade-in 0.5s ease-out',
         'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'slide-down': 'slide-down 0.5s ease-out',
         carousel: 'carousel 40s linear infinite'
       },
       fontFamily: {
