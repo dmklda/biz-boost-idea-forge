@@ -8,9 +8,24 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ResultsPage from "./pages/ResultsPage";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import '@/i18n/config';
 
 const queryClient = new QueryClient();
+
+const LanguageInitializer = ({ children }: { children: React.ReactNode }) => {
+  const { i18n } = useTranslation();
+  
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("i18nextLng");
+    if (savedLanguage && savedLanguage.length > 1) {
+      i18n.changeLanguage(savedLanguage);
+    }
+  }, [i18n]);
+  
+  return <>{children}</>;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -18,14 +33,16 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/resultados" element={<ResultsPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <LanguageInitializer>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/resultados" element={<ResultsPage />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </LanguageInitializer>
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>

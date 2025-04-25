@@ -24,6 +24,9 @@ i18n
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage']
+    },
+    react: {
+      useSuspense: false
     }
   });
 

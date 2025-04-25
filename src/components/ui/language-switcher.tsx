@@ -8,7 +8,6 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 import { Button } from "./button";
-import { useEffect } from "react";
 
 const languages = {
   pt: "Português",
@@ -20,19 +19,9 @@ const languages = {
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
 
-  // Initialize language from localStorage or browser preference
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem("i18nextLng");
-    if (savedLanguage && Object.keys(languages).includes(savedLanguage)) {
-      i18n.changeLanguage(savedLanguage);
-    }
-  }, [i18n]);
-
   const handleLanguageChange = (code: string) => {
     i18n.changeLanguage(code);
     localStorage.setItem("i18nextLng", code);
-    // Force a reload to ensure all components update
-    window.location.reload();
   };
 
   return (
