@@ -1,5 +1,5 @@
 
-import { Languages } from "lucide-react";
+import { Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   DropdownMenu,
@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 import { Button } from "./button";
+import { useEffect } from "react";
 
 const languages = {
   pt: "Português",
@@ -19,11 +20,26 @@ const languages = {
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
 
+  // Initialize language from localStorage or browser preference
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("i18nextLng");
+    if (savedLanguage && Object.keys(languages).includes(savedLanguage)) {
+      i18n.changeLanguage(savedLanguage);
+    }
+  }, [i18n]);
+
+  const handleLanguageChange = (code: string) => {
+    i18n.changeLanguage(code);
+    localStorage.setItem("i18nextLng", code);
+    // Force a reload to ensure all components update
+    window.location.reload();
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
-          <Languages className="h-[1.2rem] w-[1.2rem]" />
+          <Globe className="h-[1.2rem] w-[1.2rem]" />
           <span className="sr-only">Toggle language</span>
         </Button>
       </DropdownMenuTrigger>
@@ -31,7 +47,7 @@ export function LanguageSwitcher() {
         {Object.entries(languages).map(([code, name]) => (
           <DropdownMenuItem
             key={code}
-            onClick={() => i18n.changeLanguage(code)}
+            onClick={() => handleLanguageChange(code)}
             className={i18n.language === code ? "bg-accent" : ""}
           >
             {name}
