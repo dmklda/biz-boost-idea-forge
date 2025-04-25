@@ -56,5 +56,112 @@
       ],
       "cta": "契約する"
     }
+  },
+  "header": {
+    "howItWorks": "仕組み",
+    "benefits": "メリット",
+    "plans": "料金プラン",
+    "startNow": "今すぐ始める"
+  },
+  "hero": {
+    "title": "<span>アイデア</span>を<gradientSpan>ビジネス</gradientSpan>に変える",
+    "subtitle": "アイデアの実現可能性を発見し、それを成功するビジネスに変えるための完全な行動計画を受け取りましょう。",
+    "validateIdea": "アイデアを検証する",
+    "learnMore": "詳細を見る",
+    "viabilityAnalysis": "実現可能性分析",
+    "viabilityDesc": "市場データに基づいてアイデアの可能性を確認",
+    "growthPotential": "成長の可能性",
+    "growthDesc": "ビジネスを拡大するためのカスタム戦略",
+    "customerProfile": "顧客プロフィール",
+    "customerDesc": "理想的なターゲット層を特定し、アプローチ方法を提案"
+  },
+  "howItWorks": {
+    "title": "仕組み",
+    "subtitle": "アイデアを実現可能なビジネスプランに変える、シンプルで効率的なプロセス",
+    "step1": {
+      "number": "01",
+      "title": "アイデアを説明",
+      "description": "ターゲット層、解決する問題、収益化モデルなど、ビジネスアイデアに関する質問に答えます。"
+    },
+    "step2": {
+      "number": "02",
+      "title": "データを処理",
+      "description": "高度なアルゴリズムがアイデアを処理し、実現可能性、市場、成長の可能性を分析します。"
+    },
+    "step3": {
+      "number": "03",
+      "title": "完全な洞察を受け取る",
+      "description": "名前、スローガン、理想的なペルソナ、MVP、収益化戦略の提案を含む詳細な分析を取得します。"
+    },
+    "step4": {
+      "number": "04",
+      "title": "情報に基づいた決定を下す",
+      "description": "洞察を活用してアイデアを洗練し、行動計画を作成し、より自信を持ってビジネスを始めましょう。"
+    }
+  },
+  "features": {
+    "title": "アイデアを完全に検証",
+    "subtitle": "当社のプラットフォームは、ビジネスコンセプトの実現可能性と可能性の完全な分析を提供します。",
+    "viabilityAnalysis": {
+      "title": "実現可能性分析",
+      "description": "市場、トレンド、アイデアの実用性に基づく詳細な評価。"
+    },
+    "nameSloganPitch": {
+      "title": "名前、スローガン、ピッチ",
+      "description": "印象的で記憶に残るビジネスプレゼンテーションのための創造的な提案。"
+    },
+    "modelEvaluation": {
+      "title": "モデル評価",
+      "description": "強みと改善の機会を含むビジネスモデルの分析。"
+    },
+    "nichePersona": {
+      "title": "ニッチとペルソナ",
+      "description": "理想的なターゲット層の特定と詳細なペルソナの作成。"
+    },
+    "mvpSuggestion": {
+      "title": "MVP提案",
+      "description": "アイデアを迅速に検証する最小限の実行可能な製品を作成するための推奨事項。"
+    },
+    "recommendedStack": {
+      "title": "推奨スタック",
+      "description": "プロジェクト開発に最適なツールとテクノロジーの提案。"
+    },
+    "monetizationPotential": {
+      "title": "収益化の可能性",
+      "description": "持続可能な方法でビジネス収益を生み出すための戦略。"
+    },
+    "competitionDifferentials": {
+      "title": "競合と差別化要因",
+      "description": "競争分析と市場でのビジネスを際立たせる要因の特定。"
+    }
+  },
+  "ideaForm": {
+    "title": "アイデアを共有",
+    "subtitle": "フォームに記入して、ビジネスの可能性に関する詳細な分析を受け取る"
+  },
+  "cta": {
+    "title": "アイデアを現実に変える準備はできましたか？",
+    "subtitle": "当社のプラットフォームは、次の大きなビジネスの可能性を分析する準備ができています。今すぐ始めましょう！",
+    "validateIdea": "アイデアを検証する",
+    "seeExample": "分析例を見る"
+  },
+  "footer": {
+    "description": "高度なテクノロジーを活用した分析で、アイデアを実現可能なビジネスに変えましょう。",
+    "platform": "プラットフォーム",
+    "howItWorks": "仕組み",
+    "benefits": "メリット",
+    "plans": "料金プラン",
+    "api": "API",
+    "resources": "リソース",
+    "blog": "ブログ",
+    "guides": "ガイド",
+    "successCases": "成功事例",
+    "webinars": "ウェビナー",
+    "company": "会社情報",
+    "aboutUs": "会社概要",
+    "contact": "お問い合わせ",
+    "privacyPolicy": "プライバシーポリシー",
+    "termsOfUse": "利用規約",
+    "copyright": "すべての権利を保有。"
   }
 }

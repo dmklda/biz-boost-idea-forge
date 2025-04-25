@@ -56,5 +56,112 @@
       ],
       "cta": "Get Started"
     }
+  },
+  "header": {
+    "howItWorks": "How It Works",
+    "benefits": "Benefits",
+    "plans": "Plans",
+    "startNow": "Start Now"
+  },
+  "hero": {
+    "title": "Transform <span>ideas</span> into <gradientSpan>businesses</gradientSpan>",
+    "subtitle": "Discover the viability of your idea and receive a complete action plan to turn it into a successful business.",
+    "validateIdea": "Validate My Idea",
+    "learnMore": "Learn More",
+    "viabilityAnalysis": "Viability Analysis",
+    "viabilityDesc": "Find out if your idea has potential based on market data",
+    "growthPotential": "Growth Potential",
+    "growthDesc": "Custom strategies to scale your business",
+    "customerProfile": "Customer Profile",
+    "customerDesc": "Identify your ideal target audience and how to reach them"
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "subtitle": "A simple and efficient process to transform your idea into a viable business plan",
+    "step1": {
+      "number": "01",
+      "title": "Describe your idea",
+      "description": "Answer some questions about your business idea, such as target audience, problem it solves, and monetization model."
+    },
+    "step2": {
+      "number": "02",
+      "title": "We process the data",
+      "description": "Advanced algorithms process your idea, analyzing viability, market, and growth potential."
+    },
+    "step3": {
+      "number": "03",
+      "title": "Receive complete insights",
+      "description": "Get a detailed analysis with suggestions for name, slogan, ideal persona, MVP, and monetization strategies."
+    },
+    "step4": {
+      "number": "04",
+      "title": "Make informed decisions",
+      "description": "Use the insights to refine your idea, create an action plan, and start your business with more confidence."
+    }
+  },
+  "features": {
+    "title": "Validate your idea completely",
+    "subtitle": "Our platform provides a complete analysis of the viability and potential of your business concept.",
+    "viabilityAnalysis": {
+      "title": "Viability Analysis",
+      "description": "Detailed evaluation based on market, trends, and practical applicability of your idea."
+    },
+    "nameSloganPitch": {
+      "title": "Name, Slogan and Pitch",
+      "description": "Creative suggestions to present your business in an impactful and memorable way."
+    },
+    "modelEvaluation": {
+      "title": "Model Evaluation",
+      "description": "Analysis of your business model with strengths and opportunities for improvement."
+    },
+    "nichePersona": {
+      "title": "Niche and Persona",
+      "description": "Identification of your ideal target audience and creation of a detailed persona."
+    },
+    "mvpSuggestion": {
+      "title": "MVP Suggestion",
+      "description": "Recommendations to create a minimum viable product that validates your idea quickly."
+    },
+    "recommendedStack": {
+      "title": "Recommended Stack",
+      "description": "Suggestion of the best tools and technologies for developing your project."
+    },
+    "monetizationPotential": {
+      "title": "Monetization Potential",
+      "description": "Strategies to generate revenue with your business in a sustainable way."
+    },
+    "competitionDifferentials": {
+      "title": "Competition and Differentials",
+      "description": "Competitive analysis and identification of factors that highlight your business in the market."
+    }
+  },
+  "ideaForm": {
+    "title": "Share your idea",
+    "subtitle": "Fill out the form and receive a detailed analysis of the business potential"
+  },
+  "cta": {
+    "title": "Ready to transform your idea into reality?",
+    "subtitle": "Our platform is waiting to analyze the potential of your next big business. Start right now!",
+    "validateIdea": "Validate My Idea",
+    "seeExample": "See Analysis Example"
+  },
+  "footer": {
+    "description": "Transform your ideas into viable businesses with analyses powered by advanced technology.",
+    "platform": "Platform",
+    "howItWorks": "How it works",
+    "benefits": "Benefits",
+    "plans": "Plans",
+    "api": "API",
+    "resources": "Resources",
+    "blog": "Blog",
+    "guides": "Guides",
+    "successCases": "Success cases",
+    "webinars": "Webinars",
+    "company": "Company",
+    "aboutUs": "About us",
+    "contact": "Contact",
+    "privacyPolicy": "Privacy policy",
+    "termsOfUse": "Terms of use",
+    "copyright": "All rights reserved."
   }
 }

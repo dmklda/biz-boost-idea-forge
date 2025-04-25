@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 import { Button } from "./button";
+import { useEffect, useState } from "react";
 
 const languages = {
   pt: "Português",
@@ -18,15 +19,36 @@ const languages = {
 
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
+  const [currentLang, setCurrentLang] = useState(i18n.language);
+
+  useEffect(() => {
+    // Atualiza o estado quando i18n.language muda
+    setCurrentLang(i18n.language);
+  }, [i18n.language]);
 
   const handleLanguageChange = (code: string) => {
     console.log("Changing language to:", code);
+    if (code === currentLang) {
+      console.log("Language already set to", code);
+      return;
+    }
+    
     // Alterando o idioma programaticamente
     i18n.changeLanguage(code);
+    
     // Armazenando a preferência do usuário
     localStorage.setItem("i18nextLng", code);
-    // Força um reload para garantir que todos os componentes sejam atualizados corretamente
+    
+    // Atualizando o estado local
+    setCurrentLang(code);
+    
+    // Recarregando a página para garantir que todas as traduções sejam aplicadas
     window.location.reload();
+  };
+
+  // Função auxiliar para verificar se o código de idioma corresponde ao idioma atual
+  const isCurrentLanguage = (code: string): boolean => {
+    return currentLang.startsWith(code);
   };
 
   return (
@@ -42,7 +64,7 @@ export function LanguageSwitcher() {
           <DropdownMenuItem
             key={code}
             onClick={() => handleLanguageChange(code)}
-            className={i18n.language.startsWith(code) ? "bg-accent" : ""}
+            className={isCurrentLanguage(code) ? "bg-accent" : ""}
           >
             {name}
           </DropdownMenuItem>

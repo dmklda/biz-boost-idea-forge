@@ -1,11 +1,14 @@
+
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { MenuIcon, X, Rocket } from "lucide-react";
 import { ThemeToggle } from "./ui/theme-toggle";
 import { LanguageSwitcher } from "./ui/language-switcher";
+import { useTranslation } from 'react-i18next';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <header className="border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm backdrop-blur-md bg-opacity-80 dark:bg-opacity-80 sticky top-0 z-50">
@@ -22,13 +25,13 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
           <a href="#como-funciona" className="text-gray-600 dark:text-gray-300 hover:text-brand-blue dark:hover:text-brand-blue transition-colors">
-            Como Funciona
+            {t('header.howItWorks')}
           </a>
           <a href="#beneficios" className="text-gray-600 dark:text-gray-300 hover:text-brand-blue dark:hover:text-brand-blue transition-colors">
-            Benefícios
+            {t('header.benefits')}
           </a>
           <a href="#planos" className="text-gray-600 dark:text-gray-300 hover:text-brand-blue dark:hover:text-brand-blue transition-colors">
-            Planos
+            {t('header.plans')}
           </a>
           <LanguageSwitcher />
           <ThemeToggle />
@@ -39,7 +42,7 @@ const Header = () => {
               if (formElement) formElement.scrollIntoView({ behavior: 'smooth' });
             }}
           >
-            Começar Agora
+            {t('header.startNow')}
           </Button>
         </nav>
 
@@ -67,21 +70,21 @@ const Header = () => {
               className="text-gray-600 dark:text-gray-300 hover:text-brand-blue dark:hover:text-brand-blue transition-colors py-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Como Funciona
+              {t('header.howItWorks')}
             </a>
             <a 
               href="#beneficios" 
               className="text-gray-600 dark:text-gray-300 hover:text-brand-blue dark:hover:text-brand-blue transition-colors py-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Benefícios
+              {t('header.benefits')}
             </a>
             <a 
               href="#planos" 
               className="text-gray-600 dark:text-gray-300 hover:text-brand-blue dark:hover:text-brand-blue transition-colors py-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Planos
+              {t('header.plans')}
             </a>
             <Button 
               className="bg-brand-blue hover:bg-brand-blue/90 text-white w-full"
@@ -93,7 +96,7 @@ const Header = () => {
                 }
               }}
             >
-              Começar Agora
+              {t('header.startNow')}
             </Button>
           </nav>
         </div>

@@ -1,27 +1,30 @@
 
 import { ArrowRight } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 const HowItWorks = () => {
+  const { t } = useTranslation();
+  
   const steps = [
     {
-      number: "01",
-      title: "Descreva sua ideia",
-      description: "Responda algumas perguntas sobre sua ideia de negócio, como público-alvo, problema que resolve e modelo de monetização."
+      number: t('howItWorks.step1.number'),
+      title: t('howItWorks.step1.title'),
+      description: t('howItWorks.step1.description')
     },
     {
-      number: "02",
-      title: "Processamos os dados",
-      description: "Algoritmos avançados processam sua ideia, analisando viabilidade, mercado e potencial de crescimento."
+      number: t('howItWorks.step2.number'),
+      title: t('howItWorks.step2.title'),
+      description: t('howItWorks.step2.description')
     },
     {
-      number: "03",
-      title: "Receba insights completos",
-      description: "Obtenha uma análise detalhada com sugestões de nome, slogan, persona ideal, MVP e estratégias de monetização."
+      number: t('howItWorks.step3.number'),
+      title: t('howItWorks.step3.title'),
+      description: t('howItWorks.step3.description')
     },
     {
-      number: "04",
-      title: "Tome decisões informadas",
-      description: "Use os insights para refinar sua ideia, criar um plano de ação e iniciar seu negócio com mais confiança."
+      number: t('howItWorks.step4.number'),
+      title: t('howItWorks.step4.title'),
+      description: t('howItWorks.step4.description')
     }
   ];
 
@@ -29,9 +32,9 @@ const HowItWorks = () => {
     <section id="como-funciona" className="py-20 bg-brand-light dark:bg-gray-800">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold font-poppins mb-4">Como funciona</h2>
+          <h2 className="text-3xl md:text-4xl font-bold font-poppins mb-4">{t('howItWorks.title')}</h2>
           <p className="text-lg text-gray-600 dark:text-gray-400 font-inter">
-            Um processo simples e eficiente para transformar sua ideia em um plano de negócios viável
+            {t('howItWorks.subtitle')}
           </p>
         </div>
 

@@ -11,8 +11,10 @@ import { AudienceStep } from "./form-steps/AudienceStep";
 import { CompetitorsStep } from "./form-steps/CompetitorsStep";
 import { BudgetLocationStep } from "./form-steps/BudgetLocationStep";
 import { useIdeaForm } from "@/hooks/useIdeaForm";
+import { useTranslation } from 'react-i18next';
 
 const IdeaForm = () => {
+  const { t } = useTranslation();
   const {
     currentStep,
     formData,
@@ -43,10 +45,10 @@ const IdeaForm = () => {
           <Card className="overflow-hidden border-0 shadow-lg dark:bg-gray-800 dark:border-gray-700">
             <CardHeader className="bg-gradient-to-r from-brand-blue to-brand-purple rounded-t-lg">
               <CardTitle className="text-white text-2xl font-poppins">
-                Compartilhe sua ideia
+                {t('ideaForm.title')}
               </CardTitle>
               <CardDescription className="text-white/80 font-inter">
-                Preencha o formulário e receba uma análise detalhada do potencial de negócio
+                {t('ideaForm.subtitle')}
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6">

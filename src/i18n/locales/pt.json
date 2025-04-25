@@ -56,5 +56,112 @@
       ],
       "cta": "Contrate Agora"
     }
+  },
+  "header": {
+    "howItWorks": "Como Funciona",
+    "benefits": "Benefícios",
+    "plans": "Planos",
+    "startNow": "Começar Agora"
+  },
+  "hero": {
+    "title": "Transforme <span>ideias</span> em <gradientSpan>negócios</gradientSpan>",
+    "subtitle": "Descubra a viabilidade da sua ideia e receba um plano de ação completo para transformá-la em um negócio de sucesso.",
+    "validateIdea": "Validar Minha Ideia",
+    "learnMore": "Saiba Mais",
+    "viabilityAnalysis": "Análise de Viabilidade",
+    "viabilityDesc": "Descubra se sua ideia tem potencial baseado em dados de mercado",
+    "growthPotential": "Potencial de Crescimento",
+    "growthDesc": "Estratégias personalizadas para escalar seu negócio",
+    "customerProfile": "Perfil do Cliente",
+    "customerDesc": "Identifique seu público-alvo ideal e como alcançá-lo"
+  },
+  "howItWorks": {
+    "title": "Como funciona",
+    "subtitle": "Um processo simples e eficiente para transformar sua ideia em um plano de negócios viável",
+    "step1": {
+      "number": "01",
+      "title": "Descreva sua ideia",
+      "description": "Responda algumas perguntas sobre sua ideia de negócio, como público-alvo, problema que resolve e modelo de monetização."
+    },
+    "step2": {
+      "number": "02",
+      "title": "Processamos os dados",
+      "description": "Algoritmos avançados processam sua ideia, analisando viabilidade, mercado e potencial de crescimento."
+    },
+    "step3": {
+      "number": "03",
+      "title": "Receba insights completos",
+      "description": "Obtenha uma análise detalhada com sugestões de nome, slogan, persona ideal, MVP e estratégias de monetização."
+    },
+    "step4": {
+      "number": "04",
+      "title": "Tome decisões informadas",
+      "description": "Use os insights para refinar sua ideia, criar um plano de ação e iniciar seu negócio com mais confiança."
+    }
+  },
+  "features": {
+    "title": "Valide sua ideia de forma completa",
+    "subtitle": "Nossa plataforma fornece uma análise completa da viabilidade e potencial do seu conceito de negócio.",
+    "viabilityAnalysis": {
+      "title": "Análise de Viabilidade",
+      "description": "Avaliação detalhada baseada em mercado, tendências e aplicabilidade prática da sua ideia."
+    },
+    "nameSloganPitch": {
+      "title": "Nome, Slogan e Pitch",
+      "description": "Sugestões criativas para apresentar seu negócio de forma impactante e memorável."
+    },
+    "modelEvaluation": {
+      "title": "Avaliação do Modelo",
+      "description": "Análise do seu modelo de negócio com pontos fortes e oportunidades de melhoria."
+    },
+    "nichePersona": {
+      "title": "Nicho e Persona",
+      "description": "Identificação do seu público-alvo ideal e criação de uma persona detalhada."
+    },
+    "mvpSuggestion": {
+      "title": "Sugestão de MVP",
+      "description": "Recomendações para criar um produto mínimo viável que valide sua ideia rapidamente."
+    },
+    "recommendedStack": {
+      "title": "Stack Recomendada",
+      "description": "Sugestão das melhores ferramentas e tecnologias para desenvolvimento do seu projeto."
+    },
+    "monetizationPotential": {
+      "title": "Potencial de Monetização",
+      "description": "Estratégias para gerar receita com seu negócio de forma sustentável."
+    },
+    "competitionDifferentials": {
+      "title": "Concorrência e Diferenciais",
+      "description": "Análise competitiva e identificação de fatores que destacam seu negócio no mercado."
+    }
+  },
+  "ideaForm": {
+    "title": "Compartilhe sua ideia",
+    "subtitle": "Preencha o formulário e receba uma análise detalhada do potencial de negócio"
+  },
+  "cta": {
+    "title": "Pronto para transformar sua ideia em realidade?",
+    "subtitle": "Nossa plataforma está esperando para analisar o potencial do seu próximo grande negócio. Comece agora mesmo!",
+    "validateIdea": "Validar Minha Ideia",
+    "seeExample": "Ver Exemplo de Análise"
+  },
+  "footer": {
+    "description": "Transforme suas ideias em negócios viáveis com análises impulsionadas por tecnologia avançada.",
+    "platform": "Plataforma",
+    "howItWorks": "Como funciona",
+    "benefits": "Benefícios",
+    "plans": "Planos",
+    "api": "API",
+    "resources": "Recursos",
+    "blog": "Blog",
+    "guides": "Guias",
+    "successCases": "Casos de sucesso",
+    "webinars": "Webinars",
+    "company": "Empresa",
+    "aboutUs": "Sobre nós",
+    "contact": "Contato",
+    "privacyPolicy": "Política de privacidade",
+    "termsOfUse": "Termos de uso",
+    "copyright": "Todos os direitos reservados."
   }
 }
