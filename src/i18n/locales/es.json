@@ -1,0 +1,60 @@
+
+{
+  "testimonials": {
+    "title": "Lo que dicen nuestros usuarios",
+    "subtitle": "Emprendedores, inversores y creadores de contenido están transformando sus ideas en negocios exitosos",
+    "quote1": "El análisis que recibí fue sorprendentemente preciso. Identifiqué problemas en mi modelo de negocio que ni siquiera había notado.",
+    "author1": "María García",
+    "role1": "Fundadora de TechStart",
+    "quote2": "Ahorré meses de investigación y miles de dólares validando mi idea. El informe me ayudó a pivotar mi estrategia.",
+    "author2": "Pedro Rodríguez",
+    "role2": "CEO de DeliveryPro",
+    "quote3": "Como inversor ángel, uso Startupideia para pre-analizar las startups que me llegan. Es una herramienta indispensable.",
+    "author3": "Carlos Martínez",
+    "role3": "Inversor Ángel"
+  },
+  "pricing": {
+    "title": "Planes y precios",
+    "subtitle": "Elige el plan que mejor se adapte a tus necesidades emprendedoras",
+    "period": "/mes",
+    "mostPopular": "Más Popular",
+    "free": {
+      "name": "Gratis",
+      "description": "Para principiantes que quieren validar su primera idea.",
+      "features": [
+        "1 análisis de idea",
+        "Resultados básicos",
+        "Sugerencia de nombre y eslogan",
+        "Evaluación de viabilidad"
+      ],
+      "cta": "Empezar Gratis"
+    },
+    "entrepreneur": {
+      "name": "Emprendedor",
+      "description": "Ideal para quienes están comenzando y tienen múltiples ideas.",
+      "features": [
+        "5 análisis de ideas por mes",
+        "Informes detallados en PDF",
+        "Sugerencias de MVP",
+        "Análisis de competencia",
+        "Plan de acción en 5 pasos",
+        "Exportación a Notion/Google Docs"
+      ],
+      "cta": "Suscribirse Ahora"
+    },
+    "business": {
+      "name": "Negocio",
+      "description": "Para equipos y empresas que necesitan análisis avanzados.",
+      "features": [
+        "Análisis ilimitados",
+        "Informes completos",
+        "Modelos de negocio detallados",
+        "Consultoría personal (1h/mes)",
+        "Comparación de ideas",
+        "Análisis de tendencias de mercado",
+        "Integración API"
+      ],
+      "cta": "Contratar Ahora"
+    }
+  }
+}

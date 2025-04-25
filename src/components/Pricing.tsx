@@ -2,73 +2,58 @@
 import { Check } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
+import { useTranslation } from 'react-i18next';
+import { useCurrency } from "@/hooks/use-currency";
 
 const Pricing = () => {
+  const { t } = useTranslation();
+  const { formatPrice } = useCurrency();
+
   const plans = [
     {
-      name: "Gratuito",
-      price: "R$ 0",
-      description: "Para iniciantes que querem validar sua primeira ideia.",
-      features: [
-        "1 análise de ideia",
-        "Resultados básicos",
-        "Sugestão de nome e slogan",
-        "Avaliação de viabilidade"
-      ],
-      cta: "Começar Grátis",
+      name: t('pricing.free.name'),
+      price: formatPrice(0),
+      description: t('pricing.free.description'),
+      features: t('pricing.free.features', { returnObjects: true }),
+      cta: t('pricing.free.cta'),
       popular: false
     },
     {
-      name: "Empreendedor",
-      price: "R$ 19,90",
-      period: "/mês",
-      description: "Ideal para quem está começando e tem múltiplas ideias.",
-      features: [
-        "5 análises de ideias por mês",
-        "Relatórios detalhados em PDF",
-        "Sugestões de MVP",
-        "Análise da concorrência",
-        "Plano de ação em 5 passos",
-        "Exportação para Notion/Google Docs"
-      ],
-      cta: "Assinar Agora",
+      name: t('pricing.entrepreneur.name'),
+      price: formatPrice(19.90),
+      period: t('pricing.period'),
+      description: t('pricing.entrepreneur.description'),
+      features: t('pricing.entrepreneur.features', { returnObjects: true }),
+      cta: t('pricing.entrepreneur.cta'),
       popular: true
     },
     {
-      name: "Negócio",
-      price: "R$ 49,90",
-      period: "/mês",
-      description: "Para equipes e empresas que precisam de análises avançadas.",
-      features: [
-        "Análises ilimitadas",
-        "Relatórios completos",
-        "Modelos de negócio detalhados",
-        "Consultoria personalizada (1h/mês)",
-        "Comparação entre ideias",
-        "Análise de tendências de mercado",
-        "API para integração"
-      ],
-      cta: "Contrate Agora",
+      name: t('pricing.business.name'),
+      price: formatPrice(49.90),
+      period: t('pricing.period'),
+      description: t('pricing.business.description'),
+      features: t('pricing.business.features', { returnObjects: true }),
+      cta: t('pricing.business.cta'),
       popular: false
     }
   ];
 
   return (
-    <section id="planos" className="py-16 bg-brand-light">
+    <section id="planos" className="py-16 bg-muted/50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Planos e preços</h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Escolha o plano que melhor se adapta às suas necessidades de empreendedorismo
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('pricing.title')}</h2>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+            {t('pricing.subtitle')}
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {plans.map((plan, index) => (
-            <Card key={index} className={`relative border ${plan.popular ? 'border-brand-blue shadow-lg' : 'border-gray-200'}`}>
+            <Card key={index} className={`relative border ${plan.popular ? 'border-brand-blue shadow-lg' : 'border-input'} bg-card`}>
               {plan.popular && (
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-brand-blue text-white px-4 py-1 rounded-full text-sm font-medium">
-                  Mais Popular
+                  {t('pricing.mostPopular')}
                 </div>
               )}
               
@@ -76,7 +61,7 @@ const Pricing = () => {
                 <CardTitle className="text-xl">{plan.name}</CardTitle>
                 <div className="flex items-end gap-1 mt-2">
                   <span className="text-3xl font-bold">{plan.price}</span>
-                  {plan.period && <span className="text-gray-500 mb-1">{plan.period}</span>}
+                  {plan.period && <span className="text-muted-foreground mb-1">{plan.period}</span>}
                 </div>
                 <CardDescription>{plan.description}</CardDescription>
               </CardHeader>
@@ -86,7 +71,7 @@ const Pricing = () => {
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-start">
                       <Check className="h-5 w-5 text-brand-green shrink-0 mr-2" />
-                      <span>{feature}</span>
+                      <span className="text-foreground">{feature}</span>
                     </li>
                   ))}
                 </ul>

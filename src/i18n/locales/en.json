@@ -1,0 +1,60 @@
+
+{
+  "testimonials": {
+    "title": "What our users say",
+    "subtitle": "Entrepreneurs, investors, and content creators are turning their ideas into successful businesses",
+    "quote1": "The analysis I received was surprisingly accurate. I identified problems in my business model that I hadn't even noticed.",
+    "author1": "Mary Smith",
+    "role1": "TechStart Founder",
+    "quote2": "I saved months of research and thousands of dollars validating my idea. The report helped me pivot my strategy.",
+    "author2": "Peter Jones",
+    "role2": "DeliveryPro CEO",
+    "quote3": "As an angel investor, I use Startupideia to pre-analyze startups that come to me. It's an indispensable tool.",
+    "author3": "Charles Miller",
+    "role3": "Angel Investor"
+  },
+  "pricing": {
+    "title": "Plans & Pricing",
+    "subtitle": "Choose the plan that best fits your entrepreneurial needs",
+    "period": "/month",
+    "mostPopular": "Most Popular",
+    "free": {
+      "name": "Free",
+      "description": "For beginners who want to validate their first idea.",
+      "features": [
+        "1 idea analysis",
+        "Basic results",
+        "Name and slogan suggestion",
+        "Viability assessment"
+      ],
+      "cta": "Start Free"
+    },
+    "entrepreneur": {
+      "name": "Entrepreneur",
+      "description": "Perfect for starters with multiple ideas.",
+      "features": [
+        "5 idea analyses per month",
+        "Detailed PDF reports",
+        "MVP suggestions",
+        "Competition analysis",
+        "5-step action plan",
+        "Export to Notion/Google Docs"
+      ],
+      "cta": "Subscribe Now"
+    },
+    "business": {
+      "name": "Business",
+      "description": "For teams and companies needing advanced analyses.",
+      "features": [
+        "Unlimited analyses",
+        "Complete reports",
+        "Detailed business models",
+        "Personal consulting (1h/month)",
+        "Ideas comparison",
+        "Market trends analysis",
+        "API integration"
+      ],
+      "cta": "Get Started"
+    }
+  }
+}
