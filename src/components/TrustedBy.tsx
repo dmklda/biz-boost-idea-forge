@@ -21,12 +21,12 @@ const TrustedBy = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="w-full bg-background/50 backdrop-blur-sm py-12 border-y border-border/50 relative mt-20">
+    <div className="w-full bg-background/30 backdrop-blur-sm py-12 border-t border-b border-border/10 relative mt-20">
       <div className="container mx-auto px-4">
         <p className="text-center text-sm md:text-base text-muted-foreground mb-8 font-medium">
           {t('hero.trustedBy')}
         </p>
-        <div className="relative">
+        <div className="relative overflow-hidden">
           <div className="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-background to-transparent z-10" />
           <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-background to-transparent z-10" />
           
@@ -46,7 +46,7 @@ const TrustedBy = () => {
                     <img
                       src={company.logo}
                       alt={company.name}
-                      className="h-8 w-auto mx-auto opacity-40 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0 transform hover:scale-110"
+                      className="h-8 w-auto mx-auto opacity-40 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0 transform hover:scale-110 filter dark:brightness-150"
                     />
                   </div>
                 </CarouselItem>

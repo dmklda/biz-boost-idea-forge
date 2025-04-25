@@ -35,7 +35,7 @@ const App = () => (
     <ThemeProvider defaultTheme="system" storageKey="startupideia-theme">
       <TooltipProvider>
         <Toaster />
-        <Sonner />
+        <Sonner theme="system" />
         <LanguageInitializer>
           <BrowserRouter>
             <Routes>

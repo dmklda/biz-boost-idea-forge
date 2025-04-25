@@ -1,3 +1,4 @@
+
 import { type Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
 
@@ -57,7 +58,8 @@ export default {
           purple: '#8F00FF',
           green: '#AAFF00',
           light: '#F5F7FA',
-          dark: '#1E1E1E',
+          dark: '#1A1F2C',
+          gray: '#8E9196',
         },
         sidebar: {
           DEFAULT: 'hsl(var(--sidebar-background))',
@@ -120,9 +122,21 @@ export default {
             opacity: '1'
           }
         },
-        carousel: {
+        'carousel': {
           from: { transform: 'translateX(0)' },
           to: { transform: 'translateX(-100%)' }
+        },
+        'float': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' }
+        },
+        'glow': {
+          '0%, 100%': {
+            boxShadow: '0 0 15px 0 rgba(138, 43, 226, 0.4)'
+          },
+          '50%': {
+            boxShadow: '0 0 30px 5px rgba(138, 43, 226, 0.7)'
+          }
         }
       },
       animation: {
@@ -131,12 +145,17 @@ export default {
         'fade-in': 'fade-in 0.5s ease-out',
         'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'slide-down': 'slide-down 0.8s ease-out',
-        carousel: 'carousel 60s linear infinite'
+        'carousel': 'carousel 60s linear infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'glow': 'glow 3s ease-in-out infinite'
       },
       fontFamily: {
         'poppins': ['Poppins', 'sans-serif'],
         'inter': ['Inter', 'sans-serif']
-      }
+      },
+      backdropBlur: {
+        xs: '2px',
+      },
     }
   },
   plugins: [require("tailwindcss-animate")],

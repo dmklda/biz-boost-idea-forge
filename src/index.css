@@ -5,14 +5,14 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 240 33% 98%;
+    --foreground: 240 10% 3.9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 240 10% 3.9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 240 10% 3.9%;
 
     --primary: 223 80% 60%;
     --primary-foreground: 210 40% 98%;
@@ -46,32 +46,32 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 240 10% 5%;
+    --foreground: 0 0% 90%;
 
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --card: 240 10% 7%;
+    --card-foreground: 0 0% 90%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 240 10% 8%;
+    --popover-foreground: 0 0% 90%;
 
-    --primary: 223 80% 60%;
+    --primary: 266 100% 60%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 240 3.7% 15.9%;
+    --secondary: 240 5% 15%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 240 5% 15%;
+    --muted-foreground: 240 5% 70%;
 
-    --accent: 266 100% 50%;
+    --accent: 266 100% 60%;
     --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 62.8% 40%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 240 5% 15%;
+    --input: 240 5% 15%;
     --ring: 240 4.9% 83.9%;
     
     --sidebar-background: 240 5.9% 10%;
@@ -106,17 +106,26 @@
 }
 
 .text-gradient {
-  @apply bg-gradient-to-r from-brand-blue to-brand-purple bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-brand-blue via-brand-purple to-brand-green bg-clip-text text-transparent;
 }
 
 .glass-card {
-  @apply bg-white/50 dark:bg-black/20 backdrop-blur-md border border-white/10 dark:border-white/5 shadow-lg;
+  @apply bg-white/5 dark:bg-black/10 backdrop-blur-md border border-white/5 dark:border-white/5 shadow-lg;
 }
 
 .neo-card {
-  @apply bg-white dark:bg-secondary rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all duration-300;
+  @apply bg-white dark:bg-card rounded-xl border border-gray-100 dark:border-gray-800 shadow-md hover:shadow-lg transition-all duration-300;
 }
 
 .gradient-border {
   @apply relative before:absolute before:inset-0 before:p-[1px] before:rounded-xl before:bg-gradient-to-r before:from-brand-blue before:to-brand-purple before:-z-10;
+}
+
+/* Dark mode specific styles */
+.dark .glass-morphism {
+  @apply backdrop-blur-md bg-white/5 border border-white/10 shadow-lg;
+}
+
+.text-gradient-primary {
+  @apply bg-gradient-to-r from-brand-purple to-brand-blue bg-clip-text text-transparent;
 }
