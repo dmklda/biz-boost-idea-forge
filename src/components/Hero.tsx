@@ -1,4 +1,3 @@
-
 import { Button } from "./ui/button";
 import { ArrowRight, Star } from "lucide-react";
 import { useTranslation } from 'react-i18next';
@@ -20,7 +19,7 @@ const Hero = () => {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentBadgeIndex((prev) => (prev + 1) % badges.length);
-    }, 3000);
+    }, 5000);
 
     return () => clearInterval(timer);
   }, []);
@@ -41,13 +40,15 @@ const Hero = () => {
       <div className="container mx-auto max-w-6xl">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <div className="inline-block px-4 py-2 bg-brand-light dark:bg-gray-800 rounded-full mb-6 overflow-hidden h-10">
-              <p 
-                key={currentBadgeIndex}
-                className="text-sm text-brand-purple font-medium animate-slide-down"
-              >
-                {badges[currentBadgeIndex]}
-              </p>
+            <div className="relative inline-block w-full max-w-md">
+              <div className="px-6 py-3 bg-brand-light dark:bg-gray-800/50 backdrop-blur-sm rounded-full mb-6 h-12 flex items-center justify-center overflow-hidden shadow-lg border border-gray-200/20">
+                <p 
+                  key={currentBadgeIndex}
+                  className="text-sm md:text-base text-brand-purple font-medium animate-slide-down text-center truncate"
+                >
+                  {badges[currentBadgeIndex]}
+                </p>
+              </div>
             </div>
             
             <h1 
@@ -105,7 +106,7 @@ const Hero = () => {
           
           <div className="hidden lg:block relative">
             <div className="absolute inset-0 bg-gradient-to-r from-brand-purple/10 to-brand-blue/10 rounded-xl blur-3xl opacity-30 animate-pulse"></div>
-            <div className="relative z-10 bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 transform hover:scale-105 transition-transform duration-300">
+            <div className="relative z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-2xl p-8 transform hover:scale-105 transition-transform duration-300 border border-gray-200/20">
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h3 className="font-medium text-lg">{t('hero.dashboard.title')}</h3>
@@ -114,6 +115,7 @@ const Hero = () => {
                     {t('hero.dashboard.status')}
                   </span>
                 </div>
+                
                 <div className="space-y-4">
                   <div className="p-4 bg-brand-light dark:bg-gray-700/50 rounded-lg">
                     <div className="flex justify-between items-center mb-2">

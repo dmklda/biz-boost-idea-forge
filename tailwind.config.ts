@@ -130,8 +130,8 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'fade-in': 'fade-in 0.5s ease-out',
         'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'slide-down': 'slide-down 0.5s ease-out',
-        carousel: 'carousel 40s linear infinite'
+        'slide-down': 'slide-down 0.8s ease-out',
+        carousel: 'carousel 60s linear infinite'
       },
       fontFamily: {
         'poppins': ['Poppins', 'sans-serif'],
