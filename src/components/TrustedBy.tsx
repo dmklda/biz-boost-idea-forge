@@ -3,18 +3,18 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "./ui/carousel";
 import { useTranslation } from "react-i18next";
 
 const trustedCompanies = [
-  { name: "Company 1", logo: "/placeholder.svg" },
-  { name: "Company 2", logo: "/placeholder.svg" },
-  { name: "Company 3", logo: "/placeholder.svg" },
-  { name: "Company 4", logo: "/placeholder.svg" },
-  { name: "Company 5", logo: "/placeholder.svg" },
-  { name: "Company 6", logo: "/placeholder.svg" },
+  { name: "TechVentures", logo: "/placeholder.svg" },
+  { name: "InnovateLabs", logo: "/placeholder.svg" },
+  { name: "GlobalStart", logo: "/placeholder.svg" },
+  { name: "FutureWorks", logo: "/placeholder.svg" },
+  { name: "NextGen Solutions", logo: "/placeholder.svg" },
+  { name: "SmartCorp", logo: "/placeholder.svg" },
+  { name: "VisionTech", logo: "/placeholder.svg" },
+  { name: "DataFlow", logo: "/placeholder.svg" }
 ];
 
 const TrustedBy = () => {
@@ -30,24 +30,25 @@ const TrustedBy = () => {
           opts={{
             align: "start",
             loop: true,
+            dragFree: true,
+            containScroll: false,
+            skipSnaps: true,
           }}
           className="w-full max-w-5xl mx-auto"
         >
-          <CarouselContent className="-ml-2 md:-ml-4">
-            {trustedCompanies.map((company, index) => (
-              <CarouselItem key={index} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3 lg:basis-1/6">
+          <CarouselContent className="-ml-2 md:-ml-4 animate-carousel">
+            {[...trustedCompanies, ...trustedCompanies].map((company, index) => (
+              <CarouselItem key={index} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4">
                 <div className="p-2">
                   <img
                     src={company.logo}
                     alt={company.name}
-                    className="h-8 w-auto mx-auto opacity-50 hover:opacity-100 transition-opacity"
+                    className="h-8 w-auto mx-auto opacity-50 hover:opacity-100 transition-opacity grayscale hover:grayscale-0"
                   />
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="hidden md:flex" />
-          <CarouselNext className="hidden md:flex" />
         </Carousel>
       </div>
     </div>
