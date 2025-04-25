@@ -9,12 +9,23 @@ const Pricing = () => {
   const { t } = useTranslation();
   const { formatPrice } = useCurrency();
 
-  const plans = [
+  // Explicitly define the plan features as a string array
+  interface PlanFeatures {
+    name: string;
+    price: string;
+    period?: string;
+    description: string;
+    features: string[];
+    cta: string;
+    popular: boolean;
+  }
+
+  const plans: PlanFeatures[] = [
     {
       name: t('pricing.free.name'),
       price: formatPrice(0),
       description: t('pricing.free.description'),
-      features: t('pricing.free.features', { returnObjects: true }),
+      features: t('pricing.free.features', { returnObjects: true }) as string[],
       cta: t('pricing.free.cta'),
       popular: false
     },
@@ -23,7 +34,7 @@ const Pricing = () => {
       price: formatPrice(19.90),
       period: t('pricing.period'),
       description: t('pricing.entrepreneur.description'),
-      features: t('pricing.entrepreneur.features', { returnObjects: true }),
+      features: t('pricing.entrepreneur.features', { returnObjects: true }) as string[],
       cta: t('pricing.entrepreneur.cta'),
       popular: true
     },
@@ -32,7 +43,7 @@ const Pricing = () => {
       price: formatPrice(49.90),
       period: t('pricing.period'),
       description: t('pricing.business.description'),
-      features: t('pricing.business.features', { returnObjects: true }),
+      features: t('pricing.business.features', { returnObjects: true }) as string[],
       cta: t('pricing.business.cta'),
       popular: false
     }
