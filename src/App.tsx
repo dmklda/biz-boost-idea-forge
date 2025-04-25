@@ -20,7 +20,10 @@ const LanguageInitializer = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const savedLanguage = localStorage.getItem("i18nextLng");
     if (savedLanguage && savedLanguage.length > 1) {
+      console.log("Inicializando idioma:", savedLanguage);
       i18n.changeLanguage(savedLanguage);
+    } else {
+      console.log("Nenhum idioma salvo encontrado, usando padrão");
     }
   }, [i18n]);
   

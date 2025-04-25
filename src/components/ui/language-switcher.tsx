@@ -20,8 +20,12 @@ export function LanguageSwitcher() {
   const { i18n } = useTranslation();
 
   const handleLanguageChange = (code: string) => {
+    // Alterando o idioma programaticamente
     i18n.changeLanguage(code);
+    // Armazenando a preferência do usuário
     localStorage.setItem("i18nextLng", code);
+    // Força um reload para garantir que todos os componentes sejam atualizados corretamente
+    window.location.reload();
   };
 
   return (
@@ -37,7 +41,7 @@ export function LanguageSwitcher() {
           <DropdownMenuItem
             key={code}
             onClick={() => handleLanguageChange(code)}
-            className={i18n.language === code ? "bg-accent" : ""}
+            className={i18n.language.startsWith(code) ? "bg-accent" : ""}
           >
             {name}
           </DropdownMenuItem>

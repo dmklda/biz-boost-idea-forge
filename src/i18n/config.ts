@@ -23,7 +23,10 @@ i18n
     },
     detection: {
       order: ['localStorage', 'navigator'],
-      caches: ['localStorage']
+      caches: ['localStorage'],
+      lookupLocalStorage: 'i18nextLng',
+      // Garantindo que o detector de idioma use o valor correto do localStorage
+      checkWhitelist: true
     },
     react: {
       useSuspense: false
