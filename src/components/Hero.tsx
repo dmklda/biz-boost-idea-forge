@@ -1,12 +1,28 @@
-
 import { Button } from "./ui/button";
 import { ArrowRight, Star } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import TrustedBy from "./TrustedBy";
+import { useState, useEffect } from 'react';
 
 const Hero = () => {
   const { t } = useTranslation();
+  const [currentBadgeIndex, setCurrentBadgeIndex] = useState(0);
+
+  const badges = [
+    "Validação inteligente de ideias de negócio",
+    "Análise completa de viabilidade",
+    "Insights baseados em dados do mercado",
+    "Planejamento estratégico automatizado"
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentBadgeIndex((prev) => (prev + 1) % badges.length);
+    }, 3000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const titleWithSpans = t('hero.title')
     .replace('<span>', '<span class="text-brand-purple">')
@@ -25,8 +41,8 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <div className="inline-block px-4 py-2 bg-brand-light dark:bg-gray-800 rounded-full mb-6">
-              <p className="text-sm text-brand-purple font-medium">
-                {t('hero.badge')}
+              <p className="text-sm text-brand-purple font-medium animate-fade-in">
+                {badges[currentBadgeIndex]}
               </p>
             </div>
             
@@ -78,7 +94,7 @@ const Hero = () => {
                     <Star key={star} className="w-4 h-4 fill-brand-purple text-brand-purple" />
                   ))}
                 </div>
-                <span className="ml-2 text-sm text-muted-foreground">+10k usuarios satisfeitos</span>
+                <span className="ml-2 text-sm text-muted-foreground">{t('hero.trustedBy')}</span>
               </div>
             </div>
           </div>
@@ -89,42 +105,79 @@ const Hero = () => {
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h3 className="font-medium text-lg">{t('hero.dashboard.title')}</h3>
-                  <span className="text-green-500 text-sm">{t('hero.dashboard.status')}</span>
+                  <span className="text-green-500 text-sm flex items-center gap-2">
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    {t('hero.dashboard.status')}
+                  </span>
                 </div>
-                {[1, 2, 3].map((item) => (
-                  <div key={item} className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center space-x-2">
-                        <div className="h-8 w-8 rounded bg-brand-purple/10 flex items-center justify-center">
-                          <div className="h-4 w-4 rounded-full bg-brand-purple/20"></div>
+                <div className="space-y-4">
+                  <div className="p-4 bg-brand-light dark:bg-gray-700/50 rounded-lg">
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="h-8 w-8 bg-brand-purple/20 rounded-lg flex items-center justify-center">
+                          <div className="h-4 w-4 bg-brand-purple rounded-full"></div>
                         </div>
-                        <div className="space-y-1">
-                          <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                          <div className="h-3 w-24 bg-gray-100 dark:bg-gray-600 rounded"></div>
+                        <div>
+                          <h4 className="text-sm font-medium">Análise de Mercado</h4>
+                          <p className="text-xs text-muted-foreground">Em progresso</p>
                         </div>
                       </div>
-                      <div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                      <span className="text-sm font-medium">85%</span>
                     </div>
-                    <div className="h-2 bg-brand-purple/20 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-brand-purple rounded-full transition-all duration-1000"
-                        style={{width: `${30 + item * 20}%`}}
-                      ></div>
+                    <div className="h-2 bg-brand-purple/20 rounded-full">
+                      <div className="h-full w-[85%] bg-brand-purple rounded-full transition-all duration-1000"></div>
                     </div>
                   </div>
-                ))}
-                <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
-                  <div className="grid grid-cols-3 gap-4">
-                    {[1, 2, 3].map((stat) => (
-                      <div key={stat} className="text-center">
-                        <div className="text-2xl font-semibold text-brand-purple mb-1">
-                          {stat * 28}%
+                  
+                  <div className="p-4 bg-brand-light dark:bg-gray-700/50 rounded-lg">
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="h-8 w-8 bg-brand-blue/20 rounded-lg flex items-center justify-center">
+                          <div className="h-4 w-4 bg-brand-blue rounded-full"></div>
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          Metric {stat}
+                        <div>
+                          <h4 className="text-sm font-medium">Viabilidade Financeira</h4>
+                          <p className="text-xs text-muted-foreground">Em análise</p>
                         </div>
                       </div>
-                    ))}
+                      <span className="text-sm font-medium">62%</span>
+                    </div>
+                    <div className="h-2 bg-brand-blue/20 rounded-full">
+                      <div className="h-full w-[62%] bg-brand-blue rounded-full transition-all duration-1000"></div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 bg-brand-light dark:bg-gray-700/50 rounded-lg">
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="h-8 w-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                          <div className="h-4 w-4 bg-purple-500 rounded-full"></div>
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-medium">Análise Competitiva</h4>
+                          <p className="text-xs text-muted-foreground">Concluída</p>
+                        </div>
+                      </div>
+                      <span className="text-sm font-medium">100%</span>
+                    </div>
+                    <div className="h-2 bg-purple-500/20 rounded-full">
+                      <div className="h-full w-full bg-purple-500 rounded-full transition-all duration-1000"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                  <div className="text-center">
+                    <div className="text-2xl font-semibold text-brand-purple mb-1">92%</div>
+                    <div className="text-xs text-muted-foreground">Precisão</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-semibold text-brand-purple mb-1">15k+</div>
+                    <div className="text-xs text-muted-foreground">Análises</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-semibold text-brand-purple mb-1">24h</div>
+                    <div className="text-xs text-muted-foreground">Média</div>
                   </div>
                 </div>
               </div>
