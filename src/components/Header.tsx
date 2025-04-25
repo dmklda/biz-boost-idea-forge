@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { MenuIcon, X } from "lucide-react";
+import { MenuIcon, X, Rocket } from "lucide-react";
 import { ThemeToggle } from "./ui/theme-toggle";
 import { LanguageSwitcher } from "./ui/language-switcher";
 
@@ -12,11 +12,7 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <div className="flex items-center">
           <div className="flex items-center">
-            <img 
-              src="/lovable-uploads/37ac7b53-4404-4800-9632-3b75e3b5df09.png" 
-              alt="Startupideia Logo" 
-              className="h-10 mr-2"
-            />
+            <Rocket className="text-brand-blue h-6 w-6 mr-2" />
             <h1 className="text-2xl font-bold font-poppins bg-gradient-to-r from-brand-blue via-brand-purple to-brand-green bg-clip-text text-transparent">
               Startupideia
             </h1>
