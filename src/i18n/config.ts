@@ -24,9 +24,7 @@ i18n
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
-      lookupLocalStorage: 'i18nextLng',
-      // Garantindo que o detector de idioma use o valor correto do localStorage
-      checkWhitelist: true
+      lookupLocalStorage: 'i18nextLng'
     },
     react: {
       useSuspense: false

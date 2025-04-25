@@ -20,6 +20,7 @@ export function LanguageSwitcher() {
   const { i18n } = useTranslation();
 
   const handleLanguageChange = (code: string) => {
+    console.log("Changing language to:", code);
     // Alterando o idioma programaticamente
     i18n.changeLanguage(code);
     // Armazenando a preferência do usuário
