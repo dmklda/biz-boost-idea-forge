@@ -1,4 +1,3 @@
-
 import { type Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
 
@@ -19,6 +18,13 @@ export default {
       },
     },
     extend: {
+      perspective: {
+        '1000': '1000px',
+      },
+      transform: {
+        'perspective-1000': 'perspective(1000px)',
+        'rotateY-5': 'rotateY(5deg)',
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',

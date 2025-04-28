@@ -125,12 +125,24 @@
   @apply relative before:absolute before:inset-0 before:p-[1px] before:rounded-xl before:bg-gradient-to-r before:from-brand-blue before:to-brand-purple before:-z-10;
 }
 
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .rotateY-5 {
+    transform: rotateY(5deg);
+  }
+}
+
 .perspective-card {
-  @apply transition-all duration-300 transform perspective-1000;
+  @apply transition-all duration-300 transform;
+  perspective: 1000px;
 }
 
 .perspective-card:hover {
-  @apply transform perspective-1000 rotateY-5 shadow-neo;
+  @apply transform shadow-neo;
+  transform: perspective(1000px) rotateY(5deg);
 }
 
 .glassmorphism {
