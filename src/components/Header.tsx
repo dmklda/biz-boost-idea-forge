@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import { MenuIcon, X, Rocket } from "lucide-react";
+import { MenuIcon, X, Rocket, ArrowRight } from "lucide-react";
 import { ThemeToggle } from "./ui/theme-toggle";
 import { LanguageSwitcher } from "./ui/language-switcher";
 import { useTranslation } from 'react-i18next';
@@ -21,36 +21,65 @@ const Header = () => {
   }, []);
 
   return (
-    <header className={`border-b border-border/10 bg-background/70 dark:bg-background/80 backdrop-blur-md sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'shadow-md' : ''}`}>
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <header 
+      className={`border-b border-border/10 backdrop-blur-xl fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled 
+          ? 'py-3 bg-background/80 dark:bg-background/90 shadow-md' 
+          : 'py-5 bg-transparent'
+      }`}
+    >
+      <div className="container mx-auto px-4 flex justify-between items-center">
         <div className="flex items-center">
-          <Rocket className="text-brand-purple h-6 w-6 mr-2" />
-          <h1 className="text-2xl font-bold font-poppins bg-gradient-to-r from-brand-blue to-brand-purple bg-clip-text text-transparent">
+          <div className={`mr-3 transition-all duration-500 ${scrolled ? 'scale-90' : 'scale-100'}`}>
+            <div className="relative">
+              <div className="absolute inset-0 bg-brand-purple/20 blur-lg rounded-full"></div>
+              <div className="bg-gradient-to-br from-brand-purple to-indigo-600 w-10 h-10 rounded-full flex items-center justify-center relative">
+                <Rocket className="text-white h-5 w-5" />
+              </div>
+            </div>
+          </div>
+          <h1 
+            className={`font-bold font-poppins bg-gradient-to-r from-brand-blue to-brand-purple bg-clip-text text-transparent transition-all duration-300 ${
+              scrolled ? 'text-xl' : 'text-2xl'
+            }`}
+          >
             Startupideia
           </h1>
         </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <a href="#como-funciona" className="text-foreground/70 hover:text-brand-purple transition-colors text-sm">
+          <a 
+            href="#como-funciona" 
+            className="text-foreground/70 hover:text-brand-purple transition-colors text-sm relative group"
+          >
             {t('header.howItWorks')}
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-purple scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
           </a>
-          <a href="#beneficios" className="text-foreground/70 hover:text-brand-purple transition-colors text-sm">
+          <a 
+            href="#beneficios" 
+            className="text-foreground/70 hover:text-brand-purple transition-colors text-sm relative group"
+          >
             {t('header.benefits')}
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-purple scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
           </a>
-          <a href="#planos" className="text-foreground/70 hover:text-brand-purple transition-colors text-sm">
+          <a 
+            href="#planos" 
+            className="text-foreground/70 hover:text-brand-purple transition-colors text-sm relative group"
+          >
             {t('header.plans')}
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-purple scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
           </a>
           <LanguageSwitcher />
           <ThemeToggle />
           <Button 
-            className="bg-brand-purple hover:bg-brand-purple/90 text-white"
+            className="btn-premium"
             onClick={() => {
               const formElement = document.getElementById('form');
               if (formElement) formElement.scrollIntoView({ behavior: 'smooth' });
             }}
           >
-            {t('header.startNow')}
+            {t('header.startNow')} <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </nav>
 
@@ -63,6 +92,7 @@ const Header = () => {
             size="icon" 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
+            className="relative z-30"
           >
             {isMenuOpen ? <X size={24} /> : <MenuIcon size={24} />}
           </Button>
@@ -71,31 +101,31 @@ const Header = () => {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden py-4 px-4 bg-card/95 dark:bg-card/95 backdrop-blur-md border-t border-border/10 animate-fade-in">
-          <nav className="flex flex-col space-y-4">
+        <div className="md:hidden py-6 px-4 fixed inset-0 z-20 bg-background/95 dark:bg-black/95 backdrop-blur-lg animate-fade-in pt-24">
+          <nav className="flex flex-col space-y-6">
             <a 
               href="#como-funciona" 
-              className="text-foreground/80 hover:text-brand-purple transition-colors py-2"
+              className="text-foreground hover:text-brand-purple transition-colors py-3 text-xl font-semibold"
               onClick={() => setIsMenuOpen(false)}
             >
               {t('header.howItWorks')}
             </a>
             <a 
               href="#beneficios" 
-              className="text-foreground/80 hover:text-brand-purple transition-colors py-2"
+              className="text-foreground hover:text-brand-purple transition-colors py-3 text-xl font-semibold"
               onClick={() => setIsMenuOpen(false)}
             >
               {t('header.benefits')}
             </a>
             <a 
               href="#planos" 
-              className="text-foreground/80 hover:text-brand-purple transition-colors py-2"
+              className="text-foreground hover:text-brand-purple transition-colors py-3 text-xl font-semibold"
               onClick={() => setIsMenuOpen(false)}
             >
               {t('header.plans')}
             </a>
             <Button 
-              className="bg-brand-purple hover:bg-brand-purple/90 text-white w-full mt-2"
+              className="bg-gradient-to-r from-brand-purple to-indigo-600 hover:from-brand-purple/90 hover:to-indigo-600/90 text-white w-full mt-2 py-6 text-lg"
               onClick={() => {
                 const formElement = document.getElementById('form');
                 if (formElement) {

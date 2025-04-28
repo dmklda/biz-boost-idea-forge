@@ -1,5 +1,5 @@
 
-import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Twitter, Rocket } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
@@ -7,118 +7,140 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-gray-900 text-white">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div>
-            <h3 className="text-xl font-bold mb-4 bg-gradient-to-r from-brand-blue via-brand-purple to-brand-green bg-clip-text text-transparent">
-              Startupideia
-            </h3>
-            <p className="text-gray-400 mb-4">
-              {t('footer.description')}
-            </p>
-            <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Facebook size={20} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Twitter size={20} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Instagram size={20} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Linkedin size={20} />
-              </a>
+    <footer className="relative bg-gradient-to-b from-gray-900 to-black text-white overflow-hidden">
+      <div className="absolute inset-0 bg-mesh-pattern opacity-5"></div>
+      
+      {/* Subtle gradient overlay */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-purple/50 to-transparent"></div>
+      
+      {/* Top wave decoration */}
+      <div className="absolute top-0 left-0 right-0 h-32 overflow-hidden -translate-y-1/2 opacity-10 pointer-events-none">
+        <div className="w-[200%] h-full bg-brand-purple rounded-[100%] relative -top-3/4"></div>
+      </div>
+      
+      <div className="container mx-auto px-4 py-16 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between mb-16">
+            <div className="md:w-1/3 mb-10 md:mb-0 pr-4">
+              <div className="flex items-center mb-6">
+                <div className="relative mr-3">
+                  <div className="absolute inset-0 bg-brand-purple/20 blur-md rounded-full"></div>
+                  <div className="bg-gradient-to-br from-brand-purple to-indigo-600 w-10 h-10 rounded-full flex items-center justify-center relative">
+                    <Rocket className="text-white h-5 w-5" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold bg-gradient-to-r from-brand-blue via-brand-purple to-indigo-400 bg-clip-text text-transparent">
+                  Startupideia
+                </h3>
+              </div>
+              <p className="text-gray-400 mb-6 leading-relaxed">
+                {t('footer.description')}
+              </p>
+              <div className="flex space-x-5">
+                <a href="#" className="text-gray-400 hover:text-white transition-colors hover:scale-110 transform duration-300">
+                  <Facebook size={20} />
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors hover:scale-110 transform duration-300">
+                  <Twitter size={20} />
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors hover:scale-110 transform duration-300">
+                  <Instagram size={20} />
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors hover:scale-110 transform duration-300">
+                  <Linkedin size={20} />
+                </a>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-10 md:w-2/3">
+              <div>
+                <h4 className="font-semibold text-lg mb-6 text-white/90">{t('footer.platform')}</h4>
+                <ul className="space-y-4">
+                  <li>
+                    <a href="#como-funciona" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                      {t('footer.howItWorks')}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#beneficios" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                      {t('footer.benefits')}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#planos" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                      {t('footer.plans')}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                      {t('footer.api')}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-lg mb-6 text-white/90">{t('footer.resources')}</h4>
+                <ul className="space-y-4">
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                      {t('footer.blog')}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                      {t('footer.guides')}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                      {t('footer.successCases')}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                      {t('footer.webinars')}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-lg mb-6 text-white/90">{t('footer.company')}</h4>
+                <ul className="space-y-4">
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                      {t('footer.aboutUs')}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                      {t('footer.contact')}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                      {t('footer.privacyPolicy')}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                      {t('footer.termsOfUse')}
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
           
-          <div>
-            <h4 className="font-semibold text-lg mb-4">{t('footer.platform')}</h4>
-            <ul className="space-y-2">
-              <li>
-                <a href="#como-funciona" className="text-gray-400 hover:text-white transition-colors">
-                  {t('footer.howItWorks')}
-                </a>
-              </li>
-              <li>
-                <a href="#beneficios" className="text-gray-400 hover:text-white transition-colors">
-                  {t('footer.benefits')}
-                </a>
-              </li>
-              <li>
-                <a href="#planos" className="text-gray-400 hover:text-white transition-colors">
-                  {t('footer.plans')}
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  {t('footer.api')}
-                </a>
-              </li>
-            </ul>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-lg mb-4">{t('footer.resources')}</h4>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  {t('footer.blog')}
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  {t('footer.guides')}
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  {t('footer.successCases')}
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  {t('footer.webinars')}
-                </a>
-              </li>
-            </ul>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-lg mb-4">{t('footer.company')}</h4>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  {t('footer.aboutUs')}
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  {t('footer.contact')}
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  {t('footer.privacyPolicy')}
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  {t('footer.termsOfUse')}
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        
-        <div className="border-t border-gray-800 mt-12 pt-8 text-sm text-gray-400">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p>&copy; {currentYear} Startupideia. {t('footer.copyright')}</p>
-            <div className="mt-4 md:mt-0">
-              <a href="#" className="hover:text-white transition-colors">{t('footer.privacyPolicy')}</a>
-              <span className="mx-2">|</span>
-              <a href="#" className="hover:text-white transition-colors">{t('footer.termsOfUse')}</a>
+          <div className="border-t border-gray-800/50 mt-10 pt-8 text-sm text-gray-500">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <p>&copy; {currentYear} Startupideia. {t('footer.copyright')}</p>
+              <div className="mt-4 md:mt-0 flex gap-6">
+                <a href="#" className="hover:text-white transition-colors">{t('footer.privacyPolicy')}</a>
+                <span className="hidden md:inline">|</span>
+                <a href="#" className="hover:text-white transition-colors">{t('footer.termsOfUse')}</a>
+              </div>
             </div>
           </div>
         </div>

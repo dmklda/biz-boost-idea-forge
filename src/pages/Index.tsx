@@ -11,16 +11,21 @@ import Footer from "../components/Footer";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-purple/10 via-transparent to-transparent pointer-events-none"></div>
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/95 relative overflow-hidden">
+      {/* Background element */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-purple/5 via-transparent to-transparent pointer-events-none"></div>
+      <div className="absolute inset-0 bg-mesh-pattern opacity-10 pointer-events-none"></div>
+      
       <Header />
-      <main className="relative">
+      <main className="relative pt-16">
         <Hero />
         <HowItWorks />
         <Features />
-        <IdeaForm />
         <Testimonials />
         <Pricing />
+        <div id="form">
+          <IdeaForm />
+        </div>
         <CTA />
       </main>
       <Footer />
