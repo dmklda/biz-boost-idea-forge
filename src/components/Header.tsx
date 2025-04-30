@@ -22,9 +22,9 @@ const Header = () => {
 
   return (
     <header 
-      className={`border-b border-border/10 backdrop-blur-xl fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`border-b ${scrolled ? 'border-border/30' : 'border-transparent'} fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled 
-          ? 'py-3 bg-background/80 dark:bg-background/90 shadow-md' 
+          ? 'py-3 bg-background/60 dark:bg-background/60 backdrop-blur-xl shadow-sm' 
           : 'py-5 bg-transparent'
       }`}
     >

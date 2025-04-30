@@ -4,9 +4,8 @@ import { useState, useEffect } from "react";
 type Theme = "light" | "dark" | "system";
 
 export function useTheme() {
-  // Usamos uma função para inicialização para garantir que só execute no cliente
   const [theme, setTheme] = useState<Theme>(() => {
-    // Verifica se está no navegador
+    // Verificando se estamos no navegador
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem("theme") as Theme;
       return savedTheme || "system";
@@ -32,12 +31,16 @@ export function useTheme() {
 
   // Efeito para aplicar o tema quando mudar
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     applyTheme(theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
 
   // Ouvinte para mudanças na preferência do sistema
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = () => {
       if (theme === "system") {

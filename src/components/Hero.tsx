@@ -16,18 +16,18 @@ const Hero = () => {
   const isMobile = useIsMobile();
 
   const badges = [
-    "Validação inteligente de ideias de negócio",
-    "Análise completa de viabilidade",
-    "Insights baseados em dados do mercado",
-    "Planejamento estratégico automatizado"
+    t('hero.badges.validation') || "Validação inteligente de ideias de negócio",
+    t('hero.badges.analysis') || "Análise completa de viabilidade",
+    t('hero.badges.insights') || "Insights baseados em dados do mercado",
+    t('hero.badges.planning') || "Planejamento estratégico automatizado"
   ];
 
   // Versões mais curtas para mobile
   const mobilesBadges = [
-    "Validação inteligente",
-    "Análise de viabilidade",
-    "Insights de mercado",
-    "Planejamento estratégico"
+    t('hero.badges.mobile.validation') || "Validação inteligente",
+    t('hero.badges.mobile.analysis') || "Análise de viabilidade",
+    t('hero.badges.mobile.insights') || "Insights de mercado",
+    t('hero.badges.mobile.planning') || "Planejamento estratégico"
   ];
 
   useEffect(() => {
@@ -72,11 +72,11 @@ const Hero = () => {
       <div className="container mx-auto max-w-6xl relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="animate-blur-in">
-            <div className="relative inline-block w-full max-w-md">
-              <div className="px-6 py-3 glassmorphism rounded-full mb-6 h-12 flex items-center justify-center overflow-hidden shadow-md backdrop-blur-sm border-glow">
+            <div className="relative inline-flex w-full max-w-md">
+              <div className="px-4 sm:px-6 py-2 sm:py-3 glassmorphism rounded-full mb-6 flex items-center justify-center overflow-hidden shadow-md backdrop-blur-sm border-glow w-full">
                 <p 
                   ref={badgeRef}
-                  className="text-sm md:text-base text-brand-purple dark:text-indigo-300 font-medium text-center truncate transition-all duration-300"
+                  className="text-sm md:text-base text-brand-purple dark:text-indigo-300 font-medium text-center transition-all duration-300 truncate"
                 >
                   {isMobile ? mobilesBadges[currentBadgeIndex] : badges[currentBadgeIndex]}
                 </p>

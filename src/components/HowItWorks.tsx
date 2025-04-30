@@ -8,26 +8,26 @@ const HowItWorks = () => {
   const steps = [
     {
       number: "1",
-      title: t('howItWorks.step1.title'),
-      description: t('howItWorks.step1.description'),
+      title: t('howItWorks.step1.title') || "Descreva sua ideia",
+      description: t('howItWorks.step1.description') || "Conte-nos sobre seu conceito de negócio em detalhes",
       icon: <BrainCircuit className="h-6 w-6 text-brand-purple" />
     },
     {
       number: "2",
-      title: t('howItWorks.step2.title'),
-      description: t('howItWorks.step2.description'),
+      title: t('howItWorks.step2.title') || "Análise de mercado",
+      description: t('howItWorks.step2.description') || "Nossa IA analisa dados de mercado e tendências atuais",
       icon: <Target className="h-6 w-6 text-brand-blue" />
     },
     {
       number: "3",
-      title: t('howItWorks.step3.title'),
-      description: t('howItWorks.step3.description'),
+      title: t('howItWorks.step3.title') || "Relatório detalhado",
+      description: t('howItWorks.step3.description') || "Receba insights sobre viabilidade e potencial de crescimento",
       icon: <BarChart2 className="h-6 w-6 text-indigo-400" />
     },
     {
       number: "4",
-      title: t('howItWorks.step4.title'),
-      description: t('howItWorks.step4.description'),
+      title: t('howItWorks.step4.title') || "Plano de ação",
+      description: t('howItWorks.step4.description') || "Obtenha um roteiro prático para implementar seu negócio",
       icon: <Rocket className="h-6 w-6 text-fuchsia-500" />
     }
   ];
@@ -54,7 +54,7 @@ const HowItWorks = () => {
           {steps.map((step, index) => (
             <div key={index} className="relative group">
               <div className="card-depth glassmorphism p-8 rounded-xl h-full flex flex-col animate-fade-in transition-all duration-300 group-hover:translate-y-[-8px] border border-white/10">
-                <div className="absolute -top-3 -left-3 w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-brand-purple to-indigo-600 text-white font-medium text-lg shadow-lg">
+                <div className="absolute -top-3 -left-3 w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-brand-purple to-indigo-600 text-white font-medium text-lg shadow-lg z-10">
                   {step.number}
                 </div>
                 
