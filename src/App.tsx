@@ -30,25 +30,50 @@ const LanguageInitializer = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="system" storageKey="startupideia-theme">
-      <TooltipProvider>
-        <Toaster />
-        <Sonner theme="system" />
-        <LanguageInitializer>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/resultados" element={<ResultsPage />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </LanguageInitializer>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+// Obtendo o tema armazenado para inicialização
+const getStoredTheme = () => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem("startupideia-theme") as "dark" | "light" | "system" || "system";
+  }
+  return "system";
+};
+
+const App = () => {
+  // Aplicando o tema no corpo do documento para evitar flash ao carregar
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const theme = getStoredTheme();
+      const root = document.documentElement;
+      
+      if (theme === 'system') {
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        root.classList.add(systemTheme);
+      } else {
+        root.classList.add(theme);
+      }
+    }
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme={getStoredTheme()} storageKey="startupideia-theme">
+        <TooltipProvider>
+          <Toaster />
+          <Sonner theme="system" />
+          <LanguageInitializer>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/resultados" element={<ResultsPage />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </LanguageInitializer>
+        </TooltipProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

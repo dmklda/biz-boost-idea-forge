@@ -17,50 +17,50 @@ const Features = () => {
   const features = [
     {
       icon: <Lightbulb className="h-8 w-8 text-brand-blue" />,
-      title: t('features.viabilityAnalysis.title'),
-      description: t('features.viabilityAnalysis.description'),
+      title: t('features.viabilityAnalysis.title') || "Análise de Viabilidade",
+      description: t('features.viabilityAnalysis.description') || "Avaliamos a viabilidade da sua ideia com base em dados de mercado",
       gradient: "from-blue-500/20 to-blue-600/30"
     },
     {
       icon: <Briefcase className="h-8 w-8 text-brand-purple" />,
-      title: t('features.nameSloganPitch.title'),
-      description: t('features.nameSloganPitch.description'),
+      title: t('features.nameSloganPitch.title') || "Nome, Slogan e Pitch",
+      description: t('features.nameSloganPitch.description') || "Sugerimos nomes e slogans criativos para seu negócio",
       gradient: "from-purple-500/20 to-purple-600/30"
     },
     {
       icon: <BarChart3 className="h-8 w-8 text-brand-green" />,
-      title: t('features.modelEvaluation.title'),
-      description: t('features.modelEvaluation.description'),
+      title: t('features.modelEvaluation.title') || "Avaliação do Modelo",
+      description: t('features.modelEvaluation.description') || "Analisamos o modelo de negócio e sugerimos melhorias",
       gradient: "from-green-500/20 to-green-600/30"
     },
     {
       icon: <Target className="h-8 w-8 text-brand-blue" />,
-      title: t('features.nichePersona.title'),
-      description: t('features.nichePersona.description'),
+      title: t('features.nichePersona.title') || "Nicho e Persona",
+      description: t('features.nichePersona.description') || "Identificamos o nicho ideal e definimos a persona do seu negócio",
       gradient: "from-blue-500/20 to-blue-600/30"
     },
     {
       icon: <TrendingUp className="h-8 w-8 text-brand-purple" />,
-      title: t('features.mvpSuggestion.title'),
-      description: t('features.mvpSuggestion.description'),
+      title: t('features.mvpSuggestion.title') || "Sugestão de MVP",
+      description: t('features.mvpSuggestion.description') || "Criamos um plano de MVP para validação rápida",
       gradient: "from-purple-500/20 to-purple-600/30"
     },
     {
       icon: <Code className="h-8 w-8 text-brand-green" />,
-      title: t('features.recommendedStack.title'),
-      description: t('features.recommendedStack.description'),
+      title: t('features.recommendedStack.title') || "Stack Recomendada",
+      description: t('features.recommendedStack.description') || "Sugerimos as melhores tecnologias para seu projeto",
       gradient: "from-green-500/20 to-green-600/30"
     },
     {
       icon: <DollarSign className="h-8 w-8 text-brand-blue" />,
-      title: t('features.monetizationPotential.title'),
-      description: t('features.monetizationPotential.description'),
+      title: t('features.monetizationPotential.title') || "Potencial de Monetização",
+      description: t('features.monetizationPotential.description') || "Avaliamos as melhores estratégias de monetização",
       gradient: "from-blue-500/20 to-blue-600/30"
     },
     {
       icon: <LineChart className="h-8 w-8 text-brand-purple" />,
-      title: t('features.competitionDifferentials.title'),
-      description: t('features.competitionDifferentials.description'),
+      title: t('features.competitionDifferentials.title') || "Diferenciais Competitivos",
+      description: t('features.competitionDifferentials.description') || "Identificamos seus diferenciais no mercado",
       gradient: "from-purple-500/20 to-purple-600/30"
     }
   ];
@@ -72,13 +72,13 @@ const Features = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
           <span className="inline-block text-sm font-medium bg-brand-purple/10 dark:bg-brand-purple/20 text-brand-purple px-3 py-1 rounded-full mb-4">
-            {t('features.tagline')}
+            {t('features.tagline') || "Recursos"}
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-poppins mb-6 bg-gradient-to-r from-brand-purple to-indigo-500 bg-clip-text text-transparent">
-            {t('features.title')}
+            {t('features.title') || "Características principais"}
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto font-inter">
-            {t('features.subtitle')}
+            {t('features.subtitle') || "Tudo que você precisa para validar sua ideia de negócio"}
           </p>
         </div>
 

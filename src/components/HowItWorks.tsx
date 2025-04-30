@@ -7,25 +7,25 @@ const HowItWorks = () => {
   
   const steps = [
     {
-      number: t('howItWorks.step1.number'),
+      number: "1",
       title: t('howItWorks.step1.title'),
       description: t('howItWorks.step1.description'),
       icon: <BrainCircuit className="h-6 w-6 text-brand-purple" />
     },
     {
-      number: t('howItWorks.step2.number'),
+      number: "2",
       title: t('howItWorks.step2.title'),
       description: t('howItWorks.step2.description'),
       icon: <Target className="h-6 w-6 text-brand-blue" />
     },
     {
-      number: t('howItWorks.step3.number'),
+      number: "3",
       title: t('howItWorks.step3.title'),
       description: t('howItWorks.step3.description'),
       icon: <BarChart2 className="h-6 w-6 text-indigo-400" />
     },
     {
-      number: t('howItWorks.step4.number'),
+      number: "4",
       title: t('howItWorks.step4.title'),
       description: t('howItWorks.step4.description'),
       icon: <Rocket className="h-6 w-6 text-fuchsia-500" />
@@ -40,13 +40,13 @@ const HowItWorks = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl mx-auto text-center mb-16">
           <span className="inline-block text-sm font-medium bg-brand-purple/10 dark:bg-brand-purple/20 text-brand-purple px-3 py-1 rounded-full mb-4">
-            {t('howItWorks.tagline')}
+            {t('howItWorks.tagline') || "Como funciona"}
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-poppins mb-6 bg-gradient-to-r from-brand-purple to-indigo-500 bg-clip-text text-transparent">
-            {t('howItWorks.title')}
+            {t('howItWorks.title') || "Como validamos sua ideia"}
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-400 font-inter">
-            {t('howItWorks.subtitle')}
+            {t('howItWorks.subtitle') || "Um processo simples e eficiente para validar seu negócio"}
           </p>
         </div>
 

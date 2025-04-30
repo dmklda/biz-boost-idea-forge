@@ -7,17 +7,27 @@ import TrustedBy from "./TrustedBy";
 import { useState, useEffect, useRef } from 'react';
 import { motion } from "framer-motion";
 import { Badge } from "./ui/badge";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Hero = () => {
   const { t } = useTranslation();
   const [currentBadgeIndex, setCurrentBadgeIndex] = useState(0);
   const badgeRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   const badges = [
     "Validação inteligente de ideias de negócio",
     "Análise completa de viabilidade",
     "Insights baseados em dados do mercado",
     "Planejamento estratégico automatizado"
+  ];
+
+  // Versões mais curtas para mobile
+  const mobilesBadges = [
+    "Validação inteligente",
+    "Análise de viabilidade",
+    "Insights de mercado",
+    "Planejamento estratégico"
   ];
 
   useEffect(() => {
@@ -43,8 +53,9 @@ const Hero = () => {
   }, []);
 
   const titleWithSpans = t('hero.title')
-    .replace('<span>', '<span class="text-gradient-premium font-bold">')
-    .replace('<gradientSpan>', '<span class="bg-gradient-to-r from-brand-blue via-brand-purple to-indigo-400 bg-clip-text text-transparent">');
+    ?.replace('<span>', '<span class="text-gradient-premium font-bold">')
+    ?.replace('<gradientSpan>', '<span class="bg-gradient-to-r from-brand-blue via-brand-purple to-indigo-400 bg-clip-text text-transparent">') || 
+    'Transforme sua <span>ideia</span> em um <gradientSpan>negócio validado</gradientSpan>';
 
   const trustAvatars = [
     { src: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=64&h=64&auto=format&fit=crop", name: "Alex K." },
@@ -67,7 +78,7 @@ const Hero = () => {
                   ref={badgeRef}
                   className="text-sm md:text-base text-brand-purple dark:text-indigo-300 font-medium text-center truncate transition-all duration-300"
                 >
-                  {badges[currentBadgeIndex]}
+                  {isMobile ? mobilesBadges[currentBadgeIndex] : badges[currentBadgeIndex]}
                 </p>
               </div>
             </div>
@@ -78,7 +89,7 @@ const Hero = () => {
             />
             
             <p className="text-lg text-gray-700 dark:text-gray-300 mb-8 font-inter max-w-xl">
-              {t('hero.subtitle')}
+              {t('hero.subtitle') || "Nossa plataforma utiliza IA para analisar e validar sua ideia de negócio, fornecendo insights valiosos para o seu sucesso."}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -90,7 +101,7 @@ const Hero = () => {
                   if (formElement) formElement.scrollIntoView({ behavior: 'smooth' });
                 }}
               >
-                {t('hero.validateIdea')} <ArrowRight className="ml-2 h-5 w-5" />
+                {t('hero.validateIdea') || "Validar minha ideia"} <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button 
                 size="lg" 
@@ -101,7 +112,7 @@ const Hero = () => {
                   if (howItWorksElement) howItWorksElement.scrollIntoView({ behavior: 'smooth' });
                 }}
               >
-                {t('hero.learnMore')}
+                {t('hero.learnMore') || "Saiba mais"}
               </Button>
             </div>
 
@@ -123,7 +134,7 @@ const Hero = () => {
                     <Star key={star} className="w-4 h-4 fill-brand-purple text-brand-purple" />
                   ))}
                 </div>
-                <span className="ml-2 text-sm text-muted-foreground">{t('hero.trustedBy')}</span>
+                <span className="ml-2 text-sm text-muted-foreground">{t('hero.trustedBy') || "Utilizado por +5.000 empreendedores"}</span>
               </div>
             </div>
           </div>
