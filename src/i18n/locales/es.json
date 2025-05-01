@@ -1,3 +1,4 @@
+
 {
   "testimonials": {
     "tagline": "Testimonios",
@@ -238,8 +239,9 @@
     "title": "Últimas Tendencias y Perspectivas",
     "subtitle": "Explore nuestros artículos más recientes sobre emprendimiento, validación de ideas y tendencias del mercado",
     "readMore": "Leer Más",
-    "showLess": "Mostrar Menos",
     "loadMore": "Cargar Más Artículos",
+    "submitCasePromo": "¿Tienes una historia de éxito? Envía el caso de estudio de tu startup para nuestro blog.",
+    "submitCaseLink": "Comparte tu historia",
     "posts": {
       "post1": {
         "title": "5 Métricas Clave para Validar tu Idea de Negocio",
@@ -332,6 +334,26 @@
     "results": "Resultados alcanzados:",
     "readFullCase": "Leer Caso Completo",
     "showLess": "Mostrar Menos",
+    "submitButton": "Enviar Caso de Éxito",
+    "submitForm": {
+      "title": "Envía tu Historia de Éxito",
+      "description": "Comparte cómo construiste tu startup y cómo nuestra plataforma te ayudó a tener éxito. Los casos seleccionados serán destacados en nuestro blog.",
+      "nameLabel": "Tu Nombre",
+      "namePlaceholder": "Introduce tu nombre completo",
+      "emailLabel": "Correo Electrónico",
+      "emailPlaceholder": "Introduce tu dirección de correo electrónico",
+      "companyNameLabel": "Nombre de la Empresa",
+      "companyNamePlaceholder": "Introduce el nombre de tu empresa",
+      "descriptionLabel": "Historia de Éxito",
+      "descriptionPlaceholder": "Describe tu trayectoria, desafíos y cómo los superaste",
+      "submit": "Enviar Historia",
+      "submitting": "Enviando...",
+      "thankYou": "¡Gracias por tu envío!"
+    },
+    "submitSuccess": {
+      "title": "¡Historia de Éxito Enviada!",
+      "description": "Gracias por compartir tu historia. Nuestro equipo la revisará y se pondrá en contacto contigo pronto."
+    },
     "cta": {
       "title": "Sé nuestro próximo caso de éxito",
       "subtitle": "Empieza a validar tus ideas hoy y transfórmalas en negocios exitosos",

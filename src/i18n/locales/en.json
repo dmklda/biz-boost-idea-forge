@@ -239,6 +239,8 @@
     "subtitle": "Explore our latest articles on entrepreneurship, idea validation, and market trends",
     "readMore": "Read More",
     "loadMore": "Load More Articles",
+    "submitCasePromo": "Have a success story? Submit your startup case study for our blog.",
+    "submitCaseLink": "Share your story",
     "posts": {
       "post1": {
         "title": "5 Key Metrics to Validate Your Business Idea",
@@ -325,6 +327,26 @@
     "subtitle": "Real businesses that used our platform to validate and refine their ideas",
     "results": "Results",
     "readFullCase": "Read Full Case Study",
+    "submitButton": "Submit Success Case",
+    "submitForm": {
+      "title": "Submit Your Success Story",
+      "description": "Share how you built your startup and how our platform helped you succeed. Selected cases will be featured on our blog.",
+      "nameLabel": "Your Name",
+      "namePlaceholder": "Enter your full name",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "Enter your email address",
+      "companyNameLabel": "Company Name",
+      "companyNamePlaceholder": "Enter your company name",
+      "descriptionLabel": "Success Story",
+      "descriptionPlaceholder": "Describe your journey, challenges, and how you overcame them",
+      "submit": "Submit Story",
+      "submitting": "Submitting...",
+      "thankYou": "Thank you for your submission!"
+    },
+    "submitSuccess": {
+      "title": "Success Story Submitted!",
+      "description": "Thank you for sharing your story. Our team will review it and contact you soon."
+    },
     "cases": {
       "case1": {
         "company": "GreenDeliver",
@@ -618,7 +640,7 @@
       },
       "limitation": {
         "title": "Limitation of Liability",
-        "content": "In no event shall Startupideia be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service."
+        "content": "In no event shall Startupideia be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of the Service."
       },
       "changes": {
         "title": "Changes to Terms",

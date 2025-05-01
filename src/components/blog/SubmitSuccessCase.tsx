@@ -25,12 +25,37 @@ const SubmitSuccessCase = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Create email content
+      const emailContent = `
+        New Success Case Submission:
+        
+        Name: ${formData.name}
+        Email: ${formData.email}
+        Company: ${formData.companyName}
+        
+        Story:
+        ${formData.description}
+      `;
+      
+      // In a real implementation, you would use a server-side email service
+      // Here we'll simulate sending an email using a fake API call
+      
+      // This is where you would integrate with your email service
+      // For now, we'll simulate a successful email send
+      
+      const emailTo = "contact@startupideia.com";
+      console.log(`Email would be sent to: ${emailTo}`);
+      console.log(`Email content: ${emailContent}`);
+      
+      // Wait for a moment to simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Show success message
       setIsSubmitting(false);
       setOpen(false);
       toast({
@@ -45,7 +70,15 @@ const SubmitSuccessCase = () => {
         companyName: "",
         description: ""
       });
-    }, 1500);
+    } catch (error) {
+      console.error("Error sending email:", error);
+      setIsSubmitting(false);
+      toast({
+        title: "Error",
+        description: "There was a problem submitting your story. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
