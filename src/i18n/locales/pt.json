@@ -180,5 +180,169 @@
     "privacyPolicy": "Política de privacidade",
     "termsOfUse": "Termos de uso",
     "copyright": "Todos os direitos reservados."
+  },
+  
+  "api": {
+    "tagline": "API",
+    "title": "Documentação da API",
+    "subtitle": "Integre nossas ferramentas de validação de ideias em sua aplicação com nossa API amigável para desenvolvedores",
+    "restApi": {
+      "title": "API REST",
+      "description": "API HTTP abrangente para validação e análise programática de ideias de negócio."
+    },
+    "websockets": {
+      "title": "API Websocket",
+      "description": "Interação em tempo real para análise contínua e atualizações durante o processo de validação."
+    },
+    "documentation": {
+      "title": "Como Começar",
+      "description": "Para começar a usar a API do Startupideia, você precisará de uma chave de API através do painel da sua conta. Uma vez que você tenha sua chave de API, poderá fazer solicitações autenticadas aos nossos endpoints."
+    },
+    "authentication": {
+      "title": "Autenticação",
+      "description": "Todas as solicitações à API devem incluir sua chave de API para autenticação. Usamos OAuth 2.0 para acesso seguro aos nossos recursos de API."
+    },
+    "endpoints": {
+      "title": "Endpoints Disponíveis",
+      "description": "Nossa API fornece vários endpoints para interagir com nosso sistema de validação de ideias:",
+      "getIdeas": "Recuperar todas as suas ideias previamente analisadas",
+      "analyzeIdea": "Enviar uma nova ideia para análise",
+      "getIdeaById": "Obter informações detalhadas sobre uma ideia específica",
+      "getReports": "Recuperar relatórios gerados para suas ideias"
+    },
+    "pricing": {
+      "title": "Preços da API",
+      "description": "Nossa API está disponível em todos os planos pagos com diferentes limites de solicitações:",
+      "entrepreneur": "Empreendedor: 100 chamadas de API/mês",
+      "business": "Negócio: Chamadas de API ilimitadas"
+    },
+    "sdks": {
+      "title": "SDKs e Bibliotecas",
+      "description": "Fornecemos bibliotecas de cliente em várias linguagens para facilitar a integração:",
+      "javascript": "JavaScript/TypeScript",
+      "python": "Python",
+      "php": "PHP",
+      "ruby": "Ruby"
+    },
+    "support": {
+      "title": "Suporte à API",
+      "description": "Precisa de ajuda para integrar nossa API? Nossa equipe de suporte para desenvolvedores está pronta para ajudar:",
+      "email": "Email: api@startupideia.com",
+      "docs": "Documentação Completa",
+      "community": "Comunidade de Desenvolvedores"
+    }
+  },
+  
+  "blog": {
+    "tagline": "Blog",
+    "title": "Últimos Insights e Tendências",
+    "subtitle": "Explore nossos artigos mais recentes sobre empreendedorismo, validação de ideias e tendências de mercado",
+    "readMore": "Ler Mais",
+    "loadMore": "Carregar Mais Artigos",
+    "posts": {
+      "post1": {
+        "title": "5 Métricas Essenciais para Validar sua Ideia de Negócio",
+        "excerpt": "Saiba quais pontos de dados são mais importantes ao determinar se sua ideia tem potencial de mercado.",
+        "date": "1 de maio de 2025",
+        "category": "Validação de Ideias",
+        "content": "Ao validar uma ideia de negócio, existem várias métricas que podem ajudar a determinar se o seu conceito tem potencial para ter sucesso no mercado. Essas métricas incluem tamanho do mercado, custo de aquisição de clientes, valor vitalício dos clientes, margens de lucro e potencial de crescimento. Analisando esses indicadores-chave, os empreendedores podem tomar decisões informadas antes de investir recursos significativos."
+      },
+      "post2": {
+        "title": "Como Criar um MVP que Realmente Teste sua Hipótese",
+        "excerpt": "Construir o produto mínimo viável certo pode economizar meses de tempo de desenvolvimento.",
+        "date": "23 de abril de 2025",
+        "category": "Desenvolvimento de Produto",
+        "content": "Um produto mínimo viável (MVP) deve ser projetado com uma hipótese clara em mente. Em vez de se concentrar em recursos, concentre-se em qual suposição específica você precisa validar. Mantenha seu MVP enxuto, meça as métricas certas e esteja preparado para pivotar com base no feedback do usuário. Esta abordagem economizará tempo e recursos, fornecendo informações valiosas sobre a viabilidade da sua ideia."
+      },
+      "post3": {
+        "title": "Encontrando seu Nicho: Quando Mercados Menores Significam Lucros Maiores",
+        "excerpt": "Por que atingir um público mais restrito pode levar a um posicionamento de mercado mais forte e melhores retornos.",
+        "date": "15 de abril de 2025",
+        "category": "Análise de Mercado",
+        "content": "Contra-intuitivamente, atingir um segmento de mercado menor e mais específico muitas vezes pode levar a um maior sucesso para startups. Mercados de nicho geralmente têm menos concorrência, necessidades mais especializadas e clientes que estão dispostos a pagar preços premium por soluções adaptadas aos seus problemas específicos. Esta abordagem permite que você se estabeleça como especialista e construa uma base leal de clientes antes de considerar expansão."
+      },
+      "post4": {
+        "title": "O Guia do Empreendedor para Investimento Anjo em Angola",
+        "excerpt": "Como atrair investimento inicial para sua startup no crescente mercado angolano.",
+        "date": "8 de abril de 2025",
+        "category": "Financiamento",
+        "content": "O ecossistema de startups de Angola está evoluindo rapidamente, com mais investidores anjo procurando empreendimentos promissores. Para atrair esse capital, os empreendedores precisam entender as expectativas dos investidores locais, o ambiente regulatório e as oportunidades de networking. Este guia explora o panorama de investimentos angolano e fornece dicas práticas para garantir financiamento inicial neste mercado emergente."
+      },
+      "post5": {
+        "title": "Tendências Tecnológicas Remodelando Startups Africanas em 2025",
+        "excerpt": "As inovações e tecnologias que criam novas oportunidades para empreendedores em todo o continente.",
+        "date": "30 de março de 2025",
+        "category": "Tecnologia",
+        "content": "De soluções de pagamento móvel a tecnologias de energia sustentável, várias inovações-chave estão criando oportunidades sem precedentes para empreendedores africanos. Este artigo examina como essas tecnologias estão resolvendo desafios exclusivamente africanos enquanto criam modelos de negócios escaláveis com potencial de expansão global. Destacamos histórias de sucesso de várias regiões e setores."
+      },
+      "post6": {
+        "title": "Da Ideia ao Mercado: A Jornada da Plataforma de Startup da DMK",
+        "excerpt": "Um olhar interno sobre como o Startupideia foi desenvolvida e lançado em Angola.",
+        "date": "22 de março de 2025",
+        "category": "História de Sucesso",
+        "content": "Neste estudo de caso exclusivo, compartilhamos a jornada de desenvolvimento do Startupideia, desde o conceito inicial até o lançamento no mercado. O fundador Marciairo Kumbuessa discute os desafios enfrentados como desenvolvedor solo na construção de uma startup de tecnologia em Angola, e como a plataforma evoluiu com base nas necessidades dos empreendedores locais e no feedback dos primeiros usuários."
+      }
+    }
+  },
+  
+  "aboutUs": {
+    "tagline": "Sobre Nós",
+    "title": "Nossa Missão",
+    "subtitle": "Estamos em uma missão para ajudar empreendedores a validar suas ideias de negócio e aumentar suas chances de sucesso",
+    "mission": {
+      "title": "Por Que Começamos",
+      "description1": "O Startupideia foi fundado por Marciairo Kumbuessa, um desenvolvedor solo com a visão de tornar a validação de ideias de negócio acessível aos empreendedores em Angola e além. Após experimentar em primeira mão os desafios de lançar negócios sem a validação adequada, ele criou o Startupideia para resolver este problema crítico.",
+      "description2": "Hoje, a DMK, Lda está ajudando empreendedores em toda Angola a tomar decisões baseadas em dados sobre suas ideias de negócio antes de investir recursos significativos."
+    },
+    "company": {
+      "title": "DMK, Lda",
+      "description": "O Startupideia é de propriedade e operado pela DMK, Lda, uma empresa angolana de tecnologia com sede no Lubango, Província da Huíla. Fundada com a missão de criar soluções inovadoras para empreendedores locais, a DMK está comprometida em promover o avanço tecnológico em Angola.",
+      "location": "Lubango, Província da Huíla, Angola",
+      "emails": "contact@startupideia.com, contact@dmklda.online"
+    },
+    "values": {
+      "title": "Nossos Valores",
+      "subtitle": "Os princípios que orientam nosso trabalho e nossos relacionamentos com os clientes",
+      "value1": {
+        "title": "Decisões Baseadas em Dados",
+        "description": "Acreditamos que negócios bem-sucedidos são construídos com base em evidências e insights, não apenas intuição e paixão."
+      },
+      "value2": {
+        "title": "Capacitação Empreendedora",
+        "description": "Nosso objetivo é democratizar o acesso a ferramentas de validação de negócios e conhecimento para empreendedores em Angola e África."
+      },
+      "value3": {
+        "title": "Inovação Contínua",
+        "description": "Estamos constantemente aprimorando nossos algoritmos e metodologias para fornecer a validação mais precisa possível."
+      }
+    },
+    "team": {
+      "title": "Nossa Liderança",
+      "subtitle": "Os visionários por trás do Startupideia",
+      "member1": {
+        "name": "Marciairo Kumbuessa",
+        "role": "CEO e Fundador",
+        "bio": "Desenvolvedor solo e empreendedor com paixão por criar soluções tecnológicas que abordam desafios locais."
+      },
+      "member2": {
+        "name": "Dneisy Kumbuessa",
+        "role": "Vice-Presidente e Diretora de Vendas",
+        "bio": "Lidera relacionamentos com clientes e operações de vendas, garantindo que nossas soluções atendam às necessidades dos empreendedores locais."
+      }
+    }
+  },
+  
+  "contact": {
+    "title": "Contato",
+    "subtitle": "Entre em contato conosco para obter mais informações sobre nossos serviços",
+    "email": "contact@startupideia.com",
+    "phone": "+244 912 345 678",
+    "address": "Lubango, Província da Huíla, Angola",
+    "companyInfo": {
+      "name": "DMK, Lda",
+      "location": "Lubango, Província da Huíla, Angola",
+      "email1": "contact@startupideia.com",
+      "email2": "contact@dmklda.online"
+    }
   }
 }
