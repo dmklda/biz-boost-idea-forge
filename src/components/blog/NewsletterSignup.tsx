@@ -2,6 +2,7 @@
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
 
 const NewsletterSignup = () => {
   const { t } = useTranslation();
@@ -17,8 +18,8 @@ const NewsletterSignup = () => {
         </div>
         <p className="text-sm text-muted-foreground mt-4">
           {t("blog.submitCasePromo")} 
-          <Button variant="link" href="#" className="p-0 h-auto">
-            {t("blog.submitCaseLink")}
+          <Button variant="link" asChild className="p-0 h-auto">
+            <Link to="/recursos/casos-de-sucesso">{t("blog.submitCaseLink")}</Link>
           </Button>
         </p>
       </div>
