@@ -1,6 +1,7 @@
 
 import { Facebook, Instagram, Linkedin, Twitter, Rocket } from "lucide-react";
 import { useTranslation } from 'react-i18next';
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -57,24 +58,24 @@ const Footer = () => {
                 <h4 className="font-semibold text-lg mb-6 text-white/90">{t('footer.platform')}</h4>
                 <ul className="space-y-4">
                   <li>
-                    <a href="#como-funciona" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/como-funciona" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.howItWorks')}
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="#beneficios" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/beneficios" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.benefits')}
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="#planos" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/planos" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.plans')}
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/plataforma/api" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.api')}
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -83,24 +84,24 @@ const Footer = () => {
                 <h4 className="font-semibold text-lg mb-6 text-white/90">{t('footer.resources')}</h4>
                 <ul className="space-y-4">
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/recursos/blog" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.blog')}
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/recursos/guias" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.guides')}
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/recursos/casos-de-sucesso" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.successCases')}
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/recursos/webinars" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.webinars')}
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -109,24 +110,24 @@ const Footer = () => {
                 <h4 className="font-semibold text-lg mb-6 text-white/90">{t('footer.company')}</h4>
                 <ul className="space-y-4">
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/empresa/sobre-nos" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.aboutUs')}
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/empresa/contato" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.contact')}
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/empresa/politica-de-privacidade" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.privacyPolicy')}
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/empresa/termos-de-uso" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.termsOfUse')}
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -137,9 +138,9 @@ const Footer = () => {
             <div className="flex flex-col md:flex-row justify-between items-center">
               <p>&copy; {currentYear} Startupideia. {t('footer.copyright')}</p>
               <div className="mt-4 md:mt-0 flex gap-6">
-                <a href="#" className="hover:text-white transition-colors">{t('footer.privacyPolicy')}</a>
+                <Link to="/empresa/politica-de-privacidade" className="hover:text-white transition-colors">{t('footer.privacyPolicy')}</Link>
                 <span className="hidden md:inline">|</span>
-                <a href="#" className="hover:text-white transition-colors">{t('footer.termsOfUse')}</a>
+                <Link to="/empresa/termos-de-uso" className="hover:text-white transition-colors">{t('footer.termsOfUse')}</Link>
               </div>
             </div>
           </div>

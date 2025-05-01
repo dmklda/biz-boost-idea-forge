@@ -12,6 +12,21 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import '@/i18n/config';
 
+// Platform pages
+import ApiPage from "./pages/platform/ApiPage";
+
+// Resources pages
+import BlogPage from "./pages/resources/BlogPage";
+import GuidesPage from "./pages/resources/GuidesPage";
+import SuccessCasesPage from "./pages/resources/SuccessCasesPage";
+import WebinarsPage from "./pages/resources/WebinarsPage";
+
+// Company pages
+import AboutUsPage from "./pages/company/AboutUsPage";
+import ContactPage from "./pages/company/ContactPage";
+import PrivacyPolicyPage from "./pages/company/PrivacyPolicyPage";
+import TermsOfUsePage from "./pages/company/TermsOfUsePage";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -74,6 +89,22 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/resultados" element={<ResultsPage />} />
+                
+                {/* Platform Pages */}
+                <Route path="/plataforma/api" element={<ApiPage />} />
+                
+                {/* Resources Pages */}
+                <Route path="/recursos/blog" element={<BlogPage />} />
+                <Route path="/recursos/guias" element={<GuidesPage />} />
+                <Route path="/recursos/casos-de-sucesso" element={<SuccessCasesPage />} />
+                <Route path="/recursos/webinars" element={<WebinarsPage />} />
+                
+                {/* Company Pages */}
+                <Route path="/empresa/sobre-nos" element={<AboutUsPage />} />
+                <Route path="/empresa/contato" element={<ContactPage />} />
+                <Route path="/empresa/politica-de-privacidade" element={<PrivacyPolicyPage />} />
+                <Route path="/empresa/termos-de-uso" element={<TermsOfUsePage />} />
+                
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

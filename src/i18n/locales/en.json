@@ -181,5 +181,413 @@
     "privacyPolicy": "Privacy policy",
     "termsOfUse": "Terms of use",
     "copyright": "All rights reserved."
+  },
+  
+  "api": {
+    "tagline": "API",
+    "title": "API Documentation",
+    "subtitle": "Integrate our idea validation tools into your application with our developer-friendly API",
+    "restApi": {
+      "title": "REST API",
+      "description": "Comprehensive HTTP API for validating and analyzing business ideas programmatically."
+    },
+    "websockets": {
+      "title": "Websocket API",
+      "description": "Real-time interaction for continuous analysis and updates during the validation process."
+    },
+    "documentation": {
+      "title": "Getting Started",
+      "description": "To get started with the Startupideia API, you'll need to register for an API key through your account dashboard. Once you have your API key, you can make authenticated requests to our endpoints."
+    },
+    "authentication": {
+      "title": "Authentication",
+      "description": "All API requests must include your API key for authentication. We use OAuth 2.0 for secure access to our API resources."
+    },
+    "endpoints": {
+      "title": "Available Endpoints",
+      "description": "Our API provides several endpoints to interact with our idea validation system:",
+      "getIdeas": "Retrieve all your previously analyzed ideas",
+      "analyzeIdea": "Submit a new idea for analysis",
+      "getIdeaById": "Get detailed information about a specific idea",
+      "getReports": "Retrieve generated reports for your ideas"
+    }
+  },
+  
+  "blog": {
+    "tagline": "Blog",
+    "title": "Latest Insights & Trends",
+    "subtitle": "Explore our latest articles on entrepreneurship, idea validation, and market trends",
+    "readMore": "Read More",
+    "loadMore": "Load More Articles",
+    "posts": {
+      "post1": {
+        "title": "5 Key Metrics to Validate Your Business Idea",
+        "excerpt": "Learn which data points matter most when determining if your idea has market potential.",
+        "date": "May 1, 2025",
+        "category": "Idea Validation"
+      },
+      "post2": {
+        "title": "How to Create an MVP That Actually Tests Your Hypothesis",
+        "excerpt": "Building the right minimum viable product can save you months of development time.",
+        "date": "April 23, 2025",
+        "category": "Product Development"
+      },
+      "post3": {
+        "title": "Finding Your Niche: When Smaller Markets Mean Bigger Profits",
+        "excerpt": "Why targeting a narrower audience can lead to stronger market positioning and better returns.",
+        "date": "April 15, 2025",
+        "category": "Market Analysis"
+      }
+    }
+  },
+  
+  "guides": {
+    "tagline": "Guides",
+    "title": "Step-by-Step Guides",
+    "subtitle": "Practical resources to help you validate and launch your business ideas",
+    "readGuide": "Read Guide",
+    "exploreAll": "Explore All Guides",
+    "items": {
+      "guide1": {
+        "title": "Complete Guide to Idea Validation",
+        "description": "A comprehensive walkthrough of the entire validation process, from initial concept to market testing.",
+        "category": "Idea Validation",
+        "level": "Beginner"
+      },
+      "guide2": {
+        "title": "Building Your Customer Persona",
+        "description": "Learn how to create detailed customer personas that help you understand your target audience better.",
+        "category": "Market Research",
+        "level": "Intermediate"
+      },
+      "guide3": {
+        "title": "Competitive Analysis Framework",
+        "description": "Tools and techniques to analyze your competitors and identify market opportunities.",
+        "category": "Strategy",
+        "level": "Advanced"
+      },
+      "guide4": {
+        "title": "Financial Modeling for Startups",
+        "description": "Create realistic financial projections that will help you secure funding and plan your business growth.",
+        "category": "Finance",
+        "level": "Advanced"
+      }
+    }
+  },
+  
+  "successCases": {
+    "tagline": "Success Cases",
+    "title": "Success Stories",
+    "subtitle": "Real businesses that used our platform to validate and refine their ideas",
+    "results": "Results",
+    "readFullCase": "Read Full Case Study",
+    "cases": {
+      "case1": {
+        "company": "GreenDeliver",
+        "description": "An eco-friendly food delivery service that needed to validate their sustainable packaging model and pricing strategy.",
+        "result": "After using our platform, GreenDeliver pivoted their packaging strategy and secured $1.5M in seed funding within 3 months."
+      },
+      "case2": {
+        "company": "FinMentor",
+        "description": "A financial education platform targeting young adults with personalized learning paths and gamified experiences.",
+        "result": "Our analysis helped FinMentor refine their target demographic and feature set, resulting in 215% user growth in the first year."
+      },
+      "case3": {
+        "company": "HealthTrack",
+        "description": "A healthcare startup focusing on preventive care through AI-powered monitoring and personalized recommendations.",
+        "result": "Using our validation tools, HealthTrack identified key partnerships opportunities and has now expanded to 5 countries."
+      }
+    },
+    "cta": {
+      "title": "Your Success Story Could Be Next",
+      "subtitle": "Join thousands of entrepreneurs who've transformed their ideas into thriving businesses",
+      "button": "Start Your Journey"
+    }
+  },
+  
+  "webinars": {
+    "tagline": "Webinars",
+    "title": "Educational Webinars",
+    "subtitle": "Join our live sessions and learn from industry experts",
+    "pastWebinars": "Past Webinars",
+    "upcomingWebinars": "Upcoming Events",
+    "presenter": "Presenter",
+    "watchNow": "Watch Recording",
+    "registerNow": "Register Now",
+    "items": {
+      "webinar1": {
+        "title": "Validating Your SaaS Idea: A Practical Approach",
+        "description": "Learn how to effectively test your software idea before investing in full development.",
+        "date": "April 25, 2025",
+        "speaker": "Sarah Johnson, SaaS Entrepreneur"
+      },
+      "webinar2": {
+        "title": "Market Research Techniques for Early-Stage Startups",
+        "description": "Cost-effective strategies to gather meaningful market insights with limited resources.",
+        "date": "April 10, 2025",
+        "speaker": "Michael Chen, Market Research Specialist"
+      },
+      "webinar3": {
+        "title": "From Idea to Funding: Creating a Compelling Pitch",
+        "description": "How to structure your business pitch to attract investors after validating your concept.",
+        "date": "March 28, 2025",
+        "speaker": "David Williams, VC Partner"
+      }
+    },
+    "upcoming": {
+      "webinar1": {
+        "title": "Pricing Strategies for Innovative Products",
+        "date": "May 12, 2025",
+        "speaker": "Emily Rodriguez, Pricing Expert",
+        "time": "2:00 PM EST"
+      },
+      "webinar2": {
+        "title": "Building a Go-To-Market Strategy That Works",
+        "date": "May 18, 2025",
+        "speaker": "James Thompson, Marketing Director",
+        "time": "11:00 AM EST"
+      }
+    },
+    "cta": {
+      "title": "Want to Share Your Expertise?",
+      "subtitle": "Become a speaker at one of our upcoming webinars",
+      "button": "Apply as Speaker"
+    }
+  },
+  
+  "aboutUs": {
+    "tagline": "About Us",
+    "title": "Our Mission",
+    "subtitle": "We're on a mission to help entrepreneurs validate their business ideas and increase their chances of success",
+    "mission": {
+      "title": "Why We Started",
+      "description1": "Startupideia was founded in 2023 by a team of entrepreneurs who experienced firsthand the challenges of validating business ideas. After several failed ventures and thousands of dollars wasted on unvalidated concepts, we decided there had to be a better way.",
+      "description2": "Today, we're helping thousands of entrepreneurs around the world make data-driven decisions about their business ideas before investing significant time and resources."
+    },
+    "values": {
+      "title": "Our Values",
+      "subtitle": "The principles that guide our work and our relationships with customers",
+      "value1": {
+        "title": "Data-Driven Decisions",
+        "description": "We believe that successful businesses are built on evidence and insights, not just intuition and passion."
+      },
+      "value2": {
+        "title": "Entrepreneurial Empowerment",
+        "description": "Our goal is to democratize access to business validation tools and knowledge for entrepreneurs everywhere."
+      },
+      "value3": {
+        "title": "Continuous Innovation",
+        "description": "We're constantly improving our algorithms and methodologies to provide the most accurate validation possible."
+      }
+    },
+    "team": {
+      "title": "Meet Our Team",
+      "subtitle": "The passionate people behind Startupideia",
+      "member1": {
+        "name": "Sarah Johnson",
+        "role": "CEO & Co-founder"
+      },
+      "member2": {
+        "name": "Michael Chen",
+        "role": "CTO & Co-founder"
+      },
+      "member3": {
+        "name": "Emily Rodriguez",
+        "role": "Head of Data Science"
+      },
+      "member4": {
+        "name": "David Williams",
+        "role": "Head of Customer Success"
+      }
+    }
+  },
+  
+  "contact": {
+    "tagline": "Contact",
+    "title": "Get in Touch",
+    "subtitle": "We'd love to hear from you. Reach out for support, partnership opportunities, or just to say hello",
+    "cards": {
+      "support": {
+        "title": "Customer Support",
+        "description": "Need help with our platform or have questions about your account?"
+      },
+      "sales": {
+        "title": "Sales & Partnerships",
+        "description": "Interested in enterprise plans or exploring partnership opportunities?"
+      },
+      "office": {
+        "title": "Main Office",
+        "description": "Our headquarters location for in-person meetings and visits."
+      }
+    },
+    "form": {
+      "title": "Send Us a Message",
+      "name": "Full Name",
+      "namePlaceholder": "Enter your name",
+      "email": "Email Address",
+      "emailPlaceholder": "Enter your email",
+      "subject": "Subject",
+      "subjectPlaceholder": "Select a subject",
+      "subjectOptions": {
+        "general": "General Inquiry",
+        "support": "Technical Support",
+        "sales": "Sales Question",
+        "partnership": "Partnership Proposal"
+      },
+      "message": "Message",
+      "messagePlaceholder": "How can we help you?",
+      "send": "Send Message",
+      "sending": "Sending...",
+      "validation": {
+        "name": "Please enter your name",
+        "email": "Please enter a valid email address",
+        "subject": "Please select a subject",
+        "message": "Message must be at least 10 characters"
+      },
+      "success": {
+        "title": "Message sent!",
+        "message": "Thank you for reaching out. We'll get back to you as soon as possible."
+      }
+    }
+  },
+  
+  "privacyPolicy": {
+    "tagline": "Legal",
+    "title": "Privacy Policy",
+    "lastUpdated": "Last Updated",
+    "introduction": "At Startupideia, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services. Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the site.",
+    "sections": {
+      "dataCollection": {
+        "title": "Information We Collect",
+        "content1": "We collect information that you voluntarily provide to us when registering for our services, expressing an interest in obtaining information about us or our products and services, or otherwise contacting us.",
+        "content2": "The personal information that we collect depends on the context of your interactions with us and the choices you make. The personal information we collect may include the following:",
+        "items": {
+          "item1": "Name and contact information",
+          "item2": "Account credentials",
+          "item3": "Business information",
+          "item4": "Payment information",
+          "item5": "Usage data and analytics"
+        }
+      },
+      "useOfData": {
+        "title": "How We Use Your Information",
+        "content1": "We use personal information collected via our site for a variety of business purposes described below. We process your personal information for these purposes based on our legitimate business interests, in order to enter into or perform a contract with you, with your consent, and/or for compliance with our legal obligations. We use the information we collect or receive:",
+        "items": {
+          "item1": "To facilitate account creation and authentication",
+          "item2": "To provide and maintain our services",
+          "item3": "To process transactions and send related information",
+          "item4": "To respond to inquiries and offer support",
+          "item5": "To send administrative information and service updates"
+        }
+      },
+      "dataSecurity": {
+        "title": "Security of Your Information",
+        "content1": "We use administrative, technical, and physical security measures to help protect your personal information from unauthorized access, use, or disclosure. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable.",
+        "content2": "We cannot guarantee the security of your information transmitted to our site; any transmission is at your own risk. We are not responsible for circumvention of any privacy settings or security measures contained on the site."
+      },
+      "thirdPartyServices": {
+        "title": "Third-Party Services",
+        "content1": "We may use third-party service providers to help us operate our business and our site or administer activities on our behalf, such as sending out newsletters or surveys.",
+        "content2": "These third parties have access to your Personal Information only to perform these tasks on our behalf and are obligated not to disclose or use it for any other purpose."
+      },
+      "cookies": {
+        "title": "Cookies and Tracking Technologies",
+        "content1": "We may use cookies, web beacons, tracking pixels, and other tracking technologies to help customize the Site and improve your experience. Most browsers are set to accept cookies by default. You can remove or reject cookies, but be aware that such action could affect the availability and functionality of the Site.",
+        "content2": "By using the Site, you agree to be bound by our Cookie Policy."
+      },
+      "userRights": {
+        "title": "Your Privacy Rights",
+        "content": "Depending on your location, you may have certain rights regarding your personal information, including:",
+        "items": {
+          "item1": "Right to know what information we collect, use, share, or sell",
+          "item2": "Right to delete your personal information",
+          "item3": "Right to opt-out of the sale of your personal information",
+          "item4": "Right to non-discrimination for exercising your rights",
+          "item5": "Right to correct inaccurate information"
+        }
+      },
+      "changes": {
+        "title": "Changes to This Privacy Policy",
+        "content": "We may update our privacy policy from time to time. We will notify you of any changes by posting the new privacy policy on this page and updating the 'Last Updated' date. You are advised to review this privacy policy periodically for any changes."
+      },
+      "contact": {
+        "title": "Contact Us",
+        "content": "If you have questions or comments about this privacy policy, you may email us at privacy@startupideia.com or by mail to 123 Innovation Ave, San Francisco, CA 94103, USA."
+      }
+    }
+  },
+  
+  "termsOfUse": {
+    "tagline": "Legal",
+    "title": "Terms of Use",
+    "lastUpdated": "Last Updated",
+    "introduction": "These terms and conditions outline the rules and regulations for the use of Startupideia's website and services. By accessing this website and using our services, we assume you accept these terms and conditions in full. Do not continue to use Startupideia's website and services if you do not accept all of the terms and conditions stated on this page.",
+    "sections": {
+      "acceptance": {
+        "title": "Acceptance of Terms",
+        "content": "By creating an account on our site and using our services, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing our site or services."
+      },
+      "accountRegistration": {
+        "title": "Account Registration and Requirements",
+        "content1": "To use certain features of the site, you must register for an account. You agree to provide accurate, current, and complete information during the registration process and to update such information to keep it accurate, current, and complete.",
+        "content2": "You are responsible for maintaining the confidentiality of your account and password, and you accept responsibility for all activities that occur under your account."
+      },
+      "services": {
+        "title": "Service Description",
+        "content1": "Startupideia provides a platform for validating business ideas through data analysis and market insights. Our services include idea analysis, market assessment, business model evaluation, and strategic planning recommendations.",
+        "content2": "We reserve the right to modify, suspend, or discontinue any part of the services at any time, with or without notice to you."
+      },
+      "payment": {
+        "title": "Payment and Subscription Terms",
+        "content1": "Some of our services are offered on a subscription basis. By subscribing to our services, you agree to pay the applicable fees. Subscription fees are billed in advance on either a monthly or annual basis, depending on the subscription plan you select.",
+        "content2": "You may cancel your subscription at any time, but refunds are provided only in accordance with our Refund Policy."
+      },
+      "intellectualProperty": {
+        "title": "Intellectual Property Rights",
+        "content1": "The Service and its original content, features, and functionality are and will remain the exclusive property of Startupideia and its licensors. The Service is protected by copyright, trademark, and other laws of both the United States and foreign countries.",
+        "content2": "Our trademarks and trade dress may not be used in connection with any product or service without the prior written consent of Startupideia."
+      },
+      "userContent": {
+        "title": "User Content",
+        "content1": "You retain ownership of any content that you submit, post or display on or through the Service, including your business ideas and related information ('User Content').",
+        "content2": "By providing User Content to the Service, you grant us a worldwide, non-exclusive, royalty-free license to use, reproduce, modify, adapt, publish, translate, and distribute your User Content solely for the purpose of providing our services to you."
+      },
+      "prohibited": {
+        "title": "Prohibited Activities",
+        "content": "You agree not to engage in any of the following prohibited activities:",
+        "items": {
+          "item1": "Use the Service in any way that violates any applicable laws or regulations",
+          "item2": "Attempt to interfere with, compromise the system integrity or security, or decipher any transmissions to or from the servers running the Service",
+          "item3": "Use the Service to send unsolicited communications, promotions, or advertisements, or to spam",
+          "item4": "Upload or transmit viruses, malware, or other malicious code",
+          "item5": "Use the Service to harvest, collect, gather, or assemble information about others",
+          "item6": "Impersonate another person or misrepresent your affiliation with a person or entity"
+        }
+      },
+      "termination": {
+        "title": "Termination",
+        "content": "We may terminate or suspend your account and bar access to the Service immediately, without prior notice or liability, under our sole discretion, for any reason whatsoever, including without limitation if you breach the Terms."
+      },
+      "disclaimer": {
+        "title": "Disclaimer",
+        "content": "The Service is provided on an 'AS IS' and 'AS AVAILABLE' basis. Startupideia makes no warranties, expressed or implied, and hereby disclaims all such warranties, including without limitation implied warranties of merchantability, fitness for a particular purpose, non-infringement, and warranties arising from course of dealing or usage of trade."
+      },
+      "limitation": {
+        "title": "Limitation of Liability",
+        "content": "In no event shall Startupideia be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service."
+      },
+      "changes": {
+        "title": "Changes to Terms",
+        "content": "We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will try to provide at least 30 days' notice prior to any new terms taking effect."
+      },
+      "governingLaw": {
+        "title": "Governing Law",
+        "content": "These Terms shall be governed and construed in accordance with the laws of the United States, without regard to its conflict of law provisions."
+      },
+      "contact": {
+        "title": "Contact Us",
+        "content": "If you have any questions about these Terms, please contact us at legal@startupideia.com."
+      }
+    }
   }
 }
