@@ -31,8 +31,11 @@ const Pricing = () => {
   const getFeaturesTranslation = (key: string): string[] => {
     try {
       const features = t(`${key}`, { returnObjects: true });
+      // Ensure we have a string array by filtering out non-string values
       if (Array.isArray(features)) {
-        return features;
+        return features.filter((feature): feature is string => 
+          typeof feature === 'string'
+        );
       }
       // Fallback to default features if translation is not an array
       return ['Feature 1', 'Feature 2', 'Feature 3'];

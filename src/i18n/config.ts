@@ -30,7 +30,8 @@ i18n
       useSuspense: false
     },
     returnNull: false,
-    returnEmptyString: false
+    returnEmptyString: false,
+    returnObjectTrees: true
   });
 
 export default i18n;
