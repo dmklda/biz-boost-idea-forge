@@ -1,6 +1,6 @@
-
 {
   "testimonials": {
+    "tagline": "Depoimentos",
     "title": "O que nossos usuários dizem",
     "subtitle": "Empreendedores, investidores e criadores de conteúdo estão transformando suas ideias em negócios de sucesso",
     "quote1": "A análise que recebi foi surpreendentemente precisa. Consegui identificar problemas no meu modelo de negócio que eu nem tinha percebido.",
@@ -14,6 +14,7 @@
     "role3": "Investidor-anjo"
   },
   "pricing": {
+    "tagline": "Preços",
     "title": "Planos e preços",
     "subtitle": "Escolha o plano que melhor se adapta às suas necessidades de empreendedorismo",
     "period": "/mês",
@@ -88,6 +89,7 @@
     }
   },
   "howItWorks": {
+    "tagline": "Processo",
     "title": "Como funciona",
     "subtitle": "Um processo simples e eficiente para transformar sua ideia em um plano de negócios viável",
     "step1": {
@@ -112,6 +114,7 @@
     }
   },
   "features": {
+    "tagline": "Recursos",
     "title": "Valide sua ideia de forma completa",
     "subtitle": "Nossa plataforma fornece uma análise completa da viabilidade e potencial do seu conceito de negócio.",
     "viabilityAnalysis": {

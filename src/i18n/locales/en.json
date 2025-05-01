@@ -1,6 +1,6 @@
-
 {
   "testimonials": {
+    "tagline": "Testimonials",
     "title": "What our users say",
     "subtitle": "Entrepreneurs, investors, and content creators are turning their ideas into successful businesses",
     "quote1": "The analysis I received was surprisingly accurate. I identified problems in my business model that I hadn't even noticed.",
@@ -14,6 +14,7 @@
     "role3": "Angel Investor"
   },
   "pricing": {
+    "tagline": "Pricing",
     "title": "Plans & Pricing",
     "subtitle": "Choose the plan that best fits your entrepreneurial needs",
     "period": "/month",
@@ -88,6 +89,7 @@
     }
   },
   "howItWorks": {
+    "tagline": "Process",
     "title": "How it works",
     "subtitle": "A simple and efficient process to transform your idea into a viable business plan",
     "step1": {
@@ -112,6 +114,7 @@
     }
   },
   "features": {
+    "tagline": "Features",
     "title": "Validate your idea completely",
     "subtitle": "Our platform provides a complete analysis of the viability and potential of your business concept.",
     "viabilityAnalysis": {
