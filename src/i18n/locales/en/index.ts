@@ -1,8 +1,6 @@
 
 // Only import files that actually exist
 import successCases from './successCases.json';
-import privacyPolicy from './privacyPolicy.json';
-import termsOfUse from './termsOfUse.json';
 
 // Provide empty objects for sections that don't have files yet
 const testimonials = {};
@@ -20,6 +18,8 @@ const guides = {};
 const webinars = {};
 const aboutUs = {};
 const contact = {};
+const privacyPolicy = {};
+const termsOfUse = {};
 
 // Combine and export all translations
 export default {
