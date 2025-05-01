@@ -6,6 +6,7 @@ import Footer from "../../components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users } from "lucide-react";
+import SubmitSuccessCase from "../../components/blog/SubmitSuccessCase";
 
 const SuccessCasesPage = () => {
   const { t } = useTranslation();
@@ -51,13 +52,20 @@ const SuccessCasesPage = () => {
       <Header />
       <main className="container mx-auto px-4 pt-32 pb-16">
         <div className="max-w-4xl mx-auto mb-16">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="inline-flex h-6 items-center rounded-full bg-brand-purple/20 px-3 text-sm text-brand-purple">
-              {t("successCases.tagline")}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="inline-flex h-6 items-center rounded-full bg-brand-purple/20 px-3 text-sm text-brand-purple">
+                  {t("successCases.tagline")}
+                </div>
+              </div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2">{t("successCases.title")}</h1>
+              <p className="text-lg text-muted-foreground">{t("successCases.subtitle")}</p>
+            </div>
+            <div className="flex justify-start sm:justify-end">
+              <SubmitSuccessCase />
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">{t("successCases.title")}</h1>
-          <p className="text-lg text-muted-foreground">{t("successCases.subtitle")}</p>
         </div>
         
         <div className="space-y-12 mb-16">

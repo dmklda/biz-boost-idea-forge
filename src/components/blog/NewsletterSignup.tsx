@@ -11,10 +11,16 @@ const NewsletterSignup = () => {
       <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-8 text-center">
         <h3 className="text-2xl font-bold mb-4">Subscribe to our newsletter</h3>
         <p className="text-muted-foreground mb-6">Get the latest insights and trends delivered to your inbox</p>
-        <div className="flex max-w-md mx-auto gap-2">
+        <div className="flex max-w-md mx-auto gap-2 mb-4">
           <Input type="email" placeholder="Your email address" className="flex-grow" />
           <Button>Subscribe</Button>
         </div>
+        <p className="text-sm text-muted-foreground mt-4">
+          {t("blog.submitCasePromo")} 
+          <Button variant="link" href="#" className="p-0 h-auto">
+            {t("blog.submitCaseLink")}
+          </Button>
+        </p>
       </div>
     </div>
   );
