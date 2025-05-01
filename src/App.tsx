@@ -17,8 +17,11 @@ import ApiPage from "./pages/platform/ApiPage";
 
 // Resources pages
 import BlogPage from "./pages/resources/BlogPage";
+import BlogPostPage from "./pages/resources/BlogPostPage";
 import GuidesPage from "./pages/resources/GuidesPage";
+import GuideDetailPage from "./pages/resources/GuideDetailPage";
 import SuccessCasesPage from "./pages/resources/SuccessCasesPage";
+import SuccessCaseDetailPage from "./pages/resources/SuccessCaseDetailPage";
 import WebinarsPage from "./pages/resources/WebinarsPage";
 
 // Company pages
@@ -95,8 +98,11 @@ const App = () => {
                 
                 {/* Resources Pages */}
                 <Route path="/recursos/blog" element={<BlogPage />} />
+                <Route path="/recursos/blog/:id" element={<BlogPostPage />} />
                 <Route path="/recursos/guias" element={<GuidesPage />} />
+                <Route path="/recursos/guias/:id" element={<GuideDetailPage />} />
                 <Route path="/recursos/casos-de-sucesso" element={<SuccessCasesPage />} />
+                <Route path="/recursos/casos-de-sucesso/:id" element={<SuccessCaseDetailPage />} />
                 <Route path="/recursos/webinars" element={<WebinarsPage />} />
                 
                 {/* Company Pages */}

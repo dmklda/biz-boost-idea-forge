@@ -106,7 +106,7 @@
     },
     "step3": {
       "number": "03",
-      "title": "Receba insights completos",
+4 "title": "Receba insights completos",
       "description": "Obtenha uma análise detalhada com sugestões de nome, slogan, persona ideal, MVP e estratégias de monetização."
     },
     "step4": {
@@ -240,6 +240,8 @@
     "readMore": "Ler Mais",
     "showLess": "Mostrar Menos",
     "loadMore": "Carregar Mais Artigos",
+    "postNotFound": "Artigo não encontrado",
+    "backToBlog": "Voltar ao Blog",
     "posts": {
       "post1": {
         "title": "5 Métricas Essenciais para Validar sua Ideia de Negócio",
@@ -293,6 +295,8 @@
     "readGuide": "Ler Guia",
     "hideGuide": "Esconder Guia",
     "exploreAll": "Explorar Todos os Guias",
+    "guideNotFound": "Guia não encontrado",
+    "backToGuides": "Voltar aos Guias",
     "items": {
       "guide1": {
         "title": "Como Validar sua Ideia de Startup em 7 Dias",
@@ -332,6 +336,8 @@
     "results": "Resultados alcançados:",
     "readFullCase": "Ler Caso Completo",
     "showLess": "Mostrar Menos",
+    "caseNotFound": "Caso de sucesso não encontrado",
+    "backToCases": "Voltar aos Casos de Sucesso",
     "cta": {
       "title": "Seja nosso próximo caso de sucesso",
       "subtitle": "Comece a validar suas ideias hoje e transforme-as em negócios bem-sucedidos",

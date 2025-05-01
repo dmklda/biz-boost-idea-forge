@@ -1,15 +1,15 @@
 
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { BookOpen } from "lucide-react";
-import { useState } from "react";
 
 const GuidesPage = () => {
   const { t } = useTranslation();
-  const [expandedGuide, setExpandedGuide] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   // Mock data for guides
   const guides = [
@@ -47,14 +47,6 @@ const GuidesPage = () => {
     }
   ];
 
-  const toggleGuideExpand = (id: number) => {
-    if (expandedGuide === id) {
-      setExpandedGuide(null);
-    } else {
-      setExpandedGuide(id);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95 relative overflow-hidden">
       {/* Background element */}
@@ -88,22 +80,14 @@ const GuidesPage = () => {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{guide.title}</h3>
                 <p className="text-muted-foreground">{guide.description}</p>
-                
-                {expandedGuide === guide.id && (
-                  <div className="mt-4 pt-4 border-t border-border">
-                    <div className="text-sm text-muted-foreground">
-                      {guide.content}
-                    </div>
-                  </div>
-                )}
               </CardContent>
               <CardFooter className="px-6 pb-6 pt-0">
                 <Button 
                   variant="outline" 
                   className="w-full"
-                  onClick={() => toggleGuideExpand(guide.id)}
+                  onClick={() => navigate(`/recursos/guias/${guide.id}`)}
                 >
-                  {expandedGuide === guide.id ? t("guides.hideGuide") : t("guides.readGuide")}
+                  {t("guides.readGuide")}
                 </Button>
               </CardFooter>
             </Card>
