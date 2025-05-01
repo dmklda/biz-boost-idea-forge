@@ -19,6 +19,8 @@
     "subtitle": "Elige el plan que mejor se adapte a tus necesidades emprendedoras",
     "period": "/mes",
     "mostPopular": "Más Popular",
+    "monthly": "Mensual",
+    "annually": "Anual",
     "free": {
       "name": "Gratis",
       "description": "Para principiantes que quieren validar su primera idea.",

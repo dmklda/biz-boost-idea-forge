@@ -153,6 +153,19 @@ const Pricing = () => {
                     </Badge>
                   </div>
                 )}
+                
+                {/* Button moved here after the description */}
+                <div className="mt-4">
+                  <Button 
+                    className={`w-full ${
+                      plan.popular 
+                        ? "btn-premium" 
+                        : "bg-foreground/10 hover:bg-foreground/20 text-foreground backdrop-blur-sm"
+                    }`}
+                  >
+                    {plan.cta}
+                  </Button>
+                </div>
               </CardHeader>
               
               <CardContent className="relative z-10">
@@ -172,17 +185,7 @@ const Pricing = () => {
                 </ul>
               </CardContent>
               
-              <CardFooter className="relative z-10">
-                <Button 
-                  className={`w-full ${
-                    plan.popular 
-                      ? "btn-premium" 
-                      : "bg-foreground/10 hover:bg-foreground/20 text-foreground backdrop-blur-sm"
-                  }`}
-                >
-                  {plan.cta}
-                </Button>
-              </CardFooter>
+              {/* Removed the CardFooter with button since it's now in the CardHeader */}
             </Card>
           ))}
         </div>
