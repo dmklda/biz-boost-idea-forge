@@ -36,7 +36,12 @@ const SuccessCaseDetailPage = () => {
     }
   ];
 
+  // Find the case item - ensure we're comparing with the correct type
   const caseItem = successCases.find(caseItem => caseItem.id === id);
+
+  console.log("Current ID param:", id);
+  console.log("Available cases:", successCases.map(c => c.id));
+  console.log("Found case:", caseItem);
 
   if (!caseItem) {
     return (

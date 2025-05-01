@@ -12,6 +12,8 @@ const GuideDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   
+  console.log("Current guide ID:", id);
+  
   // Mock data for guides
   const guides = [
     {
@@ -48,7 +50,9 @@ const GuideDetailPage = () => {
     }
   ];
 
+  console.log("Available guides:", guides.map(g => g.id));
   const guide = guides.find(guide => guide.id === id);
+  console.log("Found guide:", guide);
 
   if (!guide) {
     return (

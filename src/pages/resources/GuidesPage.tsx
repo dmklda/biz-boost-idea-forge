@@ -47,6 +47,12 @@ const GuidesPage = () => {
     }
   ];
 
+  // Function to handle guide navigation
+  const handleNavigateToGuide = (guideId: number) => {
+    console.log(`Navigating to guide: ${guideId}`);
+    navigate(`/recursos/guias/${guideId}`);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95 relative overflow-hidden">
       {/* Background element */}
@@ -85,7 +91,7 @@ const GuidesPage = () => {
                 <Button 
                   variant="outline" 
                   className="w-full"
-                  onClick={() => navigate(`/recursos/guias/${guide.id}`)}
+                  onClick={() => handleNavigateToGuide(guide.id)}
                 >
                   {t("guides.readGuide")}
                 </Button>

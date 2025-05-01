@@ -1,3 +1,4 @@
+
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
@@ -95,6 +96,12 @@ const BlogPage = () => {
     }
   };
 
+  // Function to handle blog post navigation
+  const handleNavigateToBlogPost = (postId: number) => {
+    console.log(`Navigating to blog post: ${postId}`);
+    navigate(`/recursos/blog/${postId}`);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95 relative overflow-hidden">
       {/* Background element */}
@@ -152,7 +159,7 @@ const BlogPage = () => {
                   </div>
                   <h2 className="text-2xl md:text-3xl font-bold mb-4">{featuredPost.title}</h2>
                   <p className="text-muted-foreground mb-6">{featuredPost.excerpt}</p>
-                  <Button onClick={() => navigate(`/recursos/blog/${featuredPost.id}`)}>
+                  <Button onClick={() => handleNavigateToBlogPost(featuredPost.id)}>
                     <FileText className="mr-2 h-4 w-4" />
                     {t("blog.readMore")}
                   </Button>
@@ -185,7 +192,7 @@ const BlogPage = () => {
                   <Button 
                     variant="outline" 
                     className="w-full"
-                    onClick={() => navigate(`/recursos/blog/${post.id}`)}
+                    onClick={() => handleNavigateToBlogPost(post.id)}
                   >
                     {t("blog.readMore")}
                   </Button>

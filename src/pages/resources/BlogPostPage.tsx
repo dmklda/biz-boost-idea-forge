@@ -12,6 +12,8 @@ const BlogPostPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   
+  console.log("Current blog post ID:", id);
+  
   // Mock data for blog posts - in a real app, this would be fetched from API
   const blogPosts = [
     {
@@ -64,7 +66,9 @@ const BlogPostPage = () => {
     }
   ];
 
+  console.log("Available posts:", blogPosts.map(p => p.id));
   const post = blogPosts.find(post => post.id === id);
+  console.log("Found post:", post);
 
   if (!post) {
     return (

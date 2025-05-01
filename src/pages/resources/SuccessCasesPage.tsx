@@ -36,6 +36,12 @@ const SuccessCasesPage = () => {
     }
   ];
 
+  // Function to handle success case navigation
+  const handleNavigateToCase = (caseId: number) => {
+    console.log(`Navigating to success case: ${caseId}`);
+    navigate(`/recursos/casos-de-sucesso/${caseId}`);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95 relative overflow-hidden">
       {/* Background element */}
@@ -75,7 +81,7 @@ const SuccessCasesPage = () => {
                   </p>
                   <Button 
                     className="mt-2 self-start"
-                    onClick={() => navigate(`/recursos/casos-de-sucesso/${caseItem.id}`)}
+                    onClick={() => handleNavigateToCase(caseItem.id)}
                   >
                     {t("successCases.readFullCase")}
                   </Button>
