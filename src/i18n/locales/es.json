@@ -238,6 +238,7 @@
     "title": "Últimas Tendencias y Perspectivas",
     "subtitle": "Explore nuestros artículos más recientes sobre emprendimiento, validación de ideas y tendencias del mercado",
     "readMore": "Leer Más",
+    "showLess": "Mostrar Menos",
     "loadMore": "Cargar Más Artículos",
     "posts": {
       "post1": {
@@ -281,6 +282,131 @@
         "date": "22 de marzo de 2025",
         "category": "Historia de Éxito",
         "content": "En este estudio de caso exclusivo, compartimos el viaje de desarrollo de Startupideia, desde el concepto inicial hasta el lanzamiento al mercado. El fundador Marciairo Kumbuessa discute los desafíos enfrentados como desarrollador solitario construyendo una startup tecnológica en Angola, y cómo la plataforma evolucionó basándose en las necesidades de los emprendedores locales y los comentarios de los primeros usuarios."
+      }
+    }
+  },
+  
+  "guides": {
+    "tagline": "Guías",
+    "title": "Guías y Tutoriales",
+    "subtitle": "Recursos prácticos para ayudarte a validar y desarrollar tus ideas de negocio",
+    "readGuide": "Leer Guía",
+    "hideGuide": "Ocultar Guía",
+    "exploreAll": "Explorar Todas las Guías",
+    "items": {
+      "guide1": {
+        "title": "Cómo Validar tu Idea de Startup en 7 Días",
+        "description": "Una guía paso a paso para probar rápidamente la viabilidad de tu concepto de negocio antes de invertir recursos significativos.",
+        "category": "Validación de Ideas",
+        "level": "Principiante",
+        "content": "La validación de ideas es el primer paso crucial antes de iniciar cualquier emprendimiento. En esta guía, exploramos un proceso de 7 días que incluye investigación de mercado, entrevistas con clientes potenciales, análisis de competidores, pruebas de concepto y evaluación de retroalimentación. Siguiendo esta metodología, puedes ahorrar tiempo y dinero determinando si tu idea tiene potencial real antes de invertir recursos significativos."
+      },
+      "guide2": {
+        "title": "Análisis Competitivo para Startups",
+        "description": "Aprende a identificar a tus competidores, analizar sus fortalezas y debilidades, y encontrar tu diferencial en el mercado.",
+        "category": "Investigación de Mercado",
+        "level": "Intermedio",
+        "content": "Un análisis competitivo completo te permite identificar oportunidades en el mercado y desarrollar una propuesta de valor única. Esta guía cubre cómo mapear tus competidores directos e indirectos, cómo analizar sus fortalezas y debilidades, y cómo usar esa información para definir tu posicionamiento. Aprenderás a crear una matriz de competencia y a identificar brechas en el mercado que tu startup puede llenar."
+      },
+      "guide3": {
+        "title": "MVP: Del Concepto al Lanzamiento",
+        "description": "Una guía práctica para crear, probar e iterar tu Producto Mínimo Viable para máximo aprendizaje.",
+        "category": "Desarrollo de Producto",
+        "level": "Avanzado",
+        "content": "El Producto Mínimo Viable (MVP) es una versión simplificada de tu producto que incluye solo las funcionalidades esenciales. Esta guía explica cómo definir el alcance de tu MVP, cómo desarrollarlo con recursos limitados, cómo probarlo con usuarios reales y cómo analizar los resultados para informar la próxima iteración. El enfoque es maximizar el aprendizaje mientras minimizas el tiempo y la inversión inicial."
+      },
+      "guide4": {
+        "title": "Captación de Inversión para Startups Africanas",
+        "description": "Estrategias para atraer inversión en ecosistemas emergentes, enfocado en el contexto angoleño y africano.",
+        "category": "Financiación",
+        "level": "Intermedio",
+        "content": "Esta guía explora las particularidades de la captación de inversión para startups en el contexto africano, con especial énfasis en el mercado angoleño. Cubrimos las fuentes de financiación disponibles, desde bootstrapping e inversión ángel hasta capital de riesgo y financiación gubernamental. Discutimos cómo adaptar tu pitch para diferentes tipos de inversores y cómo navegar los desafíos específicos del ecosistema local, incluyendo aspectos regulatorios y valoraciones."
+      }
+    }
+  },
+  
+  "successCases": {
+    "tagline": "Casos de Éxito",
+    "title": "Historias de Éxito",
+    "subtitle": "Conoce startups y empresas que utilizaron nuestra plataforma para validar e impulsar sus negocios",
+    "results": "Resultados alcanzados:",
+    "readFullCase": "Leer Caso Completo",
+    "showLess": "Mostrar Menos",
+    "cta": {
+      "title": "Sé nuestro próximo caso de éxito",
+      "subtitle": "Empieza a validar tus ideas hoy y transfórmalas en negocios exitosos",
+      "button": "Comienza Ahora"
+    },
+    "cases": {
+      "case1": {
+        "company": "FinTech Angola",
+        "description": "Una startup fintech ubicada en Luanda que estaba teniendo dificultades para validar su modelo de negocio de pagos móviles. Utilizando la plataforma Startupideia, lograron refinar su público objetivo, ajustar su modelo de ingresos e identificar socios estratégicos. El análisis detallado proporcionado les ayudó a entender mejor el comportamiento financiero de sus potenciales usuarios y adaptar su producto para satisfacer las necesidades específicas del mercado angoleño.",
+        "result": "Aumento del 150% en la tasa de conversión y captación de inversión semilla de $500,000 después de mejorar el modelo de negocio basado en las recomendaciones de la plataforma."
+      },
+      "case2": {
+        "company": "EcoSolutions Huila",
+        "description": "Una empresa de soluciones sostenibles basada en Lubango que estaba desarrollando un sistema innovador de purificación de agua para comunidades rurales. El desafío era encontrar un modelo de negocio que fuera económicamente viable mientras atendía a comunidades con recursos limitados. La plataforma Startupideia ayudó a la empresa a desarrollar un modelo híbrido que combina ventas comerciales con iniciativas sociales financiadas, permitiendo escalar su impacto.",
+        "result": "Implementación en 12 comunidades rurales, beneficiando a más de 5,000 personas en el primer año, y establecimiento de asociaciones con 3 ONGs internacionales para expandir el proyecto."
+      },
+      "case3": {
+        "company": "EdTech Benguela",
+        "description": "Una startup de tecnología educativa que estaba desarrollando una plataforma de aprendizaje móvil adaptada a la realidad angoleña. Enfrentando un mercado competitivo y con desafíos de conectividad, utilizaron Startupideia para refinar su propuesta de valor y estrategia de entrada al mercado. El análisis detallado del comportamiento de los usuarios y del ecosistema educativo local proporcionó información valiosa que guió el desarrollo del producto.",
+        "result": "Crecimiento del 200% en la base de usuarios en 6 meses y asociación con el Ministerio de Educación para implementar la solución en 50 escuelas públicas."
+      }
+    }
+  },
+  
+  "webinars": {
+    "tagline": "Webinars",
+    "title": "Aprende con Expertos",
+    "subtitle": "Participa en nuestros webinars en vivo o mira las grabaciones de sesiones anteriores",
+    "upcoming": "Próximos Webinars",
+    "past": "Webinars Anteriores",
+    "registerNow": "Regístrate Ahora",
+    "watchRecording": "Ver Grabación",
+    "hostInfo": "Presentado por:",
+    "items": {
+      "webinar1": {
+        "title": "Validación de Ideas: De la Concepción a la Prueba de Concepto",
+        "description": "Aprende técnicas prácticas para probar la viabilidad de tu concepto de negocio con recursos mínimos.",
+        "date": "10 de mayo, 2025",
+        "time": "19:00 WAT",
+        "host": "Marciairo Kumbuessa",
+        "role": "CEO y Fundador de DMK, Lda"
+      },
+      "webinar2": {
+        "title": "Captación de Inversión: Lo Que Buscan los Inversores Africanos",
+        "description": "Un panel con inversores experimentados discutiendo lo que buscan en startups africanas.",
+        "date": "17 de mayo, 2025",
+        "time": "18:00 WAT",
+        "host": "Panel de Expertos",
+        "role": "Inversores Ángel y VCs"
+      },
+      "webinar3": {
+        "title": "Análisis de Mercado Eficaz para Emprendedores",
+        "description": "Metodologías para investigación de mercado que pueden aplicarse con presupuestos limitados.",
+        "date": "24 de mayo, 2025",
+        "time": "19:00 WAT",
+        "host": "Dneisy Kumbuessa",
+        "role": "VP y Directora de Ventas de DMK, Lda"
+      },
+      "webinar4": {
+        "title": "Construyendo MVPs que los Clientes Realmente Desean",
+        "description": "Cómo crear productos mínimos viables que validen tus hipótesis de negocio de forma eficiente.",
+        "date": "5 de abril, 2025",
+        "time": "19:00 WAT",
+        "host": "Marciairo Kumbuessa",
+        "role": "CEO y Fundador de DMK, Lda",
+        "recording": "https://www.youtube.com/watch?v=example1"
+      },
+      "webinar5": {
+        "title": "Estrategias de Crecimiento para Startups Angoleñas",
+        "description": "Tácticas de crecimiento adaptadas a la realidad del mercado angoleño.",
+        "date": "15 de marzo, 2025",
+        "time": "18:00 WAT",
+        "host": "Dneisy Kumbuessa",
+        "role": "VP y Directora de Ventas de DMK, Lda",
+        "recording": "https://www.youtube.com/watch?v=example2"
       }
     }
   },

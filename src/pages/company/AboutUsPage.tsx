@@ -7,31 +7,21 @@ import { Building, Users, Shield } from "lucide-react";
 const AboutUsPage = () => {
   const { t } = useTranslation();
 
-  // Mock team data
+  // Mock team data - show only the 2 actual team members
   const teamMembers = [
     {
       id: 1,
       name: t("aboutUs.team.member1.name"),
       role: t("aboutUs.team.member1.role"),
+      bio: t("aboutUs.team.member1.bio"),
       image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=300&auto=format&fit=crop"
     },
     {
       id: 2,
       name: t("aboutUs.team.member2.name"),
       role: t("aboutUs.team.member2.role"),
+      bio: t("aboutUs.team.member2.bio"),
       image: "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?q=80&w=300&auto=format&fit=crop"
-    },
-    {
-      id: 3,
-      name: t("aboutUs.team.member3.name"),
-      role: t("aboutUs.team.member3.role"),
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop"
-    },
-    {
-      id: 4,
-      name: t("aboutUs.team.member4.name"),
-      role: t("aboutUs.team.member4.role"),
-      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=300&auto=format&fit=crop"
     }
   ];
 
@@ -114,7 +104,7 @@ const AboutUsPage = () => {
             <p className="text-lg text-muted-foreground">{t("aboutUs.team.subtitle")}</p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
             {teamMembers.map((member) => (
               <div key={member.id} className="text-center">
                 <div className="relative w-48 h-48 mx-auto mb-4 overflow-hidden rounded-full">
@@ -125,7 +115,8 @@ const AboutUsPage = () => {
                   />
                 </div>
                 <h3 className="text-xl font-semibold mb-1">{member.name}</h3>
-                <p className="text-muted-foreground">{member.role}</p>
+                <p className="text-muted-foreground mb-2">{member.role}</p>
+                <p className="text-sm text-muted-foreground">{member.bio}</p>
               </div>
             ))}
           </div>

@@ -12,6 +12,7 @@ import { FileText } from "lucide-react";
 const BlogPage = () => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
+  const [expandedPost, setExpandedPost] = useState<number | null>(null);
 
   // Mock data for blog posts
   const blogPosts = [
@@ -85,6 +86,14 @@ const BlogPage = () => {
   // Regular posts exclude the featured post
   const regularPosts = filteredPosts.filter(post => post.id !== featuredPost.id);
 
+  const togglePostExpand = (id: number) => {
+    if (expandedPost === id) {
+      setExpandedPost(null);
+    } else {
+      setExpandedPost(id);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95 relative overflow-hidden">
       {/* Background element */}
@@ -141,10 +150,12 @@ const BlogPage = () => {
                     <span className="text-xs text-muted-foreground">{featuredPost.date}</span>
                   </div>
                   <h2 className="text-2xl md:text-3xl font-bold mb-4">{featuredPost.title}</h2>
-                  <p className="text-muted-foreground mb-6">{featuredPost.excerpt}</p>
-                  <Button>
+                  <p className="text-muted-foreground mb-6">
+                    {expandedPost === featuredPost.id ? featuredPost.content : featuredPost.excerpt}
+                  </p>
+                  <Button onClick={() => togglePostExpand(featuredPost.id)}>
                     <FileText className="mr-2 h-4 w-4" />
-                    {t("blog.readMore")}
+                    {expandedPost === featuredPost.id ? t("blog.showLess") : t("blog.readMore")}
                   </Button>
                 </div>
               </div>
@@ -169,10 +180,18 @@ const BlogPage = () => {
                   <CardTitle className="text-xl">{post.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 pt-2">
-                  <p className="text-muted-foreground">{post.excerpt}</p>
+                  <p className="text-muted-foreground">
+                    {expandedPost === post.id ? post.content : post.excerpt}
+                  </p>
                 </CardContent>
                 <CardFooter className="p-4 pt-0">
-                  <Button variant="outline" className="w-full">{t("blog.readMore")}</Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => togglePostExpand(post.id)}
+                  >
+                    {expandedPost === post.id ? t("blog.showLess") : t("blog.readMore")}
+                  </Button>
                 </CardFooter>
               </Card>
             ))}

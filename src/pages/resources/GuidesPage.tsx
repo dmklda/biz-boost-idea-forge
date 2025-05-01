@@ -5,9 +5,11 @@ import Footer from "../../components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { BookOpen } from "lucide-react";
+import { useState } from "react";
 
 const GuidesPage = () => {
   const { t } = useTranslation();
+  const [expandedGuide, setExpandedGuide] = useState<number | null>(null);
 
   // Mock data for guides
   const guides = [
@@ -16,30 +18,42 @@ const GuidesPage = () => {
       title: t("guides.items.guide1.title"),
       description: t("guides.items.guide1.description"),
       category: t("guides.items.guide1.category"),
-      level: t("guides.items.guide1.level")
+      level: t("guides.items.guide1.level"),
+      content: t("guides.items.guide1.content")
     },
     {
       id: 2,
       title: t("guides.items.guide2.title"),
       description: t("guides.items.guide2.description"),
       category: t("guides.items.guide2.category"),
-      level: t("guides.items.guide2.level")
+      level: t("guides.items.guide2.level"),
+      content: t("guides.items.guide2.content")
     },
     {
       id: 3,
       title: t("guides.items.guide3.title"),
       description: t("guides.items.guide3.description"),
       category: t("guides.items.guide3.category"),
-      level: t("guides.items.guide3.level")
+      level: t("guides.items.guide3.level"),
+      content: t("guides.items.guide3.content")
     },
     {
       id: 4,
       title: t("guides.items.guide4.title"),
       description: t("guides.items.guide4.description"),
       category: t("guides.items.guide4.category"),
-      level: t("guides.items.guide4.level")
+      level: t("guides.items.guide4.level"),
+      content: t("guides.items.guide4.content")
     }
   ];
+
+  const toggleGuideExpand = (id: number) => {
+    if (expandedGuide === id) {
+      setExpandedGuide(null);
+    } else {
+      setExpandedGuide(id);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95 relative overflow-hidden">
@@ -74,9 +88,23 @@ const GuidesPage = () => {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{guide.title}</h3>
                 <p className="text-muted-foreground">{guide.description}</p>
+                
+                {expandedGuide === guide.id && (
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <div className="text-sm text-muted-foreground">
+                      {guide.content}
+                    </div>
+                  </div>
+                )}
               </CardContent>
               <CardFooter className="px-6 pb-6 pt-0">
-                <Button variant="outline" className="w-full">{t("guides.readGuide")}</Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => toggleGuideExpand(guide.id)}
+                >
+                  {expandedGuide === guide.id ? t("guides.hideGuide") : t("guides.readGuide")}
+                </Button>
               </CardFooter>
             </Card>
           ))}

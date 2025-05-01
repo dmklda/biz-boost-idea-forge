@@ -5,9 +5,11 @@ import Footer from "../../components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users } from "lucide-react";
+import { useState } from "react";
 
 const SuccessCasesPage = () => {
   const { t } = useTranslation();
+  const [expandedCase, setExpandedCase] = useState<number | null>(null);
 
   // Mock data for success cases
   const successCases = [
@@ -33,6 +35,14 @@ const SuccessCasesPage = () => {
       image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=700&auto=format&fit=crop"
     }
   ];
+
+  const toggleCaseExpand = (id: number) => {
+    if (expandedCase === id) {
+      setExpandedCase(null);
+    } else {
+      setExpandedCase(id);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95 relative overflow-hidden">
@@ -68,12 +78,21 @@ const SuccessCasesPage = () => {
                     <Users className="h-5 w-5 text-brand-purple" />
                   </div>
                   <h2 className="text-2xl font-bold mb-4">{caseItem.company}</h2>
-                  <p className="text-muted-foreground mb-4">{caseItem.description}</p>
-                  <div className="bg-secondary/50 p-4 rounded-lg">
-                    <h4 className="font-medium mb-1">{t("successCases.results")}</h4>
-                    <p>{caseItem.result}</p>
-                  </div>
-                  <Button className="mt-6 self-start">{t("successCases.readFullCase")}</Button>
+                  <p className="text-muted-foreground mb-4">
+                    {expandedCase === caseItem.id ? caseItem.description : `${caseItem.description.substring(0, 120)}...`}
+                  </p>
+                  {expandedCase === caseItem.id && (
+                    <div className="bg-secondary/50 p-4 rounded-lg mb-4">
+                      <h4 className="font-medium mb-1">{t("successCases.results")}</h4>
+                      <p>{caseItem.result}</p>
+                    </div>
+                  )}
+                  <Button 
+                    className="mt-2 self-start" 
+                    onClick={() => toggleCaseExpand(caseItem.id)}
+                  >
+                    {expandedCase === caseItem.id ? t("successCases.showLess") : t("successCases.readFullCase")}
+                  </Button>
                 </CardContent>
               </div>
             </Card>
