@@ -1,3 +1,4 @@
+
 {
   "testimonials": {
     "title": "What our users say",
@@ -63,6 +64,18 @@
     "startNow": "Start Now"
   },
   "hero": {
+    "badges": {
+      "validation": "Smart Business Idea Validation",
+      "analysis": "Complete Viability Analysis",
+      "insights": "Market Data-Based Insights",
+      "planning": "Automated Strategic Planning",
+      "mobile": {
+        "validation": "Smart Validation",
+        "analysis": "Viability Analysis",
+        "insights": "Market Insights",
+        "planning": "Strategic Planning"
+      }
+    },
     "badge": "Smart Business Idea Validation",
     "title": "Transform <span>ideas</span> into <gradientSpan>businesses</gradientSpan>",
     "subtitle": "Discover the viability of your idea and receive a complete action plan to turn it into a successful business.",

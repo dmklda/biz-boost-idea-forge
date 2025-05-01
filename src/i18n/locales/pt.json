@@ -1,3 +1,4 @@
+
 {
   "testimonials": {
     "title": "O que nossos usuários dizem",
@@ -63,6 +64,18 @@
     "startNow": "Começar Agora"
   },
   "hero": {
+    "badges": {
+      "validation": "Validação inteligente de ideias de negócio",
+      "analysis": "Análise completa de viabilidade",
+      "insights": "Insights baseados em dados do mercado",
+      "planning": "Planejamento estratégico automatizado",
+      "mobile": {
+        "validation": "Validação inteligente",
+        "analysis": "Análise de viabilidade",
+        "insights": "Insights de mercado",
+        "planning": "Planejamento estratégico"
+      }
+    },
     "badge": "Validação inteligente de ideias de negócio",
     "title": "Transforme <span>ideias</span> em <gradientSpan>negócios</gradientSpan>",
     "subtitle": "Descubra a viabilidade da sua ideia e receba um plano de ação completo para transformá-la em um negócio de sucesso.",

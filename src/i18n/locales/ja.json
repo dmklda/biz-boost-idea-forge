@@ -64,6 +64,18 @@
     "startNow": "今すぐ始める"
   },
   "hero": {
+    "badges": {
+      "validation": "スマートなビジネスアイデアの検証",
+      "analysis": "完全な実現可能性分析",
+      "insights": "市場データに基づく洞察",
+      "planning": "自動化された戦略的計画",
+      "mobile": {
+        "validation": "スマート検証",
+        "analysis": "実現可能性分析",
+        "insights": "市場の洞察",
+        "planning": "戦略的計画"
+      }
+    },
     "title": "<span>アイデア</span>を<gradientSpan>ビジネス</gradientSpan>に変える",
     "subtitle": "アイデアの実現可能性を発見し、それを成功するビジネスに変えるための完全な行動計画を受け取りましょう。",
     "validateIdea": "アイデアを検証する",
