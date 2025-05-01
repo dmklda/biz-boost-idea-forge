@@ -1,0 +1,53 @@
+
+{
+  "tagline": "Casos de Sucesso",
+  "title": "Histórias de Sucesso",
+  "subtitle": "Conheça startups e empresas que utilizaram nossa plataforma para validar e impulsionar seus negócios",
+  "results": "Resultados alcançados:",
+  "readFullCase": "Ler Caso Completo",
+  "showLess": "Mostrar Menos",
+  "caseNotFound": "Caso de sucesso não encontrado",
+  "backToCases": "Voltar aos Casos de Sucesso",
+  "submitButton": "Enviar Caso de Sucesso",
+  "submitForm": {
+    "title": "Envie Sua História de Sucesso",
+    "description": "Compartilhe como você construiu sua startup e como nossa plataforma ajudou você a ter sucesso. Os casos selecionados serão destacados em nosso blog.",
+    "nameLabel": "Seu Nome",
+    "namePlaceholder": "Digite seu nome completo",
+    "emailLabel": "Endereço de Email",
+    "emailPlaceholder": "Digite seu endereço de email",
+    "companyNameLabel": "Nome da Empresa",
+    "companyNamePlaceholder": "Digite o nome da sua empresa",
+    "descriptionLabel": "História de Sucesso",
+    "descriptionPlaceholder": "Descreva sua jornada, desafios e como você os superou",
+    "submit": "Enviar História",
+    "submitting": "Enviando...",
+    "thankYou": "Obrigado pelo seu envio!"
+  },
+  "submitSuccess": {
+    "title": "História de Sucesso Enviada!",
+    "description": "Obrigado por compartilhar sua história. Nossa equipe irá revisá-la e entrar em contato em breve."
+  },
+  "cta": {
+    "title": "Seja nosso próximo caso de sucesso",
+    "subtitle": "Comece a validar suas ideias hoje e transforme-as em negócios bem-sucedidos",
+    "button": "Comece Agora"
+  },
+  "cases": {
+    "case1": {
+      "company": "FinTech Angola",
+      "description": "Uma startup fintech localizada em Luanda que estava tendo dificuldades para validar seu modelo de negócio de pagamentos móveis. Utilizando a plataforma Startupideia, eles conseguiram refinar seu público-alvo, ajustar seu modelo de receita e identificar parceiros estratégicos. A análise detalhada fornecida ajudou-os a entender melhor o comportamento financeiro de seus potenciais usuários e adaptar seu produto para atender às necessidades específicas do mercado angolano.",
+      "result": "Aumento de 150% na taxa de conversão e captação de investimento semente de $500.000 após aprimorar o modelo de negócio com base nas recomendações da plataforma."
+    },
+    "case2": {
+      "company": "EcoSolutions Huíla",
+      "description": "Uma empresa de soluções sustentáveis baseada no Lubango que estava desenvolvendo um sistema inovador de purificação de água para comunidades rurais. O desafio era encontrar um modelo de negócio que fosse economicamente viável enquanto atendia comunidades com recursos limitados. A plataforma Startupideia ajudou a empresa a desenvolver um modelo híbrido que combina vendas comerciais com iniciativas sociais financiadas, possibilitando escalar seu impacto.",
+      "result": "Implementação em 12 comunidades rurais, beneficiando mais de 5.000 pessoas no primeiro ano, e estabelecimento de parcerias com 3 ONGs internacionais para expandir o projeto."
+    },
+    "case3": {
+      "company": "EdTech Benguela",
+      "description": "Uma startup de tecnologia educacional que estava desenvolvendo uma plataforma de aprendizado móvel adaptada para a realidade angolana. Enfrentando um mercado competitivo e com desafios de conectividade, eles usaram o Startupideia para refinar sua proposta de valor e estratégia go-to-market. A análise detalhada do comportamento dos usuários e do ecossistema educacional local forneceu insights valiosos que direcionaram o desenvolvimento do produto.",
+      "result": "Crescimento de 200% na base de usuários em 6 meses e parceria com o Ministério da Educação para implementar a solução em 50 escolas públicas."
+    }
+  }
+}

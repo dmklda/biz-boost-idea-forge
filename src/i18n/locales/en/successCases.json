@@ -1,0 +1,50 @@
+
+{
+  "tagline": "Success Cases",
+  "title": "Success Stories",
+  "subtitle": "Real businesses that used our platform to validate and refine their ideas",
+  "results": "Results",
+  "readFullCase": "Read Full Case Study",
+  "submitButton": "Submit Success Case",
+  "submitForm": {
+    "title": "Submit Your Success Story",
+    "description": "Share how you built your startup and how our platform helped you succeed. Selected cases will be featured on our blog.",
+    "nameLabel": "Your Name",
+    "namePlaceholder": "Enter your full name",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "Enter your email address",
+    "companyNameLabel": "Company Name",
+    "companyNamePlaceholder": "Enter your company name",
+    "descriptionLabel": "Success Story",
+    "descriptionPlaceholder": "Describe your journey, challenges, and how you overcame them",
+    "submit": "Submit Story",
+    "submitting": "Submitting...",
+    "thankYou": "Thank you for your submission!"
+  },
+  "submitSuccess": {
+    "title": "Success Story Submitted!",
+    "description": "Thank you for sharing your story. Our team will review it and contact you soon."
+  },
+  "cases": {
+    "case1": {
+      "company": "GreenDeliver",
+      "description": "An eco-friendly food delivery service that needed to validate their sustainable packaging model and pricing strategy.",
+      "result": "After using our platform, GreenDeliver pivoted their packaging strategy and secured $1.5M in seed funding within 3 months."
+    },
+    "case2": {
+      "company": "FinMentor",
+      "description": "A financial education platform targeting young adults with personalized learning paths and gamified experiences.",
+      "result": "Our analysis helped FinMentor refine their target demographic and feature set, resulting in 215% user growth in the first year."
+    },
+    "case3": {
+      "company": "HealthTrack",
+      "description": "A healthcare startup focusing on preventive care through AI-powered monitoring and personalized recommendations.",
+      "result": "Using our validation tools, HealthTrack identified key partnerships opportunities and has now expanded to 5 countries."
+    }
+  },
+  "cta": {
+    "title": "Your Success Story Could Be Next",
+    "subtitle": "Join thousands of entrepreneurs who've transformed their ideas into thriving businesses",
+    "button": "Start Your Journey"
+  }
+}
