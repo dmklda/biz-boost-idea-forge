@@ -1,23 +1,25 @@
 
-// Import all the individual section files
-import testimonials from './testimonials.json';
-import pricing from './pricing.json';
-import header from './header.json';
-import hero from './hero.json';
-import howItWorks from './howItWorks.json';
-import features from './features.json';
-import ideaForm from './ideaForm.json';
-import cta from './cta.json';
-import footer from './footer.json';
-import api from './api.json';
-import blog from './blog.json';
-import guides from './guides.json';
+// Only import files that actually exist
 import successCases from './successCases.json';
-import webinars from './webinars.json';
-import aboutUs from './aboutUs.json';
-import contact from './contact.json';
 import privacyPolicy from './privacyPolicy.json';
 import termsOfUse from './termsOfUse.json';
+
+// Provide empty objects for sections that don't have files yet
+const testimonials = {};
+const pricing = {};
+const header = {};
+const hero = {};
+const howItWorks = {};
+const features = {};
+const ideaForm = {};
+const cta = {};
+const footer = {};
+const api = {};
+const blog = {};
+const guides = {};
+const webinars = {};
+const aboutUs = {};
+const contact = {};
 
 // Combine and export all translations
 export default {
