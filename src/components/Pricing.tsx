@@ -27,60 +27,39 @@ const Pricing = () => {
     gradient?: string;
   }
 
-  // Default features to use if translations are not available
-  const defaultFeatures = {
-    free: ["1 project", "Basic analytics", "24-hour support"],
-    entrepreneur: ["10 projects", "Advanced analytics", "Priority support", "Custom domain"],
-    business: ["Unlimited projects", "Premium analytics", "24/7 priority support", "Custom domain", "Team collaboration", "API access"]
-  };
-
-  // Safely get translation arrays with fallbacks
-  const getFeaturesTranslation = (key: string, fallback: string[]) => {
-    try {
-      // Try to get translated features
-      const translatedFeatures = t(`pricing.${key}.features`, { returnObjects: true });
-      // Check if we got a proper array back
-      return Array.isArray(translatedFeatures) && translatedFeatures.length > 0 
-        ? translatedFeatures 
-        : fallback;
-    } catch (e) {
-      return fallback;
-    }
-  };
-
   const plans: PlanFeatures[] = [
     {
-      name: t('pricing.free.name', 'Free'),
+      name: t('pricing.free.name'),
       price: formatPrice(0),
       monthlyPrice: 0,
       annualPrice: 0,
-      description: t('pricing.free.description', 'Get started for free'),
-      features: getFeaturesTranslation('free', defaultFeatures.free),
-      cta: t('pricing.free.cta', 'Sign Up'),
+      description: t('pricing.free.description'),
+      features: t('pricing.free.features', { returnObjects: true }) as string[],
+      cta: t('pricing.free.cta'),
       popular: false,
       gradient: "from-gray-400/20 to-gray-500/30"
     },
     {
-      name: t('pricing.entrepreneur.name', 'Entrepreneur'),
+      name: t('pricing.entrepreneur.name'),
       price: formatPrice(annualBilling ? 14.90 : 19.90),
       monthlyPrice: 19.90,
       annualPrice: 14.90,
-      period: t('pricing.period', '/month'),
-      description: t('pricing.entrepreneur.description', 'Perfect for individual entrepreneurs'),
-      features: getFeaturesTranslation('entrepreneur', defaultFeatures.entrepreneur),
-      cta: t('pricing.entrepreneur.cta', 'Start Free Trial'),
+      period: t('pricing.period'),
+      description: t('pricing.entrepreneur.description'),
+      features: t('pricing.entrepreneur.features', { returnObjects: true }) as string[],
+      cta: t('pricing.entrepreneur.cta'),
       popular: true,
       gradient: "from-brand-purple/20 via-indigo-500/20 to-brand-purple/30"
     },
     {
-      name: t('pricing.business.name', 'Business'),
+      name: t('pricing.business.name'),
       price: formatPrice(annualBilling ? 39.90 : 49.90),
       monthlyPrice: 49.90,
       annualPrice: 39.90,
-      period: t('pricing.period', '/month'),
-      description: t('pricing.business.description', 'For growing businesses and teams'),
-      features: getFeaturesTranslation('business', defaultFeatures.business),
-      cta: t('pricing.business.cta', 'Contact Sales'),
+      period: t('pricing.period'),
+      description: t('pricing.business.description'),
+      features: t('pricing.business.features', { returnObjects: true }) as string[],
+      cta: t('pricing.business.cta'),
       popular: false,
       gradient: "from-blue-600/20 via-indigo-600/20 to-blue-600/30"
     }
@@ -94,18 +73,18 @@ const Pricing = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
           <span className="inline-block text-sm font-medium bg-brand-purple/10 dark:bg-brand-purple/20 text-brand-purple px-3 py-1 rounded-full mb-4">
-            {t('pricing.tagline', 'Pricing')}
+            {t('pricing.tagline')}
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-poppins mb-6 bg-gradient-to-r from-brand-purple to-indigo-500 bg-clip-text text-transparent">
-            {t('pricing.title', 'Choose Your Plan')}
+            {t('pricing.title')}
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-10">
-            {t('pricing.subtitle', 'Select the perfect plan for your needs. Upgrade or downgrade at any time.')}
+            {t('pricing.subtitle')}
           </p>
           
           <div className="flex items-center justify-center mb-12">
             <span className={`mr-4 text-sm font-medium ${!annualBilling ? 'text-brand-purple' : 'text-muted-foreground'}`}>
-              {t('pricing.monthly', 'Monthly')}
+              {t('pricing.monthly')}
             </span>
             <button
               onClick={() => setAnnualBilling(!annualBilling)}
@@ -120,7 +99,7 @@ const Pricing = () => {
               />
             </button>
             <span className={`ml-4 text-sm font-medium flex items-center ${annualBilling ? 'text-brand-purple' : 'text-muted-foreground'}`}>
-              {t('pricing.annually', 'Annually')} 
+              {t('pricing.annually')} 
               <Badge className="ml-2 bg-green-500/20 text-green-500 hover:bg-green-500/30" variant="secondary">
                 -25%
               </Badge>
@@ -148,7 +127,7 @@ const Pricing = () => {
                 <div className="absolute top-0 right-0">
                   <div className="bg-gradient-to-r from-brand-purple to-indigo-600 text-white px-6 py-1 rounded-bl-xl rounded-tr-lg shadow-md flex items-center space-x-1">
                     <Sparkles className="h-4 w-4 mr-1" />
-                    {t('pricing.mostPopular', 'Most Popular')}
+                    {t('pricing.mostPopular')}
                   </div>
                 </div>
               )}
@@ -191,7 +170,7 @@ const Pricing = () => {
               
               <CardContent className="relative z-10">
                 <ul className="space-y-4 mt-6">
-                  {Array.isArray(plan.features) && plan.features.map((feature, i) => (
+                  {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-start">
                       <div className={`h-5 w-5 rounded-full ${
                         plan.popular ? 'bg-brand-purple/20' : 'bg-foreground/10'
@@ -205,6 +184,8 @@ const Pricing = () => {
                   ))}
                 </ul>
               </CardContent>
+              
+              {/* Removed the CardFooter with button since it's now in the CardHeader */}
             </Card>
           ))}
         </div>
