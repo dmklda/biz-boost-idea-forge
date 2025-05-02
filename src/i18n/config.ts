@@ -31,7 +31,7 @@ i18n
     },
     returnNull: false,
     returnEmptyString: false,
-    returnObjectTrees: true
+    returnObjects: true
   });
 
 export default i18n;
