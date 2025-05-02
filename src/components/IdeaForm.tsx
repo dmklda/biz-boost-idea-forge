@@ -12,9 +12,12 @@ import { CompetitorsStep } from "./form-steps/CompetitorsStep";
 import { BudgetLocationStep } from "./form-steps/BudgetLocationStep";
 import { useIdeaForm } from "@/hooks/useIdeaForm";
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { toast } from "@/components/ui/sonner";
 
 const IdeaForm = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const {
     currentStep,
     formData,
@@ -30,12 +33,15 @@ const IdeaForm = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
+    // Form data is already saved in localStorage by the useIdeaForm hook
     setTimeout(() => {
       console.log("Form submitted:", formData);
       setIsSubmitting(false);
-      window.location.href = "/resultados";
-      resetForm();
-    }, 2000);
+      
+      // Instead of redirecting directly to results, redirect to login/register
+      toast.success(t('ideaForm.success') || "Ideia registrada com sucesso!");
+      navigate("/login");
+    }, 1000);
   };
 
   return (
