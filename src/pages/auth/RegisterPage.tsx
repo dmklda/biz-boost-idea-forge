@@ -37,7 +37,12 @@ const RegisterPage = () => {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setIsLoading(true);
-      await register(data);
+      // Make sure we pass all required fields for RegisterCredentials
+      await register({
+        name: data.name,
+        email: data.email,
+        password: data.password
+      });
       toast.success(t('auth.registerSuccess') || "Registro realizado com sucesso!");
       
       // Redirect to plans page after successful registration

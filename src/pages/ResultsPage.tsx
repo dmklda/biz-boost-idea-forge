@@ -1,8 +1,13 @@
+
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useIdeaForm } from "@/hooks/useIdeaForm";
 import { toast } from "@/components/ui/sonner";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { ArrowLeft, Share2, Download, FileText } from "lucide-react";
 
 const ResultsPage = () => {
   const { authState, updateUserCredits } = useAuth();
@@ -108,7 +113,13 @@ const ResultsPage = () => {
   return (
     <div>
       <div className="min-h-screen flex flex-col">
-        <Header />
+        <header className="bg-white border-b shadow-sm z-10">
+          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="flex items-center">
+              <h1 className="text-xl font-bold text-brand-blue">Análise de Ideia</h1>
+            </div>
+          </div>
+        </header>
         
         <main className="flex-grow bg-brand-light py-8">
           <div className="container mx-auto px-4">
@@ -567,7 +578,13 @@ const ResultsPage = () => {
           </div>
         </main>
         
-        <Footer />
+        <footer className="bg-gray-800 text-white py-8">
+          <div className="container mx-auto px-4">
+            <div className="text-center text-sm">
+              © 2024 HomePlate. Todos os direitos reservados.
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );
