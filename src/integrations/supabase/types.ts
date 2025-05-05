@@ -9,7 +9,175 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      credit_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idea_analyses: {
+        Row: {
+          competitor_analysis: Json | null
+          created_at: string
+          financial_analysis: Json | null
+          id: string
+          idea_id: string
+          market_analysis: Json | null
+          recommendations: Json | null
+          score: number
+          status: string
+          swot_analysis: Json | null
+          user_id: string
+        }
+        Insert: {
+          competitor_analysis?: Json | null
+          created_at?: string
+          financial_analysis?: Json | null
+          id?: string
+          idea_id: string
+          market_analysis?: Json | null
+          recommendations?: Json | null
+          score: number
+          status: string
+          swot_analysis?: Json | null
+          user_id: string
+        }
+        Update: {
+          competitor_analysis?: Json | null
+          created_at?: string
+          financial_analysis?: Json | null
+          id?: string
+          idea_id?: string
+          market_analysis?: Json | null
+          recommendations?: Json | null
+          score?: number
+          status?: string
+          swot_analysis?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_analyses_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idea_analyses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ideas: {
+        Row: {
+          audience: string | null
+          budget: number | null
+          created_at: string
+          description: string
+          has_competitors: string | null
+          id: string
+          location: string | null
+          monetization: string | null
+          problem: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          audience?: string | null
+          budget?: number | null
+          created_at?: string
+          description: string
+          has_competitors?: string | null
+          id?: string
+          location?: string | null
+          monetization?: string | null
+          problem?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          audience?: string | null
+          budget?: number | null
+          created_at?: string
+          description?: string
+          has_competitors?: string | null
+          id?: string
+          location?: string | null
+          monetization?: string | null
+          problem?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ideas_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          credits: number
+          email: string
+          id: string
+          name: string
+          plan: string
+        }
+        Insert: {
+          created_at?: string
+          credits?: number
+          email: string
+          id: string
+          name: string
+          plan?: string
+        }
+        Update: {
+          created_at?: string
+          credits?: number
+          email?: string
+          id?: string
+          name?: string
+          plan?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

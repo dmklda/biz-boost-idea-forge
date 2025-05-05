@@ -14,10 +14,13 @@ import { useIdeaForm } from "@/hooks/useIdeaForm";
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "@/components/ui/sonner";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const IdeaForm = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { authState } = useAuth();
   const {
     currentStep,
     formData,
@@ -29,19 +32,50 @@ const IdeaForm = () => {
     resetForm
   } = useIdeaForm();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Form data is already saved in localStorage by the useIdeaForm hook
-    setTimeout(() => {
-      console.log("Form submitted:", formData);
+    try {
+      // Se o usuário está autenticado, salvar no Supabase
+      if (authState.isAuthenticated && authState.user) {
+        // Inserir a ideia no banco de dados
+        const { data: idea, error: ideaError } = await supabase
+          .from('ideas')
+          .insert({
+            user_id: authState.user.id,
+            title: formData.idea,
+            description: formData.idea,
+            audience: formData.audience,
+            problem: formData.problem,
+            has_competitors: formData.hasCompetitors,
+            monetization: formData.monetization,
+            budget: formData.budget,
+            location: formData.location
+          })
+          .select('id')
+          .single();
+
+        if (ideaError) {
+          console.error("Error saving idea:", ideaError);
+          throw new Error("Erro ao salvar ideia");
+        }
+
+        // Redirecionar para a página de resultados
+        toast.success(t('ideaForm.success') || "Ideia registrada com sucesso!");
+        navigate(`/resultados?id=${idea.id}`);
+      } else {
+        // Se não está autenticado, redirecionar para login
+        // O formData já está salvo no localStorage pelo useIdeaForm hook
+        toast.success(t('ideaForm.success') || "Ideia registrada com sucesso!");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast.error(t('ideaForm.error') || "Erro ao processar sua solicitação");
+    } finally {
       setIsSubmitting(false);
-      
-      // Instead of redirecting directly to results, redirect to login/register
-      toast.success(t('ideaForm.success') || "Ideia registrada com sucesso!");
-      navigate("/login");
-    }, 1000);
+    }
   };
 
   return (

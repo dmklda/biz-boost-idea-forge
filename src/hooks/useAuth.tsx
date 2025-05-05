@@ -1,9 +1,8 @@
 
 import { useState, useEffect, createContext, useContext, ReactNode } from "react";
 import { AuthState, User, LoginCredentials, RegisterCredentials } from "@/types/auth";
-
-// Keys for localStorage
-const AUTH_USER_KEY = 'auth_user';
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/sonner";
 
 // Initial state
 const initialAuthState: AuthState = {
@@ -16,180 +15,250 @@ const AuthContext = createContext<{
   authState: AuthState;
   login: (credentials: LoginCredentials) => Promise<User>;
   register: (credentials: RegisterCredentials) => Promise<User>;
-  logout: () => void;
+  logout: () => Promise<void>;
   updateUserCredits: (newCredits: number) => void;
   updateUserPlan: (newPlan: User['plan']) => void;
 }>({
   authState: initialAuthState,
   login: () => Promise.reject("AuthProvider not initialized"),
   register: () => Promise.reject("AuthProvider not initialized"),
-  logout: () => {},
+  logout: () => Promise.reject("AuthProvider not initialized"),
   updateUserCredits: () => {},
   updateUserPlan: () => {}
 });
 
-// Mock database of users (in localStorage)
-const USERS_DB_KEY = 'users_db';
-
-// Generate mock users or get existing ones
-const getOrCreateUsers = () => {
-  const existingUsers = localStorage.getItem(USERS_DB_KEY);
-  if (existingUsers) {
-    return JSON.parse(existingUsers);
-  }
-  
-  // Create some sample users
-  const initialUsers = [
-    {
-      id: '1',
-      email: 'demo@example.com',
-      password: 'password123', // Never store plain passwords in production!
-      name: 'Demo User',
-      plan: 'free',
-      credits: 3,
-      createdAt: new Date().toISOString()
-    }
-  ];
-  
-  localStorage.setItem(USERS_DB_KEY, JSON.stringify(initialUsers));
-  return initialUsers;
-};
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [authState, setAuthState] = useState<AuthState>(() => {
-    // Check if user is already logged in
-    const savedUser = localStorage.getItem(AUTH_USER_KEY);
-    if (savedUser) {
-      const user = JSON.parse(savedUser) as User;
-      return {
-        user,
-        isAuthenticated: true
-      };
-    }
-    return initialAuthState;
-  });
+  const [authState, setAuthState] = useState<AuthState>(initialAuthState);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Save auth state to localStorage when it changes
   useEffect(() => {
-    if (authState.user) {
-      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(authState.user));
-    } else {
-      localStorage.removeItem(AUTH_USER_KEY);
-    }
-  }, [authState]);
+    // Set up auth listener to track authentication state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          // If we have a session, get user profile data
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          
+          if (profile) {
+            setAuthState({
+              user: {
+                id: session.user.id,
+                email: session.user.email || '',
+                name: profile.name,
+                plan: profile.plan as User['plan'],
+                credits: profile.credits,
+                createdAt: profile.created_at
+              },
+              isAuthenticated: true
+            });
+          } else if (error) {
+            console.error("Error fetching profile:", error);
+            setAuthState(initialAuthState);
+          }
+        } else {
+          // No session, user is logged out
+          setAuthState(initialAuthState);
+        }
+        setIsLoading(false);
+      }
+    );
+
+    // Check for initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        // Get user profile data for initial session
+        supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single()
+          .then(({ data: profile, error }) => {
+            if (profile) {
+              setAuthState({
+                user: {
+                  id: session.user.id,
+                  email: session.user.email || '',
+                  name: profile.name,
+                  plan: profile.plan as User['plan'],
+                  credits: profile.credits,
+                  createdAt: profile.created_at
+                },
+                isAuthenticated: true
+              });
+            } else if (error) {
+              console.error("Error fetching initial profile:", error);
+            }
+            setIsLoading(false);
+          });
+      } else {
+        setIsLoading(false);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const login = async (credentials: LoginCredentials): Promise<User> => {
-    // Simulate API call
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const users = getOrCreateUsers();
-        const user = users.find((u: any) => u.email === credentials.email);
-        
-        if (user && user.password === credentials.password) {
-          // Don't include password in the auth state
-          const { password, ...userWithoutPassword } = user;
-          
-          setAuthState({
-            user: userWithoutPassword as User,
-            isAuthenticated: true
-          });
-          
-          resolve(userWithoutPassword as User);
-        } else {
-          reject(new Error("Invalid email or password"));
-        }
-      }, 500);
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: credentials.email,
+        password: credentials.password
+      });
+
+      if (error) throw new Error(error.message);
+      
+      if (!data.session || !data.user) {
+        throw new Error("Login falhou. Tente novamente.");
+      }
+
+      // Após login bem-sucedido, o onAuthStateChange lidará com a atualização do estado
+      
+      // Buscar dados do perfil do usuário
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+      
+      if (!profile) {
+        throw new Error("Perfil de usuário não encontrado");
+      }
+      
+      const user: User = {
+        id: data.user.id,
+        email: data.user.email || '',
+        name: profile.name,
+        plan: profile.plan as User['plan'],
+        credits: profile.credits,
+        createdAt: profile.created_at
+      };
+      
+      return user;
+    } catch (error) {
+      console.error("Login error:", error);
+      throw error;
+    }
   };
 
   const register = async (credentials: RegisterCredentials): Promise<User> => {
-    // Simulate API call
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const users = getOrCreateUsers();
-        
-        // Check if email is already in use
-        if (users.some((u: any) => u.email === credentials.email)) {
-          reject(new Error("Email already in use"));
-          return;
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: credentials.email,
+        password: credentials.password,
+        options: {
+          data: {
+            name: credentials.name
+          }
         }
-        
-        // Create new user
-        const newUser = {
-          id: Date.now().toString(),
-          email: credentials.email,
-          password: credentials.password, // Never store plain passwords in production!
-          name: credentials.name,
-          plan: 'free',
-          credits: 3, // Give 3 free credits to new users
-          createdAt: new Date().toISOString()
-        };
-        
-        // Add user to "database"
-        users.push(newUser);
-        localStorage.setItem(USERS_DB_KEY, JSON.stringify(users));
-        
-        // Log user in
-        const { password, ...userWithoutPassword } = newUser;
-        
-        setAuthState({
-          user: userWithoutPassword as User,
-          isAuthenticated: true
-        });
-        
-        resolve(userWithoutPassword as User);
-      }, 500);
-    });
+      });
+
+      if (error) throw new Error(error.message);
+      
+      if (!data.session || !data.user) {
+        throw new Error("Registro falhou. Tente novamente.");
+      }
+      
+      // O trigger no Supabase criará automaticamente o perfil do usuário
+      
+      // Criar objeto de usuário para retornar
+      const user: User = {
+        id: data.user.id,
+        email: data.user.email || '',
+        name: credentials.name,
+        plan: 'free',
+        credits: 3, // Os créditos iniciais definidos no perfil
+        createdAt: new Date().toISOString()
+      };
+      
+      return user;
+    } catch (error) {
+      console.error("Register error:", error);
+      throw error;
+    }
   };
 
-  const logout = () => {
-    setAuthState(initialAuthState);
+  const logout = async (): Promise<void> => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      // O listener onAuthStateChange vai atualizar o estado
+    } catch (error) {
+      console.error("Logout error:", error);
+      throw error;
+    }
   };
 
   const updateUserCredits = (newCredits: number) => {
     if (!authState.user) return;
 
-    // Update user in state
-    setAuthState(prev => ({
-      ...prev,
-      user: {
-        ...prev.user!,
-        credits: newCredits
-      }
-    }));
+    // Atualizar créditos no Supabase
+    supabase
+      .from('profiles')
+      .update({ credits: newCredits })
+      .eq('id', authState.user.id)
+      .then(({ error }) => {
+        if (error) {
+          console.error("Error updating credits:", error);
+          toast.error("Erro ao atualizar créditos");
+          return;
+        }
 
-    // Update user in "database"
-    const users = getOrCreateUsers();
-    const updatedUsers = users.map((u: any) => {
-      if (u.id === authState.user!.id) {
-        return { ...u, credits: newCredits };
-      }
-      return u;
-    });
-    localStorage.setItem(USERS_DB_KEY, JSON.stringify(updatedUsers));
+        // Atualizar estado local
+        setAuthState(prev => ({
+          ...prev,
+          user: {
+            ...prev.user!,
+            credits: newCredits
+          }
+        }));
+        
+        // Registrar a transação
+        supabase
+          .from('credit_transactions')
+          .insert({
+            user_id: authState.user.id,
+            amount: newCredits - authState.user.credits,
+            description: "Compra de créditos"
+          })
+          .then(({ error }) => {
+            if (error) {
+              console.error("Error recording transaction:", error);
+            }
+          });
+      });
   };
 
   const updateUserPlan = (newPlan: User['plan']) => {
     if (!authState.user) return;
 
-    // Update user in state
-    setAuthState(prev => ({
-      ...prev,
-      user: {
-        ...prev.user!,
-        plan: newPlan
-      }
-    }));
+    // Atualizar plano no Supabase
+    supabase
+      .from('profiles')
+      .update({ plan: newPlan })
+      .eq('id', authState.user.id)
+      .then(({ error }) => {
+        if (error) {
+          console.error("Error updating plan:", error);
+          toast.error("Erro ao atualizar plano");
+          return;
+        }
 
-    // Update user in "database"
-    const users = getOrCreateUsers();
-    const updatedUsers = users.map((u: any) => {
-      if (u.id === authState.user!.id) {
-        return { ...u, plan: newPlan };
-      }
-      return u;
-    });
-    localStorage.setItem(USERS_DB_KEY, JSON.stringify(updatedUsers));
+        // Atualizar estado local
+        setAuthState(prev => ({
+          ...prev,
+          user: {
+            ...prev.user!,
+            plan: newPlan
+          }
+        }));
+      });
   };
 
   return (

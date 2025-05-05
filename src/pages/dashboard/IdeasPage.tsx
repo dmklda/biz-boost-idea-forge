@@ -1,4 +1,5 @@
 
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,57 +8,156 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { PlusCircle, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/components/ui/sonner";
 
-// Mock idea data
-const ideas = [
-  { 
-    id: 1, 
-    name: "App de entrega de comida saudável", 
-    status: "Viável", 
-    score: 76, 
-    date: "2023-05-01",
-    audience: "Jovens profissionais preocupados com saúde",
-    problem: "Dificuldade de acesso a comida saudável no dia a dia",
-  },
-  { 
-    id: 2, 
-    name: "Plataforma de educação online", 
-    status: "Muito Promissor", 
-    score: 92, 
-    date: "2023-04-28",
-    audience: "Estudantes universitários e profissionais",
-    problem: "Acesso limitado a conteúdos educacionais de qualidade",
-  },
-  { 
-    id: 3, 
-    name: "Serviço de assinatura de plantas", 
-    status: "Moderado", 
-    score: 65, 
-    date: "2023-04-25",
-    audience: "Entusiastas de plantas e decoração",
-    problem: "Dificuldade em manter plantas vivas e saudáveis",
-  },
-  { 
-    id: 4, 
-    name: "Aplicativo de treinamento personalizado", 
-    status: "Viável", 
-    score: 78, 
-    date: "2023-04-20",
-    audience: "Pessoas que querem se exercitar em casa",
-    problem: "Falta de orientação profissional para exercícios em casa",
-  },
-  { 
-    id: 5, 
-    name: "Marketplace de produtos artesanais", 
-    status: "Viável", 
-    score: 72, 
-    date: "2023-04-15",
-    audience: "Consumidores interessados em produtos únicos e artesanais",
-    problem: "Dificuldade de artesãos em alcançar clientes",
-  },
-];
+// Tipagem para as ideias
+interface Idea {
+  id: string;
+  title: string;
+  description: string;
+  audience: string | null;
+  problem: string | null;
+  created_at: string;
+  score?: number;
+  status?: string;
+}
 
 const IdeasPage = () => {
+  const { authState } = useAuth();
+  const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Buscar ideias do usuário
+  useEffect(() => {
+    const fetchIdeas = async () => {
+      if (!authState.isAuthenticated) return;
+
+      try {
+        setLoading(true);
+        
+        // Buscar ideias do usuário atual
+        const { data, error } = await supabase
+          .from('ideas')
+          .select(`
+            *,
+            idea_analyses (score, status)
+          `)
+          .eq('user_id', authState.user?.id)
+          .order('created_at', { ascending: false });
+          
+        if (error) {
+          throw error;
+        }
+
+        // Formatar os dados para incluir análises
+        const formattedIdeas = data.map(idea => {
+          // Encontrar a análise correspondente (se existir)
+          const analysis = idea.idea_analyses && idea.idea_analyses.length > 0 
+            ? idea.idea_analyses[0] 
+            : null;
+
+          return {
+            id: idea.id,
+            title: idea.title,
+            description: idea.description,
+            audience: idea.audience,
+            problem: idea.problem,
+            created_at: idea.created_at,
+            score: analysis ? analysis.score : 0,
+            status: analysis ? analysis.status : "Pendente"
+          };
+        });
+
+        setIdeas(formattedIdeas);
+      } catch (error) {
+        console.error("Error fetching ideas:", error);
+        toast.error("Erro ao carregar ideias");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchIdeas();
+  }, [authState.isAuthenticated, authState.user?.id]);
+
+  // Filtrar ideias baseado na busca
+  const filteredIdeas = ideas.filter(idea => 
+    idea.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (idea.description && idea.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  // Filtrar ideias viáveis (pontuação >= 70)
+  const viableIdeas = filteredIdeas.filter(idea => (idea.score || 0) >= 70);
+  
+  // Filtrar ideias moderadas (pontuação < 70)
+  const moderateIdeas = filteredIdeas.filter(idea => (idea.score || 0) < 70 && (idea.score || 0) > 0);
+
+  // Renderização condicional para estados de loading e sem dados
+  const renderTableContent = (ideasToShow: Idea[]) => {
+    if (loading) {
+      return (
+        <TableRow>
+          <TableCell colSpan={5} className="text-center py-8">
+            Carregando ideias...
+          </TableCell>
+        </TableRow>
+      );
+    }
+
+    if (ideasToShow.length === 0) {
+      return (
+        <TableRow>
+          <TableCell colSpan={5} className="text-center py-8">
+            Nenhuma ideia encontrada.
+          </TableCell>
+        </TableRow>
+      );
+    }
+
+    return ideasToShow.map((idea) => (
+      <TableRow key={idea.id}>
+        <TableCell className="font-medium">{idea.title}</TableCell>
+        <TableCell>
+          <Badge variant="outline" className={`
+            ${(idea.score || 0) > 80 ? "border-green-500 bg-green-500/10 text-green-600" : 
+              (idea.score || 0) > 65 ? "border-amber-500 bg-amber-500/10 text-amber-600" :
+              (idea.score || 0) > 0 ? "border-red-500 bg-red-500/10 text-red-600" :
+              "border-gray-500 bg-gray-500/10 text-gray-600"}
+          `}>
+            {idea.status || "Pendente"}
+          </Badge>
+        </TableCell>
+        <TableCell>
+          {(idea.score || 0) > 0 ? (
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-24 rounded-full bg-gray-200">
+                <div 
+                  className={`h-full rounded-full ${
+                    (idea.score || 0) > 80 ? "bg-green-500" : 
+                    (idea.score || 0) > 65 ? "bg-amber-500" : "bg-red-500"
+                  }`}
+                  style={{ width: `${idea.score || 0}%` }}
+                />
+              </div>
+              <span>{idea.score || 0}%</span>
+            </div>
+          ) : (
+            <span>Pendente</span>
+          )}
+        </TableCell>
+        <TableCell>{new Date(idea.created_at).toLocaleDateString()}</TableCell>
+        <TableCell>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to={`/resultados?id=${idea.id}`}>Ver análise</Link>
+          </Button>
+        </TableCell>
+      </TableRow>
+    ));
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -81,6 +181,8 @@ const IdeasPage = () => {
           <Input
             placeholder="Buscar ideias..."
             className="pl-8"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
       </div>
@@ -105,40 +207,7 @@ const IdeasPage = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {ideas.map((idea) => (
-                    <TableRow key={idea.id}>
-                      <TableCell className="font-medium">{idea.name}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={`
-                          ${idea.score > 80 ? "border-green-500 bg-green-500/10 text-green-600" : 
-                            idea.score > 65 ? "border-amber-500 bg-amber-500/10 text-amber-600" :
-                            "border-red-500 bg-red-500/10 text-red-600"}
-                        `}>
-                          {idea.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-24 rounded-full bg-gray-200">
-                            <div 
-                              className={`h-full rounded-full ${
-                                idea.score > 80 ? "bg-green-500" : 
-                                idea.score > 65 ? "bg-amber-500" : "bg-red-500"
-                              }`}
-                              style={{ width: `${idea.score}%` }}
-                            />
-                          </div>
-                          <span>{idea.score}%</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{new Date(idea.date).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link to={`/resultados?id=${idea.id}`}>Ver análise</Link>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {renderTableContent(filteredIdeas)}
                 </TableBody>
               </Table>
             </CardContent>
@@ -159,33 +228,7 @@ const IdeasPage = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {ideas.filter(idea => idea.score >= 70).map((idea) => (
-                    <TableRow key={idea.id}>
-                      <TableCell className="font-medium">{idea.name}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="border-green-500 bg-green-500/10 text-green-600">
-                          {idea.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-24 rounded-full bg-gray-200">
-                            <div 
-                              className="h-full rounded-full bg-green-500"
-                              style={{ width: `${idea.score}%` }}
-                            />
-                          </div>
-                          <span>{idea.score}%</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{new Date(idea.date).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link to={`/resultados?id=${idea.id}`}>Ver análise</Link>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {renderTableContent(viableIdeas)}
                 </TableBody>
               </Table>
             </CardContent>
@@ -206,33 +249,7 @@ const IdeasPage = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {ideas.filter(idea => idea.score < 70).map((idea) => (
-                    <TableRow key={idea.id}>
-                      <TableCell className="font-medium">{idea.name}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="border-amber-500 bg-amber-500/10 text-amber-600">
-                          {idea.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-24 rounded-full bg-gray-200">
-                            <div 
-                              className="h-full rounded-full bg-amber-500"
-                              style={{ width: `${idea.score}%` }}
-                            />
-                          </div>
-                          <span>{idea.score}%</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{new Date(idea.date).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link to={`/resultados?id=${idea.id}`}>Ver análise</Link>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {renderTableContent(moderateIdeas)}
                 </TableBody>
               </Table>
             </CardContent>

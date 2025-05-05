@@ -1,43 +1,173 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CreditCard, Plus } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
+import { supabase } from "@/integrations/supabase/client";
 
-// Mock credit package options
-const creditPackages = [
+// Tipagem para pacotes de créditos
+interface CreditPackage {
+  id: number;
+  amount: number;
+  price: string;
+  savings: string;
+}
+
+// Tipagem para transações
+interface Transaction {
+  id: string;
+  type: string;
+  amount: number;
+  description: string;
+  date: string;
+  idea?: string;
+}
+
+// Pacotes de crédito disponíveis
+const creditPackages: CreditPackage[] = [
   { id: 1, amount: 5, price: "R$24,90", savings: "" },
   { id: 2, amount: 10, price: "R$44,90", savings: "10% de desconto" },
   { id: 3, amount: 25, price: "R$99,90", savings: "20% de desconto" },
-];
-
-// Mock transaction history
-const transactions = [
-  { id: 1, type: "Compra", amount: 5, date: "2023-05-01" },
-  { id: 2, type: "Uso", amount: -1, date: "2023-04-28", idea: "App de entrega de comida saudável" },
-  { id: 3, type: "Uso", amount: -1, date: "2023-04-25", idea: "Plataforma de educação online" },
 ];
 
 const CreditsPage = () => {
   const { authState, updateUserCredits } = useAuth();
   const { user } = authState;
   const [isLoading, setIsLoading] = useState<number | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loadingTransactions, setLoadingTransactions] = useState(true);
   
-  const handleBuyCredits = (packageId: number, amount: number) => {
-    // In a real app, this would redirect to a payment gateway
-    // For demo purposes, we'll just add credits directly
+  // Buscar histórico de transações
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      if (!authState.isAuthenticated) return;
+
+      try {
+        setLoadingTransactions(true);
+        
+        // Buscar transações do usuário
+        const { data: transactionData, error: transactionError } = await supabase
+          .from('credit_transactions')
+          .select('*')
+          .eq('user_id', authState.user?.id)
+          .order('created_at', { ascending: false });
+          
+        if (transactionError) {
+          throw transactionError;
+        }
+
+        // Buscar ideias para mapear com as transações
+        const { data: ideas, error: ideasError } = await supabase
+          .from('ideas')
+          .select('id, title')
+          .eq('user_id', authState.user?.id);
+          
+        if (ideasError) {
+          console.error("Error fetching ideas:", ideasError);
+        }
+
+        // Mapeamento de ideias por ID
+        const ideaMap = new Map();
+        if (ideas) {
+          ideas.forEach((idea) => {
+            ideaMap.set(idea.id, idea.title);
+          });
+        }
+
+        // Formatar transações
+        const formattedTransactions: Transaction[] = transactionData.map((transaction) => {
+          // Determinar se é uma compra ou uso
+          const isPositive = transaction.amount > 0;
+          const type = isPositive ? "Compra" : "Uso";
+          
+          // Tentar associar com uma ideia se for "Uso"
+          let ideaInfo = undefined;
+          if (!isPositive && transaction.description.includes("Análise de ideia:")) {
+            const ideaId = transaction.description.split(":")[1].trim();
+            ideaInfo = ideaMap.get(ideaId);
+          }
+
+          return {
+            id: transaction.id,
+            type,
+            amount: transaction.amount,
+            description: transaction.description,
+            date: transaction.created_at,
+            idea: ideaInfo
+          };
+        });
+
+        setTransactions(formattedTransactions);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+        toast.error("Erro ao carregar histórico de transações");
+      } finally {
+        setLoadingTransactions(false);
+      }
+    };
+
+    fetchTransactions();
+  }, [authState.isAuthenticated, authState.user?.id]);
+  
+  const handleBuyCredits = async (packageId: number, amount: number) => {
+    if (!user) return;
+    
+    // Em um app real, isso redirecionaria para um gateway de pagamento
     setIsLoading(packageId);
     
-    setTimeout(() => {
-      if (user) {
-        updateUserCredits(user.credits + amount);
-        toast.success(`${amount} créditos adicionados com sucesso!`);
-      }
+    try {
+      // Calcular novo valor de créditos
+      const newCredits = user.credits + amount;
+      
+      // Chamada para atualizar créditos
+      updateUserCredits(newCredits);
+      
+      toast.success(`${amount} créditos adicionados com sucesso!`);
+    } catch (error) {
+      console.error("Error buying credits:", error);
+      toast.error("Erro ao adicionar créditos");
+    } finally {
       setIsLoading(null);
-    }, 1500);
+    }
+  };
+
+  // Renderização condicional para transações
+  const renderTransactions = () => {
+    if (loadingTransactions) {
+      return (
+        <TableRow>
+          <TableCell colSpan={4} className="text-center py-8">
+            Carregando histórico de transações...
+          </TableCell>
+        </TableRow>
+      );
+    }
+
+    if (transactions.length === 0) {
+      return (
+        <TableRow>
+          <TableCell colSpan={4} className="text-center py-8">
+            Nenhuma transação encontrada.
+          </TableCell>
+        </TableRow>
+      );
+    }
+
+    return transactions.map((transaction) => (
+      <TableRow key={transaction.id}>
+        <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
+        <TableCell>{transaction.type}</TableCell>
+        <TableCell>{transaction.idea || transaction.description || "-"}</TableCell>
+        <TableCell className={`text-right ${
+          transaction.amount > 0 ? "text-green-500" : "text-red-500"
+        }`}>
+          {transaction.amount > 0 ? `+${transaction.amount}` : transaction.amount}
+        </TableCell>
+      </TableRow>
+    ));
   };
   
   return (
@@ -139,18 +269,7 @@ const CreditsPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {transactions.map((transaction) => (
-                <TableRow key={transaction.id}>
-                  <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
-                  <TableCell>{transaction.type}</TableCell>
-                  <TableCell>{transaction.idea || "-"}</TableCell>
-                  <TableCell className={`text-right ${
-                    transaction.amount > 0 ? "text-green-500" : "text-red-500"
-                  }`}>
-                    {transaction.amount > 0 ? `+${transaction.amount}` : transaction.amount}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {renderTransactions()}
             </TableBody>
           </Table>
         </CardContent>
