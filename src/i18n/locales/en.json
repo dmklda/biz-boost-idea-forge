@@ -655,5 +655,133 @@
         "content": "If you have any questions about these Terms, please contact us at legal@startupideia.com."
       }
     }
+  },
+  
+  "auth": {
+    "login": "Sign In",
+    "loginSubtitle": "Access your account to view your analyses",
+    "register": "Sign Up",
+    "registerSubtitle": "Register to analyze your business ideas",
+    "email": "Email",
+    "password": "Password",
+    "name": "Full name",
+    "loggingIn": "Signing in...",
+    "registering": "Signing up...",
+    "noAccount": "Don't have an account yet?",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginSuccess": "Successfully signed in!",
+    "loginFailed": "Failed to sign in",
+    "registerSuccess": "Successfully registered!",
+    "registerFailed": "Failed to register",
+    "errors": {
+      "invalidEmail": "Invalid email",
+      "passwordLength": "Password must be at least 6 characters",
+      "nameLength": "Name must be at least 2 characters"
+    }
+  },
+  
+  "dashboard": {
+    "title": "Dashboard",
+    "newAnalysis": "New Analysis",
+    "statistics": {
+      "totalAnalyses": "Total Analyses",
+      "viabilityRate": "Viability Rate",
+      "availableCredits": "Available Credits",
+      "yourPlan": "Your Plan",
+      "free": "Free",
+      "premium": "Premium",
+      "addCredits": "Add credits",
+      "upgrade": "Upgrade",
+      "compared": "compared to last month"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "analytics": "Analytics"
+    },
+    "charts": {
+      "performanceTitle": "Analysis Performance",
+      "performanceDescription": "Monthly comparison of analyses and consultations",
+      "progressTitle": "Analysis Progress",
+      "progressDescription": "Evolution of your analyses over time"
+    },
+    "recentIdeas": {
+      "title": "Recent Ideas",
+      "description": "Your latest idea analyses",
+      "viewAll": "View all"
+    }
+  },
+  
+  "credits": {
+    "title": "My Credits",
+    "subtitle": "Manage your credits for idea analysis",
+    "availableCredits": {
+      "title": "Available Credits",
+      "description": "Your current balance of credits for analyses",
+      "freePlan": "Free Plan (3 credits/month)",
+      "proPlan": "Pro Plan (unlimited credits)",
+      "upgradeBtn": "Upgrade to Pro plan"
+    },
+    "buyCredits": {
+      "title": "Buy Credits",
+      "description": "Purchase more credits for analyses",
+      "credits": "credits",
+      "processing": "Processing...",
+      "buy": "Buy"
+    },
+    "transactions": {
+      "title": "Transaction History",
+      "description": "Your history of credit purchases and usage",
+      "date": "Date",
+      "type": "Type",
+      "details": "Details",
+      "amount": "Amount",
+      "loading": "Loading transaction history...",
+      "noTransactions": "No transactions found."
+    }
+  },
+  
+  "ideas": {
+    "title": "My Ideas",
+    "subtitle": "Manage and analyze your business ideas",
+    "newIdea": "New Idea",
+    "table": {
+      "name": "Name",
+      "createdAt": "Created On",
+      "status": "Status",
+      "actions": "Actions",
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "filters": {
+      "all": "All",
+      "pending": "Pending",
+      "analyzed": "Analyzed",
+      "search": "Search idea..."
+    },
+    "emptyState": {
+      "title": "No ideas found",
+      "description": "You haven't created any ideas yet. Start by creating one now!",
+      "button": "Create Idea"
+    },
+    "deleteConfirm": {
+      "title": "Delete Idea",
+      "description": "Are you sure you want to delete this idea? This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Yes, delete"
+    },
+    "notifications": {
+      "deleted": "Idea successfully deleted",
+      "deleteError": "Error deleting idea"
+    }
+  },
+  
+  "nav": {
+    "backToHome": "Back to home page",
+    "dashboard": "Dashboard",
+    "ideas": "Ideas",
+    "credits": "Credits",
+    "profile": "Profile",
+    "logout": "Sign Out"
   }
 }

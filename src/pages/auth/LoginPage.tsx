@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -22,8 +23,8 @@ const LoginPage = () => {
 
   // Form validation schema
   const formSchema = z.object({
-    email: z.string().email(t('auth.errors.invalidEmail') || "Email inválido"),
-    password: z.string().min(6, t('auth.errors.passwordLength') || "A senha deve ter pelo menos 6 caracteres")
+    email: z.string().email(t('auth.errors.invalidEmail')),
+    password: z.string().min(6, t('auth.errors.passwordLength'))
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -38,7 +39,7 @@ const LoginPage = () => {
     try {
       setIsLoading(true);
       await login(data);
-      toast.success(t('auth.loginSuccess') || "Login realizado com sucesso!");
+      toast.success(t('auth.loginSuccess'));
       
       // Check if there's saved form data
       const savedData = getSavedIdeaData();
@@ -51,7 +52,7 @@ const LoginPage = () => {
         navigate("/dashboard");
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : (t('auth.loginFailed') || "Falha ao fazer login"));
+      toast.error(error instanceof Error ? error.message : t('auth.loginFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -64,10 +65,10 @@ const LoginPage = () => {
         <Card className="border-0 shadow-xl">
           <CardHeader className="space-y-2 text-center bg-gradient-to-r from-brand-blue to-brand-purple rounded-t-lg">
             <CardTitle className="text-2xl font-bold text-white">
-              {t('auth.login') || "Entrar"}
+              {t('auth.login')}
             </CardTitle>
             <CardDescription className="text-white/80">
-              {t('auth.loginSubtitle') || "Acesse sua conta para ver suas análises"}
+              {t('auth.loginSubtitle')}
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
@@ -78,7 +79,7 @@ const LoginPage = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('auth.email') || "Email"}</FormLabel>
+                      <FormLabel>{t('auth.email')}</FormLabel>
                       <FormControl>
                         <Input placeholder="seuemail@exemplo.com" {...field} />
                       </FormControl>
@@ -91,7 +92,7 @@ const LoginPage = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('auth.password') || "Senha"}</FormLabel>
+                      <FormLabel>{t('auth.password')}</FormLabel>
                       <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
                       </FormControl>
@@ -105,8 +106,8 @@ const LoginPage = () => {
                   disabled={isLoading}
                 >
                   {isLoading 
-                    ? t('auth.loggingIn') || "Entrando..." 
-                    : t('auth.login') || "Entrar"
+                    ? t('auth.loggingIn')
+                    : t('auth.login')
                   }
                 </Button>
               </form>
@@ -114,14 +115,14 @@ const LoginPage = () => {
           </CardContent>
           <CardFooter className="flex-col space-y-4 text-center">
             <div className="text-sm text-muted-foreground">
-              {t('auth.noAccount') || "Ainda não tem uma conta?"}{" "}
+              {t('auth.noAccount')}{" "}
               <Link to="/registro" className="text-brand-purple hover:underline">
-                {t('auth.register') || "Registre-se"}
+                {t('auth.register')}
               </Link>
             </div>
             <div className="text-xs text-muted-foreground">
               <Link to="/" className="hover:underline">
-                {t('nav.backToHome') || "Voltar para a página inicial"}
+                {t('nav.backToHome')}
               </Link>
             </div>
           </CardFooter>

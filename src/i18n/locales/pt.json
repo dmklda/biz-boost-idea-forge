@@ -1,4 +1,3 @@
-
 {
   "testimonials": {
     "tagline": "Depoimentos",
@@ -80,7 +79,7 @@
         "planning": "Planejamento estratégico"
       }
     },
-    "badge": "Validação inteligente de ideias de negócio",
+    "badge": "Validação inteligente de ideia de negócio",
     "title": "Transforme <span>ideias</span> em <gradientSpan>negócios</gradientSpan>",
     "subtitle": "Descubra a viabilidade da sua ideia e receba um plano de ação completo para transformá-la em um negócio de sucesso.",
     "validateIdea": "Teste Grátis",
@@ -477,5 +476,133 @@
       "email1": "contact@startupideia.com",
       "email2": "contact@dmklda.online"
     }
+  },
+  
+  "auth": {
+    "login": "Entrar",
+    "loginSubtitle": "Acesse sua conta para ver suas análises",
+    "register": "Registrar",
+    "registerSubtitle": "Registre-se para analisar suas ideias de negócio",
+    "email": "Email",
+    "password": "Senha",
+    "name": "Nome completo",
+    "loggingIn": "Entrando...",
+    "registering": "Registrando...",
+    "noAccount": "Ainda não tem uma conta?",
+    "alreadyHaveAccount": "Já tem uma conta?",
+    "loginSuccess": "Login realizado com sucesso!",
+    "loginFailed": "Falha ao fazer login",
+    "registerSuccess": "Registro realizado com sucesso!",
+    "registerFailed": "Falha ao registrar",
+    "errors": {
+      "invalidEmail": "Email inválido",
+      "passwordLength": "A senha deve ter pelo menos 6 caracteres",
+      "nameLength": "O nome deve ter pelo menos 2 caracteres"
+    }
+  },
+  
+  "dashboard": {
+    "title": "Dashboard",
+    "newAnalysis": "Nova Análise",
+    "statistics": {
+      "totalAnalyses": "Total de Análises",
+      "viabilityRate": "Taxa de Viabilidade",
+      "availableCredits": "Créditos Disponíveis",
+      "yourPlan": "Seu Plano",
+      "free": "Gratuito",
+      "premium": "Premium",
+      "addCredits": "Adicionar créditos",
+      "upgrade": "Fazer upgrade",
+      "compared": "em relação ao mês passado"
+    },
+    "tabs": {
+      "overview": "Visão Geral",
+      "analytics": "Análises"
+    },
+    "charts": {
+      "performanceTitle": "Desempenho de Análises",
+      "performanceDescription": "Comparação mensal de análises e consultas",
+      "progressTitle": "Progresso de Análises",
+      "progressDescription": "Evolução das suas análises ao longo do tempo"
+    },
+    "recentIdeas": {
+      "title": "Ideias Recentes",
+      "description": "Suas últimas análises de ideias",
+      "viewAll": "Ver todas"
+    }
+  },
+  
+  "credits": {
+    "title": "Meus Créditos",
+    "subtitle": "Gerencie seus créditos para análise de ideias",
+    "availableCredits": {
+      "title": "Créditos Disponíveis",
+      "description": "Seu saldo atual de créditos para análises",
+      "freePlan": "Plano Free (3 créditos/mês)",
+      "proPlan": "Plano Pro (créditos ilimitados)",
+      "upgradeBtn": "Fazer upgrade para o plano Pro"
+    },
+    "buyCredits": {
+      "title": "Comprar Créditos",
+      "description": "Adquira mais créditos para análises",
+      "credits": "créditos",
+      "processing": "Processando...",
+      "buy": "Comprar"
+    },
+    "transactions": {
+      "title": "Histórico de Transações",
+      "description": "Seu histórico de compra e uso de créditos",
+      "date": "Data",
+      "type": "Tipo",
+      "details": "Detalhes",
+      "amount": "Quantidade",
+      "loading": "Carregando histórico de transações...",
+      "noTransactions": "Nenhuma transação encontrada."
+    }
+  },
+  
+  "ideas": {
+    "title": "Minhas Ideias",
+    "subtitle": "Gerencie e analise suas ideias de negócio",
+    "newIdea": "Nova Ideia",
+    "table": {
+      "name": "Nome",
+      "createdAt": "Criado em",
+      "status": "Status",
+      "actions": "Ações",
+      "view": "Ver",
+      "edit": "Editar",
+      "delete": "Excluir"
+    },
+    "filters": {
+      "all": "Todas",
+      "pending": "Pendentes",
+      "analyzed": "Analisadas",
+      "search": "Buscar ideia..."
+    },
+    "emptyState": {
+      "title": "Nenhuma ideia encontrada",
+      "description": "Você ainda não cadastrou nenhuma ideia. Comece criando uma agora!",
+      "button": "Criar Ideia"
+    },
+    "deleteConfirm": {
+      "title": "Excluir Ideia",
+      "description": "Tem certeza que deseja excluir esta ideia? Esta ação não pode ser desfeita.",
+      "cancel": "Cancelar",
+      "confirm": "Sim, excluir"
+    },
+    "notifications": {
+      "deleted": "Ideia excluída com sucesso",
+      "deleteError": "Erro ao excluir ideia"
+    }
+  },
+  
+  "nav": {
+    "backToHome": "Voltar para a página inicial",
+    "dashboard": "Dashboard",
+    "ideas": "Ideias",
+    "credits": "Créditos",
+    "profile": "Perfil",
+    "logout": "Sair"
   }
 }

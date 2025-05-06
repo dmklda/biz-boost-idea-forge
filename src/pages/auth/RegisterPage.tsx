@@ -20,9 +20,9 @@ const RegisterPage = () => {
 
   // Form validation schema
   const formSchema = z.object({
-    name: z.string().min(2, t('auth.errors.nameLength') || "O nome deve ter pelo menos 2 caracteres"),
-    email: z.string().email(t('auth.errors.invalidEmail') || "Email inválido"),
-    password: z.string().min(6, t('auth.errors.passwordLength') || "A senha deve ter pelo menos 6 caracteres")
+    name: z.string().min(2, t('auth.errors.nameLength')),
+    email: z.string().email(t('auth.errors.invalidEmail')),
+    password: z.string().min(6, t('auth.errors.passwordLength'))
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -43,12 +43,12 @@ const RegisterPage = () => {
         email: data.email,
         password: data.password
       });
-      toast.success(t('auth.registerSuccess') || "Registro realizado com sucesso!");
+      toast.success(t('auth.registerSuccess'));
       
       // Redirect to plans page after successful registration
       navigate("/planos");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : (t('auth.registerFailed') || "Falha ao registrar"));
+      toast.error(error instanceof Error ? error.message : t('auth.registerFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -61,10 +61,10 @@ const RegisterPage = () => {
         <Card className="border-0 shadow-xl">
           <CardHeader className="space-y-2 text-center bg-gradient-to-r from-brand-blue to-brand-purple rounded-t-lg">
             <CardTitle className="text-2xl font-bold text-white">
-              {t('auth.register') || "Criar Conta"}
+              {t('auth.register')}
             </CardTitle>
             <CardDescription className="text-white/80">
-              {t('auth.registerSubtitle') || "Registre-se para analisar suas ideias de negócio"}
+              {t('auth.registerSubtitle')}
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
@@ -75,7 +75,7 @@ const RegisterPage = () => {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('auth.name') || "Nome completo"}</FormLabel>
+                      <FormLabel>{t('auth.name')}</FormLabel>
                       <FormControl>
                         <Input placeholder="Seu nome" {...field} />
                       </FormControl>
@@ -88,7 +88,7 @@ const RegisterPage = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('auth.email') || "Email"}</FormLabel>
+                      <FormLabel>{t('auth.email')}</FormLabel>
                       <FormControl>
                         <Input placeholder="seuemail@exemplo.com" {...field} />
                       </FormControl>
@@ -101,7 +101,7 @@ const RegisterPage = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('auth.password') || "Senha"}</FormLabel>
+                      <FormLabel>{t('auth.password')}</FormLabel>
                       <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
                       </FormControl>
@@ -115,8 +115,8 @@ const RegisterPage = () => {
                   disabled={isLoading}
                 >
                   {isLoading 
-                    ? t('auth.registering') || "Registrando..." 
-                    : t('auth.register') || "Registrar"
+                    ? t('auth.registering')
+                    : t('auth.register')
                   }
                 </Button>
               </form>
@@ -124,14 +124,14 @@ const RegisterPage = () => {
           </CardContent>
           <CardFooter className="flex-col space-y-4 text-center">
             <div className="text-sm text-muted-foreground">
-              {t('auth.alreadyHaveAccount') || "Já tem uma conta?"}{" "}
+              {t('auth.alreadyHaveAccount')}{" "}
               <Link to="/login" className="text-brand-purple hover:underline">
-                {t('auth.login') || "Entrar"}
+                {t('auth.login')}
               </Link>
             </div>
             <div className="text-xs text-muted-foreground">
               <Link to="/" className="hover:underline">
-                {t('nav.backToHome') || "Voltar para a página inicial"}
+                {t('nav.backToHome')}
               </Link>
             </div>
           </CardFooter>
