@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,7 +17,7 @@ import Header from "@/components/Header";
 const LoginPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, authState } = useAuth();
   const { getSavedIdeaData } = useIdeaForm();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,27 +36,47 @@ const LoginPage = () => {
   });
 
   const onSubmit = async (data: LoginCredentials) => {
+    if (isLoading) return; // Prevent multiple submissions
+    
     try {
       setIsLoading(true);
+      console.log("Login attempt with:", data.email);
+      
       await login(data);
+      
+      console.log("Login successful, checking for saved data");
       toast.success(t('auth.loginSuccess'));
       
       // Check if there's saved form data
       const savedData = getSavedIdeaData();
       
-      if (savedData) {
-        // Redirect to results if there's saved data
-        navigate("/resultados");
-      } else {
-        // Otherwise go to dashboard
-        navigate("/dashboard");
-      }
+      console.log("Redirecting after login", savedData ? "to results" : "to dashboard");
+      
+      // Use a small timeout to ensure the auth state is updated before navigation
+      setTimeout(() => {
+        if (savedData) {
+          // Redirect to results if there's saved data
+          navigate("/resultados");
+        } else {
+          // Otherwise go to dashboard
+          navigate("/dashboard");
+        }
+        setIsLoading(false);
+      }, 100);
+      
     } catch (error) {
+      console.error("Login error:", error);
       toast.error(error instanceof Error ? error.message : t('auth.loginFailed'));
-    } finally {
       setIsLoading(false);
     }
   };
+
+  // If already authenticated, redirect to dashboard
+  if (authState.isAuthenticated) {
+    console.log("User is already authenticated, redirecting to dashboard");
+    navigate("/dashboard");
+    return null;
+  }
 
   return (
     <>
