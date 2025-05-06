@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useIdeaForm } from "@/hooks/useIdeaForm";
@@ -20,6 +21,7 @@ const LoginPage = () => {
   const { login, authState } = useAuth();
   const { getSavedIdeaData } = useIdeaForm();
   const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   // Form validation schema
   const formSchema = z.object({
@@ -35,35 +37,38 @@ const LoginPage = () => {
     }
   });
 
+  // Check authentication status and redirect if needed
+  useEffect(() => {
+    if (authState.isAuthenticated && !isRedirecting) {
+      console.log("User is authenticated, redirecting to dashboard");
+      setIsRedirecting(true);
+      
+      // Check if there's saved form data
+      const savedData = getSavedIdeaData();
+      
+      // Redirect based on saved data
+      if (savedData) {
+        navigate("/resultados");
+      } else {
+        navigate("/dashboard");
+      }
+    }
+  }, [authState.isAuthenticated, navigate, getSavedIdeaData, isRedirecting]);
+
   const onSubmit = async (data: LoginCredentials) => {
-    if (isLoading) return; // Prevent multiple submissions
+    if (isLoading || isRedirecting) return; // Prevent multiple submissions
     
     try {
       setIsLoading(true);
       console.log("Login attempt with:", data.email);
       
+      // Attempt login
       await login(data);
       
-      console.log("Login successful, checking for saved data");
+      console.log("Login successful");
       toast.success(t('auth.loginSuccess'));
       
-      // Check if there's saved form data
-      const savedData = getSavedIdeaData();
-      
-      console.log("Redirecting after login", savedData ? "to results" : "to dashboard");
-      
-      // Use a small timeout to ensure the auth state is updated before navigation
-      setTimeout(() => {
-        if (savedData) {
-          // Redirect to results if there's saved data
-          navigate("/resultados");
-        } else {
-          // Otherwise go to dashboard
-          navigate("/dashboard");
-        }
-        setIsLoading(false);
-      }, 100);
-      
+      // Auth state change will trigger the useEffect for redirection
     } catch (error) {
       console.error("Login error:", error);
       toast.error(error instanceof Error ? error.message : t('auth.loginFailed'));
@@ -71,11 +76,18 @@ const LoginPage = () => {
     }
   };
 
-  // If already authenticated, redirect to dashboard
-  if (authState.isAuthenticated) {
-    console.log("User is already authenticated, redirecting to dashboard");
-    navigate("/dashboard");
-    return null;
+  // If already redirecting, show loading state
+  if (isRedirecting) {
+    return (
+      <>
+        <Header />
+        <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-background to-background/95 p-4 pt-20">
+          <div className="text-center">
+            <p className="text-lg">{t('auth.redirecting')}</p>
+          </div>
+        </div>
+      </>
+    );
   }
 
   return (

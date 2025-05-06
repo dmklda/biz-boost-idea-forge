@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,8 +16,9 @@ import Header from "@/components/Header";
 const RegisterPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, authState } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   // Form validation schema
   const formSchema = z.object({
@@ -35,7 +36,18 @@ const RegisterPage = () => {
     }
   });
 
+  // Check authentication status and redirect if needed
+  useEffect(() => {
+    if (authState.isAuthenticated && !isRedirecting) {
+      console.log("User is authenticated, redirecting to plans");
+      setIsRedirecting(true);
+      navigate("/planos");
+    }
+  }, [authState.isAuthenticated, navigate, isRedirecting]);
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    if (isLoading || isRedirecting) return;
+    
     try {
       setIsLoading(true);
       // Make sure we pass all required fields for RegisterCredentials
@@ -44,16 +56,29 @@ const RegisterPage = () => {
         email: data.email,
         password: data.password
       });
-      toast.success(t('auth.registerSuccess'));
       
-      // Redirect to plans page after successful registration
-      navigate("/planos");
+      toast.success(t('auth.registerSuccess'));
+      // Auth state change will trigger the useEffect for redirection
     } catch (error) {
+      console.error("Register error:", error);
       toast.error(error instanceof Error ? error.message : t('auth.registerFailed'));
-    } finally {
       setIsLoading(false);
     }
   };
+
+  // If already redirecting, show loading state
+  if (isRedirecting) {
+    return (
+      <>
+        <Header />
+        <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-background to-background/95 p-4 pt-20">
+          <div className="text-center">
+            <p className="text-lg">{t('auth.redirecting')}</p>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

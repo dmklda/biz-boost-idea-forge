@@ -10,6 +10,7 @@
     "name": "Nombre completo",
     "loggingIn": "Iniciando sesión...",
     "registering": "Registrando...",
+    "redirecting": "Redirigiendo...",
     "noAccount": "¿No tiene cuenta todavía?",
     "alreadyHaveAccount": "¿Ya tiene una cuenta?",
     "loginSuccess": "¡Inicio de sesión exitoso!",

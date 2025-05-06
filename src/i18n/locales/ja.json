@@ -10,6 +10,7 @@
     "name": "フルネーム",
     "loggingIn": "ログイン中...",
     "registering": "登録中...",
+    "redirecting": "リダイレクト中...",
     "noAccount": "アカウントをお持ちでないですか？",
     "alreadyHaveAccount": "すでにアカウントをお持ちですか？",
     "loginSuccess": "ログインに成功しました！",
