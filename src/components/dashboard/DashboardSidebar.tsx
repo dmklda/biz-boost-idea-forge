@@ -1,137 +1,87 @@
-
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { 
-  Home, 
-  BarChart, 
-  CreditCard, 
-  Settings, 
-  LogOut,
-  Calendar,
-  PlusCircle
-} from "lucide-react";
+import { Home, BarChart, CreditCard, Settings, LogOut, Calendar, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { IdeaForm } from "@/components/IdeaForm";
 import { useState } from "react";
-
-export const DashboardSidebar = ({ collapsed = false }: { collapsed?: boolean }) => {
-  const { t } = useTranslation();
+export const DashboardSidebar = ({
+  collapsed = false
+}: {
+  collapsed?: boolean;
+}) => {
+  const {
+    t
+  } = useTranslation();
   const location = useLocation();
-  const { logout } = useAuth();
+  const {
+    logout
+  } = useAuth();
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
-  
   const handleNewAnalysis = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsAnalysisDialogOpen(true);
   };
-  
-  const menuItems = [
-    {
-      title: t('nav.dashboard'),
-      icon: Home,
-      path: '/dashboard',
-      onClick: undefined
-    },
-    {
-      title: t('nav.ideas'),
-      icon: Calendar,
-      path: '/dashboard/ideias',
-      onClick: undefined
-    },
-    {
-      title: t('dashboard.newAnalysis'),
-      icon: PlusCircle,
-      path: '#',
-      onClick: handleNewAnalysis
-    },
-    {
-      title: t('nav.credits'),
-      icon: CreditCard,
-      path: '/dashboard/creditos',
-      onClick: undefined
-    },
-    {
-      title: t('header.plans'),
-      icon: BarChart,
-      path: '/planos',
-      onClick: undefined
-    },
-    {
-      title: t('nav.profile'),
-      icon: Settings,
-      path: '/dashboard/configuracoes',
-      onClick: undefined
-    },
-  ];
-  
+  const menuItems = [{
+    title: t('nav.dashboard'),
+    icon: Home,
+    path: '/dashboard',
+    onClick: undefined
+  }, {
+    title: t('nav.ideas'),
+    icon: Calendar,
+    path: '/dashboard/ideias',
+    onClick: undefined
+  }, {
+    title: t('dashboard.newAnalysis'),
+    icon: PlusCircle,
+    path: '#',
+    onClick: handleNewAnalysis
+  }, {
+    title: t('nav.credits'),
+    icon: CreditCard,
+    path: '/dashboard/creditos',
+    onClick: undefined
+  }, {
+    title: t('header.plans'),
+    icon: BarChart,
+    path: '/planos',
+    onClick: undefined
+  }, {
+    title: t('nav.profile'),
+    icon: Settings,
+    path: '/dashboard/configuracoes',
+    onClick: undefined
+  }];
   const handleLogout = () => {
     logout();
     window.location.href = "/";
   };
-  
-  return (
-    <div className={cn(
-      "flex flex-col h-full bg-background border-r px-2",
-      collapsed ? "w-[70px]" : "w-[240px]"
-    )}>
+  return <div className={cn("flex flex-col h-full bg-background border-r px-2", collapsed ? "w-[70px]" : "w-[240px]")}>
       <div className="py-4">
         <div className={cn("flex items-center", collapsed ? "justify-center px-2" : "px-4")}>
-          {collapsed ? (
-            <img 
-              src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png"
-              alt="Startup Ideia" 
-              className="h-10 w-auto"
-            />
-          ) : (
-            <div className="flex items-center">
-              <img 
-                src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png"
-                alt="Startup Ideia" 
-                className="h-12 w-auto"
-              />
-            </div>
-          )}
+          {collapsed ? <img src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png" alt="Startup Ideia" className="h-10 w-auto" /> : <div className="flex items-center">
+              <img src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png" alt="Startup Ideia" className="h-8 w-auto" />
+            </div>}
         </div>
       </div>
       
       <div className="flex-1">
         <nav className="flex flex-col gap-1">
-          {menuItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            
-            return (
-              <Link
-                key={item.path + item.title}
-                to={item.path}
-                className={cn(
-                  "flex items-center py-2 px-3 rounded-md transition-colors",
-                  isActive 
-                    ? "bg-brand-purple/10 text-brand-purple" 
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                  collapsed ? "justify-center" : ""
-                )}
-                onClick={item.onClick}
-              >
+          {menuItems.map(item => {
+          const isActive = location.pathname === item.path;
+          return <Link key={item.path + item.title} to={item.path} className={cn("flex items-center py-2 px-3 rounded-md transition-colors", isActive ? "bg-brand-purple/10 text-brand-purple" : "text-muted-foreground hover:bg-muted hover:text-foreground", collapsed ? "justify-center" : "")} onClick={item.onClick}>
                 <item.icon className={cn("h-5 w-5", collapsed ? "" : "mr-3")} />
                 {!collapsed && <span>{item.title}</span>}
-              </Link>
-            );
-          })}
+              </Link>;
+        })}
         </nav>
       </div>
       
       <div className="py-4">
-        <Button 
-          variant="ghost" 
-          className={cn(
-            "w-full flex items-center text-muted-foreground hover:text-foreground",
-            collapsed ? "justify-center p-2" : "justify-start p-3"
-          )}
-          onClick={handleLogout}
-        >
+        <Button variant="ghost" className={cn("w-full flex items-center text-muted-foreground hover:text-foreground", collapsed ? "justify-center p-2" : "justify-start p-3")} onClick={handleLogout}>
           <LogOut className={cn("h-5 w-5", collapsed ? "" : "mr-3")} />
           {!collapsed && <span>{t('nav.logout')}</span>}
         </Button>
@@ -151,6 +101,5 @@ export const DashboardSidebar = ({ collapsed = false }: { collapsed?: boolean })
           </div>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>;
 };
