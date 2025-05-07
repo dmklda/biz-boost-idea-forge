@@ -32,42 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth listener to track authentication state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user) {
-          // If we have a session, get user profile data
-          const { data: profile, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-          
-          if (profile) {
-            setAuthState({
-              user: {
-                id: session.user.id,
-                email: session.user.email || '',
-                name: profile.name,
-                plan: profile.plan as User['plan'],
-                credits: profile.credits,
-                createdAt: profile.created_at
-              },
-              isAuthenticated: true
-            });
-          } else if (error) {
-            console.error("Error fetching profile:", error);
-            setAuthState(initialAuthState);
-          }
-        } else {
-          // No session, user is logged out
-          setAuthState(initialAuthState);
-        }
-        setIsLoading(false);
-      }
-    );
-
-    // Check for initial session
+    // Check for initial session immediately
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         // Get user profile data for initial session
@@ -99,6 +64,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
+    // Set up auth listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session?.user) {
+          // If we have a session, get user profile data
+          supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single()
+            .then(({ data: profile, error }) => {
+              if (profile) {
+                setAuthState({
+                  user: {
+                    id: session.user.id,
+                    email: session.user.email || '',
+                    name: profile.name,
+                    plan: profile.plan as User['plan'],
+                    credits: profile.credits,
+                    createdAt: profile.created_at
+                  },
+                  isAuthenticated: true
+                });
+              } else if (error) {
+                console.error("Error fetching profile:", error);
+                setAuthState(initialAuthState);
+              }
+            });
+        } else {
+          // No session, user is logged out
+          setAuthState(initialAuthState);
+        }
+      }
+    );
+
     return () => {
       subscription.unsubscribe();
     };
@@ -116,10 +116,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!data.session || !data.user) {
         throw new Error("Login falhou. Tente novamente.");
       }
-
-      // Após login bem-sucedido, o onAuthStateChange lidará com a atualização do estado
       
-      // Buscar dados do perfil do usuário
+      // Fetch user profile immediately instead of waiting for onAuthStateChange
       const { data: profile } = await supabase
         .from('profiles')
         .select('*')
@@ -138,6 +136,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         credits: profile.credits,
         createdAt: profile.created_at
       };
+      
+      // Update auth state immediately for faster response
+      setAuthState({
+        user,
+        isAuthenticated: true
+      });
       
       return user;
     } catch (error) {

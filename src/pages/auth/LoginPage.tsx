@@ -43,17 +43,10 @@ const LoginPage = () => {
       console.log("User is authenticated, redirecting to dashboard");
       setIsRedirecting(true);
       
-      // Check if there's saved form data
-      const savedData = getSavedIdeaData();
-      
-      // Redirect based on saved data
-      if (savedData) {
-        navigate("/resultados");
-      } else {
-        navigate("/dashboard");
-      }
+      // Immediate redirect instead of checking saved data
+      navigate("/dashboard");
     }
-  }, [authState.isAuthenticated, navigate, getSavedIdeaData, isRedirecting]);
+  }, [authState.isAuthenticated, navigate, isRedirecting]);
 
   const onSubmit = async (data: LoginCredentials) => {
     if (isLoading || isRedirecting) return; // Prevent multiple submissions
@@ -68,7 +61,8 @@ const LoginPage = () => {
       console.log("Login successful");
       toast.success(t('auth.loginSuccess'));
       
-      // Auth state change will trigger the useEffect for redirection
+      // Immediate redirect instead of waiting for auth state change
+      navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
       toast.error(error instanceof Error ? error.message : t('auth.loginFailed'));
