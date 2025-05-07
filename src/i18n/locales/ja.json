@@ -127,5 +127,12 @@
     "credits": "クレジット",
     "profile": "プロフィール",
     "logout": "ログアウト"
+  },
+  
+  "header": {
+    "howItWorks": "ご利用方法",
+    "benefits": "メリット",
+    "plans": "プラン",
+    "startNow": "今すぐ始める"
   }
 }

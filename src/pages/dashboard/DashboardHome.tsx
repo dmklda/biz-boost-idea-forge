@@ -5,21 +5,31 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
 import { 
-  BarChart, 
-  LineChart, 
-  Bar, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer 
-} from "recharts";
-import { PlusCircle, ArrowUp, ArrowDown, CreditCard } from "lucide-react";
+  BarChart as BarChartIcon, 
+  LineChart as LineChartIcon, 
+  ArrowUp, 
+  ArrowDown, 
+  CreditCard, 
+  PlusCircle 
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend
+} from "recharts";
 
-// Mock data for charts
+// Mock data for charts - in a real application this would come from the API
 const performanceData = [
   { name: 'Jan', análises: 4, consultas: 2 },
   { name: 'Fev', análises: 3, consultas: 5 },
@@ -29,15 +39,47 @@ const performanceData = [
   { name: 'Jun', análises: 3, consultas: 4 },
 ];
 
-const recentIdeas = [
-  { id: 1, name: "App de entrega de comida saudável", status: "Viável", date: "2023-05-01" },
-  { id: 2, name: "Plataforma de educação online", status: "Muito Promissor", date: "2023-04-28" },
-  { id: 3, name: "Serviço de assinatura de plantas", status: "Moderado", date: "2023-04-25" },
-];
-
 const DashboardHome = () => {
+  const { t } = useTranslation();
   const { authState, updateUserCredits } = useAuth();
   const { user } = authState;
+  const [recentIdeas, setRecentIdeas] = useState<any[]>([]);
+  const [ideaCount, setIdeaCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchUserIdeas = async () => {
+      if (!user) return;
+      
+      try {
+        // Fetch total idea count
+        const { count, error: countError } = await supabase
+          .from('ideas')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id);
+        
+        if (countError) throw countError;
+        if (count !== null) setIdeaCount(count);
+        
+        // Fetch recent ideas
+        const { data, error } = await supabase
+          .from('ideas')
+          .select('id, title, created_at')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(3);
+        
+        if (error) throw error;
+        setRecentIdeas(data || []);
+      } catch (error) {
+        console.error('Error fetching user ideas:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchUserIdeas();
+  }, [user]);
   
   const addCredits = () => {
     // In a real app, this would redirect to a payment gateway
@@ -50,11 +92,11 @@ const DashboardHome = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t('dashboard.title')}</h1>
         <Link to="/">
           <Button className="bg-brand-purple hover:bg-brand-purple/90">
             <PlusCircle className="h-4 w-4 mr-2" />
-            Nova Análise
+            {t('dashboard.newAnalysis')}
           </Button>
         </Link>
       </div>
@@ -64,14 +106,14 @@ const DashboardHome = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total de Análises
+              {t('dashboard.statistics.totalAnalyses')}
             </CardTitle>
-            <BarChart className="h-4 w-4 text-muted-foreground" />
+            <BarChartIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
+            <div className="text-2xl font-bold">{ideaCount}</div>
             <p className="text-xs text-muted-foreground">
-              +2 em relação ao mês passado
+              +2 {t('dashboard.statistics.compared')}
             </p>
           </CardContent>
         </Card>
@@ -79,14 +121,14 @@ const DashboardHome = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Taxa de Viabilidade
+              {t('dashboard.statistics.viabilityRate')}
             </CardTitle>
             <ArrowUp className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">65%</div>
             <p className="text-xs text-muted-foreground">
-              +5% em relação ao mês passado
+              +5% {t('dashboard.statistics.compared')}
             </p>
           </CardContent>
         </Card>
@@ -94,14 +136,14 @@ const DashboardHome = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Créditos Disponíveis
+              {t('dashboard.statistics.availableCredits')}
             </CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{user?.credits || 0}</div>
             <Button variant="link" size="sm" className="p-0 h-auto text-xs text-brand-purple" onClick={addCredits}>
-              Adicionar créditos
+              {t('dashboard.statistics.addCredits')}
             </Button>
           </CardContent>
         </Card>
@@ -109,20 +151,20 @@ const DashboardHome = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Seu Plano
+              {t('dashboard.statistics.yourPlan')}
             </CardTitle>
             <Badge variant={user?.plan === "free" ? "outline" : "default"} className={user?.plan === "free" ? "" : "bg-brand-purple"}>
-              {user?.plan === "free" ? "Free" : "Pro"}
+              {user?.plan === "free" ? t('dashboard.statistics.free') : t('dashboard.statistics.premium')}
             </Badge>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {user?.plan === "free" ? "Gratuito" : "Premium"}
+              {user?.plan === "free" ? t('dashboard.statistics.free') : t('dashboard.statistics.premium')}
             </div>
             {user?.plan === "free" && (
               <Link to="/planos">
                 <Button variant="link" size="sm" className="p-0 h-auto text-xs text-brand-purple">
-                  Fazer upgrade
+                  {t('dashboard.statistics.upgrade')}
                 </Button>
               </Link>
             )}
@@ -133,16 +175,16 @@ const DashboardHome = () => {
       {/* Charts */}
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          <TabsTrigger value="analytics">Análises</TabsTrigger>
+          <TabsTrigger value="overview">{t('dashboard.tabs.overview')}</TabsTrigger>
+          <TabsTrigger value="analytics">{t('dashboard.tabs.analytics')}</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             <Card className="col-span-4">
               <CardHeader>
-                <CardTitle>Desempenho de Análises</CardTitle>
+                <CardTitle>{t('dashboard.charts.performanceTitle')}</CardTitle>
                 <CardDescription>
-                  Comparação mensal de análises e consultas
+                  {t('dashboard.charts.performanceDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="pl-2">
@@ -162,36 +204,48 @@ const DashboardHome = () => {
             
             <Card className="col-span-3">
               <CardHeader>
-                <CardTitle>Ideias Recentes</CardTitle>
+                <CardTitle>{t('dashboard.recentIdeas.title')}</CardTitle>
                 <CardDescription>
-                  Suas últimas análises de ideias
+                  {t('dashboard.recentIdeas.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentIdeas.map((idea) => (
-                    <div key={idea.id} className="flex items-center">
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium leading-none">
-                          {idea.name}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {idea.status}
-                          </Badge>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(idea.date).toLocaleDateString()}
+                  {isLoading ? (
+                    <div className="flex items-center justify-center py-4">
+                      <div className="h-4 w-4 rounded-full border-2 border-brand-purple border-t-transparent animate-spin"></div>
+                    </div>
+                  ) : recentIdeas.length > 0 ? (
+                    recentIdeas.map((idea) => (
+                      <div key={idea.id} className="flex items-center">
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium leading-none">
+                            {idea.title}
                           </p>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary" className="text-xs">
+                              {new Date(idea.created_at).toLocaleDateString()}
+                            </Badge>
+                          </div>
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-muted-foreground">
+                      <p>{t('ideas.emptyState.title')}</p>
+                      <Link to="/">
+                        <Button variant="link" className="mt-2">
+                          {t('ideas.emptyState.button')}
+                        </Button>
+                      </Link>
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
               <CardFooter>
                 <Link to="/dashboard/ideias">
                   <Button variant="outline" size="sm">
-                    Ver todas
+                    {t('dashboard.recentIdeas.viewAll')}
                   </Button>
                 </Link>
               </CardFooter>
@@ -202,9 +256,9 @@ const DashboardHome = () => {
         <TabsContent value="analytics" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Progresso de Análises</CardTitle>
+              <CardTitle>{t('dashboard.charts.progressTitle')}</CardTitle>
               <CardDescription>
-                Evolução das suas análises ao longo do tempo
+                {t('dashboard.charts.progressDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent className="pl-2">

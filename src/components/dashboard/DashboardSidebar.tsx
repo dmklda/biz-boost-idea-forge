@@ -8,8 +8,7 @@ import {
   Settings, 
   LogOut,
   Calendar,
-  PlusCircle,
-  Users
+  PlusCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
@@ -22,32 +21,32 @@ export const DashboardSidebar = ({ collapsed = false }: { collapsed?: boolean })
   
   const menuItems = [
     {
-      title: 'Dashboard',
+      title: t('nav.dashboard'),
       icon: Home,
       path: '/dashboard',
     },
     {
-      title: 'Minhas Ideias',
+      title: t('nav.ideas'),
       icon: Calendar,
       path: '/dashboard/ideias',
     },
     {
-      title: 'Nova Análise',
+      title: t('dashboard.newAnalysis'),
       icon: PlusCircle,
       path: '/',
     },
     {
-      title: 'Créditos',
+      title: t('nav.credits'),
       icon: CreditCard,
       path: '/dashboard/creditos',
     },
     {
-      title: 'Planos',
+      title: t('header.plans'),
       icon: BarChart,
       path: '/planos',
     },
     {
-      title: 'Configurações',
+      title: t('nav.profile'),
       icon: Settings,
       path: '/dashboard/configuracoes',
     },
@@ -67,14 +66,14 @@ export const DashboardSidebar = ({ collapsed = false }: { collapsed?: boolean })
         <div className={cn("flex items-center", collapsed ? "justify-center px-2" : "px-4")}>
           {collapsed ? (
             <div className="h-8 w-8 rounded-full bg-brand-purple flex items-center justify-center text-white font-bold">
-              I
+              S
             </div>
           ) : (
             <div className="flex items-center space-x-2">
               <div className="h-8 w-8 rounded-full bg-brand-purple flex items-center justify-center text-white font-bold">
-                I
+                S
               </div>
-              <span className="text-lg font-bold">IdeaAnalyzer</span>
+              <span className="text-lg font-bold">Startupideia</span>
             </div>
           )}
         </div>
@@ -115,7 +114,7 @@ export const DashboardSidebar = ({ collapsed = false }: { collapsed?: boolean })
           onClick={handleLogout}
         >
           <LogOut className={cn("h-5 w-5", collapsed ? "" : "mr-3")} />
-          {!collapsed && <span>Logout</span>}
+          {!collapsed && <span>{t('nav.logout')}</span>}
         </Button>
       </div>
     </div>

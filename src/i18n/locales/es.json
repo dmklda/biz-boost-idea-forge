@@ -127,5 +127,12 @@
     "credits": "Créditos",
     "profile": "Perfil",
     "logout": "Cerrar sesión"
+  },
+  
+  "header": {
+    "howItWorks": "Cómo funciona",
+    "benefits": "Beneficios",
+    "plans": "Planes",
+    "startNow": "Empezar ahora"
   }
 }

@@ -5,6 +5,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 
 const DashboardLayout = () => {
   const { authState } = useAuth();
@@ -31,6 +33,9 @@ const DashboardLayout = () => {
           </Button>
           
           <div className="ml-auto flex items-center space-x-4">
+            <LanguageSwitcher />
+            <ThemeToggle />
+            
             <div className="text-sm">
               <span className="font-medium">{authState.user?.name}</span>
               <div className="text-xs text-muted-foreground">
