@@ -1,3 +1,4 @@
+
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { 
@@ -82,14 +83,14 @@ export const DashboardSidebar = ({ collapsed = false }: { collapsed?: boolean })
             <img 
               src="/lovable-uploads/de1cda05-c7b3-4112-b45f-a03ba18a084a.png"
               alt="Startup Ideia" 
-              className="h-10 w-auto"
+              className="h-8 w-auto"
             />
           ) : (
-            <div className="flex items-center">
+            <div className="flex items-center space-x-2">
               <img 
                 src="/lovable-uploads/de1cda05-c7b3-4112-b45f-a03ba18a084a.png"
                 alt="Startup Ideia" 
-                className="h-12 w-auto"
+                className="h-8 w-auto"
               />
             </div>
           )}

@@ -30,11 +30,11 @@ const Header = () => {
     >
       <div className="container mx-auto px-4 flex justify-between items-center">
         <div className="flex items-center">
-          <div className={`mr-3 transition-all duration-500 ${scrolled ? 'scale-95' : 'scale-100'}`}>
+          <div className={`mr-3 transition-all duration-500 ${scrolled ? 'scale-90' : 'scale-100'}`}>
             <img 
               src="/lovable-uploads/de1cda05-c7b3-4112-b45f-a03ba18a084a.png" 
               alt="Startup Ideia Logo" 
-              className="h-14 md:h-16 w-auto" 
+              className="h-10 w-auto" 
             />
           </div>
         </div>

@@ -22,7 +22,7 @@ const DashboardLayout = () => {
       <DashboardSidebar collapsed={sidebarCollapsed} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-16 border-b flex items-center px-4 bg-background/95 backdrop-blur-sm sticky top-0 z-10">
+        <header className="h-14 border-b flex items-center px-4 bg-background/95 backdrop-blur-sm sticky top-0 z-10">
           <Button 
             variant="ghost" 
             size="icon" 
@@ -31,14 +31,6 @@ const DashboardLayout = () => {
           >
             <Menu className="h-5 w-5" />
           </Button>
-          
-          <div className="md:hidden flex items-center mr-4">
-            <img 
-              src="/lovable-uploads/de1cda05-c7b3-4112-b45f-a03ba18a084a.png"
-              alt="Startup Ideia" 
-              className="h-10 w-auto"
-            />
-          </div>
           
           <div className="ml-auto flex items-center space-x-4">
             <LanguageSwitcher />
