@@ -32,6 +32,14 @@ const DashboardLayout = () => {
             <Menu className="h-5 w-5" />
           </Button>
           
+          <div className="flex items-center md:hidden">
+            <img 
+              src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png"
+              alt="Startup Ideia" 
+              className="h-8 w-auto"
+            />
+          </div>
+          
           <div className="ml-auto flex items-center space-x-4">
             <LanguageSwitcher />
             <ThemeToggle />
