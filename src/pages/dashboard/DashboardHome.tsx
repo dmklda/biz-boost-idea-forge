@@ -293,7 +293,7 @@ const DashboardHome = () => {
               <div>
                 <h3 className="font-medium text-sm">{t('dashboard.insights.activityTrend') || "Tendência de Atividade"}</h3>
                 <p className="text-muted-foreground text-xs mt-1">
-                  {idealCount > 3 
+                  {ideaCount > 3 
                     ? t('dashboard.insights.highActivity') || "Sua atividade está acima da média dos usuários."
                     : t('dashboard.insights.lowActivity') || "Crie mais análises para obter insights completos."}
                 </p>
