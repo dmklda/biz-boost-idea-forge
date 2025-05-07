@@ -80,15 +80,18 @@ export const DashboardSidebar = ({ collapsed = false }: { collapsed?: boolean })
       <div className="py-4">
         <div className={cn("flex items-center", collapsed ? "justify-center px-2" : "px-4")}>
           {collapsed ? (
-            <div className="h-8 w-8 rounded-full bg-brand-purple flex items-center justify-center text-white font-bold">
-              S
-            </div>
+            <img 
+              src="/lovable-uploads/de1cda05-c7b3-4112-b45f-a03ba18a084a.png"
+              alt="Startup Ideia" 
+              className="h-8 w-auto"
+            />
           ) : (
             <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-full bg-brand-purple flex items-center justify-center text-white font-bold">
-                S
-              </div>
-              <span className="text-lg font-bold">Startupideia</span>
+              <img 
+                src="/lovable-uploads/de1cda05-c7b3-4112-b45f-a03ba18a084a.png"
+                alt="Startup Ideia" 
+                className="h-8 w-auto"
+              />
             </div>
           )}
         </div>

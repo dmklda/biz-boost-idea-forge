@@ -1,6 +1,7 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import { MenuIcon, X, Rocket, ArrowRight } from "lucide-react";
+import { MenuIcon, X, ArrowRight } from "lucide-react";
 import { ThemeToggle } from "./ui/theme-toggle";
 import { LanguageSwitcher } from "./ui/language-switcher";
 import { useTranslation } from 'react-i18next';
@@ -30,14 +31,12 @@ const Header = () => {
       <div className="container mx-auto px-4 flex justify-between items-center">
         <div className="flex items-center">
           <div className={`mr-3 transition-all duration-500 ${scrolled ? 'scale-90' : 'scale-100'}`}>
-            <div className="relative">
-              <div className="absolute inset-0 bg-brand-purple/20 blur-lg rounded-full"></div>
-              <div className="bg-gradient-to-br from-brand-purple to-indigo-600 w-10 h-10 rounded-full flex items-center justify-center relative">
-                <Rocket className="text-white h-5 w-5" />
-              </div>
-            </div>
+            <img 
+              src="/lovable-uploads/de1cda05-c7b3-4112-b45f-a03ba18a084a.png" 
+              alt="Startup Ideia Logo" 
+              className="h-10 w-auto" 
+            />
           </div>
-          {/* Removed the h1 with "Startupideia" text */}
         </div>
 
         {/* Desktop Navigation */}

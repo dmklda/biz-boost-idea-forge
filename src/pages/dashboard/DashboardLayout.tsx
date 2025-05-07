@@ -43,7 +43,7 @@ const DashboardLayout = () => {
               </div>
             </div>
             
-            <div className="h-8 w-8 rounded-full bg-brand-purple flex items-center justify-center text-white font-bold">
+            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#00BFFF] to-[#8F00FF] flex items-center justify-center text-white font-bold">
               {authState.user?.name.charAt(0)}
             </div>
           </div>
