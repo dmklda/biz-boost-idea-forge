@@ -22,7 +22,7 @@ const DashboardLayout = () => {
       <DashboardSidebar collapsed={sidebarCollapsed} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-14 border-b flex items-center px-4 bg-background/95 backdrop-blur-sm">
+        <header className="h-14 border-b flex items-center px-4 bg-background/95 backdrop-blur-sm sticky top-0 z-10">
           <Button 
             variant="ghost" 
             size="icon" 

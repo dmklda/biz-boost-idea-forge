@@ -12,14 +12,15 @@ import { CompetitorsStep } from "./form-steps/CompetitorsStep";
 import { BudgetLocationStep } from "./form-steps/BudgetLocationStep";
 import { useIdeaForm } from "@/hooks/useIdeaForm";
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from "@/components/ui/sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
-const IdeaForm = () => {
+export const IdeaForm = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { authState } = useAuth();
   const {
     currentStep,
@@ -31,6 +32,9 @@ const IdeaForm = () => {
     handlePrevStep,
     resetForm
   } = useIdeaForm();
+  
+  // Check if we're in the dashboard
+  const isDashboard = location.pathname.includes('/dashboard');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +67,13 @@ const IdeaForm = () => {
 
         // Redirecionar para a página de resultados
         toast.success(t('ideaForm.success') || "Ideia registrada com sucesso!");
-        navigate(`/resultados?id=${idea.id}`);
+        
+        // If we're in the dashboard, navigate within the dashboard
+        if (isDashboard) {
+          navigate(`/dashboard/ideias?id=${idea.id}`);
+        } else {
+          navigate(`/resultados?id=${idea.id}`);
+        }
       } else {
         // Se não está autenticado, redirecionar para login
         // O formData já está salvo no localStorage pelo useIdeaForm hook
@@ -77,63 +87,73 @@ const IdeaForm = () => {
       setIsSubmitting(false);
     }
   };
+  
+  const wrapInCard = isDashboard === false;
 
-  return (
-    <section id="form" className="py-20 bg-white dark:bg-gray-900">
-      <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto">
-          <Card className="overflow-hidden border-0 shadow-lg dark:bg-gray-800 dark:border-gray-700">
-            <CardHeader className="bg-gradient-to-r from-brand-blue to-brand-purple rounded-t-lg">
-              <CardTitle className="text-white text-2xl font-poppins">
-                {t('ideaForm.title')}
-              </CardTitle>
-              <CardDescription className="text-white/80 font-inter">
-                {t('ideaForm.subtitle')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-6">
-              <form onSubmit={handleSubmit}>
-                {currentStep === 1 && (
-                  <IdeaStep 
-                    formData={formData}
-                    updateFormData={updateFormData}
-                    onNext={handleNextStep}
-                  />
-                )}
+  const formContent = (
+    <form onSubmit={handleSubmit}>
+      {currentStep === 1 && (
+        <IdeaStep 
+          formData={formData}
+          updateFormData={updateFormData}
+          onNext={handleNextStep}
+        />
+      )}
 
-                {currentStep === 2 && (
-                  <AudienceStep 
-                    formData={formData}
-                    updateFormData={updateFormData}
-                    onNext={handleNextStep}
-                    onPrev={handlePrevStep}
-                  />
-                )}
+      {currentStep === 2 && (
+        <AudienceStep 
+          formData={formData}
+          updateFormData={updateFormData}
+          onNext={handleNextStep}
+          onPrev={handlePrevStep}
+        />
+      )}
 
-                {currentStep === 3 && (
-                  <CompetitorsStep 
-                    formData={formData}
-                    updateFormData={updateFormData}
-                    onNext={handleNextStep}
-                    onPrev={handlePrevStep}
-                  />
-                )}
+      {currentStep === 3 && (
+        <CompetitorsStep 
+          formData={formData}
+          updateFormData={updateFormData}
+          onNext={handleNextStep}
+          onPrev={handlePrevStep}
+        />
+      )}
 
-                {currentStep === 4 && (
-                  <BudgetLocationStep 
-                    formData={formData}
-                    updateFormData={updateFormData}
-                    onPrev={handlePrevStep}
-                    isSubmitting={isSubmitting}
-                  />
-                )}
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </section>
+      {currentStep === 4 && (
+        <BudgetLocationStep 
+          formData={formData}
+          updateFormData={updateFormData}
+          onPrev={handlePrevStep}
+          isSubmitting={isSubmitting}
+        />
+      )}
+    </form>
   );
+
+  if (wrapInCard) {
+    return (
+      <section id="form" className="py-20 bg-white dark:bg-gray-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <Card className="overflow-hidden border-0 shadow-lg dark:bg-gray-800 dark:border-gray-700">
+              <CardHeader className="bg-gradient-to-r from-brand-blue to-brand-purple rounded-t-lg">
+                <CardTitle className="text-white text-2xl font-poppins">
+                  {t('ideaForm.title')}
+                </CardTitle>
+                <CardDescription className="text-white/80 font-inter">
+                  {t('ideaForm.subtitle')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                {formContent}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+    );
+  }
+  
+  return formContent;
 };
 
 export default IdeaForm;

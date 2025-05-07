@@ -13,42 +13,57 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { IdeaForm } from "@/components/IdeaForm";
+import { useState } from "react";
 
 export const DashboardSidebar = ({ collapsed = false }: { collapsed?: boolean }) => {
   const { t } = useTranslation();
   const location = useLocation();
   const { logout } = useAuth();
+  const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
+  
+  const handleNewAnalysis = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsAnalysisDialogOpen(true);
+  };
   
   const menuItems = [
     {
       title: t('nav.dashboard'),
       icon: Home,
       path: '/dashboard',
+      onClick: undefined
     },
     {
       title: t('nav.ideas'),
       icon: Calendar,
       path: '/dashboard/ideias',
+      onClick: undefined
     },
     {
       title: t('dashboard.newAnalysis'),
       icon: PlusCircle,
-      path: '/',
+      path: '#',
+      onClick: handleNewAnalysis
     },
     {
       title: t('nav.credits'),
       icon: CreditCard,
       path: '/dashboard/creditos',
+      onClick: undefined
     },
     {
       title: t('header.plans'),
       icon: BarChart,
       path: '/planos',
+      onClick: undefined
     },
     {
       title: t('nav.profile'),
       icon: Settings,
       path: '/dashboard/configuracoes',
+      onClick: undefined
     },
   ];
   
@@ -86,7 +101,7 @@ export const DashboardSidebar = ({ collapsed = false }: { collapsed?: boolean })
             
             return (
               <Link
-                key={item.path}
+                key={item.path + item.title}
                 to={item.path}
                 className={cn(
                   "flex items-center py-2 px-3 rounded-md transition-colors",
@@ -95,6 +110,7 @@ export const DashboardSidebar = ({ collapsed = false }: { collapsed?: boolean })
                     : "text-muted-foreground hover:bg-muted hover:text-foreground",
                   collapsed ? "justify-center" : ""
                 )}
+                onClick={item.onClick}
               >
                 <item.icon className={cn("h-5 w-5", collapsed ? "" : "mr-3")} />
                 {!collapsed && <span>{item.title}</span>}
@@ -117,6 +133,21 @@ export const DashboardSidebar = ({ collapsed = false }: { collapsed?: boolean })
           {!collapsed && <span>{t('nav.logout')}</span>}
         </Button>
       </div>
+
+      {/* New Analysis Dialog */}
+      <Dialog open={isAnalysisDialogOpen} onOpenChange={setIsAnalysisDialogOpen}>
+        <DialogContent className="sm:max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>{t('ideaForm.title')}</DialogTitle>
+            <DialogDescription>
+              {t('ideaForm.subtitle')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <IdeaForm />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
