@@ -3,45 +3,63 @@ import React from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Lightbulb, Plus, CreditCard, User } from "lucide-react";
+import { LayoutDashboard, Lightbulb, Plus, CreditCard, User, Bell } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { IdeaForm } from "@/components/IdeaForm";
+import { useAuth } from "@/hooks/useAuth";
+import { Badge } from "@/components/ui/badge";
 
 export const MobileBottomNav = () => {
   const { t } = useTranslation();
   const location = useLocation();
+  const { authState } = useAuth();
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = React.useState(false);
+  const [hasNotifications, setHasNotifications] = React.useState(false);
+
+  // Check if user has low credits to show notification badge
+  React.useEffect(() => {
+    if (authState.user && authState.user.credits < 2) {
+      setHasNotifications(true);
+    } else {
+      setHasNotifications(false);
+    }
+  }, [authState.user]);
 
   const menuItems = [
     {
       title: t('nav.dashboard'),
       icon: LayoutDashboard,
       path: '/dashboard',
-      onClick: undefined
+      onClick: undefined,
+      badge: false
     }, 
     {
       title: t('nav.ideas'),
       icon: Lightbulb,
       path: '/dashboard/ideias',
-      onClick: undefined
+      onClick: undefined,
+      badge: false
     }, 
     {
       title: t('dashboard.newAnalysis'),
       icon: Plus,
       path: '#',
-      onClick: () => setIsAnalysisDialogOpen(true)
+      onClick: () => setIsAnalysisDialogOpen(true),
+      badge: false
     }, 
     {
       title: t('nav.credits'),
       icon: CreditCard,
       path: '/dashboard/creditos',
-      onClick: undefined
+      onClick: undefined,
+      badge: hasNotifications
     }, 
     {
       title: t('nav.profile'),
       icon: User,
       path: '/dashboard/configuracoes',
-      onClick: undefined
+      onClick: undefined,
+      badge: false
     }
   ];
 
@@ -61,7 +79,12 @@ export const MobileBottomNav = () => {
                 )}
                 onClick={item.onClick}
               >
-                <item.icon className="h-5 w-5 mb-1" />
+                <div className="relative">
+                  <item.icon className="h-5 w-5 mb-1" />
+                  {item.badge && (
+                    <Badge className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-red-500" />
+                  )}
+                </div>
                 <span className="text-xs font-medium">{item.title}</span>
               </Link>
             );

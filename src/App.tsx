@@ -23,6 +23,11 @@ import DashboardLayout from "./pages/dashboard/DashboardLayout";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import IdeasPage from "./pages/dashboard/IdeasPage";
 import CreditsPage from "./pages/dashboard/CreditsPage";
+import IdeasHistoryPage from "./pages/dashboard/IdeasHistoryPage";
+import IdeaDetailPage from "./pages/dashboard/IdeaDetailPage";
+import UserSettingsPage from "./pages/dashboard/UserSettingsPage";
+import ResourceCenterPage from "./pages/dashboard/ResourceCenterPage";
+import AdvancedMetricsPage from "./pages/dashboard/AdvancedMetricsPage";
 
 // Platform pages
 import ApiPage from "./pages/platform/ApiPage";
@@ -115,7 +120,12 @@ const App = () => {
                   <Route path="/dashboard" element={<DashboardLayout />}>
                     <Route index element={<DashboardHome />} />
                     <Route path="ideias" element={<IdeasPage />} />
+                    <Route path="ideias/historico" element={<IdeasHistoryPage />} />
+                    <Route path="ideias/:id" element={<IdeaDetailPage />} />
                     <Route path="creditos" element={<CreditsPage />} />
+                    <Route path="configuracoes" element={<UserSettingsPage />} />
+                    <Route path="recursos" element={<ResourceCenterPage />} />
+                    <Route path="metricas" element={<AdvancedMetricsPage />} />
                   </Route>
                   
                   {/* Platform Pages */}
