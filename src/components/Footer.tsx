@@ -1,5 +1,5 @@
 
-import { Facebook, Instagram, Linkedin, Twitter, Rocket } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";
 
@@ -26,11 +26,15 @@ const Footer = () => {
               <div className="flex items-center mb-6">
                 <div className="relative mr-3">
                   <div className="absolute inset-0 bg-brand-purple/20 blur-md rounded-full"></div>
-                  <div className="bg-gradient-to-br from-brand-purple to-indigo-600 w-10 h-10 rounded-full flex items-center justify-center relative">
-                    <Rocket className="text-white h-5 w-5" />
+                  <div className="relative h-10 w-10 flex items-center justify-center">
+                    <img 
+                      src="/lovable-uploads/f0d454ac-a2f6-40e5-843c-c4c7257679aa.png" 
+                      alt="Startupideia Logo" 
+                      className="h-full w-auto object-contain"
+                    />
                   </div>
                 </div>
-                <h3 className="text-xl font-bold bg-gradient-to-r from-brand-blue via-brand-purple to-indigo-400 bg-clip-text text-transparent">
+                <h3 className="text-xl font-bold bg-gradient-to-r from-[#3A8DFF] to-[#8F00FF] bg-clip-text text-transparent">
                   Startupideia
                 </h3>
               </div>

@@ -43,8 +43,18 @@ const DashboardLayout = () => {
               </div>
             </div>
             
-            <div className="h-8 w-8 rounded-full bg-brand-purple flex items-center justify-center text-white font-bold">
-              {authState.user?.name.charAt(0)}
+            <div className="h-8 w-8 rounded-full flex items-center justify-center">
+              {authState.user?.avatar ? (
+                <img 
+                  src={authState.user.avatar} 
+                  alt={`${authState.user.name} avatar`} 
+                  className="h-full w-full object-cover rounded-full"
+                />
+              ) : (
+                <div className="h-full w-full rounded-full bg-brand-purple flex items-center justify-center text-white font-bold">
+                  {authState.user?.name?.charAt(0)}
+                </div>
+              )}
             </div>
           </div>
         </header>

@@ -80,15 +80,23 @@ export const DashboardSidebar = ({ collapsed = false }: { collapsed?: boolean })
       <div className="py-4">
         <div className={cn("flex items-center", collapsed ? "justify-center px-2" : "px-4")}>
           {collapsed ? (
-            <div className="h-8 w-8 rounded-full bg-brand-purple flex items-center justify-center text-white font-bold">
-              S
+            <div className="h-8 w-8 rounded-full flex items-center justify-center">
+              <img 
+                src="/lovable-uploads/f0d454ac-a2f6-40e5-843c-c4c7257679aa.png" 
+                alt="Startupideia Logo" 
+                className="h-full w-auto object-contain"
+              />
             </div>
           ) : (
             <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-full bg-brand-purple flex items-center justify-center text-white font-bold">
-                S
+              <div className="h-8 w-8 rounded-full flex items-center justify-center">
+                <img 
+                  src="/lovable-uploads/f0d454ac-a2f6-40e5-843c-c4c7257679aa.png" 
+                  alt="Startupideia Logo" 
+                  className="h-full w-auto object-contain"
+                />
               </div>
-              <span className="text-lg font-bold">Startupideia</span>
+              <span className="text-lg font-bold bg-gradient-to-r from-[#3A8DFF] to-[#8F00FF] bg-clip-text text-transparent">Startupideia</span>
             </div>
           )}
         </div>
