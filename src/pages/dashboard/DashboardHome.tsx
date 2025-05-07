@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,7 @@ import {
 import { ChartContainer, ChartTooltipContent, ChartLegendContent } from "@/components/ui/chart";
 import { IdeaForm } from "@/components/IdeaForm";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const DashboardHome = () => {
   const { t } = useTranslation();
@@ -46,6 +47,8 @@ const DashboardHome = () => {
   const [viabilityRate, setViabilityRate] = useState(0);
   const [viabilityTrend, setViabilityTrend] = useState(0);
   const [totalConsultations, setTotalConsultations] = useState(0);
+  const isMobile = useIsMobile();
+  const chartContainerRef = useRef<HTMLDivElement>(null);
   
   // Function to get month name from number
   const getMonthName = (monthNumber: number) => {
@@ -173,52 +176,54 @@ const DashboardHome = () => {
   };
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">{t('dashboard.title')}</h1>
-        <Dialog open={isAnalysisDialogOpen} onOpenChange={setIsAnalysisDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-brand-purple hover:bg-brand-purple/90">
-              <PlusCircle className="h-4 w-4 mr-2" />
-              {t('dashboard.newAnalysis')}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-4xl">
-            <DialogHeader>
-              <DialogTitle>{t('ideaForm.title')}</DialogTitle>
-              <DialogDescription>
-                {t('ideaForm.subtitle')}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-4">
-              <IdeaForm />
-            </div>
-          </DialogContent>
-        </Dialog>
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{t('dashboard.title')}</h1>
+        {!isMobile && (
+          <Dialog open={isAnalysisDialogOpen} onOpenChange={setIsAnalysisDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-brand-purple hover:bg-brand-purple/90">
+                <PlusCircle className="h-4 w-4 mr-2" />
+                {t('dashboard.newAnalysis')}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-4xl">
+              <DialogHeader>
+                <DialogTitle>{t('ideaForm.title')}</DialogTitle>
+                <DialogDescription>
+                  {t('ideaForm.subtitle')}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4">
+                <IdeaForm />
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
       
       {/* Cards with Stats */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-2 md:grid-cols-4">
+        <Card className="shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 md:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {t('dashboard.statistics.totalAnalyses')}
             </CardTitle>
             <BarChartIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{ideaCount}</div>
+            <div className="text-xl md:text-2xl font-bold">{ideaCount}</div>
             {ideaCount > 0 && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground line-clamp-2">
                 {t('dashboard.statistics.totalAnalysesDescription')}
               </p>
             )}
           </CardContent>
         </Card>
         
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+        <Card className="shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 md:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {t('dashboard.statistics.viabilityRate')}
             </CardTitle>
             {viabilityTrend > 0 ? (
@@ -230,31 +235,31 @@ const DashboardHome = () => {
             )}
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{viabilityRate}%</div>
+            <div className="text-xl md:text-2xl font-bold">{viabilityRate}%</div>
             <p className="text-xs text-muted-foreground">
               {viabilityTrend > 0 ? `+${viabilityTrend}%` : viabilityTrend < 0 ? `${viabilityTrend}%` : "0%"} {t('dashboard.statistics.compared')}
             </p>
           </CardContent>
         </Card>
         
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+        <Card className="shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 md:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {t('dashboard.statistics.availableCredits')}
             </CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{user?.credits || 0}</div>
+            <div className="text-xl md:text-2xl font-bold">{user?.credits || 0}</div>
             <Button variant="link" size="sm" className="p-0 h-auto text-xs text-brand-purple" onClick={addCredits}>
               {t('dashboard.statistics.addCredits')}
             </Button>
           </CardContent>
         </Card>
         
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+        <Card className="shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 md:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {t('dashboard.statistics.yourPlan')}
             </CardTitle>
             <Badge variant={user?.plan === "free" ? "outline" : "default"} className={user?.plan === "free" ? "" : "bg-brand-purple"}>
@@ -262,7 +267,7 @@ const DashboardHome = () => {
             </Badge>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-xl md:text-2xl font-bold">
               {user?.plan === "free" ? t('dashboard.statistics.free') : t('dashboard.statistics.premium')}
             </div>
             {user?.plan === "free" && (
@@ -277,16 +282,16 @@ const DashboardHome = () => {
       </div>
       
       {/* Insights Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('dashboard.insights.title') || "Insights"}</CardTitle>
+      <Card className="shadow-sm">
+        <CardHeader className="pb-2 md:pb-4">
+          <CardTitle className="text-lg md:text-xl">{t('dashboard.insights.title') || "Insights"}</CardTitle>
           <CardDescription>
             {t('dashboard.insights.description') || "Análise inteligente da sua atividade recente"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <div className="bg-muted/50 p-4 rounded-lg flex items-start space-x-3">
+          <div className="grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-3">
+            <div className="bg-muted/50 p-3 md:p-4 rounded-lg flex items-start space-x-3">
               <div className="bg-brand-purple/10 rounded-full p-2 mt-1">
                 <TrendingUp className="h-5 w-5 text-brand-purple" />
               </div>
@@ -300,7 +305,7 @@ const DashboardHome = () => {
               </div>
             </div>
             
-            <div className="bg-muted/50 p-4 rounded-lg flex items-start space-x-3">
+            <div className="bg-muted/50 p-3 md:p-4 rounded-lg flex items-start space-x-3">
               <div className="bg-blue-500/10 rounded-full p-2 mt-1">
                 <BarChartIcon className="h-5 w-5 text-blue-500" />
               </div>
@@ -314,7 +319,7 @@ const DashboardHome = () => {
               </div>
             </div>
             
-            <div className="bg-muted/50 p-4 rounded-lg flex items-start space-x-3">
+            <div className="bg-muted/50 p-3 md:p-4 rounded-lg flex items-start space-x-3">
               <div className="bg-green-500/10 rounded-full p-2 mt-1">
                 <Calendar className="h-5 w-5 text-green-500" />
               </div>
@@ -333,55 +338,60 @@ const DashboardHome = () => {
       
       {/* Charts */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
+        <TabsList className="w-full grid grid-cols-2">
           <TabsTrigger value="overview">{t('dashboard.tabs.overview')}</TabsTrigger>
           <TabsTrigger value="analytics">{t('dashboard.tabs.analytics')}</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
-              <CardHeader>
-                <CardTitle>{t('dashboard.charts.performanceTitle')}</CardTitle>
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-7">
+            <Card className="col-span-1 md:col-span-4 shadow-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg md:text-xl">{t('dashboard.charts.performanceTitle')}</CardTitle>
                 <CardDescription>
                   {t('dashboard.charts.performanceDescription')}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="pl-2">
-                <ChartContainer 
-                  config={{
-                    análises: {
-                      label: "Análises",
-                      theme: {
-                        light: "#9b87f5",
-                        dark: "#a48bff"
+              <CardContent 
+                className="px-0 md:pl-2 overflow-x-auto" 
+                ref={chartContainerRef}
+              >
+                <div className="min-w-[400px] sm:min-w-full">
+                  <ChartContainer 
+                    config={{
+                      análises: {
+                        label: "Análises",
+                        theme: {
+                          light: "#9b87f5",
+                          dark: "#a48bff"
+                        }
+                      },
+                      consultas: {
+                        label: "Consultas",
+                        theme: {
+                          light: "#7E69AB",
+                          dark: "#9182C2"
+                        }
                       }
-                    },
-                    consultas: {
-                      label: "Consultas",
-                      theme: {
-                        light: "#7E69AB",
-                        dark: "#9182C2"
-                      }
-                    }
-                  }}
-                  className="aspect-[4/3]"
-                >
-                  <BarChart data={performanceData} barGap={4}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip content={<ChartTooltipContent />} />
-                    <Legend content={<ChartLegendContent />} />
-                    <Bar dataKey="análises" fill="var(--color-análises, #9b87f5)" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="consultas" fill="var(--color-consultas, #7E69AB)" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ChartContainer>
+                    }}
+                    className="aspect-[4/3]"
+                  >
+                    <BarChart data={performanceData} barGap={4}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip content={<ChartTooltipContent />} />
+                      <Legend content={<ChartLegendContent />} />
+                      <Bar dataKey="análises" fill="var(--color-análises, #9b87f5)" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="consultas" fill="var(--color-consultas, #7E69AB)" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ChartContainer>
+                </div>
               </CardContent>
             </Card>
             
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>{t('dashboard.recentIdeas.title')}</CardTitle>
+            <Card className="col-span-1 md:col-span-3 shadow-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg md:text-xl">{t('dashboard.recentIdeas.title')}</CardTitle>
                 <CardDescription>
                   {t('dashboard.recentIdeas.description')}
                 </CardDescription>
@@ -444,35 +454,37 @@ const DashboardHome = () => {
         </TabsContent>
         
         <TabsContent value="analytics" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('dashboard.charts.progressTitle')}</CardTitle>
+          <Card className="shadow-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg md:text-xl">{t('dashboard.charts.progressTitle')}</CardTitle>
               <CardDescription>
                 {t('dashboard.charts.progressDescription')}
               </CardDescription>
             </CardHeader>
-            <CardContent className="pl-2">
-              <ChartContainer 
-                config={{
-                  análises: {
-                    label: "Análises",
-                    theme: {
-                      light: "#9b87f5",
-                      dark: "#a48bff"
+            <CardContent className="px-0 md:pl-2 overflow-x-auto">
+              <div className="min-w-[400px] sm:min-w-full">
+                <ChartContainer 
+                  config={{
+                    análises: {
+                      label: "Análises",
+                      theme: {
+                        light: "#9b87f5",
+                        dark: "#a48bff"
+                      }
                     }
-                  }
-                }}
-                className="aspect-[4/3]"
-              >
-                <LineChart data={performanceData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip content={<ChartTooltipContent />} />
-                  <Legend content={<ChartLegendContent />} />
-                  <Line type="monotone" dataKey="análises" stroke="var(--color-análises, #9b87f5)" strokeWidth={2} dot={{ r: 4 }} />
-                </LineChart>
-              </ChartContainer>
+                  }}
+                  className="aspect-[4/3]"
+                >
+                  <LineChart data={performanceData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Legend content={<ChartLegendContent />} />
+                    <Line type="monotone" dataKey="análises" stroke="var(--color-análises, #9b87f5)" strokeWidth={2} dot={{ r: 4 }} />
+                  </LineChart>
+                </ChartContainer>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

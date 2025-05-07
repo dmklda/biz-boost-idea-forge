@@ -76,6 +76,12 @@ export default {
           'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))'
+        },
+        mobilenav: {
+          DEFAULT: 'hsl(var(--background))',
+          border: 'hsl(var(--border))',
+          icon: 'hsl(var(--muted-foreground))',
+          'icon-active': 'hsl(var(--primary))'
         }
       },
       borderRadius: {
