@@ -173,17 +173,17 @@ const DashboardHome = () => {
   };
   
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('dashboard.title')}</h1>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold tracking-tight">{t('dashboard.title')}</h1>
         <Dialog open={isAnalysisDialogOpen} onOpenChange={setIsAnalysisDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-brand-purple hover:bg-brand-purple/90 w-full sm:w-auto">
+            <Button className="bg-brand-purple hover:bg-brand-purple/90">
               <PlusCircle className="h-4 w-4 mr-2" />
               {t('dashboard.newAnalysis')}
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-4xl">
             <DialogHeader>
               <DialogTitle>{t('ideaForm.title')}</DialogTitle>
               <DialogDescription>
@@ -198,7 +198,7 @@ const DashboardHome = () => {
       </div>
       
       {/* Cards with Stats */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -285,7 +285,7 @@ const DashboardHome = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div className="bg-muted/50 p-4 rounded-lg flex items-start space-x-3">
               <div className="bg-brand-purple/10 rounded-full p-2 mt-1">
                 <TrendingUp className="h-5 w-5 text-brand-purple" />
@@ -333,20 +333,20 @@ const DashboardHome = () => {
       
       {/* Charts */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="w-full flex overflow-x-auto sm:w-auto">
-          <TabsTrigger value="overview" className="flex-1 sm:flex-none">{t('dashboard.tabs.overview')}</TabsTrigger>
-          <TabsTrigger value="analytics" className="flex-1 sm:flex-none">{t('dashboard.tabs.analytics')}</TabsTrigger>
+        <TabsList>
+          <TabsTrigger value="overview">{t('dashboard.tabs.overview')}</TabsTrigger>
+          <TabsTrigger value="analytics">{t('dashboard.tabs.analytics')}</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 grid-cols-1 lg:grid-cols-7">
-            <Card className="lg:col-span-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            <Card className="col-span-4">
               <CardHeader>
                 <CardTitle>{t('dashboard.charts.performanceTitle')}</CardTitle>
                 <CardDescription>
                   {t('dashboard.charts.performanceDescription')}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="pl-2 overflow-x-auto">
+              <CardContent className="pl-2">
                 <ChartContainer 
                   config={{
                     análises: {
@@ -364,7 +364,7 @@ const DashboardHome = () => {
                       }
                     }
                   }}
-                  className="aspect-[4/3] min-w-[300px]"
+                  className="aspect-[4/3]"
                 >
                   <BarChart data={performanceData} barGap={4}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -379,7 +379,7 @@ const DashboardHome = () => {
               </CardContent>
             </Card>
             
-            <Card className="lg:col-span-3">
+            <Card className="col-span-3">
               <CardHeader>
                 <CardTitle>{t('dashboard.recentIdeas.title')}</CardTitle>
                 <CardDescription>
@@ -434,7 +434,7 @@ const DashboardHome = () => {
               </CardContent>
               <CardFooter>
                 <Link to="/dashboard/ideias">
-                  <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                  <Button variant="outline" size="sm">
                     {t('dashboard.recentIdeas.viewAll')}
                   </Button>
                 </Link>
@@ -451,7 +451,7 @@ const DashboardHome = () => {
                 {t('dashboard.charts.progressDescription')}
               </CardDescription>
             </CardHeader>
-            <CardContent className="pl-2 overflow-x-auto">
+            <CardContent className="pl-2">
               <ChartContainer 
                 config={{
                   análises: {
@@ -462,7 +462,7 @@ const DashboardHome = () => {
                     }
                   }
                 }}
-                className="aspect-[4/3] min-w-[300px]"
+                className="aspect-[4/3]"
               >
                 <LineChart data={performanceData}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
