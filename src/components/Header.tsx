@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { MenuIcon, X, Rocket, ArrowRight } from "lucide-react";
@@ -38,13 +37,7 @@ const Header = () => {
               </div>
             </div>
           </div>
-          <h1 
-            className={`font-bold font-poppins bg-gradient-to-r from-brand-blue to-brand-purple bg-clip-text text-transparent transition-all duration-300 ${
-              scrolled ? 'text-xl' : 'text-2xl'
-            }`}
-          >
-            Startupideia
-          </h1>
+          {/* Removed the h1 with "Startupideia" text */}
         </div>
 
         {/* Desktop Navigation */}
