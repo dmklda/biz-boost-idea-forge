@@ -1,3 +1,4 @@
+
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Home, BarChart, CreditCard, Settings, LogOut, Calendar, PlusCircle } from "lucide-react";
@@ -59,10 +60,10 @@ export const DashboardSidebar = ({
     logout();
     window.location.href = "/";
   };
-  return <div className={cn("flex flex-col h-full bg-background border-r px-2", collapsed ? "w-[70px]" : "w-[240px]")}>
+  return <div className={cn("flex flex-col h-full bg-background border-r px-2", collapsed ? "w-[60px]" : "w-[240px]")}>
       <div className="py-4">
         <div className={cn("flex items-center", collapsed ? "justify-center px-2" : "px-4")}>
-          {collapsed ? <img src="/lovable-uploads/1d922337-e8ee-440b-afed-32d32a6a045a.png" alt="Startup Ideia" className="h-8 w-auto" /> : <div className="flex items-center">
+          {collapsed ? <img src="/lovable-uploads/87bedc4a-87c0-4400-983d-123220e6de66.png" alt="Startup Ideia" className="h-8 w-auto" /> : <div className="flex items-center">
               <img src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png" alt="Startup Ideia" className="h-8 w-auto" />
             </div>}
         </div>
@@ -89,7 +90,7 @@ export const DashboardSidebar = ({
 
       {/* New Analysis Dialog */}
       <Dialog open={isAnalysisDialogOpen} onOpenChange={setIsAnalysisDialogOpen}>
-        <DialogContent className="sm:max-w-4xl">
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t('ideaForm.title')}</DialogTitle>
             <DialogDescription>
