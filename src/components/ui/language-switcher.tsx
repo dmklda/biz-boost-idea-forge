@@ -9,7 +9,6 @@ import {
 } from "./dropdown-menu";
 import { Button } from "./button";
 import { useEffect, useState } from "react";
-import i18n from "@/i18n/config"; // Import i18n directly
 
 const languages = {
   pt: "Português",
@@ -19,15 +18,13 @@ const languages = {
 };
 
 export function LanguageSwitcher() {
-  const { i18n: i18nHook } = useTranslation();
-  const [currentLang, setCurrentLang] = useState(i18nHook?.language || 'pt');
+  const { i18n } = useTranslation();
+  const [currentLang, setCurrentLang] = useState(i18n.language);
 
   useEffect(() => {
     // Atualiza o estado quando i18n.language muda
-    if (i18nHook?.language) {
-      setCurrentLang(i18nHook.language);
-    }
-  }, [i18nHook?.language]);
+    setCurrentLang(i18n.language);
+  }, [i18n.language]);
 
   const handleLanguageChange = (code: string) => {
     console.log("Changing language to:", code);
@@ -37,21 +34,16 @@ export function LanguageSwitcher() {
     }
     
     // Alterando o idioma programaticamente
-    if (i18nHook) {
-      i18nHook.changeLanguage(code).catch(error => {
-        console.error("Error changing language:", error);
-      });
-    } else {
-      i18n.changeLanguage(code).catch(error => {
-        console.error("Error changing language directly:", error);
-      });
-    }
+    i18n.changeLanguage(code);
     
     // Armazenando a preferência do usuário
     localStorage.setItem("i18nextLng", code);
     
     // Atualizando o estado local
     setCurrentLang(code);
+    
+    // Recarregando a página para garantir que todas as traduções sejam aplicadas
+    window.location.reload();
   };
 
   // Função auxiliar para verificar se o código de idioma corresponde ao idioma atual

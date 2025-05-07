@@ -1,10 +1,15 @@
 
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
-  <rect width="64" height="64" rx="16" fill="#FFFFFF" />
-  <g transform="translate(12, 8) scale(0.7)">
-    <path d="M32 13C25 13 20 19 20 24C20 29 24 33 28 34.5L28.5 36C29 38 31 43 32 44.5C33 43 35 38 35.5 36L36 34.5C40 33 44 29 44 24C44 19 39 13 32 13Z" fill="#3A8DFF"/>
-    <path d="M32 37V37C36 36 40 32.5 40 28C40 23.5 36 20 32 20C28 20 24 23.5 24 28C24 32.5 28 36 32 37Z" fill="#8F00FF" fill-opacity="0.5"/>
-    <path d="M32 24C31.44 24 31 24.44 31 25V31C31 31.56 31.44 32 32 32C32.56 32 33 31.56 33 31V25C33 24.44 32.56 24 32 24Z" fill="#AAFF00"/>
-    <path d="M32 34C31.44 34 31 34.44 31 35V35.04C31 35.6 31.44 36.04 32 36.04C32.56 36.04 33 35.6 33 35.04V35C33 34.44 32.56 34 32 34Z" fill="#AAFF00"/>
-  </g>
+  <rect width="64" height="64" rx="16" fill="url(#paint0_linear)" />
+  <path d="M32 13C25 13 20 19 20 24C20 29 24 33 28 34.5L28.5 36C29 38 31 43 32 44.5C33 43 35 38 35.5 36L36 34.5C40 33 44 29 44 24C44 19 39 13 32 13Z" fill="white"/>
+  <path d="M32 37V37C36 36 40 32.5 40 28C40 23.5 36 20 32 20C28 20 24 23.5 24 28C24 32.5 28 36 32 37Z" fill="white" fill-opacity="0.5"/>
+  <path d="M32 24C31.44 24 31 24.44 31 25V31C31 31.56 31.44 32 32 32C32.56 32 33 31.56 33 31V25C33 24.44 32.56 24 32 24Z" fill="#3A8DFF"/>
+  <path d="M32 34C31.44 34 31 34.44 31 35V35.04C31 35.6 31.44 36.04 32 36.04C32.56 36.04 33 35.6 33 35.04V35C33 34.44 32.56 34 32 34Z" fill="#3A8DFF"/>
+  <defs>
+    <linearGradient id="paint0_linear" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3A8DFF"/>
+      <stop offset="0.5" stop-color="#8F00FF"/>
+      <stop offset="1" stop-color="#AAFF00"/>
+    </linearGradient>
+  </defs>
 </svg>

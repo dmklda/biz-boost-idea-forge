@@ -1,7 +1,7 @@
 
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "@/components/providers/theme-provider"; // Use the provider's useTheme hook
+import { useTheme } from "@/hooks/use-theme";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 

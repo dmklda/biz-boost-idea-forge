@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import { MenuIcon, X, ArrowRight } from "lucide-react";
+import { MenuIcon, X, Rocket, ArrowRight } from "lucide-react";
 import { ThemeToggle } from "./ui/theme-toggle";
 import { LanguageSwitcher } from "./ui/language-switcher";
 import { useTranslation } from 'react-i18next';
@@ -33,17 +33,13 @@ const Header = () => {
           <div className={`mr-3 transition-all duration-500 ${scrolled ? 'scale-90' : 'scale-100'}`}>
             <div className="relative">
               <div className="absolute inset-0 bg-brand-purple/20 blur-lg rounded-full"></div>
-              <div className="relative h-10 w-10 flex items-center justify-center">
-                <img 
-                  src="/lovable-uploads/f0d454ac-a2f6-40e5-843c-c4c7257679aa.png" 
-                  alt="Startupideia Logo" 
-                  className="h-full w-auto object-contain"
-                />
+              <div className="bg-gradient-to-br from-brand-purple to-indigo-600 w-10 h-10 rounded-full flex items-center justify-center relative">
+                <Rocket className="text-white h-5 w-5" />
               </div>
             </div>
           </div>
           <h1 
-            className={`font-bold font-poppins bg-gradient-to-r from-[#3A8DFF] to-[#8F00FF] bg-clip-text text-transparent transition-all duration-300 ${
+            className={`font-bold font-poppins bg-gradient-to-r from-brand-blue to-brand-purple bg-clip-text text-transparent transition-all duration-300 ${
               scrolled ? 'text-xl' : 'text-2xl'
             }`}
           >
@@ -129,7 +125,7 @@ const Header = () => {
               {t('header.plans')}
             </a>
             <Button 
-              className="bg-gradient-to-r from-[#3A8DFF] to-[#8F00FF] hover:from-[#3A8DFF]/90 hover:to-[#8F00FF]/90 text-white w-full mt-2 py-6 text-lg"
+              className="bg-gradient-to-r from-brand-purple to-indigo-600 hover:from-brand-purple/90 hover:to-indigo-600/90 text-white w-full mt-2 py-6 text-lg"
               onClick={() => {
                 const formElement = document.getElementById('form');
                 if (formElement) {

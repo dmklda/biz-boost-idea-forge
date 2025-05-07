@@ -43,10 +43,8 @@ const DashboardLayout = () => {
               </div>
             </div>
             
-            <div className="h-8 w-8 rounded-full flex items-center justify-center">
-              <div className="h-full w-full rounded-full bg-brand-purple flex items-center justify-center text-white font-bold">
-                {authState.user?.name?.charAt(0)}
-              </div>
+            <div className="h-8 w-8 rounded-full bg-brand-purple flex items-center justify-center text-white font-bold">
+              {authState.user?.name.charAt(0)}
             </div>
           </div>
         </header>

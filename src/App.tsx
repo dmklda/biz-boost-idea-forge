@@ -8,9 +8,9 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ResultsPage from "./pages/ResultsPage";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import '@/i18n/config';
-import { I18nextProvider } from "react-i18next";
-import i18n from './i18n/config';
 import { AuthProvider } from "./hooks/useAuth";
 
 // Auth pages
@@ -51,6 +51,21 @@ const queryClient = new QueryClient({
   }
 });
 
+const LanguageInitializer = ({ children }: { children: React.ReactNode }) => {
+  const { i18n } = useTranslation();
+  
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("i18nextLng");
+    if (savedLanguage && savedLanguage.length > 1) {
+      i18n.changeLanguage(savedLanguage).catch(error => {
+        console.error("Error changing language:", error);
+      });
+    }
+  }, [i18n]);
+  
+  return <>{children}</>;
+};
+
 // Obtendo o tema armazenado para inicialização
 const getStoredTheme = (): "dark" | "light" | "system" => {
   if (typeof window !== 'undefined') {
@@ -61,14 +76,31 @@ const getStoredTheme = (): "dark" | "light" | "system" => {
 
 const App = () => {
   // Aplicando o tema no corpo do documento para evitar flash ao carregar
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const theme = getStoredTheme();
+      const root = document.documentElement;
+      
+      // Remover classes para evitar conflitos
+      root.classList.remove('dark', 'light');
+      
+      if (theme === 'system') {
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        root.classList.add(systemTheme);
+      } else {
+        root.classList.add(theme);
+      }
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <I18nextProvider i18n={i18n}>
-        <ThemeProvider defaultTheme={getStoredTheme()} storageKey="theme">
-          <AuthProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner theme="system" />
+      <ThemeProvider defaultTheme={getStoredTheme()} storageKey="theme">
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner theme="system" />
+            <LanguageInitializer>
               <BrowserRouter>
                 <Routes>
                   <Route path="/" element={<Index />} />
@@ -108,10 +140,10 @@ const App = () => {
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
-            </TooltipProvider>
-          </AuthProvider>
-        </ThemeProvider>
-      </I18nextProvider>
+            </LanguageInitializer>
+          </TooltipProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };
