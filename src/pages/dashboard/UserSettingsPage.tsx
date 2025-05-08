@@ -1,5 +1,5 @@
-
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -25,7 +25,7 @@ interface Profile {
 
 const UserSettingsPage = () => {
   const { t, i18n } = useTranslation();
-  const { authState, updateUserProfile, logout } = useAuth();
+  const { authState } = useAuth();
   const isMobile = useIsMobile();
   
   // User profile state
@@ -69,10 +69,8 @@ const UserSettingsPage = () => {
         
       if (error) throw error;
       
-      updateUserProfile({
-        ...authState.user,
-        name: profile.name
-      });
+      // Update user state - modify to use available methods from useAuth hook
+      authState.user.name = profile.name;
       
       toast.success(t('settings.profileUpdated') || "Perfil atualizado com sucesso");
     } catch (error) {
@@ -467,7 +465,7 @@ const UserSettingsPage = () => {
                 
                 <div className="pt-2">
                   {profile.plan === "free" ? (
-                    <Button className="bg-brand-purple hover:bg-brand-purple/90" asChild>
+                    <Button className="bg-brand-purple hover:bg-brand-purple/90">
                       <Link to="/planos">{t('settings.upgradePlan') || "Fazer upgrade"}</Link>
                     </Button>
                   ) : (

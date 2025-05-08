@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { MobileBottomNav } from "@/components/dashboard/MobileBottomNav";

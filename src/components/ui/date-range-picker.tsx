@@ -66,7 +66,7 @@ export function DateRangePicker({
             selected={value}
             onSelect={onChange}
             numberOfMonths={2}
-            className={cn("rounded-md border", calendarClassName)}
+            className={cn("rounded-md border pointer-events-auto", calendarClassName)}
           />
           <div className="flex items-center justify-between p-3 border-t">
             <Button

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Search, Book, FileText, Video, ExternalLink, Calendar, BookOpen, BookOpen2 } from "lucide-react";
+import { Search, Book, FileText, Video, ExternalLink, Calendar, BookOpen } from "lucide-react";
 
 interface Resource {
   id: string;
@@ -67,7 +66,7 @@ const ResourceCenterPage = () => {
           category: "success-cases",
           type: "case-study",
           url: "/recursos/casos-de-sucesso/nubank",
-          image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=2940&auto=format&fit=crop",
+          image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=2671&auto=format&fit=crop",
           tags: ["fintech", "case", "unicórnio"],
           date: "2023-09-20"
         },
@@ -203,7 +202,7 @@ const ResourceCenterPage = () => {
             {t('resources.allResources') || "Todos"}
           </TabsTrigger>
           <TabsTrigger value="guides" className="flex items-center gap-1">
-            <BookOpen2 className="h-4 w-4" />
+            <BookOpen className="h-4 w-4" />
             {t('resources.guides') || "Guias"}
           </TabsTrigger>
           <TabsTrigger value="blog" className="flex items-center gap-1">
