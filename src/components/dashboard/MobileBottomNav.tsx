@@ -3,8 +3,8 @@ import React from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Lightbulb, Plus, CreditCard, User, Bell } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { LayoutDashboard, Lightbulb, Plus, CreditCard, User } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { IdeaForm } from "@/components/IdeaForm";
 import { useAuth } from "@/hooks/useAuth";
 import { Badge } from "@/components/ui/badge";
@@ -72,7 +72,7 @@ export const MobileBottomNav = () => {
             return (
               <Link
                 key={item.path + item.title}
-                to={item.path}
+                to={item.onClick ? "#" : item.path}
                 className={cn(
                   "flex flex-col items-center py-2 px-3 rounded-lg transition-colors",
                   isActive ? "text-brand-purple" : "text-muted-foreground",
