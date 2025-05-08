@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -57,10 +56,7 @@ interface SortConfig {
 }
 
 interface FilterOptions {
-  date: {
-    from: Date | undefined;
-    to: Date | undefined;
-  } | undefined;
+  date: DateRange | undefined;
   score: string;
   keywords: string;
 }

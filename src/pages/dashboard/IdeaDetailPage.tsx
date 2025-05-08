@@ -136,18 +136,18 @@ const IdeaDetailPage = () => {
         if (analysisError) throw analysisError;
         
         if (analysisData) {
-          // Convert the JSON fields to properly typed objects
+          // Convert the JSON fields to properly typed objects with type assertions
           const typedAnalysis: Analysis = {
             id: analysisData.id,
             idea_id: analysisData.idea_id,
             score: analysisData.score,
             status: analysisData.status,
             created_at: analysisData.created_at,
-            swot_analysis: analysisData.swot_analysis as SwotAnalysis,
-            market_analysis: analysisData.market_analysis as MarketAnalysis,
-            recommendations: analysisData.recommendations as Recommendations,
-            competitor_analysis: analysisData.competitor_analysis as CompetitorAnalysis,
-            financial_analysis: analysisData.financial_analysis as FinancialAnalysis,
+            swot_analysis: analysisData.swot_analysis as unknown as SwotAnalysis,
+            market_analysis: analysisData.market_analysis as unknown as MarketAnalysis,
+            recommendations: analysisData.recommendations as unknown as Recommendations,
+            competitor_analysis: analysisData.competitor_analysis as unknown as CompetitorAnalysis,
+            financial_analysis: analysisData.financial_analysis as unknown as FinancialAnalysis,
           };
           
           setAnalysis(typedAnalysis);

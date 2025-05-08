@@ -193,7 +193,7 @@ const DashboardLayout = () => {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => authState.logout()}>
+                  <DropdownMenuItem onClick={() => authState?.logout()}>
                     {t('nav.logout') || "Sair"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>

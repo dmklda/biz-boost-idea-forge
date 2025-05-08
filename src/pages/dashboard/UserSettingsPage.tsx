@@ -25,7 +25,7 @@ interface Profile {
 
 const UserSettingsPage = () => {
   const { t, i18n } = useTranslation();
-  const { authState } = useAuth();
+  const { authState, logout } = useAuth();
   const isMobile = useIsMobile();
   
   // User profile state
@@ -134,7 +134,7 @@ const UserSettingsPage = () => {
         
         if (error) throw error;
         
-        logout();
+        await logout();
         toast.success(t('settings.accountDeleted') || "Conta excluída com sucesso");
       } catch (error) {
         console.error("Error deleting account:", error);
