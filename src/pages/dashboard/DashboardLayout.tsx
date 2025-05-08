@@ -23,7 +23,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const DashboardLayout = () => {
-  const { authState } = useAuth();
+  // Extract both authState and logout function
+  const { authState, logout } = useAuth();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const isMobile = useIsMobile();
   const { t } = useTranslation();
@@ -193,7 +194,7 @@ const DashboardLayout = () => {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => authState?.logout()}>
+                  <DropdownMenuItem onClick={() => logout()}>
                     {t('nav.logout') || "Sair"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
