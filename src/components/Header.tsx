@@ -24,9 +24,9 @@ const Header = () => {
     <header className={`border-b ${scrolled ? 'border-border/30' : 'border-transparent'} fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'py-3 bg-background/60 dark:bg-background/60 backdrop-blur-xl shadow-sm' : 'py-5 bg-transparent'}`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
         <div className="flex items-center">
-          <div className={`transition-all duration-500 ${scrolled ? 'scale-90' : 'scale-100'}`}>
+          <Link to="/" className={`transition-all duration-500 ${scrolled ? 'scale-90' : 'scale-100'}`}>
             <img src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png" alt="Startup Ideia Logo" className="h-8 md:h-8 w-auto" />
-          </div>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
