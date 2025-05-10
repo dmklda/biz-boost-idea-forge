@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Navigate, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,13 +14,17 @@ import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-
 const DashboardLayout = () => {
   // Extract both authState and logout function
-  const { authState, logout } = useAuth();
+  const {
+    authState,
+    logout
+  } = useAuth();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const isMobile = useIsMobile();
-  const { t } = useTranslation();
+  const {
+    t
+  } = useTranslation();
   const location = useLocation();
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
   const [pageTitle, setPageTitle] = useState("");
@@ -31,12 +34,7 @@ const DashboardLayout = () => {
   // Set page title based on route
   useEffect(() => {
     const path = location.pathname;
-    if (path === "/dashboard") setPageTitle(t('nav.dashboard'));
-    else if (path.includes("/ideias")) setPageTitle(t('nav.ideas'));
-    else if (path.includes("/creditos")) setPageTitle(t('nav.credits'));
-    else if (path.includes("/configuracoes")) setPageTitle(t('nav.profile'));
-    else if (path.includes("/recursos")) setPageTitle(t('nav.resources'));
-    else setPageTitle("Startupideia");
+    if (path === "/dashboard") setPageTitle(t('nav.dashboard'));else if (path.includes("/ideias")) setPageTitle(t('nav.ideas'));else if (path.includes("/creditos")) setPageTitle(t('nav.credits'));else if (path.includes("/configuracoes")) setPageTitle(t('nav.profile'));else if (path.includes("/recursos")) setPageTitle(t('nav.resources'));else setPageTitle("Startupideia");
   }, [location.pathname, t]);
 
   // Check if user has low credits to show notification badge
@@ -52,11 +50,9 @@ const DashboardLayout = () => {
   if (!authState.isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-  
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen);
   };
-  
   return <div className="flex flex-col h-screen bg-background">
       {/* Dashboard layout with sidebar */}
       <div className="flex flex-1 overflow-hidden">
@@ -71,7 +67,7 @@ const DashboardLayout = () => {
             
             <div className="flex items-center">
               <Link to="/">
-                <img src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png" alt="Startup Ideia" className="h-8 w-auto" />
+                
               </Link>
             </div>
             
@@ -208,5 +204,4 @@ const DashboardLayout = () => {
       </div>
     </div>;
 };
-
 export default DashboardLayout;
