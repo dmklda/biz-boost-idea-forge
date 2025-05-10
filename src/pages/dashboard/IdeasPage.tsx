@@ -76,7 +76,7 @@ const IdeasPage = () => {
         setIdeas(formattedIdeas);
       } catch (error) {
         console.error("Error fetching ideas:", error);
-        toast.error(t('ideas.errors.fetchFailed', "Erro ao carregar ideias"));
+        toast.error(t('ideas.errors.fetchFailed'));
       } finally {
         setLoading(false);
       }

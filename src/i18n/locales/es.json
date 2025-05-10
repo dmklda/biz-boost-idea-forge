@@ -1,4 +1,3 @@
-
 {
   "auth": {
     "login": "Iniciar Sesión",
@@ -108,6 +107,9 @@
       "pending": "Pendiente",
       "analyzed": "Analizado",
       "inProgress": "En Progreso"
+    },
+    "errors": {
+      "fetchFailed": "Error al cargar las ideas"
     }
   },
   
@@ -189,5 +191,58 @@
     "view": "Ver",
     "loading": "Cargando...",
     "noResults": "No se encontraron resultados"
+  },
+  
+  "monitoringStatus": {
+    "title": "Estado del sistema",
+    "active": "Todos los sistemas activos",
+    "partial": "Problemas parciales",
+    "down": "Sistema caído"
+  },
+  
+  "countries": {
+    "global": "Global",
+    "angola": "Angola",
+    "brazil": "Brasil",
+    "portugal": "Portugal",
+    "mozambique": "Mozambique",
+    "other": "Otros"
+  },
+  
+  "profile": {
+    "title": "Mi Perfil",
+    "subtitle": "Administre su información personal y preferencias de cuenta",
+    "personalInfo": {
+      "title": "Información Personal",
+      "name": "Nombre Completo",
+      "email": "Correo Electrónico",
+      "phone": "Teléfono",
+      "country": "País",
+      "language": "Idioma Preferido"
+    },
+    "accountSettings": {
+      "title": "Configuración de la Cuenta",
+      "changePassword": "Cambiar Contraseña",
+      "currentPassword": "Contraseña Actual",
+      "newPassword": "Nueva Contraseña",
+      "confirmPassword": "Confirmar Nueva Contraseña",
+      "twoFactor": "Autenticación de Dos Factores",
+      "enabled": "Habilitado",
+      "disabled": "Deshabilitado"
+    },
+    "notifications": {
+      "title": "Preferencias de Notificación",
+      "analysis": "Notificaciones de Análisis",
+      "marketing": "Notificaciones de Marketing",
+      "newsletter": "Boletín Informativo",
+      "updates": "Actualizaciones del Producto"
+    },
+    "dangerZone": {
+      "title": "Zona de Peligro",
+      "deleteAccount": "Eliminar Cuenta",
+      "deleteWarning": "Esta acción no se puede deshacer. Se eliminarán permanentemente todos sus datos.",
+      "confirmDelete": "Sí, eliminar mi cuenta"
+    },
+    "save": "Guardar Cambios"
   }
 }
