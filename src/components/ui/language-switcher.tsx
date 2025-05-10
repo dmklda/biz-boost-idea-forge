@@ -19,11 +19,11 @@ const languages = {
 
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
-  const [currentLang, setCurrentLang] = useState(i18n.language || 'en');
+  const [currentLang, setCurrentLang] = useState(i18n.language);
 
   useEffect(() => {
-    // Update state when i18n.language changes
-    setCurrentLang(i18n.language || 'en');
+    // Atualiza o estado quando i18n.language muda
+    setCurrentLang(i18n.language);
   }, [i18n.language]);
 
   const handleLanguageChange = (code: string) => {
@@ -33,22 +33,21 @@ export function LanguageSwitcher() {
       return;
     }
     
-    // Changing the language programmatically
+    // Alterando o idioma programaticamente
     i18n.changeLanguage(code);
     
-    // Storing user preference
+    // Armazenando a preferência do usuário
     localStorage.setItem("i18nextLng", code);
     
-    // Updating local state
+    // Atualizando o estado local
     setCurrentLang(code);
     
-    // Reloading the page to ensure all translations are applied
+    // Recarregando a página para garantir que todas as traduções sejam aplicadas
     window.location.reload();
   };
 
-  // Helper function to check if language code matches current language
+  // Função auxiliar para verificar se o código de idioma corresponde ao idioma atual
   const isCurrentLanguage = (code: string): boolean => {
-    if (!currentLang) return code === 'en'; // Default to English if no language set
     return currentLang.startsWith(code);
   };
 
