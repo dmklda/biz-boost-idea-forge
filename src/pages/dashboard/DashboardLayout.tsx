@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Navigate, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -14,36 +13,28 @@ import { IdeaForm } from "@/components/IdeaForm";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 const DashboardLayout = () => {
   // Extract both authState and logout function
-  const { authState, logout } = useAuth();
+  const {
+    authState,
+    logout
+  } = useAuth();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const isMobile = useIsMobile();
-  const { t } = useTranslation();
+  const {
+    t
+  } = useTranslation();
   const location = useLocation();
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
   const [pageTitle, setPageTitle] = useState("");
   const [hasNotifications, setHasNotifications] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  
+
   // Set page title based on route
   useEffect(() => {
     const path = location.pathname;
-    if (path === "/dashboard") setPageTitle(t('nav.dashboard'));
-    else if (path.includes("/ideias")) setPageTitle(t('nav.ideas'));
-    else if (path.includes("/creditos")) setPageTitle(t('nav.credits'));
-    else if (path.includes("/configuracoes")) setPageTitle(t('nav.profile'));
-    else if (path.includes("/recursos")) setPageTitle(t('nav.resources'));
-    else setPageTitle("Startupideia");
+    if (path === "/dashboard") setPageTitle(t('nav.dashboard'));else if (path.includes("/ideias")) setPageTitle(t('nav.ideas'));else if (path.includes("/creditos")) setPageTitle(t('nav.credits'));else if (path.includes("/configuracoes")) setPageTitle(t('nav.profile'));else if (path.includes("/recursos")) setPageTitle(t('nav.resources'));else setPageTitle("Startupideia");
   }, [location.pathname, t]);
 
   // Check if user has low credits to show notification badge
@@ -54,173 +45,116 @@ const DashboardLayout = () => {
       setHasNotifications(false);
     }
   }, [authState.user]);
-  
+
   // Redirect to login if not authenticated
   if (!authState.isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen);
   };
-  
-  return (
-    <div className="flex flex-col h-screen bg-background">
+  return <div className="flex flex-col h-screen bg-background">
       {/* Dashboard layout with sidebar */}
       <div className="flex flex-1 overflow-hidden">
         {/* Only show sidebar on non-mobile */}
-        {!isMobile && (
-          <DashboardSidebar collapsed={sidebarCollapsed} />
-        )}
+        {!isMobile && <DashboardSidebar collapsed={sidebarCollapsed} />}
         
         <div className="flex-1 flex flex-col overflow-hidden">
           <header className="h-14 border-b flex items-center px-4 bg-background/95 backdrop-blur-sm sticky top-0 z-30">
-            {!isMobile && (
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="mr-4" 
-                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              >
+            {!isMobile && <Button variant="ghost" size="icon" className="mr-4" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
                 <Menu className="h-5 w-5" />
-              </Button>
-            )}
+              </Button>}
             
             <div className="flex items-center">
-              {isMobile ? (
-                <Link to="/">
-                  <img 
-                    src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png"
-                    alt="Startup Ideia" 
-                    className="h-8 w-auto"
-                  />
-                </Link>
-              ) : (
-                <Link to="/">
-                  <img 
-                    src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png"
-                    alt="Startup Ideia" 
-                    className="h-8 w-auto"
-                  />
-                </Link>
-              )}
+              {isMobile ? <Link to="/">
+                  <img src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png" alt="Startup Ideia" className="h-8 w-auto" />
+                </Link> : <Link to="/">
+                  
+                </Link>}
             </div>
             
             <div className="ml-auto flex items-center gap-3">
               {/* Search button - Mobile only */}
-              {isMobile && (
-                <Button variant="ghost" size="icon" onClick={toggleSearch}>
+              {isMobile && <Button variant="ghost" size="icon" onClick={toggleSearch}>
                   <Search className="h-5 w-5" />
-                </Button>
-              )}
+                </Button>}
 
               {/* Notifications button - For mobile */}
-              {isMobile && (
-                <DropdownMenu>
+              {isMobile && <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="relative">
                       <Bell className="h-5 w-5" />
-                      {hasNotifications && (
-                        <Badge className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-red-500" />
-                      )}
+                      {hasNotifications && <Badge className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-red-500" />}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-80">
                     <DropdownMenuLabel>{t('notifications.title') || "Notificações"}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    {hasNotifications && (
-                      <DropdownMenuItem>
+                    {hasNotifications && <DropdownMenuItem>
                         <div className="flex flex-col">
                           <span className="font-medium">{t('notifications.lowCredits') || "Créditos baixos"}</span>
                           <span className="text-xs text-muted-foreground">
                             {t('notifications.lowCreditsDesc') || "Seus créditos estão acabando. Adicione mais para continuar analisando ideias."}
                           </span>
                         </div>
-                      </DropdownMenuItem>
-                    )}
-                    {!hasNotifications && (
-                      <div className="px-2 py-4 text-center text-muted-foreground">
+                      </DropdownMenuItem>}
+                    {!hasNotifications && <div className="px-2 py-4 text-center text-muted-foreground">
                         {t('notifications.noNotifications') || "Nenhuma notificação no momento"}
-                      </div>
-                    )}
+                      </div>}
                   </DropdownMenuContent>
-                </DropdownMenu>
-              )}
+                </DropdownMenu>}
 
               {/* Search input - Only show when search is open on mobile */}
-              {isSearchOpen && isMobile && (
-                <div className="absolute inset-x-0 top-0 bg-background z-50 p-4">
+              {isSearchOpen && isMobile && <div className="absolute inset-x-0 top-0 bg-background z-50 p-4">
                   <div className="flex gap-2">
-                    <Input 
-                      placeholder={t('search.placeholder') || "Pesquisar ideias..."} 
-                      autoFocus
-                      className="flex-1"
-                    />
+                    <Input placeholder={t('search.placeholder') || "Pesquisar ideias..."} autoFocus className="flex-1" />
                     <Button variant="ghost" size="icon" onClick={toggleSearch}>
                       <span className="sr-only">Close</span>
                       <span aria-hidden="true">&times;</span>
                     </Button>
                   </div>
-                </div>
-              )}
+                </div>}
               
               {/* Notifications - Desktop */}
-              {!isMobile && (
-                <DropdownMenu>
+              {!isMobile && <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="relative">
                       <Bell className="h-5 w-5" />
-                      {hasNotifications && (
-                        <Badge className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-red-500" />
-                      )}
+                      {hasNotifications && <Badge className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-red-500" />}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-80">
                     <DropdownMenuLabel>{t('notifications.title') || "Notificações"}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    {hasNotifications && (
-                      <DropdownMenuItem>
+                    {hasNotifications && <DropdownMenuItem>
                         <div className="flex flex-col">
                           <span className="font-medium">{t('notifications.lowCredits') || "Créditos baixos"}</span>
                           <span className="text-xs text-muted-foreground">
                             {t('notifications.lowCreditsDesc') || "Seus créditos estão acabando. Adicione mais para continuar analisando ideias."}
                           </span>
                         </div>
-                      </DropdownMenuItem>
-                    )}
-                    {!hasNotifications && (
-                      <div className="px-2 py-4 text-center text-muted-foreground">
+                      </DropdownMenuItem>}
+                    {!hasNotifications && <div className="px-2 py-4 text-center text-muted-foreground">
                         {t('notifications.noNotifications') || "Nenhuma notificação no momento"}
-                      </div>
-                    )}
+                      </div>}
                   </DropdownMenuContent>
-                </DropdownMenu>
-              )}
+                </DropdownMenu>}
               
               {/* New Analysis button on desktop only */}
-              {!isMobile && (
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => setIsAnalysisDialogOpen(true)}
-                  className="text-brand-purple"
-                >
+              {!isMobile && <Button variant="ghost" size="icon" onClick={() => setIsAnalysisDialogOpen(true)} className="text-brand-purple">
                   <Plus className="h-5 w-5" />
-                </Button>
-              )}
+                </Button>}
               
               {!isMobile && <LanguageSwitcher />}
               {!isMobile && <ThemeToggle />}
               
               <div className="flex items-center gap-2">
-                {!isMobile && (
-                  <div className="text-sm hidden md:block">
+                {!isMobile && <div className="text-sm hidden md:block">
                     <span className="font-medium">{authState.user?.name}</span>
                     <div className="text-xs text-muted-foreground">
                       {authState.user?.plan === "free" ? "Plano Gratuito" : "Plano Pro"}
                     </div>
-                  </div>
-                )}
+                  </div>}
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -270,8 +204,6 @@ const DashboardLayout = () => {
           </Dialog>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default DashboardLayout;
