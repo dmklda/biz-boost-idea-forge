@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Navigate, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,23 +9,19 @@ import { Menu, Plus, Bell, Search } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { IdeaForm } from "@/components/IdeaForm";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+
 const DashboardLayout = () => {
   // Extract both authState and logout function
-  const {
-    authState,
-    logout
-  } = useAuth();
+  const { authState, logout } = useAuth();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const isMobile = useIsMobile();
-  const {
-    t
-  } = useTranslation();
+  const { t } = useTranslation();
   const location = useLocation();
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
   const [pageTitle, setPageTitle] = useState("");
@@ -34,7 +31,12 @@ const DashboardLayout = () => {
   // Set page title based on route
   useEffect(() => {
     const path = location.pathname;
-    if (path === "/dashboard") setPageTitle(t('nav.dashboard'));else if (path.includes("/ideias")) setPageTitle(t('nav.ideas'));else if (path.includes("/creditos")) setPageTitle(t('nav.credits'));else if (path.includes("/configuracoes")) setPageTitle(t('nav.profile'));else if (path.includes("/recursos")) setPageTitle(t('nav.resources'));else setPageTitle("Startupideia");
+    if (path === "/dashboard") setPageTitle(t('nav.dashboard'));
+    else if (path.includes("/ideias")) setPageTitle(t('nav.ideas'));
+    else if (path.includes("/creditos")) setPageTitle(t('nav.credits'));
+    else if (path.includes("/configuracoes")) setPageTitle(t('nav.profile'));
+    else if (path.includes("/recursos")) setPageTitle(t('nav.resources'));
+    else setPageTitle("Startupideia");
   }, [location.pathname, t]);
 
   // Check if user has low credits to show notification badge
@@ -50,9 +52,11 @@ const DashboardLayout = () => {
   if (!authState.isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
+  
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen);
   };
+  
   return <div className="flex flex-col h-screen bg-background">
       {/* Dashboard layout with sidebar */}
       <div className="flex flex-1 overflow-hidden">
@@ -66,11 +70,9 @@ const DashboardLayout = () => {
               </Button>}
             
             <div className="flex items-center">
-              {isMobile ? <Link to="/">
-                  <img src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png" alt="Startup Ideia" className="h-8 w-auto" />
-                </Link> : <Link to="/">
-                  
-                </Link>}
+              <Link to="/">
+                <img src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png" alt="Startup Ideia" className="h-8 w-auto" />
+              </Link>
             </div>
             
             <div className="ml-auto flex items-center gap-3">
@@ -88,18 +90,18 @@ const DashboardLayout = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-80">
-                    <DropdownMenuLabel>{t('notifications.title') || "Notificações"}</DropdownMenuLabel>
+                    <DropdownMenuLabel>{t('notifications.title')}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {hasNotifications && <DropdownMenuItem>
                         <div className="flex flex-col">
-                          <span className="font-medium">{t('notifications.lowCredits') || "Créditos baixos"}</span>
+                          <span className="font-medium">{t('notifications.lowCredits')}</span>
                           <span className="text-xs text-muted-foreground">
-                            {t('notifications.lowCreditsDesc') || "Seus créditos estão acabando. Adicione mais para continuar analisando ideias."}
+                            {t('notifications.lowCreditsDesc')}
                           </span>
                         </div>
                       </DropdownMenuItem>}
                     {!hasNotifications && <div className="px-2 py-4 text-center text-muted-foreground">
-                        {t('notifications.noNotifications') || "Nenhuma notificação no momento"}
+                        {t('notifications.noNotifications')}
                       </div>}
                   </DropdownMenuContent>
                 </DropdownMenu>}
@@ -107,7 +109,7 @@ const DashboardLayout = () => {
               {/* Search input - Only show when search is open on mobile */}
               {isSearchOpen && isMobile && <div className="absolute inset-x-0 top-0 bg-background z-50 p-4">
                   <div className="flex gap-2">
-                    <Input placeholder={t('search.placeholder') || "Pesquisar ideias..."} autoFocus className="flex-1" />
+                    <Input placeholder={t('search.placeholder')} autoFocus className="flex-1" />
                     <Button variant="ghost" size="icon" onClick={toggleSearch}>
                       <span className="sr-only">Close</span>
                       <span aria-hidden="true">&times;</span>
@@ -124,18 +126,18 @@ const DashboardLayout = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-80">
-                    <DropdownMenuLabel>{t('notifications.title') || "Notificações"}</DropdownMenuLabel>
+                    <DropdownMenuLabel>{t('notifications.title')}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {hasNotifications && <DropdownMenuItem>
                         <div className="flex flex-col">
-                          <span className="font-medium">{t('notifications.lowCredits') || "Créditos baixos"}</span>
+                          <span className="font-medium">{t('notifications.lowCredits')}</span>
                           <span className="text-xs text-muted-foreground">
-                            {t('notifications.lowCreditsDesc') || "Seus créditos estão acabando. Adicione mais para continuar analisando ideias."}
+                            {t('notifications.lowCreditsDesc')}
                           </span>
                         </div>
                       </DropdownMenuItem>}
                     {!hasNotifications && <div className="px-2 py-4 text-center text-muted-foreground">
-                        {t('notifications.noNotifications') || "Nenhuma notificação no momento"}
+                        {t('notifications.noNotifications')}
                       </div>}
                   </DropdownMenuContent>
                 </DropdownMenu>}
@@ -152,7 +154,7 @@ const DashboardLayout = () => {
                 {!isMobile && <div className="text-sm hidden md:block">
                     <span className="font-medium">{authState.user?.name}</span>
                     <div className="text-xs text-muted-foreground">
-                      {authState.user?.plan === "free" ? "Plano Gratuito" : "Plano Pro"}
+                      {authState.user?.plan === "free" ? t('dashboard.statistics.free') : t('dashboard.statistics.premium')}
                     </div>
                   </div>}
                 
@@ -168,12 +170,12 @@ const DashboardLayout = () => {
                     <DropdownMenuLabel>{authState.user?.name || ""}</DropdownMenuLabel>
                     <DropdownMenuItem asChild>
                       <Link to="/dashboard/configuracoes">
-                        {t('nav.profile') || "Perfil"}
+                        {t('nav.profile')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => logout()}>
-                      {t('nav.logout') || "Sair"}
+                      {t('nav.logout')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -206,4 +208,5 @@ const DashboardLayout = () => {
       </div>
     </div>;
 };
+
 export default DashboardLayout;

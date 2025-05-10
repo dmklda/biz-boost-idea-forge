@@ -154,7 +154,41 @@
   },
   "ideaForm": {
     "title": "Share your idea",
-    "subtitle": "Fill out the form and receive a detailed analysis of the business potential"
+    "subtitle": "Fill out the form and receive a detailed analysis of the business potential",
+    "success": "Idea successfully registered!",
+    "error": "Error processing your request",
+    "idea": {
+      "title": "What's your business idea?",
+      "placeholder": "Describe your business idea briefly..."
+    },
+    "audience": {
+      "title": "Who is your target audience?",
+      "placeholder": "Describe the ideal customers for your business..."
+    },
+    "problem": {
+      "title": "What problem does this idea solve?",
+      "placeholder": "Describe the problem your business would solve..."
+    },
+    "monetization": {
+      "title": "How do you plan to monetize it?",
+      "placeholder": "Describe how your business would generate revenue..."
+    },
+    "competitors": {
+      "title": "Are there competitors in the market?",
+      "yes": "Yes, there are similar solutions",
+      "no": "No, this is an innovative solution"
+    },
+    "budget": {
+      "title": "What's your initial investment budget?",
+      "placeholder": "Enter the amount...",
+      "currency": "USD"
+    },
+    "location": {
+      "title": "Where will this business operate?",
+      "placeholder": "Select a location..."
+    },
+    "submit": "Submit for Analysis",
+    "submitting": "Analyzing..."
   },
   "cta": {
     "title": "Ready to transform your idea into reality?",
@@ -700,14 +734,14 @@
     },
     "charts": {
       "performanceTitle": "Analysis Performance",
-      "performanceDescription": "Monthly comparison of analyses and consultations",
+      "performanceDescription": "Monthly comparison of analyses and queries",
       "progressTitle": "Analysis Progress",
       "progressDescription": "Evolution of your analyses over time"
     },
     "recentIdeas": {
       "title": "Recent Ideas",
       "description": "Your latest idea analyses",
-      "viewAll": "View all"
+      "viewAll": "View All"
     }
   },
   
@@ -744,35 +778,26 @@
     "title": "My Ideas",
     "subtitle": "Manage and analyze your business ideas",
     "newIdea": "New Idea",
+    "loading": "Loading ideas...",
+    "noIdeasFound": "No ideas found.",
     "table": {
       "name": "Name",
-      "createdAt": "Created On",
       "status": "Status",
+      "score": "Score",
+      "createdAt": "Created At",
       "actions": "Actions",
-      "view": "View",
-      "edit": "Edit",
-      "delete": "Delete"
+      "view": "View analysis"
     },
     "filters": {
-      "all": "All",
+      "all": "All Ideas",
+      "viable": "Viable",
+      "moderate": "Moderate"
+    },
+    "search": "Search ideas...",
+    "statuses": {
       "pending": "Pending",
       "analyzed": "Analyzed",
-      "search": "Search idea..."
-    },
-    "emptyState": {
-      "title": "No ideas found",
-      "description": "You haven't created any ideas yet. Start by creating one now!",
-      "button": "Create Idea"
-    },
-    "deleteConfirm": {
-      "title": "Delete Idea",
-      "description": "Are you sure you want to delete this idea? This action cannot be undone.",
-      "cancel": "Cancel",
-      "confirm": "Yes, delete"
-    },
-    "notifications": {
-      "deleted": "Idea successfully deleted",
-      "deleteError": "Error deleting idea"
+      "inProgress": "In Progress"
     }
   },
   
@@ -782,6 +807,31 @@
     "ideas": "Ideas",
     "credits": "Credits",
     "profile": "Profile",
-    "logout": "Sign Out"
+    "resources": "Resources",
+    "logout": "Logout"
+  },
+  
+  "notifications": {
+    "title": "Notifications",
+    "lowCredits": "Low credits",
+    "lowCreditsDesc": "Your credits are running out. Add more to continue analyzing ideas.",
+    "noNotifications": "No notifications at the moment"
+  },
+  
+  "search": {
+    "placeholder": "Search ideas..."
+  },
+  
+  "common": {
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "loading": "Loading...",
+    "noResults": "No results found"
   }
 }

@@ -154,7 +154,41 @@
   },
   "ideaForm": {
     "title": "Compartilhe sua ideia",
-    "subtitle": "Preencha o formulário e receba uma análise detalhada do potencial de negócio"
+    "subtitle": "Preencha o formulário e receba uma análise detalhada do potencial de negócio",
+    "success": "Ideia registrada com sucesso!",
+    "error": "Erro ao processar sua solicitação",
+    "idea": {
+      "title": "Qual é a sua ideia de negócio?",
+      "placeholder": "Descreva brevemente sua ideia de negócio..."
+    },
+    "audience": {
+      "title": "Quem seria seu público-alvo?",
+      "placeholder": "Descreva os clientes ideais para seu negócio..."
+    },
+    "problem": {
+      "title": "Qual problema essa ideia resolve?",
+      "placeholder": "Descreva o problema que seu negócio solucionaria..."
+    },
+    "monetization": {
+      "title": "Como você planeja monetizá-la?",
+      "placeholder": "Descreva como seu negócio geraria receita..."
+    },
+    "competitors": {
+      "title": "Existem concorrentes no mercado?",
+      "yes": "Sim, existem soluções similares",
+      "no": "Não, esta é uma solução inovadora"
+    },
+    "budget": {
+      "title": "Qual seu orçamento de investimento inicial?",
+      "placeholder": "Digite o valor...",
+      "currency": "USD"
+    },
+    "location": {
+      "title": "Onde este negócio vai operar?",
+      "placeholder": "Selecione uma localização..."
+    },
+    "submit": "Enviar para Análise",
+    "submitting": "Analisando..."
   },
   "cta": {
     "title": "Pronto para transformar sua ideia em realidade?",
@@ -565,35 +599,26 @@
     "title": "Minhas Ideias",
     "subtitle": "Gerencie e analise suas ideias de negócio",
     "newIdea": "Nova Ideia",
+    "loading": "Carregando ideias...",
+    "noIdeasFound": "Nenhuma ideia encontrada.",
     "table": {
       "name": "Nome",
-      "createdAt": "Criado em",
       "status": "Status",
+      "score": "Pontuação",
+      "createdAt": "Criado em",
       "actions": "Ações",
-      "view": "Ver",
-      "edit": "Editar",
-      "delete": "Excluir"
+      "view": "Ver análise"
     },
     "filters": {
-      "all": "Todas",
-      "pending": "Pendentes",
-      "analyzed": "Analisadas",
-      "search": "Buscar ideia..."
+      "all": "Todas as Ideias",
+      "viable": "Viáveis",
+      "moderate": "Moderadas"
     },
-    "emptyState": {
-      "title": "Nenhuma ideia encontrada",
-      "description": "Você ainda não cadastrou nenhuma ideia. Comece criando uma agora!",
-      "button": "Criar Ideia"
-    },
-    "deleteConfirm": {
-      "title": "Excluir Ideia",
-      "description": "Tem certeza que deseja excluir esta ideia? Esta ação não pode ser desfeita.",
-      "cancel": "Cancelar",
-      "confirm": "Sim, excluir"
-    },
-    "notifications": {
-      "deleted": "Ideia excluída com sucesso",
-      "deleteError": "Erro ao excluir ideia"
+    "search": "Buscar ideias...",
+    "statuses": {
+      "pending": "Pendente",
+      "analyzed": "Analisado",
+      "inProgress": "Em Progresso"
     }
   },
   
@@ -603,6 +628,31 @@
     "ideas": "Ideias",
     "credits": "Créditos",
     "profile": "Perfil",
+    "resources": "Recursos",
     "logout": "Sair"
+  },
+  
+  "notifications": {
+    "title": "Notificações",
+    "lowCredits": "Créditos baixos",
+    "lowCreditsDesc": "Seus créditos estão acabando. Adicione mais para continuar analisando ideias.",
+    "noNotifications": "Nenhuma notificação no momento"
+  },
+  
+  "search": {
+    "placeholder": "Pesquisar ideias..."
+  },
+  
+  "common": {
+    "back": "Voltar",
+    "next": "Próximo",
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "view": "Ver",
+    "loading": "Carregando...",
+    "noResults": "Nenhum resultado encontrado"
   }
 }

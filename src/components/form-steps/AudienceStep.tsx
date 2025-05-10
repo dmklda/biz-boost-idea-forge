@@ -3,6 +3,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { FormData } from "@/types/form";
+import { useTranslation } from "react-i18next";
 
 interface AudienceStepProps {
   formData: FormData;
@@ -12,15 +13,17 @@ interface AudienceStepProps {
 }
 
 export const AudienceStep = ({ formData, updateFormData, onNext, onPrev }: AudienceStepProps) => {
+  const { t } = useTranslation();
+  
   return (
     <div className="space-y-4">
       <div>
         <Label htmlFor="audience" className="text-base font-medium">
-          Quem seria seu público-alvo?
+          {t('ideaForm.audience.title', 'Quem seria seu público-alvo?')}
         </Label>
         <Textarea 
           id="audience"
-          placeholder="Descreva os clientes ideais para seu negócio..."
+          placeholder={t('ideaForm.audience.placeholder', 'Descreva os clientes ideais para seu negócio...')}
           className="mt-2 resize-none"
           rows={3}
           value={formData.audience}
@@ -30,11 +33,11 @@ export const AudienceStep = ({ formData, updateFormData, onNext, onPrev }: Audie
       </div>
       <div>
         <Label htmlFor="problem" className="text-base font-medium">
-          Qual problema essa ideia resolve?
+          {t('ideaForm.problem.title', 'Qual problema essa ideia resolve?')}
         </Label>
         <Textarea 
           id="problem"
-          placeholder="Descreva o problema que seu negócio solucionaria..."
+          placeholder={t('ideaForm.problem.placeholder', 'Descreva o problema que seu negócio solucionaria...')}
           className="mt-2 resize-none"
           rows={3}
           value={formData.problem}
@@ -44,7 +47,7 @@ export const AudienceStep = ({ formData, updateFormData, onNext, onPrev }: Audie
       </div>
       <div className="flex justify-between">
         <Button type="button" variant="outline" onClick={onPrev}>
-          Voltar
+          {t('common.back', 'Voltar')}
         </Button>
         <Button 
           type="button" 
@@ -52,7 +55,7 @@ export const AudienceStep = ({ formData, updateFormData, onNext, onPrev }: Audie
           disabled={formData.audience.trim().length < 5 || formData.problem.trim().length < 5}
           className="bg-brand-blue hover:bg-brand-blue/90"
         >
-          Próximo
+          {t('common.next', 'Próximo')}
         </Button>
       </div>
     </div>

@@ -77,7 +77,7 @@
       "description": "Su historial de compras y uso de créditos",
       "date": "Fecha",
       "type": "Tipo",
-      "details": "Detalles",
+      "details": "Detalhes",
       "amount": "Cantidad",
       "loading": "Cargando historial de transacciones...",
       "noTransactions": "No se encontraron transacciones."
@@ -88,35 +88,26 @@
     "title": "Mis Ideas",
     "subtitle": "Gestione y analice sus ideas de negocio",
     "newIdea": "Nueva Idea",
+    "loading": "Cargando ideas...",
+    "noIdeasFound": "No se encontraron ideas.",
     "table": {
       "name": "Nombre",
-      "createdAt": "Creado el",
       "status": "Estado",
+      "score": "Puntuación",
+      "createdAt": "Creado el",
       "actions": "Acciones",
-      "view": "Ver",
-      "edit": "Editar",
-      "delete": "Eliminar"
+      "view": "Ver análisis"
     },
     "filters": {
-      "all": "Todas",
-      "pending": "Pendientes",
-      "analyzed": "Analizadas",
-      "search": "Buscar idea..."
+      "all": "Todas las Ideas",
+      "viable": "Viables",
+      "moderate": "Moderadas"
     },
-    "emptyState": {
-      "title": "No se encontraron ideas",
-      "description": "Aún no ha creado ninguna idea. ¡Comience creando una ahora!",
-      "button": "Crear Idea"
-    },
-    "deleteConfirm": {
-      "title": "Eliminar Idea",
-      "description": "¿Está seguro de que desea eliminar esta idea? Esta acción no se puede deshacer.",
-      "cancel": "Cancelar",
-      "confirm": "Sí, eliminar"
-    },
-    "notifications": {
-      "deleted": "Idea eliminada correctamente",
-      "deleteError": "Error al eliminar la idea"
+    "search": "Buscar ideas...",
+    "statuses": {
+      "pending": "Pendiente",
+      "analyzed": "Analizado",
+      "inProgress": "En Progreso"
     }
   },
   
@@ -126,6 +117,7 @@
     "ideas": "Ideas",
     "credits": "Créditos",
     "profile": "Perfil",
+    "resources": "Recursos",
     "logout": "Cerrar sesión"
   },
   
@@ -134,5 +126,68 @@
     "benefits": "Beneficios",
     "plans": "Planes",
     "startNow": "Empezar ahora"
+  },
+
+  "ideaForm": {
+    "title": "Comparta su idea",
+    "subtitle": "Complete el formulario y reciba un análisis detallado del potencial de negocio",
+    "success": "¡Idea registrada con éxito!",
+    "error": "Error al procesar su solicitud",
+    "idea": {
+      "title": "¿Cuál es su idea de negocio?",
+      "placeholder": "Describa brevemente su idea de negocio..."
+    },
+    "audience": {
+      "title": "¿Quién es su público objetivo?",
+      "placeholder": "Describa los clientes ideales para su negocio..."
+    },
+    "problem": {
+      "title": "¿Qué problema resuelve esta idea?",
+      "placeholder": "Describa el problema que su negocio resolvería..."
+    },
+    "monetization": {
+      "title": "¿Cómo planea monetizarlo?",
+      "placeholder": "Describa cómo su negocio generaría ingresos..."
+    },
+    "competitors": {
+      "title": "¿Hay competidores en el mercado?",
+      "yes": "Sí, hay soluciones similares",
+      "no": "No, esta es una solución innovadora"
+    },
+    "budget": {
+      "title": "¿Cuál es su presupuesto de inversión inicial?",
+      "placeholder": "Ingrese el monto...",
+      "currency": "USD"
+    },
+    "location": {
+      "title": "¿Dónde operará este negocio?",
+      "placeholder": "Seleccione una ubicación..."
+    },
+    "submit": "Enviar para análisis",
+    "submitting": "Analizando..."
+  },
+
+  "notifications": {
+    "title": "Notificaciones",
+    "lowCredits": "Créditos bajos",
+    "lowCreditsDesc": "Sus créditos se están acabando. Añada más para seguir analizando ideas.",
+    "noNotifications": "No hay notificaciones en este momento"
+  },
+
+  "search": {
+    "placeholder": "Buscar ideas..."
+  },
+
+  "common": {
+    "back": "Volver",
+    "next": "Siguiente",
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "loading": "Cargando...",
+    "noResults": "No se encontraron resultados"
   }
 }

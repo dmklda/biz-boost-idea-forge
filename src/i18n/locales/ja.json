@@ -88,35 +88,26 @@
     "title": "マイアイデア",
     "subtitle": "ビジネスアイデアの管理と分析",
     "newIdea": "新しいアイデア",
+    "loading": "アイデアを読み込み中...",
+    "noIdeasFound": "アイデアが見つかりません。",
     "table": {
       "name": "名前",
-      "createdAt": "作成日",
       "status": "ステータス",
+      "score": "スコア",
+      "createdAt": "作成日",
       "actions": "操作",
-      "view": "表示",
-      "edit": "編集",
-      "delete": "削除"
+      "view": "分析を表示"
     },
     "filters": {
-      "all": "すべて",
+      "all": "すべてのアイデア",
+      "viable": "実現可能",
+      "moderate": "適度"
+    },
+    "search": "アイデアを検索...",
+    "statuses": {
       "pending": "保留中",
       "analyzed": "分析済み",
-      "search": "アイデアを検索..."
-    },
-    "emptyState": {
-      "title": "アイデアが見つかりません",
-      "description": "まだアイデアを作成していません。今すぐ作成してみましょう！",
-      "button": "アイデアを作成"
-    },
-    "deleteConfirm": {
-      "title": "アイデアを削除",
-      "description": "このアイデアを削除してもよろしいですか？この操作は元に戻せません。",
-      "cancel": "キャンセル",
-      "confirm": "はい、削除します"
-    },
-    "notifications": {
-      "deleted": "アイデアが正常に削除されました",
-      "deleteError": "アイデアの削除中にエラーが発生しました"
+      "inProgress": "進行中"
     }
   },
   
@@ -126,6 +117,7 @@
     "ideas": "アイデア",
     "credits": "クレジット",
     "profile": "プロフィール",
+    "resources": "リソース",
     "logout": "ログアウト"
   },
   
@@ -134,5 +126,68 @@
     "benefits": "メリット",
     "plans": "プラン",
     "startNow": "今すぐ始める"
+  },
+
+  "ideaForm": {
+    "title": "アイデアを共有する",
+    "subtitle": "フォームに記入して、ビジネスの可能性の詳細な分析を受け取る",
+    "success": "アイデアが正常に登録されました！",
+    "error": "リクエストの処理中にエラーが発生しました",
+    "idea": {
+      "title": "あなたのビジネスアイデアは何ですか？",
+      "placeholder": "ビジネスアイデアを簡潔に説明してください..."
+    },
+    "audience": {
+      "title": "ターゲットオーディエンスは誰ですか？",
+      "placeholder": "あなたのビジネスに理想的な顧客を説明してください..."
+    },
+    "problem": {
+      "title": "このアイデアはどのような問題を解決しますか？",
+      "placeholder": "あなたのビジネスが解決する問題を説明してください..."
+    },
+    "monetization": {
+      "title": "どのように収益化する予定ですか？",
+      "placeholder": "あなたのビジネスがどのように収益を生み出すか説明してください..."
+    },
+    "competitors": {
+      "title": "市場に競合他社はいますか？",
+      "yes": "はい、類似のソリューションがあります",
+      "no": "いいえ、これは革新的なソリューションです"
+    },
+    "budget": {
+      "title": "初期投資予算はいくらですか？",
+      "placeholder": "金額を入力してください...",
+      "currency": "USD"
+    },
+    "location": {
+      "title": "このビジネスはどこで運営されますか？",
+      "placeholder": "場所を選択してください..."
+    },
+    "submit": "分析のために提出する",
+    "submitting": "分析中..."
+  },
+
+  "notifications": {
+    "title": "通知",
+    "lowCredits": "クレジット残高が少ない",
+    "lowCreditsDesc": "クレジットが不足しています。アイデア分析を続けるにはクレジットを追加してください。",
+    "noNotifications": "現在通知はありません"
+  },
+
+  "search": {
+    "placeholder": "アイデアを検索..."
+  },
+
+  "common": {
+    "back": "戻る",
+    "next": "次へ",
+    "submit": "提出",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "delete": "削除",
+    "edit": "編集",
+    "view": "表示",
+    "loading": "読み込み中...",
+    "noResults": "結果が見つかりません"
   }
 }

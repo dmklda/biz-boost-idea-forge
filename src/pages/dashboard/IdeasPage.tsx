@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/components/ui/sonner";
+import { useTranslation } from "react-i18next";
 
 // Tipagem para as ideias
 interface Idea {
@@ -25,6 +26,7 @@ interface Idea {
 }
 
 const IdeasPage = () => {
+  const { t } = useTranslation();
   const { authState } = useAuth();
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,21 +69,21 @@ const IdeasPage = () => {
             problem: idea.problem,
             created_at: idea.created_at,
             score: analysis ? analysis.score : 0,
-            status: analysis ? analysis.status : "Pendente"
+            status: analysis ? analysis.status : t('ideas.statuses.pending')
           };
         });
 
         setIdeas(formattedIdeas);
       } catch (error) {
         console.error("Error fetching ideas:", error);
-        toast.error("Erro ao carregar ideias");
+        toast.error(t('ideas.errors.fetchFailed', "Erro ao carregar ideias"));
       } finally {
         setLoading(false);
       }
     };
 
     fetchIdeas();
-  }, [authState.isAuthenticated, authState.user?.id]);
+  }, [authState.isAuthenticated, authState.user?.id, t]);
 
   // Filtrar ideias baseado na busca
   const filteredIdeas = ideas.filter(idea => 
@@ -101,7 +103,7 @@ const IdeasPage = () => {
       return (
         <TableRow>
           <TableCell colSpan={5} className="text-center py-8">
-            Carregando ideias...
+            {t('ideas.loading')}
           </TableCell>
         </TableRow>
       );
@@ -111,7 +113,7 @@ const IdeasPage = () => {
       return (
         <TableRow>
           <TableCell colSpan={5} className="text-center py-8">
-            Nenhuma ideia encontrada.
+            {t('ideas.noIdeasFound')}
           </TableCell>
         </TableRow>
       );
@@ -127,7 +129,7 @@ const IdeasPage = () => {
               (idea.score || 0) > 0 ? "border-red-500 bg-red-500/10 text-red-600" :
               "border-gray-500 bg-gray-500/10 text-gray-600"}
           `}>
-            {idea.status || "Pendente"}
+            {idea.status}
           </Badge>
         </TableCell>
         <TableCell>
@@ -145,13 +147,13 @@ const IdeasPage = () => {
               <span>{idea.score || 0}%</span>
             </div>
           ) : (
-            <span>Pendente</span>
+            <span>{t('ideas.statuses.pending')}</span>
           )}
         </TableCell>
         <TableCell>{new Date(idea.created_at).toLocaleDateString()}</TableCell>
         <TableCell>
           <Button variant="ghost" size="sm" asChild>
-            <Link to={`/resultados?id=${idea.id}`}>Ver análise</Link>
+            <Link to={`/resultados?id=${idea.id}`}>{t('ideas.table.view')}</Link>
           </Button>
         </TableCell>
       </TableRow>
@@ -162,15 +164,15 @@ const IdeasPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Minhas Ideias</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('ideas.title')}</h1>
           <p className="text-muted-foreground">
-            Histórico e gerenciamento de suas análises de ideias
+            {t('ideas.subtitle')}
           </p>
         </div>
         <Link to="/">
           <Button className="bg-brand-purple hover:bg-brand-purple/90">
             <PlusCircle className="h-4 w-4 mr-2" />
-            Nova Análise
+            {t('ideas.newIdea')}
           </Button>
         </Link>
       </div>
@@ -179,7 +181,7 @@ const IdeasPage = () => {
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar ideias..."
+            placeholder={t('ideas.search')}
             className="pl-8"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -189,9 +191,9 @@ const IdeasPage = () => {
       
       <Tabs defaultValue="all" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="all">Todas as Ideias</TabsTrigger>
-          <TabsTrigger value="viable">Viáveis</TabsTrigger>
-          <TabsTrigger value="moderate">Moderadas</TabsTrigger>
+          <TabsTrigger value="all">{t('ideas.filters.all')}</TabsTrigger>
+          <TabsTrigger value="viable">{t('ideas.filters.viable')}</TabsTrigger>
+          <TabsTrigger value="moderate">{t('ideas.filters.moderate')}</TabsTrigger>
         </TabsList>
         <TabsContent value="all" className="space-y-4">
           <Card>
@@ -199,11 +201,11 @@ const IdeasPage = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Ideia</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Pontuação</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Ações</TableHead>
+                    <TableHead>{t('ideas.table.name')}</TableHead>
+                    <TableHead>{t('ideas.table.status')}</TableHead>
+                    <TableHead>{t('ideas.table.score')}</TableHead>
+                    <TableHead>{t('ideas.table.createdAt')}</TableHead>
+                    <TableHead>{t('ideas.table.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -220,11 +222,11 @@ const IdeasPage = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Ideia</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Pontuação</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Ações</TableHead>
+                    <TableHead>{t('ideas.table.name')}</TableHead>
+                    <TableHead>{t('ideas.table.status')}</TableHead>
+                    <TableHead>{t('ideas.table.score')}</TableHead>
+                    <TableHead>{t('ideas.table.createdAt')}</TableHead>
+                    <TableHead>{t('ideas.table.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -241,11 +243,11 @@ const IdeasPage = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Ideia</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Pontuação</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Ações</TableHead>
+                    <TableHead>{t('ideas.table.name')}</TableHead>
+                    <TableHead>{t('ideas.table.status')}</TableHead>
+                    <TableHead>{t('ideas.table.score')}</TableHead>
+                    <TableHead>{t('ideas.table.createdAt')}</TableHead>
+                    <TableHead>{t('ideas.table.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
