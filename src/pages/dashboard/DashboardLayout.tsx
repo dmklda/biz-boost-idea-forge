@@ -108,6 +108,39 @@ const DashboardLayout = () => {
                 </Button>
               )}
 
+              {/* Notifications button - For mobile */}
+              {isMobile && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="relative">
+                      <Bell className="h-5 w-5" />
+                      {hasNotifications && (
+                        <Badge className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-red-500" />
+                      )}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-80">
+                    <DropdownMenuLabel>{t('notifications.title') || "Notificações"}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {hasNotifications && (
+                      <DropdownMenuItem>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{t('notifications.lowCredits') || "Créditos baixos"}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {t('notifications.lowCreditsDesc') || "Seus créditos estão acabando. Adicione mais para continuar analisando ideias."}
+                          </span>
+                        </div>
+                      </DropdownMenuItem>
+                    )}
+                    {!hasNotifications && (
+                      <div className="px-2 py-4 text-center text-muted-foreground">
+                        {t('notifications.noNotifications') || "Nenhuma notificação no momento"}
+                      </div>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+
               {/* Search input - Only show when search is open on mobile */}
               {isSearchOpen && isMobile && (
                 <div className="absolute inset-x-0 top-0 bg-background z-50 p-4">
@@ -125,7 +158,7 @@ const DashboardLayout = () => {
                 </div>
               )}
               
-              {/* Notifications */}
+              {/* Notifications - Desktop */}
               {!isMobile && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
