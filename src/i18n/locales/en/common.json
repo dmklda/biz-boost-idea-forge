@@ -1,0 +1,89 @@
+
+{
+  "nav": {
+    "backToHome": "Back to home page",
+    "dashboard": "Dashboard",
+    "ideas": "Ideas",
+    "credits": "Credits",
+    "profile": "Profile",
+    "resources": "Resources",
+    "logout": "Logout"
+  },
+  "header": {
+    "howItWorks": "How It Works",
+    "benefits": "Benefits",
+    "plans": "Plans",
+    "startNow": "Start Now"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "lowCredits": "Low Credits",
+    "lowCreditsDesc": "Your credits are running out. Add more to continue analyzing ideas.",
+    "noNotifications": "No notifications at this time"
+  },
+  "search": {
+    "placeholder": "Search ideas..."
+  },
+  "ui": {
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "loading": "Loading...",
+    "noResults": "No results found",
+    "max": "max",
+    "characters": "characters",
+    "dontKnow": "I don't know"
+  },
+  "monitoringStatus": {
+    "title": "System Status",
+    "active": "All Systems Active",
+    "partial": "Partial Issues",
+    "down": "System Down"
+  },
+  "countries": {
+    "global": "Global",
+    "angola": "Angola",
+    "brazil": "Brazil",
+    "portugal": "Portugal",
+    "mozambique": "Mozambique",
+    "unitedstates": "United States",
+    "canada": "Canada",
+    "unitedkingdom": "United Kingdom",
+    "germany": "Germany",
+    "france": "France",
+    "australia": "Australia",
+    "india": "India",
+    "china": "China",
+    "other": "Other"
+  },
+  "formSteps": {
+    "marketAnalysis": "Market Analysis",
+    "financialViability": "Financial Viability",
+    "competitiveAnalysis": "Competitive Analysis",
+    "progress": "In progress",
+    "analyzing": "Analyzing",
+    "completed": "Completed",
+    "accuracy": "Accuracy",
+    "analyses": "Analyses",
+    "average": "Average"
+  },
+  "dashboardCharts": {
+    "marketAnalysis": "Market Analysis",
+    "financialViability": "Financial Viability",
+    "competitiveAnalysis": "Competitive Analysis",
+    "accuracy": "Accuracy",
+    "analyses": "Analyses",
+    "average": "Average"
+  },
+  "hero": {
+    "dashboard": {
+      "title": "Active Workflows",
+      "status": "All Systems Active"
+    }
+  }
+}

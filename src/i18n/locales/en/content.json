@@ -1,0 +1,217 @@
+
+{
+  "api": {
+    "tagline": "API",
+    "title": "API Documentation",
+    "subtitle": "Integrate our idea validation tools into your application with our developer-friendly API",
+    "restApi": {
+      "title": "REST API",
+      "description": "Comprehensive HTTP API for validating and analyzing business ideas programmatically."
+    },
+    "websockets": {
+      "title": "Websocket API",
+      "description": "Real-time interaction for continuous analysis and updates during the validation process."
+    },
+    "documentation": {
+      "title": "Getting Started",
+      "description": "To get started with the Startupideia API, you'll need to register for an API key through your account dashboard. Once you have your API key, you can make authenticated requests to our endpoints."
+    },
+    "authentication": {
+      "title": "Authentication",
+      "description": "All API requests must include your API key for authentication. We use OAuth 2.0 for secure access to our API resources."
+    },
+    "endpoints": {
+      "title": "Available Endpoints",
+      "description": "Our API provides several endpoints to interact with our idea validation system:",
+      "getIdeas": "Retrieve all your previously analyzed ideas",
+      "analyzeIdea": "Submit a new idea for analysis",
+      "getIdeaById": "Get detailed information about a specific idea",
+      "getReports": "Retrieve generated reports for your ideas"
+    },
+    "pricing": {
+      "title": "API Pricing",
+      "description": "Our API is available on all paid plans with varying request limits:",
+      "entrepreneur": "Entrepreneur: 100 API calls/month",
+      "business": "Business: Unlimited API calls"
+    },
+    "sdks": {
+      "title": "SDKs & Libraries",
+      "description": "We provide client libraries in multiple languages to make integration easier:",
+      "javascript": "JavaScript/TypeScript",
+      "python": "Python",
+      "php": "PHP",
+      "ruby": "Ruby"
+    },
+    "support": {
+      "title": "API Support",
+      "description": "Need help integrating our API? Our developer support team is ready to assist you:",
+      "email": "Email: api@startupideia.com",
+      "docs": "Comprehensive Documentation",
+      "community": "Developer Community"
+    }
+  },
+  "blog": {
+    "tagline": "Blog",
+    "title": "Latest Insights & Trends",
+    "subtitle": "Explore our latest articles on entrepreneurship, idea validation, and market trends",
+    "readMore": "Read More",
+    "loadMore": "Load More Articles",
+    "submitCasePromo": "Have a success story? Submit your startup case study for our blog.",
+    "submitCaseLink": "Share your story",
+    "posts": {
+      "post1": {
+        "title": "5 Key Metrics to Validate Your Business Idea",
+        "excerpt": "Learn which data points matter most when determining if your idea has market potential.",
+        "date": "May 1, 2025",
+        "category": "Idea Validation",
+        "content": "When validating a business idea, there are several metrics that can help you determine whether your concept has potential to succeed in the market. These metrics include market size, customer acquisition cost, lifetime value of customers, profit margins, and growth potential. By analyzing these key indicators, entrepreneurs can make informed decisions before investing significant resources."
+      },
+      "post2": {
+        "title": "How to Create an MVP That Actually Tests Your Hypothesis",
+        "excerpt": "Building the right minimum viable product can save you months of development time.",
+        "date": "April 23, 2025",
+        "category": "Product Development",
+        "content": "A minimum viable product (MVP) should be designed with a clear hypothesis in mind. Rather than focusing on features, concentrate on what specific assumption you need to validate. Keep your MVP lean, measure the right metrics, and be prepared to pivot based on user feedback. This approach will save you time and resources while providing valuable insights into your idea's viability."
+      },
+      "post3": {
+        "title": "Finding Your Niche: When Smaller Markets Mean Bigger Profits",
+        "excerpt": "Why targeting a narrower audience can lead to stronger market positioning and better returns.",
+        "date": "April 15, 2025",
+        "category": "Market Analysis",
+        "content": "Counterintuitively, targeting a smaller, more specific market segment can often lead to greater success for startups. Niche markets typically have less competition, more specialized needs, and customers who are willing to pay premium prices for solutions tailored to their specific problems. This approach allows you to establish yourself as an expert and build a loyal customer base before considering expansion."
+      },
+      "post4": {
+        "title": "The Entrepreneur's Guide to Angel Investment in Angola",
+        "excerpt": "How to attract early-stage investment for your startup in the growing Angolan market.",
+        "date": "April 8, 2025",
+        "category": "Funding",
+        "content": "Angola's startup ecosystem is evolving rapidly, with more angel investors looking for promising ventures. To attract this capital, entrepreneurs need to understand local investor expectations, regulatory environment, and networking opportunities. This guide explores the Angolan investment landscape and provides practical tips for securing early-stage funding in this emerging market."
+      },
+      "post5": {
+        "title": "Technology Trends Reshaping African Startups in 2025",
+        "excerpt": "The innovations and technologies creating new opportunities for entrepreneurs across the continent.",
+        "date": "March 30, 2025",
+        "category": "Technology",
+        "content": "From mobile payment solutions to sustainable energy technologies, several key innovations are creating unprecedented opportunities for African entrepreneurs. This article examines how these technologies are solving uniquely African challenges while creating scalable business models that have potential for global expansion. We highlight success stories from various regions and sectors."
+      },
+      "post6": {
+        "title": "From Idea to Market: The Journey of DMK's Startup Platform",
+        "excerpt": "An inside look at how Startupideia was developed and launched in Angola.",
+        "date": "March 22, 2025",
+        "category": "Success Story",
+        "content": "In this exclusive case study, we share the development journey of Startupideia, from initial concept to market launch. Founder Marciairo Kumbuessa discusses the challenges faced as a solo developer building a tech startup in Angola, and how the platform evolved based on local entrepreneur needs and feedback from early users."
+      }
+    }
+  },
+  "guides": {
+    "tagline": "Guides",
+    "title": "Step-by-Step Guides",
+    "subtitle": "Practical resources to help you validate and launch your business ideas",
+    "readGuide": "Read Guide",
+    "exploreAll": "Explore All Guides",
+    "items": {
+      "guide1": {
+        "title": "Complete Guide to Idea Validation",
+        "description": "A comprehensive walkthrough of the entire validation process, from initial concept to market testing.",
+        "category": "Idea Validation",
+        "level": "Beginner"
+      },
+      "guide2": {
+        "title": "Building Your Customer Persona",
+        "description": "Learn how to create detailed customer personas that help you understand your target audience better.",
+        "category": "Market Research",
+        "level": "Intermediate"
+      },
+      "guide3": {
+        "title": "Competitive Analysis Framework",
+        "description": "Tools and techniques to analyze your competitors and identify market opportunities.",
+        "category": "Strategy",
+        "level": "Advanced"
+      },
+      "guide4": {
+        "title": "Financial Modeling for Startups",
+        "description": "Create realistic financial projections that will help you secure funding and plan your business growth.",
+        "category": "Finance",
+        "level": "Advanced"
+      }
+    }
+  },
+  "successCases": {
+    "tagline": "Success Cases",
+    "title": "Success Stories",
+    "subtitle": "Real businesses that used our platform to validate and refine their ideas",
+    "results": "Results",
+    "readFullCase": "Read Full Case Study",
+    "submitButton": "Submit Success Case",
+    "submitForm": {
+      "title": "Submit Your Success Story",
+      "description": "Share how you built your startup and how our platform helped you succeed. Selected cases will be featured on our blog.",
+      "nameLabel": "Your Name",
+      "namePlaceholder": "Enter your full name",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "Enter your email address",
+      "companyNameLabel": "Company Name",
+      "companyNamePlaceholder": "Enter your company name",
+      "descriptionLabel": "Success Story",
+      "descriptionPlaceholder": "Describe your journey, challenges, and how you overcame them",
+      "submit": "Submit Story",
+      "submitting": "Submitting...",
+      "thankYou": "Thank you for your submission!"
+    },
+    "submitSuccess": {
+      "title": "Success Story Submitted!",
+      "description": "Thank you for sharing your story. Our team will review it and contact you soon."
+    }
+  },
+  "webinars": {
+    "tagline": "Webinars",
+    "title": "Learn from Experts",
+    "subtitle": "Join our live webinars or watch recordings of past sessions",
+    "upcoming": "Upcoming Webinars",
+    "past": "Past Webinars",
+    "registerNow": "Register Now",
+    "watchRecording": "Watch Recording",
+    "hostInfo": "Hosted by:",
+    "items": {
+      "webinar1": {
+        "title": "Idea Validation: From Concept to Proof of Concept",
+        "description": "Learn practical techniques to test your business concept's viability with minimal resources.",
+        "date": "May 10, 2025",
+        "time": "7:00 PM WAT",
+        "host": "Marciairo Kumbuessa",
+        "role": "CEO & Founder of DMK, Lda"
+      },
+      "webinar2": {
+        "title": "Raising Capital: What African Investors Look For",
+        "description": "A panel with experienced investors discussing what they look for in African startups.",
+        "date": "May 17, 2025",
+        "time": "6:00 PM WAT",
+        "host": "Expert Panel",
+        "role": "Angel Investors & VCs"
+      }
+    }
+  },
+  "aboutUs": {
+    "tagline": "About Us",
+    "title": "Our Mission",
+    "subtitle": "We're on a mission to help entrepreneurs validate their business ideas and increase their chances of success",
+    "mission": {
+      "title": "Why We Started",
+      "description1": "Startupideia was founded by Marciairo Kumbuessa, a solo developer with a vision to make business idea validation accessible to entrepreneurs in Angola and beyond. After experiencing firsthand the challenges of launching businesses without proper validation, he created Startupideia to solve this critical problem.",
+      "description2": "Today, DMK, Lda is helping entrepreneurs across Angola make data-driven decisions about their business ideas before investing significant resources."
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Get in touch with us for more information about our services",
+    "email": "contact@startupideia.com",
+    "phone": "+244 912 345 678",
+    "address": "Lubango, Huíla Province, Angola",
+    "companyInfo": {
+      "name": "DMK, Lda",
+      "location": "Lubango, Huíla Province, Angola",
+      "email1": "contact@startupideia.com",
+      "email2": "contact@dmklda.online"
+    }
+  }
+}

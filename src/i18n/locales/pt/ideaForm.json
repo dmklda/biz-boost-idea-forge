@@ -1,0 +1,39 @@
+
+{
+  "title": "Compartilhe sua ideia",
+  "subtitle": "Preencha o formulário e receba uma análise detalhada do potencial de negócio",
+  "success": "Ideia registrada com sucesso!",
+  "error": "Erro ao processar sua solicitação",
+  "idea": {
+    "title": "Qual é a sua ideia de negócio?",
+    "placeholder": "Descreva brevemente sua ideia de negócio..."
+  },
+  "audience": {
+    "title": "Quem seria seu público-alvo?",
+    "placeholder": "Descreva os clientes ideais para seu negócio..."
+  },
+  "problem": {
+    "title": "Qual problema essa ideia resolve?",
+    "placeholder": "Descreva o problema que seu negócio solucionaria..."
+  },
+  "monetization": {
+    "title": "Como você planeja monetizá-la?",
+    "placeholder": "Descreva como seu negócio geraria receita..."
+  },
+  "competitors": {
+    "title": "Existem concorrentes no mercado?",
+    "yes": "Sim, existem soluções similares",
+    "no": "Não, esta é uma solução inovadora"
+  },
+  "budget": {
+    "title": "Qual seu orçamento de investimento inicial?",
+    "placeholder": "Digite o valor...",
+    "currency": "USD"
+  },
+  "location": {
+    "title": "Onde este negócio vai operar?",
+    "placeholder": "Selecione uma localização..."
+  },
+  "submit": "Enviar para Análise",
+  "submitting": "Analisando..."
+}

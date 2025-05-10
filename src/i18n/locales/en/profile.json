@@ -1,0 +1,37 @@
+
+{
+  "title": "My Profile",
+  "subtitle": "Manage your personal information and account preferences",
+  "personalInfo": {
+    "title": "Personal Information",
+    "name": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "country": "Country",
+    "language": "Preferred Language"
+  },
+  "accountSettings": {
+    "title": "Account Settings",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "twoFactor": "Two-Factor Authentication",
+    "enabled": "Enabled",
+    "disabled": "Disabled"
+  },
+  "notifications": {
+    "title": "Notification Preferences",
+    "analysis": "Analysis Notifications",
+    "marketing": "Marketing Notifications",
+    "newsletter": "Newsletter",
+    "updates": "Product Updates"
+  },
+  "dangerZone": {
+    "title": "Danger Zone",
+    "deleteAccount": "Delete Account",
+    "deleteWarning": "This action cannot be undone. All your data will be permanently removed.",
+    "confirmDelete": "Yes, delete my account"
+  },
+  "save": "Save Changes"
+}

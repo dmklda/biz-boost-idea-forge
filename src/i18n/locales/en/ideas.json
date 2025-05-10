@@ -1,0 +1,34 @@
+
+{
+  "title": "My Ideas",
+  "subtitle": "Manage and analyze your business ideas",
+  "newIdea": "New Idea",
+  "loading": "Loading ideas...",
+  "noIdeasFound": "No ideas found.",
+  "table": {
+    "name": "Name",
+    "status": "Status",
+    "score": "Score",
+    "createdAt": "Created at",
+    "actions": "Actions",
+    "view": "View analysis"
+  },
+  "filters": {
+    "all": "All Ideas",
+    "viable": "Viable",
+    "moderate": "Moderate"
+  },
+  "search": "Search ideas...",
+  "statuses": {
+    "pending": "Pending",
+    "analyzed": "Analyzed",
+    "inProgress": "In Progress"
+  },
+  "errors": {
+    "fetchFailed": "Error loading ideas"
+  },
+  "emptyState": {
+    "title": "You don't have any analyzed ideas yet",
+    "button": "Create my first idea"
+  }
+}

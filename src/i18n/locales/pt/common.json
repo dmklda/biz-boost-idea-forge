@@ -1,0 +1,89 @@
+
+{
+  "nav": {
+    "backToHome": "Voltar para a página inicial",
+    "dashboard": "Dashboard",
+    "ideas": "Ideias",
+    "credits": "Créditos",
+    "profile": "Perfil",
+    "resources": "Recursos",
+    "logout": "Sair"
+  },
+  "header": {
+    "howItWorks": "Como Funciona",
+    "benefits": "Benefícios",
+    "plans": "Planos",
+    "startNow": "Começar Agora"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "lowCredits": "Créditos baixos",
+    "lowCreditsDesc": "Seus créditos estão acabando. Adicione mais para continuar analisando ideias.",
+    "noNotifications": "Nenhuma notificação no momento"
+  },
+  "search": {
+    "placeholder": "Pesquisar ideias..."
+  },
+  "ui": {
+    "back": "Voltar",
+    "next": "Próximo",
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "view": "Ver",
+    "loading": "Carregando...",
+    "noResults": "Nenhum resultado encontrado",
+    "max": "máx",
+    "characters": "caracteres",
+    "dontKnow": "Não sei"
+  },
+  "monitoringStatus": {
+    "title": "Estado do sistema",
+    "active": "Todos os sistemas ativos",
+    "partial": "Problemas parciais",
+    "down": "Sistema inoperante"
+  },
+  "countries": {
+    "global": "Global",
+    "angola": "Angola",
+    "brazil": "Brasil",
+    "portugal": "Portugal",
+    "mozambique": "Moçambique",
+    "unitedstates": "Estados Unidos",
+    "canada": "Canadá",
+    "unitedkingdom": "Reino Unido",
+    "germany": "Alemanha",
+    "france": "França",
+    "australia": "Austrália",
+    "india": "Índia",
+    "china": "China",
+    "other": "Outros"
+  },
+  "formSteps": {
+    "marketAnalysis": "Análise de Mercado",
+    "financialViability": "Viabilidade Financeira",
+    "competitiveAnalysis": "Análise Competitiva",
+    "progress": "Em progresso",
+    "analyzing": "Em análise",
+    "completed": "Concluída",
+    "accuracy": "Precisão",
+    "analyses": "Análises",
+    "average": "Média"
+  },
+  "dashboardCharts": {
+    "marketAnalysis": "Análise de Mercado",
+    "financialViability": "Viabilidade Financeira",
+    "competitiveAnalysis": "Análise Competitiva",
+    "accuracy": "Precisão",
+    "analyses": "Análises",
+    "average": "Média"
+  },
+  "hero": {
+    "dashboard": {
+      "title": "Fluxos de Trabalho Ativos",
+      "status": "Todos os Sistemas Ativos"
+    }
+  }
+}
