@@ -70,9 +70,11 @@ const DashboardLayout = () => {
               </Button>}
             
             <div className="flex items-center">
-              <Link to="/">
-                <img src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png" alt="Startup Ideia" className="h-8 w-auto" />
-              </Link>
+              {isMobile && (
+                <Link to="/">
+                  <img src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png" alt="Startup Ideia" className="h-8 w-auto" />
+                </Link>
+              )}
             </div>
             
             <div className="ml-auto flex items-center gap-3">
