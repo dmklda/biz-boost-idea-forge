@@ -69,9 +69,9 @@ export const DashboardSidebar = ({
   };
 
   return (
-    <div className={cn("flex flex-col h-full bg-background border-r px-2", collapsed ? "w-[70px]" : "w-[240px]")}>
+    <div className={cn("flex flex-col h-full bg-background border-r", collapsed ? "w-[70px]" : "w-[240px]")}>
       <div className="py-4">
-        <div className={cn("flex items-center", collapsed ? "justify-center px-2" : "px-4")}>
+        <div className={cn("flex items-center justify-center px-2", collapsed ? "" : "px-4")}>
           {collapsed ? (
             <Link to="/">
               <img src="/lovable-uploads/1d922337-e8ee-440b-afed-32d32a6a045a.png" alt="Startup Ideia" className="h-8 w-auto" />
@@ -86,7 +86,7 @@ export const DashboardSidebar = ({
         </div>
       </div>
       
-      <div className="flex-1">
+      <div className="flex-1 px-2 py-4">
         <nav className="flex flex-col gap-1">
           {menuItems.map(item => {
             const isActive = location.pathname === item.path;
@@ -109,7 +109,7 @@ export const DashboardSidebar = ({
         </nav>
       </div>
       
-      <div className="py-4">
+      <div className="py-4 px-2">
         <Button 
           variant="ghost" 
           className={cn(
