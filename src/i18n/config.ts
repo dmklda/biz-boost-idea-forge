@@ -3,47 +3,53 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// Carregamento dinâmico dos arquivos de tradução
-const loadLocaleFiles = (language: string) => {
+// Function to safely load translation files, with proper error handling
+const safeImport = async (path: string) => {
+  try {
+    const module = await import(path);
+    return module.default;
+  } catch (error) {
+    console.warn(`Failed to load translation file: ${path}`, error);
+    return {};
+  }
+};
+
+// Dynamic loading of translation files
+const loadLocaleFiles = async (language: string) => {
   return {
-    auth: import(`./locales/${language}/auth.json`).then(m => m.default),
-    common: import(`./locales/${language}/common.json`).then(m => m.default),
-    dashboard: import(`./locales/${language}/dashboard.json`).then(m => m.default),
-    ideas: import(`./locales/${language}/ideas.json`).then(m => m.default),
-    credits: import(`./locales/${language}/credits.json`).then(m => m.default),
-    ideaForm: import(`./locales/${language}/ideaForm.json`).then(m => m.default),
-    settings: import(`./locales/${language}/settings.json`).then(m => m.default),
-    profile: import(`./locales/${language}/profile.json`).catch(() => ({})),
-    metrics: import(`./locales/${language}/metrics.json`).catch(() => ({})),
-    content: import(`./locales/${language}/content.json`).catch(() => ({})),
-    landing: import(`./locales/${language}/landing.json`).catch(() => ({}))
+    auth: await safeImport(`./locales/${language}/auth.json`),
+    common: await safeImport(`./locales/${language}/common.json`),
+    dashboard: await safeImport(`./locales/${language}/dashboard.json`),
+    ideas: await safeImport(`./locales/${language}/ideas.json`),
+    credits: await safeImport(`./locales/${language}/credits.json`),
+    ideaForm: await safeImport(`./locales/${language}/ideaForm.json`),
+    settings: await safeImport(`./locales/${language}/settings.json`),
+    profile: await safeImport(`./locales/${language}/profile.json`).catch(() => ({})),
+    metrics: await safeImport(`./locales/${language}/metrics.json`).catch(() => ({})),
+    content: await safeImport(`./locales/${language}/content.json`).catch(() => ({})),
+    landing: await safeImport(`./locales/${language}/landing.json`).catch(() => ({}))
   };
 };
 
-// Função para carregar recursos de tradução
+// Function to load resources with better error handling
 const loadResources = async () => {
   const languages = ['en', 'pt', 'es', 'ja'];
   const resources: Record<string, Record<string, any>> = {};
 
   for (const lang of languages) {
-    const namespaces = await loadLocaleFiles(lang);
-    resources[lang] = {};
-
-    for (const [ns, promise] of Object.entries(namespaces)) {
-      try {
-        const module = await promise;
-        resources[lang][ns] = module;
-      } catch (error) {
-        console.warn(`Failed to load ${ns} namespace for ${lang}`, error);
-        resources[lang][ns] = {};
-      }
+    try {
+      const namespaces = await loadLocaleFiles(lang);
+      resources[lang] = namespaces;
+    } catch (error) {
+      console.error(`Failed to load translations for ${lang}`, error);
+      resources[lang] = {}; // Provide empty fallback
     }
   }
 
   return resources;
 };
 
-// Inicializa o i18next
+// Initialize i18next
 const initializeI18n = async () => {
   const resources = await loadResources();
 
@@ -52,7 +58,7 @@ const initializeI18n = async () => {
     .use(initReactI18next)
     .init({
       resources,
-      fallbackLng: 'pt',
+      fallbackLng: ['en', 'pt'], // Fallback chain: first English, then Portuguese
       defaultNS: 'common',
       fallbackNS: 'common',
       interpolation: {
@@ -68,14 +74,15 @@ const initializeI18n = async () => {
       },
       returnNull: false,
       returnEmptyString: false,
-      returnObjects: true
+      returnObjects: true,
+      debug: false // Set to true for detailed debugging information
     });
 
   return i18n;
 };
 
-// Exporta a função de inicialização
+// Export the initialization function
 export const i18nInstance = initializeI18n();
 
-// Exporta o i18n para uso no resto da aplicação
+// Export i18n for use in the rest of the application
 export default i18n;

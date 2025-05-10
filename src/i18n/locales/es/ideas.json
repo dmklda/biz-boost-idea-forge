@@ -1,0 +1,34 @@
+
+{
+  "title": "Mis Ideas",
+  "subtitle": "Gestiona y analiza tus ideas de negocio",
+  "newIdea": "Nueva Idea",
+  "loading": "Cargando ideas...",
+  "noIdeasFound": "No se encontraron ideas.",
+  "table": {
+    "name": "Nombre",
+    "status": "Estado",
+    "score": "Puntuación",
+    "createdAt": "Creado el",
+    "actions": "Acciones",
+    "view": "Ver análisis"
+  },
+  "filters": {
+    "all": "Todas las Ideas",
+    "viable": "Viables",
+    "moderate": "Moderadas"
+  },
+  "search": "Buscar ideas...",
+  "statuses": {
+    "pending": "Pendiente",
+    "analyzed": "Analizado",
+    "inProgress": "En Progreso"
+  },
+  "errors": {
+    "fetchFailed": "Error al cargar ideas"
+  },
+  "emptyState": {
+    "title": "Aún no tienes ideas analizadas",
+    "button": "Crear mi primera idea"
+  }
+}

@@ -1,0 +1,29 @@
+
+{
+  "title": "マイクレジット",
+  "subtitle": "アイデア分析用のクレジットを管理する",
+  "availableCredits": {
+    "title": "利用可能なクレジット",
+    "description": "分析用のクレジット残高",
+    "freePlan": "無料プラン (3クレジット/月)",
+    "proPlan": "プロプラン (無制限クレジット)",
+    "upgradeBtn": "プロプランへアップグレード"
+  },
+  "buyCredits": {
+    "title": "クレジット購入",
+    "description": "分析用のクレジットを追加購入",
+    "credits": "クレジット",
+    "processing": "処理中...",
+    "buy": "購入"
+  },
+  "transactions": {
+    "title": "取引履歴",
+    "description": "クレジット購入と使用履歴",
+    "date": "日付",
+    "type": "種類",
+    "details": "詳細",
+    "amount": "金額",
+    "loading": "取引履歴を読み込み中...",
+    "noTransactions": "取引が見つかりません。"
+  }
+}
