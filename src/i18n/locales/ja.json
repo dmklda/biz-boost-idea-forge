@@ -35,7 +35,8 @@
       "premium": "プレミアム",
       "addCredits": "クレジットを追加",
       "upgrade": "アップグレード",
-      "compared": "先月比"
+      "compared": "先月比",
+      "totalAnalysesDescription": "分析されたアイデアの合計"
     },
     "tabs": {
       "overview": "概要",
@@ -51,6 +52,19 @@
       "title": "最近のアイデア",
       "description": "最新のアイデア分析",
       "viewAll": "すべて表示"
+    },
+    "insights": {
+      "title": "インサイト",
+      "description": "最近のアクティビティのインテリジェント分析",
+      "activityTrend": "アクティビティトレンド",
+      "highActivity": "あなたのアクティビティはユーザー平均を上回っています。",
+      "lowActivity": "完全なインサイトを得るために、より多くの分析を作成してください。",
+      "successRate": "成功率",
+      "goodSuccessRate": "あなたのアイデアは市場の実現可能性が高いです。",
+      "improvementNeeded": "より良い実現可能性のためにアイデアを改善することを検討してください。",
+      "nextSteps": "次のステップ",
+      "hasCredits": "新しい分析のためのクレジットがあります。",
+      "needsCredits": "アイデア分析を続けるにはクレジットを追加してください。"
     }
   },
   
@@ -110,6 +124,10 @@
     },
     "errors": {
       "fetchFailed": "アイデアの読み込みに失敗しました"
+    },
+    "emptyState": {
+      "title": "まだ分析されたアイデアがありません",
+      "button": "最初のアイデアを作成する"
     }
   },
   
@@ -244,5 +262,53 @@
       "confirmDelete": "はい、アカウントを削除します"
     },
     "save": "変更を保存"
+  },
+  
+  "metrics": {
+    "title": "高度なメトリクス",
+    "subtitle": "プロジェクトに関する詳細な分析とアイデア",
+    "exportData": "データのエクスポート",
+    "exportSuccess": "データのエクスポートに成功しました",
+    "timeRange": "期間",
+    "selectTimeRange": "期間を選択",
+    "last7Days": "過去7日間",
+    "last30Days": "過去30日間",
+    "last90Days": "過去90日間",
+    "lastYear": "過去1年間",
+    "allTime": "全期間",
+    "granularity": "粒度",
+    "selectGranularity": "粒度を選択",
+    "daily": "日次",
+    "weekly": "週次",
+    "monthly": "月次",
+    "totalAnalyses": "分析の合計",
+    "averageScore": "平均スコア",
+    "topCategory": "主要カテゴリ",
+    "viableIdeas": "実現可能なアイデア",
+    "trends": "トレンド",
+    "distribution": "分布",
+    "performance": "パフォーマンス",
+    "analysisAndScoreTrend": "分析とスコアのトレンド",
+    "analysisAndScoreTrendDesc": "分析数と平均スコアの時間経過に伴う進化",
+    "analyses": "分析",
+    "ideaCount": "アイデア数",
+    "scoreDistribution": "スコア分布",
+    "scoreDistributionDesc": "範囲別のスコア分布",
+    "categoryDistribution": "カテゴリ別分布",
+    "categoryDistributionDesc": "カテゴリ別アイデアのパーセント分布",
+    "ideaRadar": "アイデアレーダー",
+    "ideaRadarDesc": "分析の異なる次元でのパフォーマンス",
+    "performanceInsights": "パフォーマンスインサイト",
+    "performanceInsightsDesc": "アイデアのパフォーマンス分析",
+    "topPerforming": "最高パフォーマンス",
+    "improvementNeeded": "改善が必要",
+    "recommendations": "推奨事項"
+  },
+  
+  "hero": {
+    "dashboard": {
+      "title": "分析ダッシュボード",
+      "status": "オンライン"
+    }
   }
 }

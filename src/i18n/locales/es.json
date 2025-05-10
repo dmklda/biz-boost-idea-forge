@@ -35,7 +35,8 @@
       "premium": "Premium",
       "addCredits": "Añadir créditos",
       "upgrade": "Actualizar",
-      "compared": "en comparación con el mes pasado"
+      "compared": "en comparación con el mes pasado",
+      "totalAnalysesDescription": "Su total de ideas analizadas"
     },
     "tabs": {
       "overview": "Vista General",
@@ -51,6 +52,19 @@
       "title": "Ideas Recientes",
       "description": "Sus últimos análisis de ideas",
       "viewAll": "Ver todo"
+    },
+    "insights": {
+      "title": "Perspectivas",
+      "description": "Análisis inteligente de su actividad reciente",
+      "activityTrend": "Tendencia de Actividad",
+      "highActivity": "Su actividad está por encima del promedio de usuarios.",
+      "lowActivity": "Cree más análisis para obtener perspectivas completas.",
+      "successRate": "Tasa de Éxito",
+      "goodSuccessRate": "Sus ideas tienen buena viabilidad de mercado.",
+      "improvementNeeded": "Considere refinar sus ideas para mejor viabilidad.",
+      "nextSteps": "Próximos Pasos",
+      "hasCredits": "Tiene créditos disponibles para nuevos análisis.",
+      "needsCredits": "Añada créditos para seguir analizando ideas."
     }
   },
   
@@ -110,6 +124,10 @@
     },
     "errors": {
       "fetchFailed": "Error al cargar las ideas"
+    },
+    "emptyState": {
+      "title": "Aún no tiene ideas analizadas",
+      "button": "Crear mi primera idea"
     }
   },
   
@@ -244,5 +262,53 @@
       "confirmDelete": "Sí, eliminar mi cuenta"
     },
     "save": "Guardar Cambios"
+  },
+  
+  "metrics": {
+    "title": "Métricas Avanzadas",
+    "subtitle": "Análisis detallado e ideas sobre sus proyectos",
+    "exportData": "Exportar Datos",
+    "exportSuccess": "Datos exportados exitosamente",
+    "timeRange": "Periodo",
+    "selectTimeRange": "Seleccione un periodo",
+    "last7Days": "Últimos 7 días",
+    "last30Days": "Últimos 30 días",
+    "last90Days": "Últimos 90 días",
+    "lastYear": "Último año",
+    "allTime": "Todo el tiempo",
+    "granularity": "Granularidad",
+    "selectGranularity": "Seleccione la granularidad",
+    "daily": "Diaria",
+    "weekly": "Semanal",
+    "monthly": "Mensual",
+    "totalAnalyses": "Total de Análisis",
+    "averageScore": "Puntuación Media",
+    "topCategory": "Categoría Principal",
+    "viableIdeas": "Ideas Viables",
+    "trends": "Tendencias",
+    "distribution": "Distribución",
+    "performance": "Rendimiento",
+    "analysisAndScoreTrend": "Tendencia de Análisis y Puntuaciones",
+    "analysisAndScoreTrendDesc": "Evolución del número de análisis y puntuación media a lo largo del tiempo",
+    "analyses": "Análisis",
+    "ideaCount": "Cantidad de Ideas",
+    "scoreDistribution": "Distribución de Puntuaciones",
+    "scoreDistributionDesc": "Distribución de las puntuaciones por rangos",
+    "categoryDistribution": "Distribución por Categoría",
+    "categoryDistributionDesc": "Distribución porcentual de las ideas por categoría",
+    "ideaRadar": "Radar de Ideas",
+    "ideaRadarDesc": "Desempeño en diferentes dimensiones de análisis",
+    "performanceInsights": "Insights de Rendimiento",
+    "performanceInsightsDesc": "Análisis de rendimiento de sus ideas",
+    "topPerforming": "Mejor Desempeño",
+    "improvementNeeded": "Necesita Mejora",
+    "recommendations": "Recomendaciones"
+  },
+  
+  "hero": {
+    "dashboard": {
+      "title": "Panel Analítico",
+      "status": "En línea"
+    }
   }
 }
