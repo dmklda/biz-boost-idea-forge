@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -72,10 +73,10 @@ const UserSettingsPage = () => {
       // Update user state - modify to use available methods from useAuth hook
       authState.user.name = profile.name;
       
-      toast.success(t('settings.profileUpdated') || "Perfil atualizado com sucesso");
+      toast.success(t('settings.profileUpdated'));
     } catch (error) {
       console.error("Error updating profile:", error);
-      toast.error(t('errors.updatingProfile') || "Erro ao atualizar perfil");
+      toast.error(t('errors.updatingProfile') || "Error updating profile");
     } finally {
       setLoading(false);
     }
@@ -86,7 +87,7 @@ const UserSettingsPage = () => {
     e.preventDefault();
     
     if (newPassword !== confirmNewPassword) {
-      toast.error(t('errors.passwordsDoNotMatch') || "As senhas não coincidem");
+      toast.error(t('errors.passwordsDoNotMatch') || "Passwords do not match");
       return;
     }
     
@@ -98,13 +99,13 @@ const UserSettingsPage = () => {
       
       if (error) throw error;
       
-      toast.success(t('settings.passwordUpdated') || "Senha atualizada com sucesso");
+      toast.success(t('settings.passwordUpdated'));
       setCurrentPassword("");
       setNewPassword("");
       setConfirmNewPassword("");
     } catch (error) {
       console.error("Error changing password:", error);
-      toast.error(t('errors.changingPassword') || "Erro ao alterar senha");
+      toast.error(t('errors.changingPassword') || "Error changing password");
     } finally {
       setLoading(false);
     }
@@ -115,17 +116,17 @@ const UserSettingsPage = () => {
     setLanguage(newLanguage);
     i18n.changeLanguage(newLanguage);
     localStorage.setItem("i18nextLng", newLanguage);
-    toast.success(t('settings.languageUpdated') || "Idioma atualizado com sucesso");
+    toast.success(t('settings.languageUpdated'));
   };
   
   // Handle notification settings update
   const handleNotificationSettingsUpdate = () => {
-    toast.success(t('settings.notificationsUpdated') || "Configurações de notificações atualizadas");
+    toast.success(t('settings.notificationsUpdated'));
   };
   
   // Handle account deletion
   const handleDeleteAccount = async () => {
-    if (confirm(t('settings.confirmDeleteAccount') || "Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.")) {
+    if (confirm(t('settings.confirmDeleteAccount'))) {
       try {
         setLoading(true);
         
@@ -135,10 +136,10 @@ const UserSettingsPage = () => {
         if (error) throw error;
         
         await logout();
-        toast.success(t('settings.accountDeleted') || "Conta excluída com sucesso");
+        toast.success(t('settings.accountDeleted'));
       } catch (error) {
         console.error("Error deleting account:", error);
-        toast.error(t('errors.deletingAccount') || "Erro ao excluir conta");
+        toast.error(t('errors.deletingAccount') || "Error deleting account");
         setLoading(false);
       }
     }
@@ -148,10 +149,10 @@ const UserSettingsPage = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-          {t('settings.title') || "Configurações"}
+          {t('settings.title')}
         </h1>
         <p className="text-muted-foreground mt-1">
-          {t('settings.subtitle') || "Gerencie suas preferências de conta e perfil"}
+          {t('settings.subtitle')}
         </p>
       </div>
       
@@ -159,19 +160,19 @@ const UserSettingsPage = () => {
         <TabsList className="grid grid-cols-2 md:grid-cols-4">
           <TabsTrigger value="profile">
             <User className="h-4 w-4 mr-2" />
-            {t('settings.profile') || "Perfil"}
+            {t('settings.profile')}
           </TabsTrigger>
           <TabsTrigger value="account">
             <Lock className="h-4 w-4 mr-2" />
-            {t('settings.account') || "Conta"}
+            {t('settings.account')}
           </TabsTrigger>
           <TabsTrigger value="notifications">
             <Bell className="h-4 w-4 mr-2" />
-            {t('settings.notifications') || "Notificações"}
+            {t('settings.notifications')}
           </TabsTrigger>
           <TabsTrigger value="plan">
             <CreditCard className="h-4 w-4 mr-2" />
-            {t('settings.plan') || "Plano"}
+            {t('settings.plan')}
           </TabsTrigger>
         </TabsList>
         
@@ -179,15 +180,15 @@ const UserSettingsPage = () => {
         <TabsContent value="profile" className="space-y-4">
           <Card className="shadow-sm">
             <CardHeader>
-              <CardTitle>{t('settings.personalInfo') || "Informações Pessoais"}</CardTitle>
+              <CardTitle>{t('settings.personalInfo')}</CardTitle>
               <CardDescription>
-                {t('settings.personalInfoDesc') || "Atualize suas informações de perfil"}
+                {t('settings.personalInfoDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleProfileUpdate} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">{t('settings.name') || "Nome"}</Label>
+                  <Label htmlFor="name">{t('settings.name')}</Label>
                   <Input
                     id="name"
                     value={profile.name}
@@ -197,7 +198,7 @@ const UserSettingsPage = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="email">{t('settings.email') || "Email"}</Label>
+                  <Label htmlFor="email">{t('settings.email')}</Label>
                   <Input
                     id="email"
                     value={profile.email}
@@ -205,15 +206,15 @@ const UserSettingsPage = () => {
                     readOnly
                   />
                   <p className="text-xs text-muted-foreground">
-                    {t('settings.emailChangeNote') || "O email não pode ser alterado"}
+                    {t('settings.emailChangeNote')}
                   </p>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label>{t('settings.language') || "Idioma"}</Label>
+                  <Label>{t('settings.language')}</Label>
                   <Select value={language} onValueChange={handleLanguageChange}>
                     <SelectTrigger>
-                      <SelectValue placeholder={t('settings.selectLanguage') || "Selecione um idioma"} />
+                      <SelectValue placeholder={t('settings.selectLanguage')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="pt">Português</SelectItem>
@@ -225,7 +226,7 @@ const UserSettingsPage = () => {
                 </div>
                 
                 <Button type="submit" disabled={loading}>
-                  {loading ? (t('common.saving') || "Salvando...") : (t('common.save') || "Salvar")}
+                  {loading ? (t('common.saving') || "Saving...") : (t('common.save'))}
                 </Button>
               </form>
             </CardContent>
@@ -236,15 +237,15 @@ const UserSettingsPage = () => {
         <TabsContent value="account" className="space-y-4">
           <Card className="shadow-sm">
             <CardHeader>
-              <CardTitle>{t('settings.security') || "Segurança"}</CardTitle>
+              <CardTitle>{t('settings.security')}</CardTitle>
               <CardDescription>
-                {t('settings.securityDesc') || "Gerencie sua senha e configurações de segurança"}
+                {t('settings.securityDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handlePasswordChange} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="current-password">{t('settings.currentPassword') || "Senha atual"}</Label>
+                  <Label htmlFor="current-password">{t('settings.currentPassword')}</Label>
                   <Input
                     id="current-password"
                     type="password"
@@ -255,7 +256,7 @@ const UserSettingsPage = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="new-password">{t('settings.newPassword') || "Nova senha"}</Label>
+                  <Label htmlFor="new-password">{t('settings.newPassword')}</Label>
                   <Input
                     id="new-password"
                     type="password"
@@ -266,7 +267,7 @@ const UserSettingsPage = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="confirm-password">{t('settings.confirmPassword') || "Confirmar nova senha"}</Label>
+                  <Label htmlFor="confirm-password">{t('settings.confirmPassword')}</Label>
                   <Input
                     id="confirm-password"
                     type="password"
@@ -277,7 +278,7 @@ const UserSettingsPage = () => {
                 </div>
                 
                 <Button type="submit" disabled={loading}>
-                  {loading ? (t('common.updating') || "Atualizando...") : (t('settings.changePassword') || "Alterar senha")}
+                  {loading ? (t('common.updating') || "Updating...") : (t('settings.changePassword'))}
                 </Button>
               </form>
             </CardContent>
@@ -285,9 +286,9 @@ const UserSettingsPage = () => {
           
           <Card className="shadow-sm">
             <CardHeader>
-              <CardTitle>{t('settings.dangerZone') || "Zona de Perigo"}</CardTitle>
+              <CardTitle>{t('settings.dangerZone')}</CardTitle>
               <CardDescription>
-                {t('settings.dangerZoneDesc') || "Ações irreversíveis para sua conta"}
+                {t('settings.dangerZoneDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -296,14 +297,14 @@ const UserSettingsPage = () => {
                   <div className="flex flex-col space-y-2">
                     <h3 className="font-medium flex items-center gap-2">
                       <ShieldAlert className="h-4 w-4 text-destructive" />
-                      {t('settings.deleteAccount') || "Excluir conta"}
+                      {t('settings.deleteAccount')}
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      {t('settings.deleteAccountDesc') || "Ao excluir sua conta, todos os dados serão permanentemente removidos. Esta ação não pode ser desfeita."}
+                      {t('settings.deleteAccountDesc')}
                     </p>
                     <div className="pt-2">
                       <Button variant="destructive" onClick={handleDeleteAccount} disabled={loading}>
-                        {t('settings.deleteAccount') || "Excluir conta"}
+                        {t('settings.deleteAccount')}
                       </Button>
                     </div>
                   </div>
@@ -317,18 +318,18 @@ const UserSettingsPage = () => {
         <TabsContent value="notifications" className="space-y-4">
           <Card className="shadow-sm">
             <CardHeader>
-              <CardTitle>{t('settings.notificationPreferences') || "Preferências de Notificação"}</CardTitle>
+              <CardTitle>{t('settings.notificationPreferences')}</CardTitle>
               <CardDescription>
-                {t('settings.notificationPreferencesDesc') || "Configure como você deseja receber notificações"}
+                {t('settings.notificationPreferencesDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex flex-row items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label>{t('settings.emailNotifications') || "Notificações por email"}</Label>
+                    <Label>{t('settings.emailNotifications')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      {t('settings.emailNotificationsDesc') || "Receba notificações por email"}
+                      {t('settings.emailNotificationsDesc')}
                     </p>
                   </div>
                   <Switch
@@ -346,9 +347,9 @@ const UserSettingsPage = () => {
                 
                 <div className="flex flex-row items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label>{t('settings.accountAlerts') || "Alertas de conta"}</Label>
+                    <Label>{t('settings.accountAlerts')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      {t('settings.accountAlertsDesc') || "Alertas importantes sobre sua conta"}
+                      {t('settings.accountAlertsDesc')}
                     </p>
                   </div>
                   <Switch
@@ -366,9 +367,9 @@ const UserSettingsPage = () => {
                 
                 <div className="flex flex-row items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label>{t('settings.marketingEmails') || "Emails de marketing"}</Label>
+                    <Label>{t('settings.marketingEmails')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      {t('settings.marketingEmailsDesc') || "Receba ofertas e novidades"}
+                      {t('settings.marketingEmailsDesc')}
                     </p>
                   </div>
                   <Switch
@@ -386,9 +387,9 @@ const UserSettingsPage = () => {
                 
                 <div className="flex flex-row items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label>{t('settings.newFeatures') || "Novos recursos"}</Label>
+                    <Label>{t('settings.newFeatures')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      {t('settings.newFeaturesDesc') || "Receba notificações sobre novos recursos"}
+                      {t('settings.newFeaturesDesc')}
                     </p>
                   </div>
                   <Switch
@@ -406,9 +407,9 @@ const UserSettingsPage = () => {
                 
                 <div className="flex flex-row items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label>{t('settings.tips') || "Dicas e sugestões"}</Label>
+                    <Label>{t('settings.tips')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      {t('settings.tipsDesc') || "Receba dicas para melhorar suas ideias"}
+                      {t('settings.tipsDesc')}
                     </p>
                   </div>
                   <Switch
@@ -424,7 +425,7 @@ const UserSettingsPage = () => {
                 
                 <div className="pt-2">
                   <Button onClick={handleNotificationSettingsUpdate}>
-                    {t('common.save') || "Salvar"}
+                    {t('common.save')}
                   </Button>
                 </div>
               </div>
@@ -436,40 +437,40 @@ const UserSettingsPage = () => {
         <TabsContent value="plan" className="space-y-4">
           <Card className="shadow-sm">
             <CardHeader>
-              <CardTitle>{t('settings.currentPlan') || "Plano Atual"}</CardTitle>
+              <CardTitle>{t('settings.currentPlan')}</CardTitle>
               <CardDescription>
-                {t('settings.currentPlanDesc') || "Detalhes do seu plano e assinatura"}
+                {t('settings.currentPlanDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="font-medium">{profile.plan === "free" ? t('settings.freePlan') || "Plano Gratuito" : t('settings.proPlan') || "Plano Pro"}</p>
+                    <p className="font-medium">{profile.plan === "free" ? t('settings.freePlan') : t('settings.proPlan')}</p>
                     <p className="text-sm text-muted-foreground">
                       {profile.plan === "free"
-                        ? (t('settings.freePlanDesc') || "Acesso básico com recursos limitados")
-                        : (t('settings.proPlanDesc') || "Acesso completo a todos os recursos")}
+                        ? t('settings.freePlanDesc')
+                        : t('settings.proPlanDesc')}
                     </p>
                   </div>
                   <Badge variant={profile.plan === "free" ? "outline" : "default"} className={profile.plan === "free" ? "" : "bg-brand-purple"}>
-                    {profile.plan === "free" ? t('settings.free') || "Gratuito" : t('settings.premium') || "Premium"}
+                    {profile.plan === "free" ? t('settings.free') : t('settings.premium')}
                   </Badge>
                 </div>
                 
                 <div className="pt-2">
                   <p className="text-sm">
-                    {t('settings.currentCredits') || "Créditos disponíveis"}: <span className="font-bold">{profile.credits}</span>
+                    {t('settings.currentCredits')}: <span className="font-bold">{profile.credits}</span>
                   </p>
                 </div>
                 
                 <div className="pt-2">
                   {profile.plan === "free" ? (
                     <Button className="bg-brand-purple hover:bg-brand-purple/90">
-                      <Link to="/planos">{t('settings.upgradePlan') || "Fazer upgrade"}</Link>
+                      <Link to="/planos">{t('settings.upgradePlan')}</Link>
                     </Button>
                   ) : (
-                    <Button variant="outline">{t('settings.managePlan') || "Gerenciar assinatura"}</Button>
+                    <Button variant="outline">{t('settings.managePlan')}</Button>
                   )}
                 </div>
               </div>
