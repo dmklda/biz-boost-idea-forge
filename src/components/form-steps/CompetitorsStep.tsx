@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { FormData } from "@/types/form";
+import { useTranslation } from "react-i18next";
 
 interface CompetitorsStepProps {
   formData: FormData;
@@ -13,11 +14,13 @@ interface CompetitorsStepProps {
 }
 
 export const CompetitorsStep = ({ formData, updateFormData, onNext, onPrev }: CompetitorsStepProps) => {
+  const { t } = useTranslation();
+  
   return (
     <div className="space-y-4">
       <div>
         <Label className="text-base font-medium block mb-3">
-          Existem concorrentes ou soluções parecidas no mercado?
+          {t('ideaForm.competitors.title')}
         </Label>
         <RadioGroup 
           value={formData.hasCompetitors}
@@ -26,26 +29,26 @@ export const CompetitorsStep = ({ formData, updateFormData, onNext, onPrev }: Co
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="sim" id="competitors-yes" />
-            <Label htmlFor="competitors-yes">Sim</Label>
+            <Label htmlFor="competitors-yes">{t('ideaForm.competitors.yes')}</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="nao" id="competitors-no" />
-            <Label htmlFor="competitors-no">Não</Label>
+            <Label htmlFor="competitors-no">{t('ideaForm.competitors.no')}</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="nao-sei" id="competitors-unknown" />
-            <Label htmlFor="competitors-unknown">Não sei</Label>
+            <Label htmlFor="competitors-unknown">{t('common.dontKnow')}</Label>
           </div>
         </RadioGroup>
       </div>
 
       <div>
         <Label htmlFor="monetization" className="text-base font-medium">
-          Como você pretende ganhar dinheiro com essa ideia?
+          {t('ideaForm.monetization.title')}
         </Label>
         <Textarea 
           id="monetization"
-          placeholder="Descreva seus planos de monetização..."
+          placeholder={t('ideaForm.monetization.placeholder')}
           className="mt-2 resize-none"
           rows={3}
           value={formData.monetization}
@@ -56,7 +59,7 @@ export const CompetitorsStep = ({ formData, updateFormData, onNext, onPrev }: Co
 
       <div className="flex justify-between">
         <Button type="button" variant="outline" onClick={onPrev}>
-          Voltar
+          {t('common.back')}
         </Button>
         <Button 
           type="button"
@@ -64,7 +67,7 @@ export const CompetitorsStep = ({ formData, updateFormData, onNext, onPrev }: Co
           disabled={!formData.hasCompetitors || formData.monetization.trim().length < 5}
           className="bg-brand-green hover:bg-brand-green/90"
         >
-          Próximo
+          {t('common.next')}
         </Button>
       </div>
     </div>

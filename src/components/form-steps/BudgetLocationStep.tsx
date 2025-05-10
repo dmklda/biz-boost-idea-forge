@@ -4,11 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FormData } from "@/types/form";
-
-const COUNTRIES = [
-  "Brazil", "United States", "Canada", "United Kingdom", 
-  "Germany", "France", "Australia", "India", "China", "Other"
-];
+import { useTranslation } from "react-i18next";
 
 interface BudgetLocationStepProps {
   formData: FormData;
@@ -23,16 +19,23 @@ export const BudgetLocationStep = ({
   onPrev,
   isSubmitting 
 }: BudgetLocationStepProps) => {
+  const { t } = useTranslation();
+  
+  const COUNTRIES = [
+    "Brazil", "United States", "Canada", "United Kingdom", 
+    "Germany", "France", "Australia", "India", "China", "Other"
+  ];
+
   return (
     <div className="space-y-4">
       <div>
         <Label htmlFor="budget" className="text-base font-medium">
-          Qual orçamento inicial está disponível para o negócio? (em R$)
+          {t('ideaForm.budget.title')}
         </Label>
         <Input 
           id="budget"
           type="number"
-          placeholder="Digite o valor disponível para iniciar"
+          placeholder={t('ideaForm.budget.placeholder')}
           className="mt-2"
           value={formData.budget}
           onChange={(e) => updateFormData("budget", Number(e.target.value))}
@@ -43,19 +46,19 @@ export const BudgetLocationStep = ({
 
       <div>
         <Label htmlFor="location" className="text-base font-medium">
-          Em qual país será desenvolvido o negócio?
+          {t('ideaForm.location.title')}
         </Label>
         <Select 
           value={formData.location}
           onValueChange={(value) => updateFormData("location", value)}
         >
           <SelectTrigger className="mt-2">
-            <SelectValue placeholder="Selecione o país" />
+            <SelectValue placeholder={t('ideaForm.location.placeholder')} />
           </SelectTrigger>
           <SelectContent>
             {COUNTRIES.map((country) => (
               <SelectItem key={country} value={country}>
-                {country}
+                {t(`countries.${country.toLowerCase().replace(' ', '')}`)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -64,14 +67,14 @@ export const BudgetLocationStep = ({
 
       <div className="flex justify-between">
         <Button type="button" variant="outline" onClick={onPrev}>
-          Voltar
+          {t('common.back')}
         </Button>
         <Button 
           type="submit"
           disabled={!formData.budget || !formData.location || isSubmitting}
           className="bg-brand-green hover:bg-brand-green/90"
         >
-          {isSubmitting ? "Analisando..." : "Analisar Ideia"}
+          {isSubmitting ? t('ideaForm.submitting') : t('ideaForm.submit')}
         </Button>
       </div>
     </div>

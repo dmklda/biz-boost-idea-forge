@@ -1,3 +1,4 @@
+
 {
   "testimonials": {
     "tagline": "Depoimentos",
@@ -547,7 +548,8 @@
       "premium": "Premium",
       "addCredits": "Adicionar créditos",
       "upgrade": "Fazer upgrade",
-      "compared": "em relação ao mês passado"
+      "compared": "em relação ao mês passado",
+      "totalAnalysesDescription": "Total de ideias analisadas"
     },
     "tabs": {
       "overview": "Visão Geral",
@@ -563,6 +565,19 @@
       "title": "Ideias Recentes",
       "description": "Suas últimas análises de ideias",
       "viewAll": "Ver todas"
+    },
+    "insights": {
+      "title": "Insights",
+      "description": "Análise inteligente da sua atividade recente",
+      "activityTrend": "Tendência de Atividade",
+      "highActivity": "Sua atividade está acima da média dos usuários.",
+      "lowActivity": "Crie mais análises para insights completos.",
+      "successRate": "Taxa de Sucesso",
+      "goodSuccessRate": "Suas ideias têm boa viabilidade de mercado.",
+      "improvementNeeded": "Considere refinar suas ideias para melhor viabilidade.",
+      "nextSteps": "Próximos Passos",
+      "hasCredits": "Você tem créditos disponíveis para novas análises.",
+      "needsCredits": "Adicione créditos para continuar analisando ideias."
     }
   },
   
@@ -619,6 +634,13 @@
       "pending": "Pendente",
       "analyzed": "Analisado",
       "inProgress": "Em Progresso"
+    },
+    "errors": {
+      "fetchFailed": "Erro ao carregar ideias"
+    },
+    "emptyState": {
+      "title": "Você ainda não tem nenhuma ideia analisada",
+      "button": "Criar minha primeira ideia"
     }
   },
   
@@ -653,6 +675,54 @@
     "edit": "Editar",
     "view": "Ver",
     "loading": "Carregando...",
-    "noResults": "Nenhum resultado encontrado"
+    "noResults": "Nenhum resultado encontrado",
+    "max": "máx",
+    "characters": "caracteres",
+    "dontKnow": "Não sei"
+  },
+  
+  "countries": {
+    "global": "Global",
+    "angola": "Angola",
+    "brazil": "Brasil",
+    "portugal": "Portugal",
+    "mozambique": "Moçambique",
+    "unitedstates": "Estados Unidos",
+    "canada": "Canadá",
+    "unitedkingdom": "Reino Unido",
+    "germany": "Alemanha",
+    "france": "França",
+    "australia": "Austrália",
+    "india": "Índia",
+    "china": "China",
+    "other": "Outros"
+  },
+  
+  "monitoringStatus": {
+    "title": "Estado do sistema",
+    "active": "Todos os sistemas ativos",
+    "partial": "Problemas parciais",
+    "down": "Sistema inoperante"
+  },
+  
+  "formSteps": {
+    "marketAnalysis": "Análise de Mercado",
+    "financialViability": "Viabilidade Financeira",
+    "competitiveAnalysis": "Análise Competitiva",
+    "progress": "Em progresso",
+    "analyzing": "Em análise",
+    "completed": "Concluída",
+    "accuracy": "Precisão",
+    "analyses": "Análises",
+    "average": "Média"
+  },
+  
+  "dashboardCharts": {
+    "marketAnalysis": "Análise de Mercado",
+    "financialViability": "Viabilidade Financeira",
+    "competitiveAnalysis": "Análise Competitiva",
+    "accuracy": "Precisão",
+    "analyses": "Análises",
+    "average": "Média"
   }
 }

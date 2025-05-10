@@ -1,3 +1,4 @@
+
 {
   "auth": {
     "login": "Iniciar Sesión",
@@ -208,7 +209,10 @@
     "edit": "Editar",
     "view": "Ver",
     "loading": "Cargando...",
-    "noResults": "No se encontraron resultados"
+    "noResults": "No se encontraron resultados",
+    "max": "máx",
+    "characters": "caracteres",
+    "dontKnow": "No lo sé"
   },
   
   "monitoringStatus": {
@@ -224,6 +228,14 @@
     "brazil": "Brasil",
     "portugal": "Portugal",
     "mozambique": "Mozambique",
+    "unitedstates": "Estados Unidos",
+    "canada": "Canadá",
+    "unitedkingdom": "Reino Unido",
+    "germany": "Alemania",
+    "france": "Francia",
+    "australia": "Australia",
+    "india": "India",
+    "china": "China",
     "other": "Otros"
   },
   
@@ -310,5 +322,26 @@
       "title": "Panel Analítico",
       "status": "En línea"
     }
+  },
+  
+  "formSteps": {
+    "marketAnalysis": "Análisis de Mercado",
+    "financialViability": "Viabilidad Financiera",
+    "competitiveAnalysis": "Análisis Competitivo",
+    "progress": "En progreso",
+    "analyzing": "Analizando",
+    "completed": "Completado",
+    "accuracy": "Precisión",
+    "analyses": "Análisis",
+    "average": "Promedio"
+  },
+  
+  "dashboardCharts": {
+    "marketAnalysis": "Análisis de Mercado",
+    "financialViability": "Viabilidad Financiera",
+    "competitiveAnalysis": "Análisis Competitivo",
+    "accuracy": "Precisión",
+    "analyses": "Análisis",
+    "average": "Promedio"
   }
 }

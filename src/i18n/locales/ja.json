@@ -1,3 +1,4 @@
+
 {
   "auth": {
     "login": "ログイン",
@@ -208,7 +209,10 @@
     "edit": "編集",
     "view": "表示",
     "loading": "読み込み中...",
-    "noResults": "結果が見つかりません"
+    "noResults": "結果が見つかりません",
+    "max": "最大",
+    "characters": "文字",
+    "dontKnow": "わかりません"
   },
   
   "monitoringStatus": {
@@ -224,6 +228,14 @@
     "brazil": "ブラジル",
     "portugal": "ポルトガル",
     "mozambique": "モザンビーク",
+    "unitedstates": "アメリカ合衆国",
+    "canada": "カナダ",
+    "unitedkingdom": "イギリス",
+    "germany": "ドイツ",
+    "france": "フランス",
+    "australia": "オーストラリア",
+    "india": "インド",
+    "china": "中国",
     "other": "その他"
   },
   
@@ -310,5 +322,26 @@
       "title": "分析ダッシュボード",
       "status": "オンライン"
     }
+  },
+  
+  "formSteps": {
+    "marketAnalysis": "市場分析",
+    "financialViability": "財務的実現可能性",
+    "competitiveAnalysis": "競合分析",
+    "progress": "進行中",
+    "analyzing": "分析中",
+    "completed": "完了",
+    "accuracy": "精度",
+    "analyses": "分析",
+    "average": "平均"
+  },
+  
+  "dashboardCharts": {
+    "marketAnalysis": "市場分析",
+    "financialViability": "財務的実現可能性",
+    "competitiveAnalysis": "競合分析",
+    "accuracy": "精度",
+    "analyses": "分析",
+    "average": "平均"
   }
 }
