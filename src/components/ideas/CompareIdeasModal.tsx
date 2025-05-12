@@ -277,328 +277,332 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
                 {t('ideas.compare.insights') || "Insights"}
               </TabsTrigger>
             </TabsList>
+            
+            {loading ? (
+              <div className="flex-1 flex items-center justify-center p-8">
+                <div className="animate-pulse flex flex-col items-center">
+                  <div className="h-8 w-32 bg-muted rounded mb-4"></div>
+                  <div className="h-4 w-48 bg-muted rounded"></div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <TabsContent value="viability" className="mt-0">
+                  <div className="relative">
+                    {/* Navigation buttons */}
+                    {ideas.length > (isMobile ? 1 : 2) && (
+                      <>
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          className="absolute left-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                          onClick={() => shiftVisibleIdeas('prev')}
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                          onClick={() => shiftVisibleIdeas('next')}
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                      {visibleIdeas.map((idx) => {
+                        const idea = ideas[idx];
+                        if (!idea) return null;
+                        
+                        return (
+                          <Card key={idea.id} className="h-full overflow-hidden">
+                            <CardHeader className="border-b pb-3">
+                              <div className="flex items-start justify-between">
+                                <CardTitle className="text-lg">{idea.title}</CardTitle>
+                                <Badge variant="outline" className={getStatusBadgeClass(idea.score)}>
+                                  {idea.score ? `${idea.score}%` : t('ideas.statuses.pending')}
+                                </Badge>
+                              </div>
+                              {idea.tags && idea.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {idea.tags.map((tag) => (
+                                    <TagBadge key={tag.id} name={tag.name} color={tag.color} className="text-xs" />
+                                  ))}
+                                </div>
+                              )}
+                            </CardHeader>
+                            
+                            <CardContent className="pt-4">
+                              <div className="space-y-4">
+                                <div>
+                                  <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.description')}</h3>
+                                  <p className="text-sm">{idea.description}</p>
+                                </div>
+                                
+                                <div>
+                                  <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.audience')}</h3>
+                                  <p className="text-sm">{idea.audience || t('ideas.compare.notSpecified')}</p>
+                                </div>
+                                
+                                <div>
+                                  <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.problem')}</h3>
+                                  <p className="text-sm">{idea.problem || t('ideas.compare.notSpecified')}</p>
+                                </div>
+                                
+                                <div className="pt-2">
+                                  <div className="h-2 w-full rounded-full bg-gray-200">
+                                    <div 
+                                      className={`h-full rounded-full ${
+                                        (idea.score || 0) > 80 ? "bg-green-500" : 
+                                        (idea.score || 0) > 65 ? "bg-amber-500" : 
+                                        (idea.score || 0) > 0 ? "bg-red-500" : "bg-gray-400"
+                                      }`}
+                                      style={{ width: `${idea.score || 0}%` }}
+                                    />
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {t('ideas.compare.viabilityScore')}: {idea.score || 0}%
+                                  </p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="market" className="mt-0">
+                  <div className="relative">
+                    {/* Navigation buttons (same as above) */}
+                    {ideas.length > (isMobile ? 1 : 2) && (
+                      <>
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          className="absolute left-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                          onClick={() => shiftVisibleIdeas('prev')}
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                          onClick={() => shiftVisibleIdeas('next')}
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                      {visibleIdeas.map((idx) => {
+                        const idea = ideas[idx];
+                        if (!idea) return null;
+                        
+                        return (
+                          <Card key={idea.id} className="h-full overflow-hidden">
+                            <CardHeader className="border-b pb-3">
+                              <div className="flex items-start justify-between">
+                                <CardTitle className="text-lg">{idea.title}</CardTitle>
+                                <Users className="h-5 w-5 text-muted-foreground" />
+                              </div>
+                            </CardHeader>
+                            
+                            <CardContent className="pt-4">
+                              <div className="space-y-4">
+                                <div>
+                                  <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.marketSize')}</h3>
+                                  <p className="text-sm">{idea.analysis?.market_size || t('ideas.compare.notAnalyzed')}</p>
+                                </div>
+                                
+                                <div>
+                                  <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.differentiation')}</h3>
+                                  <p className="text-sm">{idea.analysis?.differentiation || t('ideas.compare.notAnalyzed')}</p>
+                                </div>
+                                
+                                <div>
+                                  <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.monetization')}</h3>
+                                  <p className="text-sm">{idea.monetization || t('ideas.compare.notSpecified')}</p>
+                                </div>
+                                
+                                <div>
+                                  <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.audience')}</h3>
+                                  <p className="text-sm">{idea.audience || t('ideas.compare.notSpecified')}</p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="strengths" className="mt-0">
+                  <div className="relative">
+                    {/* Navigation buttons (same as above) */}
+                    {ideas.length > (isMobile ? 1 : 2) && (
+                      <>
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          className="absolute left-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                          onClick={() => shiftVisibleIdeas('prev')}
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                          onClick={() => shiftVisibleIdeas('next')}
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                      {visibleIdeas.map((idx) => {
+                        const idea = ideas[idx];
+                        if (!idea) return null;
+                        
+                        return (
+                          <Card key={idea.id} className="h-full overflow-hidden">
+                            <CardHeader className="border-b pb-3">
+                              <div className="flex items-start justify-between">
+                                <CardTitle className="text-lg">{idea.title}</CardTitle>
+                                <Shield className="h-5 w-5 text-muted-foreground" />
+                              </div>
+                            </CardHeader>
+                            
+                            <CardContent className="pt-4">
+                              <div className="space-y-4">
+                                <div>
+                                  <h3 className="text-sm font-medium text-green-600 mb-1">{t('ideas.compare.strengths')}</h3>
+                                  {idea.analysis?.strengths && idea.analysis.strengths.length > 0 ? (
+                                    <ul className="list-disc pl-5 space-y-1">
+                                      {idea.analysis.strengths.map((strength, idx) => (
+                                        <li key={idx} className="text-sm">{strength}</li>
+                                      ))}
+                                    </ul>
+                                  ) : (
+                                    <p className="text-sm italic">{t('ideas.compare.notAnalyzed')}</p>
+                                  )}
+                                </div>
+                                
+                                <div>
+                                  <h3 className="text-sm font-medium text-red-600 mb-1">{t('ideas.compare.weaknesses')}</h3>
+                                  {idea.analysis?.weaknesses && idea.analysis.weaknesses.length > 0 ? (
+                                    <ul className="list-disc pl-5 space-y-1">
+                                      {idea.analysis.weaknesses.map((weakness, idx) => (
+                                        <li key={idx} className="text-sm">{weakness}</li>
+                                      ))}
+                                    </ul>
+                                  ) : (
+                                    <p className="text-sm italic">{t('ideas.compare.notAnalyzed')}</p>
+                                  )}
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="insights" className="mt-0">
+                  <div className="relative">
+                    {/* Navigation buttons (same as above) */}
+                    {ideas.length > (isMobile ? 1 : 2) && (
+                      <>
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          className="absolute left-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                          onClick={() => shiftVisibleIdeas('prev')}
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                          onClick={() => shiftVisibleIdeas('next')}
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                      {visibleIdeas.map((idx) => {
+                        const idea = ideas[idx];
+                        if (!idea) return null;
+                        
+                        const insights = getComparableInsights(idx);
+                        
+                        return (
+                          <Card key={idea.id} className="h-full overflow-hidden">
+                            <CardHeader className="border-b pb-3">
+                              <div className="flex items-start justify-between">
+                                <CardTitle className="text-lg">{idea.title}</CardTitle>
+                                <TrendingUp className="h-5 w-5 text-muted-foreground" />
+                              </div>
+                            </CardHeader>
+                            
+                            <CardContent className="pt-4">
+                              <div className="space-y-4">
+                                {insights && insights.length > 0 ? (
+                                  insights.map((insight, i) => (
+                                    <div key={i} className={cn(
+                                      "rounded-md p-3",
+                                      insight.type === 'positive' ? "bg-green-50 border border-green-200" : 
+                                      insight.type === 'negative' ? "bg-red-50 border border-red-200" : 
+                                      "bg-blue-50 border border-blue-200"
+                                    )}>
+                                      <h3 className={cn(
+                                        "text-sm font-semibold mb-1",
+                                        insight.type === 'positive' ? "text-green-700" : 
+                                        insight.type === 'negative' ? "text-red-700" : 
+                                        "text-blue-700"
+                                      )}>
+                                        {insight.title}
+                                      </h3>
+                                      <p className="text-sm">{insight.content}</p>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <div className="flex flex-col items-center justify-center text-center p-6">
+                                    <AlertTriangle className="h-8 w-8 text-amber-500 mb-2" />
+                                    <h3 className="text-sm font-medium">{t('ideas.compare.noInsights') || "Sem insights disponíveis"}</h3>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      {t('ideas.compare.completeAnalysis') || "Complete a análise desta ideia para obter insights comparativos"}
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </TabsContent>
+              </>
+            )}
           </Tabs>
         </DialogHeader>
         
-        {loading ? (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="animate-pulse flex flex-col items-center">
-              <div className="h-8 w-32 bg-muted rounded mb-4"></div>
-              <div className="h-4 w-48 bg-muted rounded"></div>
-            </div>
-          </div>
-        ) : (
-          <div className="flex-1 overflow-auto">
-            <TabsContent value="viability" className="mt-0">
-              <div className="relative">
-                {/* Navigation buttons */}
-                {ideas.length > (isMobile ? 1 : 2) && (
-                  <>
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      className="absolute left-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
-                      onClick={() => shiftVisibleIdeas('prev')}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      className="absolute right-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
-                      onClick={() => shiftVisibleIdeas('next')}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </>
-                )}
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                  {visibleIdeas.map((idx) => {
-                    const idea = ideas[idx];
-                    if (!idea) return null;
-                    
-                    return (
-                      <Card key={idea.id} className="h-full overflow-hidden">
-                        <CardHeader className="border-b pb-3">
-                          <div className="flex items-start justify-between">
-                            <CardTitle className="text-lg">{idea.title}</CardTitle>
-                            <Badge variant="outline" className={getStatusBadgeClass(idea.score)}>
-                              {idea.score ? `${idea.score}%` : t('ideas.statuses.pending')}
-                            </Badge>
-                          </div>
-                          {idea.tags && idea.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {idea.tags.map((tag) => (
-                                <TagBadge key={tag.id} name={tag.name} color={tag.color} className="text-xs" />
-                              ))}
-                            </div>
-                          )}
-                        </CardHeader>
-                        
-                        <CardContent className="pt-4">
-                          <div className="space-y-4">
-                            <div>
-                              <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.description')}</h3>
-                              <p className="text-sm">{idea.description}</p>
-                            </div>
-                            
-                            <div>
-                              <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.audience')}</h3>
-                              <p className="text-sm">{idea.audience || t('ideas.compare.notSpecified')}</p>
-                            </div>
-                            
-                            <div>
-                              <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.problem')}</h3>
-                              <p className="text-sm">{idea.problem || t('ideas.compare.notSpecified')}</p>
-                            </div>
-                            
-                            <div className="pt-2">
-                              <div className="h-2 w-full rounded-full bg-gray-200">
-                                <div 
-                                  className={`h-full rounded-full ${
-                                    (idea.score || 0) > 80 ? "bg-green-500" : 
-                                    (idea.score || 0) > 65 ? "bg-amber-500" : 
-                                    (idea.score || 0) > 0 ? "bg-red-500" : "bg-gray-400"
-                                  }`}
-                                  style={{ width: `${idea.score || 0}%` }}
-                                />
-                              </div>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {t('ideas.compare.viabilityScore')}: {idea.score || 0}%
-                              </p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="market" className="mt-0">
-              <div className="relative">
-                {/* Navigation buttons (same as above) */}
-                {ideas.length > (isMobile ? 1 : 2) && (
-                  <>
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      className="absolute left-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
-                      onClick={() => shiftVisibleIdeas('prev')}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      className="absolute right-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
-                      onClick={() => shiftVisibleIdeas('next')}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </>
-                )}
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                  {visibleIdeas.map((idx) => {
-                    const idea = ideas[idx];
-                    if (!idea) return null;
-                    
-                    return (
-                      <Card key={idea.id} className="h-full overflow-hidden">
-                        <CardHeader className="border-b pb-3">
-                          <div className="flex items-start justify-between">
-                            <CardTitle className="text-lg">{idea.title}</CardTitle>
-                            <Users className="h-5 w-5 text-muted-foreground" />
-                          </div>
-                        </CardHeader>
-                        
-                        <CardContent className="pt-4">
-                          <div className="space-y-4">
-                            <div>
-                              <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.marketSize')}</h3>
-                              <p className="text-sm">{idea.analysis?.market_size || t('ideas.compare.notAnalyzed')}</p>
-                            </div>
-                            
-                            <div>
-                              <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.differentiation')}</h3>
-                              <p className="text-sm">{idea.analysis?.differentiation || t('ideas.compare.notAnalyzed')}</p>
-                            </div>
-                            
-                            <div>
-                              <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.monetization')}</h3>
-                              <p className="text-sm">{idea.monetization || t('ideas.compare.notSpecified')}</p>
-                            </div>
-                            
-                            <div>
-                              <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.audience')}</h3>
-                              <p className="text-sm">{idea.audience || t('ideas.compare.notSpecified')}</p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="strengths" className="mt-0">
-              <div className="relative">
-                {/* Navigation buttons (same as above) */}
-                {ideas.length > (isMobile ? 1 : 2) && (
-                  <>
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      className="absolute left-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
-                      onClick={() => shiftVisibleIdeas('prev')}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      className="absolute right-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
-                      onClick={() => shiftVisibleIdeas('next')}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </>
-                )}
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                  {visibleIdeas.map((idx) => {
-                    const idea = ideas[idx];
-                    if (!idea) return null;
-                    
-                    return (
-                      <Card key={idea.id} className="h-full overflow-hidden">
-                        <CardHeader className="border-b pb-3">
-                          <div className="flex items-start justify-between">
-                            <CardTitle className="text-lg">{idea.title}</CardTitle>
-                            <Shield className="h-5 w-5 text-muted-foreground" />
-                          </div>
-                        </CardHeader>
-                        
-                        <CardContent className="pt-4">
-                          <div className="space-y-4">
-                            <div>
-                              <h3 className="text-sm font-medium text-green-600 mb-1">{t('ideas.compare.strengths')}</h3>
-                              {idea.analysis?.strengths && idea.analysis.strengths.length > 0 ? (
-                                <ul className="list-disc pl-5 space-y-1">
-                                  {idea.analysis.strengths.map((strength, idx) => (
-                                    <li key={idx} className="text-sm">{strength}</li>
-                                  ))}
-                                </ul>
-                              ) : (
-                                <p className="text-sm italic">{t('ideas.compare.notAnalyzed')}</p>
-                              )}
-                            </div>
-                            
-                            <div>
-                              <h3 className="text-sm font-medium text-red-600 mb-1">{t('ideas.compare.weaknesses')}</h3>
-                              {idea.analysis?.weaknesses && idea.analysis.weaknesses.length > 0 ? (
-                                <ul className="list-disc pl-5 space-y-1">
-                                  {idea.analysis.weaknesses.map((weakness, idx) => (
-                                    <li key={idx} className="text-sm">{weakness}</li>
-                                  ))}
-                                </ul>
-                              ) : (
-                                <p className="text-sm italic">{t('ideas.compare.notAnalyzed')}</p>
-                              )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="insights" className="mt-0">
-              <div className="relative">
-                {/* Navigation buttons (same as above) */}
-                {ideas.length > (isMobile ? 1 : 2) && (
-                  <>
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      className="absolute left-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
-                      onClick={() => shiftVisibleIdeas('prev')}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      className="absolute right-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
-                      onClick={() => shiftVisibleIdeas('next')}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </>
-                )}
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                  {visibleIdeas.map((idx) => {
-                    const idea = ideas[idx];
-                    if (!idea) return null;
-                    
-                    const insights = getComparableInsights(idx);
-                    
-                    return (
-                      <Card key={idea.id} className="h-full overflow-hidden">
-                        <CardHeader className="border-b pb-3">
-                          <div className="flex items-start justify-between">
-                            <CardTitle className="text-lg">{idea.title}</CardTitle>
-                            <TrendingUp className="h-5 w-5 text-muted-foreground" />
-                          </div>
-                        </CardHeader>
-                        
-                        <CardContent className="pt-4">
-                          <div className="space-y-4">
-                            {insights && insights.length > 0 ? (
-                              insights.map((insight, i) => (
-                                <div key={i} className={cn(
-                                  "rounded-md p-3",
-                                  insight.type === 'positive' ? "bg-green-50 border border-green-200" : 
-                                  insight.type === 'negative' ? "bg-red-50 border border-red-200" : 
-                                  "bg-blue-50 border border-blue-200"
-                                )}>
-                                  <h3 className={cn(
-                                    "text-sm font-semibold mb-1",
-                                    insight.type === 'positive' ? "text-green-700" : 
-                                    insight.type === 'negative' ? "text-red-700" : 
-                                    "text-blue-700"
-                                  )}>
-                                    {insight.title}
-                                  </h3>
-                                  <p className="text-sm">{insight.content}</p>
-                                </div>
-                              ))
-                            ) : (
-                              <div className="flex flex-col items-center justify-center text-center p-6">
-                                <AlertTriangle className="h-8 w-8 text-amber-500 mb-2" />
-                                <h3 className="text-sm font-medium">{t('ideas.compare.noInsights') || "Sem insights disponíveis"}</h3>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  {t('ideas.compare.completeAnalysis') || "Complete a análise desta ideia para obter insights comparativos"}
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </div>
-            </TabsContent>
-          </div>
-        )}
+        <div className="flex-1 overflow-auto">
+          {/* The TabsContent components have been moved inside the Tabs component above */}
+        </div>
       </DialogContent>
     </Dialog>
   );
