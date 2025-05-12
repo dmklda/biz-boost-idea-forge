@@ -1,483 +1,259 @@
+
 {
-  "auth": {
+  "common": {
+    "welcome": "ようこそ",
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "success": "成功",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "view": "表示",
+    "search": "検索",
+    "filter": "フィルター",
+    "sort": "並べ替え",
+    "create": "作成",
+    "add": "追加",
+    "remove": "削除",
+    "back": "戻る",
+    "next": "次へ",
+    "previous": "前へ",
+    "submit": "送信",
+    "reset": "リセット",
+    "apply": "適用",
+    "clear": "クリア",
+    "close": "閉じる",
+    "open": "開く",
+    "show": "表示",
+    "hide": "非表示",
+    "yes": "はい",
+    "no": "いいえ",
+    "all": "すべて",
+    "none": "なし",
+    "or": "または",
+    "and": "および",
+    "with": "と",
+    "to": "へ",
+    "of": "の",
+    "by": "によって",
+    "on": "に",
+    "at": "で",
+    "in": "で",
+    "export": "エクスポート",
+    "import": "インポート",
+    "download": "ダウンロード",
+    "upload": "アップロード",
+    "copy": "コピー",
+    "paste": "貼り付け",
+    "cut": "切り取り",
+    "select": "選択",
+    "selectAll": "すべて選択",
+    "selectNone": "選択を解除",
+    "update": "更新",
+    "updated": "更新済み",
+    "refresh": "リフレッシュ",
+    "retry": "再試行",
+    "settings": "設定",
+    "preferences": "設定",
+    "options": "オプション",
+    "done": "完了",
+    "complete": "完了",
+    "incomplete": "未完了",
+    "enable": "有効にする",
+    "disable": "無効にする",
+    "enabled": "有効",
+    "disabled": "無効",
+    "help": "ヘルプ",
+    "support": "サポート",
+    "about": "について",
+    "contact": "お問い合わせ",
+    "language": "言語",
+    "theme": "テーマ",
+    "layout": "レイアウト",
+    "darkMode": "ダークモード",
+    "lightMode": "ライトモード",
+    "systemDefault": "システムデフォルト",
+    "backToDashboard": "ダッシュボードに戻る",
+    "more": "もっと見る",
+    "less": "少なく表示",
+    "new": "新規",
+    "share": "共有",
+    "info": "情報",
+    "details": "詳細",
+    "summary": "概要"
+  },
+  "nav": {
+    "home": "ホーム",
+    "dashboard": "ダッシュボード",
+    "settings": "設定",
+    "profile": "プロフィール",
+    "logout": "ログアウト",
     "login": "ログイン",
-    "loginSubtitle": "アカウントにアクセスして分析を確認する",
-    "register": "登録",
-    "registerSubtitle": "ビジネスアイデアを分析するために登録する",
-    "email": "メールアドレス",
-    "password": "パスワード",
-    "name": "フルネーム",
-    "loggingIn": "ログイン中...",
-    "registering": "登録中...",
-    "redirecting": "リダイレクト中...",
+    "signup": "サインアップ",
+    "credits": "クレジット",
+    "ideas": "アイデア",
+    "metrics": "メトリクス",
+    "resources": "リソース",
+    "history": "履歴",
+    "drafts": "下書き"
+  },
+  "auth": {
+    "signIn": "サインイン",
+    "signUp": "サインアップ",
+    "signOut": "サインアウト",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "resetPassword": "パスワードをリセット",
+    "emailPlaceholder": "メールアドレスを入力",
+    "passwordPlaceholder": "パスワードを入力",
+    "confirmPasswordPlaceholder": "パスワードを確認",
+    "namePlaceholder": "名前を入力",
     "noAccount": "アカウントをお持ちでないですか？",
-    "alreadyHaveAccount": "すでにアカウントをお持ちですか？",
-    "loginSuccess": "ログインに成功しました！",
-    "loginFailed": "ログインに失敗しました",
-    "registerSuccess": "登録に成功しました！",
-    "registerFailed": "登録に失敗しました",
+    "alreadyAccount": "すでにアカウントをお持ちですか？",
+    "createAccount": "アカウントを作成",
+    "continueWith": "続行",
+    "orContinueWith": "または続行",
     "errors": {
-      "invalidEmail": "無効なメールアドレスです",
-      "passwordLength": "パスワードは6文字以上である必要があります",
-      "nameLength": "名前は2文字以上である必要があります"
+      "emailRequired": "メールは必須です",
+      "validEmail": "有効なメールアドレスを入力してください",
+      "passwordRequired": "パスワードは必須です",
+      "passwordMinLength": "パスワードは最低6文字必要です",
+      "passwordsDontMatch": "パスワードが一致しません",
+      "nameRequired": "名前は必須です"
     }
   },
-  
-  "dashboard": {
-    "title": "ダッシュボード",
-    "newAnalysis": "新しい分析",
-    "statistics": {
-      "totalAnalyses": "分析の合計",
-      "viabilityRate": "実現可能性率",
-      "availableCredits": "利用可能なクレジット",
-      "yourPlan": "あなたのプラン",
-      "free": "無料",
-      "premium": "プレミアム",
-      "addCredits": "クレジットを追加",
-      "upgrade": "アップグレード",
-      "compared": "先月比",
-      "totalAnalysesDescription": "分析されたアイデアの合計"
-    },
-    "tabs": {
-      "overview": "概要",
-      "analytics": "分析"
-    },
-    "charts": {
-      "performanceTitle": "分析パフォーマンス",
-      "performanceDescription": "分析と相談の月次比較",
-      "progressTitle": "分析の進捗",
-      "progressDescription": "時間の経過に伴う分析の進化"
-    },
-    "recentIdeas": {
-      "title": "最近のアイデア",
-      "description": "最新のアイデア分析",
-      "viewAll": "すべて表示"
-    },
-    "insights": {
-      "title": "インサイト",
-      "description": "最近のアクティビティのインテリジェント分析",
-      "activityTrend": "アクティビティトレンド",
-      "highActivity": "あなたのアクティビティはユーザー平均を上回っています。",
-      "lowActivity": "完全なインサイトを得るために、より多くの分析を作成してください。",
-      "successRate": "成功率",
-      "goodSuccessRate": "あなたのアイデアは市場の実現可能性が高いです。",
-      "improvementNeeded": "より良い実現可能性のためにアイデアを改善することを検討してください。",
-      "nextSteps": "次のステップ",
-      "hasCredits": "新しい分析のためのクレジットがあります。",
-      "needsCredits": "アイデア分析を続けるにはクレジットを追加してください。"
-    }
-  },
-  
-  "credits": {
-    "title": "マイクレジット",
-    "subtitle": "アイデア分析のためのクレジットを管理する",
-    "availableCredits": {
-      "title": "利用可能なクレジット",
-      "description": "分析のための現在のクレジット残高",
-      "freePlan": "無料プラン（月3クレジット）",
-      "proPlan": "プロプラン（無制限のクレジット）",
-      "upgradeBtn": "プロプランにアップグレード"
-    },
-    "buyCredits": {
-      "title": "クレジットを購入",
-      "description": "分析のためのさらなるクレジットを購入",
-      "credits": "クレジット",
-      "processing": "処理中...",
-      "buy": "購入"
-    },
-    "transactions": {
-      "title": "取引履歴",
-      "description": "クレジットの購入と使用の履歴",
-      "date": "日付",
-      "type": "タイプ",
-      "details": "詳細",
-      "amount": "金額",
-      "loading": "取引履歴を読み込み中...",
-      "noTransactions": "取引が見つかりません。",
-      "purchase": "購入",
-      "usage": "使用",
-      "addedSuccess": "クレジットが正常に追加されました！"
-    }
-  },
-  
   "ideas": {
-    "title": "マイアイデア",
-    "subtitle": "ビジネスアイデアの管理と分析",
-    "newIdea": "新しいアイデア",
+    "title": "アイデア一覧",
+    "subtitle": "分析済みのアイデアを表示・管理",
+    "newIdea": "新規アイデア",
+    "viewDrafts": "下書きを見る",
+    "search": "アイデアを検索...",
     "loading": "アイデアを読み込み中...",
-    "noIdeasFound": "アイデアが見つかりません。",
+    "noIdeasFound": "アイデアが見つかりません",
+    "filters": {
+      "all": "すべて",
+      "favorites": "お気に入り",
+      "viable": "実現可能",
+      "moderate": "中程度"
+    },
+    "statuses": {
+      "excellent": "優秀",
+      "good": "良い",
+      "moderate": "普通",
+      "poor": "低い",
+      "pending": "保留中"
+    },
     "table": {
       "name": "名前",
       "status": "ステータス",
       "score": "スコア",
       "createdAt": "作成日",
-      "actions": "操作",
-      "view": "分析を表示"
-    },
-    "filters": {
-      "all": "すべてのアイデア",
-      "viable": "実現可能",
-      "moderate": "適度",
-      "favorites": "お気に入り"
-    },
-    "search": "アイデアを検索...",
-    "statuses": {
-      "pending": "保留中",
-      "analyzed": "分析済み",
-      "inProgress": "進行中"
+      "actions": "アクション",
+      "view": "表示"
     },
     "errors": {
       "fetchFailed": "アイデアの読み込みに失敗しました"
     },
-    "emptyState": {
-      "title": "まだ分析されたアイデアがありません",
-      "button": "最初のアイデアを作成する"
-    },
-    "favorite": "お気に入り",
-    "favorited": "お気に入り済み",
-    "addedToFavorites": "お気に入りに追加しました",
-    "removedFromFavorites": "お気に入りから削除しました",
-    "favoriteError": "お気に入り状態の更新中にエラーが発生しました",
-    "noFavorites": "まだお気に入りのアイデアがありません",
-    "viewDrafts": "下書きを見る",
     "reanalyze": {
       "button": "再分析",
-      "noCredits": "クレジットが不足しています",
+      "noCredits": "このアイデアを再分析するためのクレジットが不足しています",
       "buyCredits": "クレジットを購入"
-    }
-  },
-  
-  "nav": {
-    "backToHome": "ホームページに戻る",
-    "dashboard": "ダッシュボード",
-    "ideas": "アイデア",
-    "credits": "クレジット",
-    "profile": "プロフィール",
-    "resources": "リソース",
-    "logout": "ログアウト",
-    "drafts": "下書き"
-  },
-  
-  "header": {
-    "howItWorks": "ご利用方法",
-    "benefits": "メリット",
-    "plans": "プラン",
-    "startNow": "今すぐ始める"
-  },
-
-  "ideaForm": {
-    "title": "アイデアを共有する",
-    "subtitle": "フォームに記入して、ビジネスの可能性の詳細な分析を受け取る",
-    "success": "アイデアが正常に登録されました！",
-    "error": "リクエストの処理中にエラーが発生しました",
-    "idea": {
-      "title": "あなたのビジネスアイデアは何ですか？",
-      "placeholder": "ビジネスアイデアを簡潔に説明してください..."
     },
-    "audience": {
-      "title": "ターゲットオーディエンスは誰ですか？",
-      "placeholder": "あなたのビジネスに理想的な顧客を説明してください..."
-    },
-    "problem": {
-      "title": "このアイデアはどのような問題を解決しますか？",
-      "placeholder": "あなたのビジネスが解決する問題を説明してください..."
-    },
-    "monetization": {
-      "title": "どのように収益化する予定ですか？",
-      "placeholder": "あなたのビジネスがどのように収益を生み出すか説������てください..."
-    },
-    "competitors": {
-      "title": "市場に競合他社はいますか？",
-      "yes": "はい、類似のソリューションがあります",
-      "no": "いいえ、これは革新的なソリューションです"
-    },
-    "budget": {
-      "title": "初期投資予算はいくらですか？",
-      "placeholder": "金額を入力してください...",
-      "currency": "USD"
-    },
-    "location": {
-      "title": "このビジネスはどこで運営されますか？",
-      "placeholder": "場所を選択してください..."
-    },
-    "submit": "分析のために提出する",
-    "submitting": "分析中...",
-    "saveAsDraft": "下書きとして保存",
-    "savingDraft": "保存中...",
-    "draftSaved": "下書きが正常に保存されました！",
-    "viewDrafts": "下書きを見る",
-    "reanalyzeTitle": "アイデア再分析",
-    "reanalyzeSubtitle": "新しい分析のためにアイデアを洗練する"
-  },
-
-  "notifications": {
-    "title": "通知",
-    "lowCredits": "クレジット残高が少ない",
-    "lowCreditsDesc": "クレジットが不足しています。アイデア分析を続けるにはクレジットを追加してください。",
-    "noNotifications": "現在通知はありません"
-  },
-
-  "search": {
-    "placeholder": "アイデアを検索..."
-  },
-
-  "common": {
-    "back": "戻る",
-    "next": "次へ",
-    "submit": "提出",
-    "cancel": "キャンセル",
-    "save": "保存",
-    "delete": "削除",
-    "edit": "編集",
-    "view": "表示",
-    "loading": "読み込み中...",
-    "noResults": "結果が見つかりません",
-    "max": "最大",
-    "characters": "文字",
-    "dontKnow": "わかりません"
-  },
-  
-  "monitoringStatus": {
-    "title": "システム状態",
-    "active": "すべてのシステムが稼働中",
-    "partial": "一部問題あり",
-    "down": "システムダウン"
-  },
-  
-  "countries": {
-    "global": "グローバル",
-    "angola": "アンゴラ",
-    "brazil": "ブラジル",
-    "portugal": "ポルトガル",
-    "mozambique": "モザンビーク",
-    "unitedstates": "アメリカ合衆国",
-    "canada": "カナダ",
-    "unitedkingdom": "イギリス",
-    "germany": "ドイツ",
-    "france": "フランス",
-    "australia": "オーストラリア",
-    "india": "インド",
-    "china": "中国",
-    "other": "その他"
-  },
-  
-  "profile": {
-    "title": "マイプロフィール",
-    "subtitle": "個人情報とアカウント設定の管理",
-    "personalInfo": {
-      "title": "個人情報",
-      "name": "フルネーム",
-      "email": "メールアドレス",
-      "phone": "電話番号",
-      "country": "国",
-      "language": "優先言語"
-    },
-    "accountSettings": {
-      "title": "アカウント設定",
-      "changePassword": "パスワード変更",
-      "currentPassword": "現在のパスワード",
-      "newPassword": "新しいパスワード",
-      "confirmPassword": "新しいパスワードの確認",
-      "twoFactor": "二要素認証",
-      "enabled": "有効",
-      "disabled": "無効"
-    },
-    "notifications": {
-      "title": "通知設定",
-      "analysis": "分析通知",
-      "marketing": "マーケティング通知",
-      "newsletter": "ニュースレター",
-      "updates": "製品アップデート"
-    },
-    "dangerZone": {
-      "title": "危険ゾーン",
-      "deleteAccount": "アカウント削除",
-      "deleteWarning": "この操作は元に戻せません。すべてのデータが完全に削除されます。",
-      "confirmDelete": "はい、アカウントを削除します"
-    },
-    "save": "変更を保存"
-  },
-  
-  "metrics": {
-    "title": "高度なメトリクス",
-    "subtitle": "プロジェクトに関する詳細な分析とアイデア",
-    "exportData": "データのエクスポート",
-    "exportSuccess": "データのエクスポートに成功しました",
-    "timeRange": "期間",
-    "selectTimeRange": "期間を選択",
-    "last7Days": "過去7日間",
-    "last30Days": "過去30日間",
-    "last90Days": "過去90日間",
-    "lastYear": "過去1年間",
-    "allTime": "全期間",
-    "granularity": "粒度",
-    "selectGranularity": "粒度を選択",
-    "daily": "日次",
-    "weekly": "週次",
-    "monthly": "月次",
-    "totalAnalyses": "分析の合計",
-    "averageScore": "平均スコア",
-    "topCategory": "主要カテゴリ",
-    "viableIdeas": "実現可能なアイデア",
-    "trends": "トレンド",
-    "distribution": "分布",
-    "performance": "パフォーマンス",
-    "analysisAndScoreTrend": "分析とスコアのトレンド",
-    "analysisAndScoreTrendDesc": "分析数と平均スコアの時間経過に伴う進化",
-    "analyses": "分析",
-    "ideaCount": "アイデア数",
-    "scoreDistribution": "スコア分布",
-    "scoreDistributionDesc": "範囲別のスコア分布",
-    "categoryDistribution": "カテゴリ別分布",
-    "categoryDistributionDesc": "カテゴリ別アイデアのパーセント分布",
-    "ideaRadar": "アイデアレーダー",
-    "ideaRadarDesc": "分析の異なる次元でのパフォーマンス",
-    "performanceInsights": "パフォーマンスインサイト",
-    "performanceInsightsDesc": "アイデアのパフォーマンス分析",
-    "topPerforming": "最高パフォーマンス",
-    "improvementNeeded": "改善が必要",
-    "recommendations": "推奨事項"
-  },
-  
-  "hero": {
-    "dashboard": {
-      "title": "分析ダッシュボード",
-      "status": "オンライン"
-    }
-  },
-  
-  "formSteps": {
-    "marketAnalysis": "市場分析",
-    "financialViability": "財務的実現可能性",
-    "competitiveAnalysis": "競合分析",
-    "progress": "進行中",
-    "analyzing": "分析中",
-    "completed": "完了",
-    "accuracy": "精度",
-    "analyses": "分析",
-    "average": "平均"
-  },
-  
-  "dashboardCharts": {
-    "marketAnalysis": "市場分析",
-    "financialViability": "財務的実現可能性",
-    "competitiveAnalysis": "競合分析",
-    "accuracy": "精度",
-    "analyses": "分析",
-    "average": "平均"
-  },
-  
-  "settings": {
-    "title": "設定",
-    "subtitle": "アカウントとプロフィールの設定を管理する",
-    "profile": "プロフィール",
-    "account": "アカウント",
-    "notifications": "通知",
-    "plan": "プラン",
-    "personalInfo": "個人情報",
-    "personalInfoDesc": "プロフィール情報を更新する",
-    "name": "名前",
-    "email": "メールアドレス",
-    "emailChangeNote": "メールアドレスは変更できません",
-    "language": "言語",
-    "selectLanguage": "言語を選択してください",
-    "security": "セキュリティ",
-    "securityDesc": "パスワードとセキュリティ設定を管理する",
-    "currentPassword": "現在のパスワード",
-    "newPassword": "新しいパスワード",
-    "confirmPassword": "新しいパスワードの確認",
-    "changePassword": "パスワード変更",
-    "dangerZone": "危険ゾーン",
-    "dangerZoneDesc": "アカウントの取り返しのつかないアクション",
-    "deleteAccount": "アカウント削除",
-    "deleteAccountDesc": "アカウントを削除すると���すべ���のデータが完全に削除されます。この操作は元に戻せません。",
-    "notificationPreferences": "通知設定",
-    "notificationPreferencesDesc": "通知の受け取り方を設定する",
-    "emailNotifications": "メール通知",
-    "emailNotificationsDesc": "メールで通知を受け取る",
-    "accountAlerts": "アカウントアラート",
-    "accountAlertsDesc": "アカウントに関する重要なアラート",
-    "marketingEmails": "マーケティングメール",
-    "marketingEmailsDesc": "オファーやニュースを受け取る",
-    "newFeatures": "新機能",
-    "newFeaturesDesc": "新機能に関する通知を受け取る",
-    "tips": "ヒントと提案",
-    "tipsDesc": "アイデアを改善するためのヒントを受け取る",
-    "notificationsUpdated": "通知設定が正常に更新されました",
-    "currentPlan": "現在のプラン",
-    "currentPlanDesc": "プランと購読の詳細",
-    "freePlan": "無料プラン",
-    "freePlanDesc": "限られた機能への基本アクセス",
-    "proPlan": "プロプラン",
-    "proPlanDesc": "すべての機能への完全アクセス",
-    "free": "無料",
-    "premium": "プレミアム",
-    "currentCredits": "利用可能なクレジット",
-    "upgradePlan": "アップグレード",
-    "managePlan": "サブスクリプション管理",
-    "profileUpdated": "プロフィールが正常に更新されました",
-    "passwordUpdated": "パスワードが正常に更新されました",
-    "languageUpdated": "言語が正常に更新されました",
-    "confirmDeleteAccount": "本当にアカウントを削除しますか？この操作は元に戻せません。",
-    "accountDeleted": "アカウントが正常に削除されました"
-  },
-  
-  "tags": {
-    "title": "タグ",
-    "add": "タグを追加",
-    "create": "新しいタグを作成",
-    "edit": "タグを編集",
-    "delete": "タグを削除",
-    "empty": "作成されたタグはありません",
-    "nameLabel": "タグ名",
-    "namePlaceholder": "タグ名を入力",
-    "colorLabel": "タグの色",
-    "success": {
-      "created": "タグが正常に作成されました",
-      "updated": "タグが正常に更新されました",
-      "deleted": "タグが正常に削除されました"
-    },
-    "errors": {
-      "emptyName": "タグ名を空にすることはできません",
-      "duplicate": "この名前のタグは既に存在します",
-      "createFailed": "タグの作成に失敗しました",
-      "updateFailed": "タグの更新に失敗しました",
-      "deleteFailed": "タグの削除に失敗しました"
-    }
-  },
-  
-  "drafts": {
-    "title": "下書き",
-    "subtitle": "保存したアイデアの作業を続ける",
-    "viewCompleted": "完成したアイデアを見る",
-    "search": "下書きを検索...",
-    "listTitle": "あなたの下書き",
-    "empty": "まだ保存された下書きはありません",
-    "noResults": "検索に一致する下書きが見つかりませんでした",
-    "errors": {
-      "fetchFailed": "下書きの読み込みに失敗しました"
-    },
-    "table": {
-      "title": "タイトル",
-      "created": "作成日",
-      "updated": "更新日",
+    "history": {
+      "title": "アイデア履歴",
+      "description": "すべての分析済みアイデアを表示・管理",
+      "filters": "フィルター",
+      "filterOptions": "フィルターオプション",
+      "dateRange": "日付範囲",
+      "scoreFilter": "スコア",
+      "allScores": "すべてのスコア",
+      "highScore": "高い (70-100)",
+      "mediumScore": "中程度 (40-69)",
+      "lowScore": "低い (0-39)",
+      "keywords": "キーワード（カンマ区切り）",
+      "keywordsPlaceholder": "例：アプリ、健康、教育",
+      "exportOptions": "エクスポートオプション",
+      "noIdeas": "アイデアが見つかりません",
+      "score": "スコア",
       "status": "ステータス",
-      "actions": "操作"
+      "date": "日付",
+      "actions": "アクション"
     },
-    "continue": "続ける",
-    "status": {
-      "draft": "下書き"
+    "compare": {
+      "button": "アイデア比較",
+      "title": "アイデア比較",
+      "maxSelected": "比較用に最大3つのアイデアを選択できます",
+      "needMoreIdeas": "比較するには少なくとも2つのアイデアを選択してください",
+      "viability": "実現可能性",
+      "market": "市場",
+      "strengths": "強み",
+      "weaknesses": "弱み",
+      "strengthsWeaknesses": "強み/弱み",
+      "description": "説明",
+      "audience": "ターゲットユーザー",
+      "problem": "問題点",
+      "marketSize": "市場規模",
+      "differentiation": "差別化要素",
+      "solution": "解決策",
+      "monetization": "収益化",
+      "viabilityScore": "実現可能性スコア",
+      "notSpecified": "未指定",
+      "notAnalyzed": "未分析",
+      "selectForComparison": "比較用に選択",
+      "fetchError": "アイデア詳細の取得中にエラーが発生しました"
+    }
+  },
+  "credits": {
+    "title": "クレジット",
+    "subtitle": "分析クレジットを管理",
+    "available": {
+      "title": "利用可能なクレジット",
+      "description": "各クレジットで新しいアイデアの分析または既存アイデアの再分析ができます。",
+      "infoTooltip": "クレジットは新しいアイデアを分析したり、既存のアイデアを再分析したりする際に消費されます。"
     },
-    "delete": {
-      "title": "下書きを削除しますか？",
-      "description": "この操作は元に戻せません。下書きは完全に削除されます。"
+    "buy": {
+      "title": "クレジットを購入",
+      "description": "アイデア分析を続けるためにクレジットを追加購入",
+      "selectAmount": "数量を選択",
+      "button": "今すぐ購入",
+      "perCredit": "クレジットあたり",
+      "bestValue": "ベストバリュー",
+      "discount": "{{percentage}}%オフ"
     },
-    "deleteSuccess": "下書きが正常に削除されました",
-    "deleteError": "下書きの削除中��エラーが発生しました",
-    "noDrafts": "まだ下書きがありません",
-    "createDraft": "下書きを作成",
-    "lastEdited": "最終編集",
-    "confirmDelete": "この下書きを削除してもよろしいですか？",
-    "confirmDeleteDescription": "この操作は元に戻せません"
+    "pricing": {
+      "title": "パッケージプラン",
+      "description": "ニーズに合わせた最適なパッケージを選択",
+      "starter": "スターター",
+      "professional": "プロフェッショナル",
+      "business": "ビジネス",
+      "enterprise": "エンタープライズ",
+      "perMonth": "/月",
+      "billed": "年間請求",
+      "features": "含まれる機能:",
+      "upgrade": "アップグレード",
+      "current": "現在のプラン",
+      "getStarted": "始める"
+    },
+    "transactions": {
+      "title": "取引履歴",
+      "date": "日付",
+      "type": "タイプ",
+      "amount": "数量",
+      "status": "ステータス",
+      "empty": "取引が見つかりません",
+      "purchase": "購入",
+      "bonus": "ボーナス",
+      "complete": "完了",
+      "pending": "保留中",
+      "failed": "失敗"
+    }
+  },
+  "dashboard": {
+    "welcome": "おかえりなさい、{{name}}さん！",
+    "lastLogin": "最終ログイン: {{date}}",
+    "quickActions": "クイックアクション",
+    "newIdea": "新規アイデア",
+    "viewIdeas": "アイデアを見る",
+    "buyCredits": "クレジットを購入"
   }
 }

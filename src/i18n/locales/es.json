@@ -1,483 +1,259 @@
+
 {
+  "common": {
+    "welcome": "Bienvenido",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "create": "Crear",
+    "add": "Añadir",
+    "remove": "Eliminar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "reset": "Reiniciar",
+    "apply": "Aplicar",
+    "clear": "Limpiar",
+    "close": "Cerrar",
+    "open": "Abrir",
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "yes": "Sí",
+    "no": "No",
+    "all": "Todos",
+    "none": "Ninguno",
+    "or": "o",
+    "and": "y",
+    "with": "con",
+    "to": "para",
+    "of": "de",
+    "by": "por",
+    "on": "en",
+    "at": "a las",
+    "in": "en",
+    "export": "Exportar",
+    "import": "Importar",
+    "download": "Descargar",
+    "upload": "Subir",
+    "copy": "Copiar",
+    "paste": "Pegar",
+    "cut": "Cortar",
+    "select": "Seleccionar",
+    "selectAll": "Seleccionar todo",
+    "selectNone": "Deseleccionar todo",
+    "update": "Actualizar",
+    "updated": "Actualizado",
+    "refresh": "Refrescar",
+    "retry": "Reintentar",
+    "settings": "Configuración",
+    "preferences": "Preferencias",
+    "options": "Opciones",
+    "done": "Hecho",
+    "complete": "Completo",
+    "incomplete": "Incompleto",
+    "enable": "Habilitar",
+    "disable": "Deshabilitar",
+    "enabled": "Habilitado",
+    "disabled": "Deshabilitado",
+    "help": "Ayuda",
+    "support": "Soporte",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "language": "Idioma",
+    "theme": "Tema",
+    "layout": "Diseño",
+    "darkMode": "Modo oscuro",
+    "lightMode": "Modo claro",
+    "systemDefault": "Predeterminado del sistema",
+    "backToDashboard": "Volver al Panel",
+    "more": "Más",
+    "less": "Menos",
+    "new": "Nuevo",
+    "share": "Compartir",
+    "info": "Información",
+    "details": "Detalles",
+    "summary": "Resumen"
+  },
+  "nav": {
+    "home": "Inicio",
+    "dashboard": "Panel",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "logout": "Cerrar sesión",
+    "login": "Iniciar sesión",
+    "signup": "Registrarse",
+    "credits": "Créditos",
+    "ideas": "Ideas",
+    "metrics": "Métricas",
+    "resources": "Recursos",
+    "history": "Historial",
+    "drafts": "Borradores"
+  },
   "auth": {
-    "login": "Iniciar Sesión",
-    "loginSubtitle": "Acceda a su cuenta para ver sus análisis",
-    "register": "Registrarse",
-    "registerSubtitle": "Regístrese para analizar sus ideas de negocio",
-    "email": "Correo electrónico",
-    "password": "Contraseña",
-    "name": "Nombre completo",
-    "loggingIn": "Iniciando sesión...",
-    "registering": "Registrando...",
-    "redirecting": "Redirigiendo...",
-    "noAccount": "¿No tiene cuenta todavía?",
-    "alreadyHaveAccount": "¿Ya tiene una cuenta?",
-    "loginSuccess": "¡Inicio de sesión exitoso!",
-    "loginFailed": "Error al iniciar sesión",
-    "registerSuccess": "¡Registro exitoso!",
-    "registerFailed": "Error al registrarse",
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "signOut": "Cerrar sesión",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "resetPassword": "Restablecer contraseña",
+    "emailPlaceholder": "Introduce tu email",
+    "passwordPlaceholder": "Introduce tu contraseña",
+    "confirmPasswordPlaceholder": "Confirma tu contraseña",
+    "namePlaceholder": "Introduce tu nombre",
+    "noAccount": "¿No tienes una cuenta?",
+    "alreadyAccount": "¿Ya tienes una cuenta?",
+    "createAccount": "Crear cuenta",
+    "continueWith": "Continuar con",
+    "orContinueWith": "o continuar con",
     "errors": {
-      "invalidEmail": "Correo electrónico inválido",
-      "passwordLength": "La contraseña debe tener al menos 6 caracteres",
-      "nameLength": "El nombre debe tener al menos 2 caracteres"
+      "emailRequired": "El email es obligatorio",
+      "validEmail": "Por favor, introduce un email válido",
+      "passwordRequired": "La contraseña es obligatoria",
+      "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
+      "passwordsDontMatch": "Las contraseñas no coinciden",
+      "nameRequired": "El nombre es obligatorio"
     }
   },
-  
-  "dashboard": {
-    "title": "Panel",
-    "newAnalysis": "Nuevo Análisis",
-    "statistics": {
-      "totalAnalyses": "Análisis Totales",
-      "viabilityRate": "Tasa de Viabilidad",
-      "availableCredits": "Créditos Disponibles",
-      "yourPlan": "Su Plan",
-      "free": "Gratuito",
-      "premium": "Premium",
-      "addCredits": "Añadir créditos",
-      "upgrade": "Actualizar",
-      "compared": "en comparación con el mes pasado",
-      "totalAnalysesDescription": "Su total de ideas analizadas"
-    },
-    "tabs": {
-      "overview": "Vista General",
-      "analytics": "Análisis"
-    },
-    "charts": {
-      "performanceTitle": "Rendimiento de Análisis",
-      "performanceDescription": "Comparación mensual de análisis y consultas",
-      "progressTitle": "Progreso de Análisis",
-      "progressDescription": "Evolución de sus análisis a lo largo del tiempo"
-    },
-    "recentIdeas": {
-      "title": "Ideas Recientes",
-      "description": "Sus últimos análisis de ideas",
-      "viewAll": "Ver todo"
-    },
-    "insights": {
-      "title": "Perspectivas",
-      "description": "Análisis inteligente de su actividad reciente",
-      "activityTrend": "Tendencia de Actividad",
-      "highActivity": "Su actividad está por encima del promedio de usuarios.",
-      "lowActivity": "Cree más análisis para obtener perspectivas completas.",
-      "successRate": "Tasa de Éxito",
-      "goodSuccessRate": "Sus ideas tienen buena viabilidad de mercado.",
-      "improvementNeeded": "Considere refinar sus ideas para mejor viabilidad.",
-      "nextSteps": "Próximos Pasos",
-      "hasCredits": "Tiene créditos disponibles para nuevos análisis.",
-      "needsCredits": "Añada créditos para seguir analizando ideas."
-    }
-  },
-  
-  "credits": {
-    "title": "Mis Créditos",
-    "subtitle": "Gestione sus créditos para análisis de ideas",
-    "availableCredits": {
-      "title": "Créditos Disponibles",
-      "description": "Su saldo actual de créditos para análisis",
-      "freePlan": "Plan Gratuito (3 créditos/mes)",
-      "proPlan": "Plan Pro (créditos ilimitados)",
-      "upgradeBtn": "Actualizar al plan Pro"
-    },
-    "buyCredits": {
-      "title": "Comprar Créditos",
-      "description": "Adquiera más créditos para análisis",
-      "credits": "créditos",
-      "processing": "Procesando...",
-      "buy": "Comprar"
-    },
-    "transactions": {
-      "title": "Historial de Transacciones",
-      "description": "Su historial de compras y uso de créditos",
-      "date": "Fecha",
-      "type": "Tipo",
-      "details": "Detalles",
-      "amount": "Cantidad",
-      "loading": "Cargando historial de transacciones...",
-      "noTransactions": "No se encontraron transacciones.",
-      "purchase": "Compra",
-      "usage": "Uso",
-      "addedSuccess": "¡Créditos añadidos con éxito!"
-    }
-  },
-  
   "ideas": {
-    "title": "Mis Ideas",
-    "subtitle": "Gestione y analice sus ideas de negocio",
+    "title": "Tus Ideas",
+    "subtitle": "Visualiza y gestiona tus ideas analizadas",
     "newIdea": "Nueva Idea",
+    "viewDrafts": "Ver Borradores",
+    "search": "Buscar ideas...",
     "loading": "Cargando ideas...",
-    "noIdeasFound": "No se encontraron ideas.",
+    "noIdeasFound": "No se encontraron ideas",
+    "filters": {
+      "all": "Todas",
+      "favorites": "Favoritas",
+      "viable": "Viables",
+      "moderate": "Moderadas"
+    },
+    "statuses": {
+      "excellent": "Excelente",
+      "good": "Bueno",
+      "moderate": "Moderado",
+      "poor": "Deficiente",
+      "pending": "Pendiente"
+    },
     "table": {
       "name": "Nombre",
       "status": "Estado",
       "score": "Puntuación",
-      "createdAt": "Creado el",
+      "createdAt": "Creado en",
       "actions": "Acciones",
-      "view": "Ver análisis"
-    },
-    "filters": {
-      "all": "Todas las Ideas",
-      "viable": "Viables",
-      "moderate": "Moderadas",
-      "favorites": "Favoritas"
-    },
-    "search": "Buscar ideas...",
-    "statuses": {
-      "pending": "Pendiente",
-      "analyzed": "Analizado",
-      "inProgress": "En Progreso"
+      "view": "Ver"
     },
     "errors": {
-      "fetchFailed": "Error al cargar las ideas"
+      "fetchFailed": "Error al cargar ideas"
     },
-    "emptyState": {
-      "title": "Aún no tiene ideas analizadas",
-      "button": "Crear mi primera idea"
-    },
-    "favorite": "Favorito",
-    "favorited": "Favorito",
-    "addedToFavorites": "Añadido a favoritos",
-    "removedFromFavorites": "Eliminado de favoritos",
-    "favoriteError": "Error al actualizar el estado de favorito",
-    "noFavorites": "Aún no tiene ideas favoritas",
-    "viewDrafts": "Ver Borradores",
     "reanalyze": {
       "button": "Reanalizar",
-      "noCredits": "No tiene créditos suficientes",
-      "buyCredits": "Comprar créditos"
-    }
-  },
-  
-  "nav": {
-    "backToHome": "Volver a la página principal",
-    "dashboard": "Panel",
-    "ideas": "Ideas",
-    "credits": "Créditos",
-    "profile": "Perfil",
-    "resources": "Recursos",
-    "logout": "Cerrar sesión",
-    "drafts": "Borradores"
-  },
-  
-  "header": {
-    "howItWorks": "Cómo funciona",
-    "benefits": "Beneficios",
-    "plans": "Planes",
-    "startNow": "Empezar ahora"
-  },
-
-  "ideaForm": {
-    "title": "Comparta su idea",
-    "subtitle": "Complete el formulario y reciba un análisis detallado del potencial de negocio",
-    "success": "¡Idea registrada con éxito!",
-    "error": "Error al procesar su solicitud",
-    "idea": {
-      "title": "¿Cuál es su idea de negocio?",
-      "placeholder": "Describa brevemente su idea de negocio..."
+      "noCredits": "No tienes suficientes créditos para reanalizar esta idea",
+      "buyCredits": "Comprar Créditos"
     },
-    "audience": {
-      "title": "¿Quién es su público objetivo?",
-      "placeholder": "Describa los clientes ideales para su negocio..."
-    },
-    "problem": {
-      "title": "¿Qué problema resuelve esta idea?",
-      "placeholder": "Describa el problema que su negocio resolvería..."
-    },
-    "monetization": {
-      "title": "¿Cómo planea monetizarlo?",
-      "placeholder": "Describa cómo su negocio generaría ingresos..."
-    },
-    "competitors": {
-      "title": "¿Hay competidores en el mercado?",
-      "yes": "Sí, hay soluciones similares",
-      "no": "No, esta es una solución innovadora"
-    },
-    "budget": {
-      "title": "¿Cuál es su presupuesto de inversión inicial?",
-      "placeholder": "Ingrese el monto...",
-      "currency": "USD"
-    },
-    "location": {
-      "title": "¿Dónde operará este negocio?",
-      "placeholder": "Seleccione una ubicación..."
-    },
-    "submit": "Enviar para análisis",
-    "submitting": "Analizando...",
-    "saveAsDraft": "Guardar como borrador",
-    "savingDraft": "Guardando...",
-    "draftSaved": "¡Borrador guardado con éxito!",
-    "viewDrafts": "Ver borradores",
-    "reanalyzeTitle": "Reanálisis de Idea",
-    "reanalyzeSubtitle": "Refine su idea para un nuevo análisis"
-  },
-
-  "notifications": {
-    "title": "Notificaciones",
-    "lowCredits": "Créditos bajos",
-    "lowCreditsDesc": "Sus créditos se están acabando. Añada más para seguir analizando ideas.",
-    "noNotifications": "No hay notificaciones en este momento"
-  },
-
-  "search": {
-    "placeholder": "Buscar ideas..."
-  },
-
-  "common": {
-    "back": "Volver",
-    "next": "Siguiente",
-    "submit": "Enviar",
-    "cancel": "Cancelar",
-    "save": "Guardar",
-    "delete": "Eliminar",
-    "edit": "Editar",
-    "view": "Ver",
-    "loading": "Cargando...",
-    "noResults": "No se encontraron resultados",
-    "max": "máx",
-    "characters": "caracteres",
-    "dontKnow": "No lo sé"
-  },
-  
-  "monitoringStatus": {
-    "title": "Estado del sistema",
-    "active": "Todos los sistemas activos",
-    "partial": "Problemas parciales",
-    "down": "Sistema caído"
-  },
-  
-  "countries": {
-    "global": "Global",
-    "angola": "Angola",
-    "brazil": "Brasil",
-    "portugal": "Portugal",
-    "mozambique": "Mozambique",
-    "unitedstates": "Estados Unidos",
-    "canada": "Canadá",
-    "unitedkingdom": "Reino Unido",
-    "germany": "Alemania",
-    "france": "Francia",
-    "australia": "Australia",
-    "india": "India",
-    "china": "China",
-    "other": "Otros"
-  },
-  
-  "profile": {
-    "title": "Mi Perfil",
-    "subtitle": "Administre su información personal y preferencias de cuenta",
-    "personalInfo": {
-      "title": "Información Personal",
-      "name": "Nombre Completo",
-      "email": "Correo Electrónico",
-      "phone": "Teléfono",
-      "country": "País",
-      "language": "Idioma Preferido"
-    },
-    "accountSettings": {
-      "title": "Configuración de la Cuenta",
-      "changePassword": "Cambiar Contraseña",
-      "currentPassword": "Contraseña Actual",
-      "newPassword": "Nueva Contraseña",
-      "confirmPassword": "Confirmar Nueva Contraseña",
-      "twoFactor": "Autenticación de Dos Factores",
-      "enabled": "Habilitado",
-      "disabled": "Deshabilitado"
-    },
-    "notifications": {
-      "title": "Preferencias de Notificación",
-      "analysis": "Notificaciones de Análisis",
-      "marketing": "Notificaciones de Marketing",
-      "newsletter": "Boletín Informativo",
-      "updates": "Actualizaciones del Producto"
-    },
-    "dangerZone": {
-      "title": "Zona de Peligro",
-      "deleteAccount": "Eliminar Cuenta",
-      "deleteWarning": "Esta acción no se puede deshacer. Se eliminarán permanentemente todos sus datos.",
-      "confirmDelete": "Sí, eliminar mi cuenta"
-    },
-    "save": "Guardar Cambios"
-  },
-  
-  "metrics": {
-    "title": "Métricas Avanzadas",
-    "subtitle": "Análisis detallado e ideas sobre sus proyectos",
-    "exportData": "Exportar Datos",
-    "exportSuccess": "Datos exportados exitosamente",
-    "timeRange": "Periodo",
-    "selectTimeRange": "Seleccione un periodo",
-    "last7Days": "Últimos 7 días",
-    "last30Days": "Últimos 30 días",
-    "last90Days": "Últimos 90 días",
-    "lastYear": "Último año",
-    "allTime": "Todo el tiempo",
-    "granularity": "Granularidad",
-    "selectGranularity": "Seleccione la granularidad",
-    "daily": "Diaria",
-    "weekly": "Semanal",
-    "monthly": "Mensual",
-    "totalAnalyses": "Total de Análisis",
-    "averageScore": "Puntuación Media",
-    "topCategory": "Categoría Principal",
-    "viableIdeas": "Ideas Viables",
-    "trends": "Tendencias",
-    "distribution": "Distribución",
-    "performance": "Rendimiento",
-    "analysisAndScoreTrend": "Tendencia de Análisis y Puntuaciones",
-    "analysisAndScoreTrendDesc": "Evolución del número de análisis y puntuación media a lo largo del tiempo",
-    "analyses": "Análisis",
-    "ideaCount": "Cantidad de Ideas",
-    "scoreDistribution": "Distribución de Puntuaciones",
-    "scoreDistributionDesc": "Distribución de las puntuaciones por rangos",
-    "categoryDistribution": "Distribución por Categoría",
-    "categoryDistributionDesc": "Distribución porcentual de las ideas por categoría",
-    "ideaRadar": "Radar de Ideas",
-    "ideaRadarDesc": "Desempeño en diferentes dimensiones de análisis",
-    "performanceInsights": "Insights de Rendimiento",
-    "performanceInsightsDesc": "Análisis de rendimiento de sus ideas",
-    "topPerforming": "Mejor Desempeño",
-    "improvementNeeded": "Necesita Mejora",
-    "recommendations": "Recomendaciones"
-  },
-  
-  "hero": {
-    "dashboard": {
-      "title": "Panel Analítico",
-      "status": "En línea"
-    }
-  },
-  
-  "formSteps": {
-    "marketAnalysis": "Análisis de Mercado",
-    "financialViability": "Viabilidad Financiera",
-    "competitiveAnalysis": "Análisis Competitivo",
-    "progress": "En progreso",
-    "analyzing": "Analizando",
-    "completed": "Completado",
-    "accuracy": "Precisión",
-    "analyses": "Análisis",
-    "average": "Promedio"
-  },
-  
-  "dashboardCharts": {
-    "marketAnalysis": "Análisis de Mercado",
-    "financialViability": "Viabilidad Financiera",
-    "competitiveAnalysis": "Análisis Competitivo",
-    "accuracy": "Precisión",
-    "analyses": "Análisis",
-    "average": "Promedio"
-  },
-  
-  "settings": {
-    "title": "Configuraciones",
-    "subtitle": "Gestione sus preferencias de cuenta y perfil",
-    "profile": "Perfil",
-    "account": "Cuenta",
-    "notifications": "Notificaciones",
-    "plan": "Plan",
-    "personalInfo": "Información Personal",
-    "personalInfoDesc": "Actualice su información de perfil",
-    "name": "Nombre",
-    "email": "Correo electrónico",
-    "emailChangeNote": "El correo electrónico no se puede cambiar",
-    "language": "Idioma",
-    "selectLanguage": "Seleccione un idioma",
-    "security": "Seguridad",
-    "securityDesc": "Gestione su contraseña y configuraciones de seguridad",
-    "currentPassword": "Contraseña actual",
-    "newPassword": "Nueva contraseña",
-    "confirmPassword": "Confirmar nueva contraseña",
-    "changePassword": "Cambiar contraseña",
-    "dangerZone": "Zona de Peligro",
-    "dangerZoneDesc": "Acciones irreversibles para su cuenta",
-    "deleteAccount": "Eliminar cuenta",
-    "deleteAccountDesc": "Al eliminar su cuenta, todos los datos serán eliminados permanentemente. Esta acción no se puede deshacer.",
-    "notificationPreferences": "Preferencias de Notificación",
-    "notificationPreferencesDesc": "Configure cómo desea recibir notificaciones",
-    "emailNotifications": "Notificaciones por correo electrónico",
-    "emailNotificationsDesc": "Recibir notificaciones por correo electrónico",
-    "accountAlerts": "Alertas de cuenta",
-    "accountAlertsDesc": "Alertas importantes sobre su cuenta",
-    "marketingEmails": "Correos de marketing",
-    "marketingEmailsDesc": "Recibir ofertas y novedades",
-    "newFeatures": "Nuevas funciones",
-    "newFeaturesDesc": "Recibir notificaciones sobre nuevas funciones",
-    "tips": "Consejos y sugerencias",
-    "tipsDesc": "Recibir consejos para mejorar sus ideas",
-    "notificationsUpdated": "Configuraciones de notificaciones actualizadas exitosamente",
-    "currentPlan": "Plan Actual",
-    "currentPlanDesc": "Detalles de su plan y suscripción",
-    "freePlan": "Plan Gratuito",
-    "freePlanDesc": "Acceso básico con funciones limitadas",
-    "proPlan": "Plan Pro",
-    "proPlanDesc": "Acceso completo a todas las funciones",
-    "free": "Gratuito",
-    "premium": "Premium",
-    "currentCredits": "Créditos disponibles",
-    "upgradePlan": "Actualizar plan",
-    "managePlan": "Gestionar suscripción",
-    "profileUpdated": "Perfil actualizado exitosamente",
-    "passwordUpdated": "Contraseña actualizada exitosamente",
-    "languageUpdated": "Idioma actualizado exitosamente",
-    "confirmDeleteAccount": "¿Está seguro de que desea eliminar su cuenta? Esta acción no se puede deshacer.",
-    "accountDeleted": "Cuenta eliminada exitosamente"
-  },
-  
-  "tags": {
-    "title": "Etiquetas",
-    "add": "Añadir etiquetas",
-    "create": "Crear nueva etiqueta",
-    "edit": "Editar etiqueta",
-    "delete": "Eliminar etiqueta",
-    "empty": "No hay etiquetas creadas",
-    "nameLabel": "Nombre de etiqueta",
-    "namePlaceholder": "Ingrese nombre de etiqueta",
-    "colorLabel": "Color de etiqueta",
-    "success": {
-      "created": "Etiqueta creada exitosamente",
-      "updated": "Etiqueta actualizada exitosamente",
-      "deleted": "Etiqueta eliminada exitosamente"
-    },
-    "errors": {
-      "emptyName": "El nombre de la etiqueta no puede estar vacío",
-      "duplicate": "Ya existe una etiqueta con este nombre",
-      "createFailed": "Error al crear la etiqueta",
-      "updateFailed": "Error al actualizar la etiqueta",
-      "deleteFailed": "Error al eliminar la etiqueta"
-    }
-  },
-
-  "drafts": {
-    "title": "Mis Borradores",
-    "subtitle": "Continúe trabajando en sus ideas guardadas",
-    "viewCompleted": "Ver ideas completas",
-    "search": "Buscar borradores...",
-    "listTitle": "Sus borradores",
-    "empty": "Aún no tiene borradores guardados",
-    "noResults": "No se encontraron borradores que coincidan con su búsqueda",
-    "errors": {
-      "fetchFailed": "Error al cargar los borradores"
-    },
-    "table": {
-      "title": "Título",
-      "created": "Creado en",
-      "updated": "Actualizado en",
+    "history": {
+      "title": "Historial de Ideas",
+      "description": "Visualiza y gestiona todas tus ideas analizadas",
+      "filters": "Filtros",
+      "filterOptions": "Opciones de Filtro",
+      "dateRange": "Rango de fechas",
+      "scoreFilter": "Puntuación",
+      "allScores": "Todas las puntuaciones",
+      "highScore": "Alta (70-100)",
+      "mediumScore": "Media (40-69)",
+      "lowScore": "Baja (0-39)",
+      "keywords": "Palabras clave (separadas por coma)",
+      "keywordsPlaceholder": "Ej.: app, salud, educación",
+      "exportOptions": "Opciones de exportación",
+      "noIdeas": "No se encontraron ideas",
+      "score": "Puntuación",
       "status": "Estado",
+      "date": "Fecha",
       "actions": "Acciones"
     },
-    "continue": "Continuar",
-    "status": {
-      "draft": "Borrador"
+    "compare": {
+      "button": "Comparar Ideas",
+      "title": "Comparación de Ideas",
+      "maxSelected": "Puedes seleccionar hasta 3 ideas para comparar",
+      "needMoreIdeas": "Selecciona al menos 2 ideas para comparar",
+      "viability": "Viabilidad",
+      "market": "Mercado",
+      "strengths": "Fortalezas",
+      "weaknesses": "Debilidades",
+      "strengthsWeaknesses": "Fortalezas/Debilidades",
+      "description": "Descripción",
+      "audience": "Público objetivo",
+      "problem": "Problema",
+      "marketSize": "Tamaño del mercado",
+      "differentiation": "Diferenciación",
+      "solution": "Solución",
+      "monetization": "Monetización",
+      "viabilityScore": "Puntuación de viabilidad",
+      "notSpecified": "No especificado",
+      "notAnalyzed": "No analizado",
+      "selectForComparison": "Seleccionar para comparación",
+      "fetchError": "Error al obtener detalles de la idea"
+    }
+  },
+  "credits": {
+    "title": "Créditos",
+    "subtitle": "Gestiona tus créditos de análisis",
+    "available": {
+      "title": "Créditos Disponibles",
+      "description": "Cada crédito te permite analizar una nueva idea o reanalizar una existente.",
+      "infoTooltip": "Los créditos se consumen cuando analizas una nueva idea o reanalizas una idea existente."
     },
-    "delete": {
-      "title": "¿Eliminar borrador?",
-      "description": "Esta acción no puede ser revertida. El borrador será eliminado permanentemente."
+    "buy": {
+      "title": "Comprar Créditos",
+      "description": "Adquiere más créditos para continuar analizando tus ideas",
+      "selectAmount": "Selecciona la cantidad",
+      "button": "Comprar Ahora",
+      "perCredit": "por crédito",
+      "bestValue": "Mejor valor",
+      "discount": "Ahorra un {{percentage}}%"
     },
-    "deleteSuccess": "Borrador eliminado con éxito",
-    "deleteError": "Error al eliminar el borrador",
-    "noDrafts": "Aún no tiene ningún borrador",
-    "createDraft": "Crear un borrador",
-    "lastEdited": "Última edición",
-    "confirmDelete": "¿Está seguro de que desea eliminar este borrador?",
-    "confirmDeleteDescription": "Esta acción no se puede deshacer"
+    "pricing": {
+      "title": "Nuestros Paquetes",
+      "description": "Elige el paquete ideal para tus necesidades",
+      "starter": "Inicial",
+      "professional": "Profesional",
+      "business": "Negocio",
+      "enterprise": "Empresa",
+      "perMonth": "/mes",
+      "billed": "facturado anualmente",
+      "features": "Características incluidas:",
+      "upgrade": "Mejorar",
+      "current": "Plan actual",
+      "getStarted": "Comenzar"
+    },
+    "transactions": {
+      "title": "Historial de Transacciones",
+      "date": "Fecha",
+      "type": "Tipo",
+      "amount": "Cantidad",
+      "status": "Estado",
+      "empty": "No se encontraron transacciones",
+      "purchase": "Compra",
+      "bonus": "Bono",
+      "complete": "Completo",
+      "pending": "Pendiente",
+      "failed": "Fallido"
+    }
+  },
+  "dashboard": {
+    "welcome": "¡Bienvenido de nuevo, {{name}}!",
+    "lastLogin": "Último inicio de sesión: {{date}}",
+    "quickActions": "Acciones Rápidas",
+    "newIdea": "Nueva Idea",
+    "viewIdeas": "Ver Ideas",
+    "buyCredits": "Comprar Créditos"
   }
 }

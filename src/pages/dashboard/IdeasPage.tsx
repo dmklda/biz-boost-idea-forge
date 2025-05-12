@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { PlusCircle, Search, Save, Archive } from "lucide-react";
+import { PlusCircle, Search, Save, Archive, ArrowLeftRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,6 +15,8 @@ import { useTranslation } from "react-i18next";
 import { FavoriteButton } from "@/components/ideas/FavoriteButton";
 import { TagBadge } from "@/components/ideas/TagBadge";
 import { type TagType } from "@/components/ideas/TagsSelector";
+import { CompareIdeasModal } from "@/components/ideas/CompareIdeasModal";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Typing for ideas
 interface Idea {
@@ -38,6 +40,10 @@ const IdeasPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [userHasCredits, setUserHasCredits] = useState(false);
+  
+  // State for idea comparison
+  const [selectedIdeas, setSelectedIdeas] = useState<string[]>([]);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
 
   // Fetch user's ideas and check credits
   useEffect(() => {
@@ -175,13 +181,35 @@ const IdeasPage = () => {
   const handleViewDrafts = () => {
     navigate("/dashboard/rascunhos");
   };
+  
+  // Handler for idea selection for comparison
+  const handleIdeaSelectionChange = (ideaId: string, isSelected: boolean) => {
+    if (isSelected) {
+      if (selectedIdeas.length >= 3) {
+        toast.warning(t('ideas.compare.maxSelected'));
+        return;
+      }
+      setSelectedIdeas([...selectedIdeas, ideaId]);
+    } else {
+      setSelectedIdeas(selectedIdeas.filter(id => id !== ideaId));
+    }
+  };
+  
+  // Handler for comparing selected ideas
+  const handleCompareIdeas = () => {
+    if (selectedIdeas.length < 2) {
+      toast.warning(t('ideas.compare.needMoreIdeas'));
+      return;
+    }
+    setIsCompareModalOpen(true);
+  };
 
   // Rendering conditional for loading and empty states
   const renderTableContent = (ideasToShow: Idea[]) => {
     if (loading) {
       return (
         <TableRow>
-          <TableCell colSpan={6} className="text-center py-8">
+          <TableCell colSpan={7} className="text-center py-8">
             {t('ideas.loading')}
           </TableCell>
         </TableRow>
@@ -191,7 +219,7 @@ const IdeasPage = () => {
     if (ideasToShow.length === 0) {
       return (
         <TableRow>
-          <TableCell colSpan={6} className="text-center py-8">
+          <TableCell colSpan={7} className="text-center py-8">
             {t('ideas.noIdeasFound')}
           </TableCell>
         </TableRow>
@@ -200,6 +228,15 @@ const IdeasPage = () => {
 
     return ideasToShow.map((idea) => (
       <TableRow key={idea.id}>
+        <TableCell>
+          <Checkbox 
+            checked={selectedIdeas.includes(idea.id)}
+            onCheckedChange={(checked) => 
+              handleIdeaSelectionChange(idea.id, checked === true)
+            }
+            aria-label={t('ideas.compare.selectForComparison')}
+          />
+        </TableCell>
         <TableCell className="font-medium">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
@@ -299,16 +336,26 @@ const IdeasPage = () => {
         </div>
       </div>
       
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="relative flex-1 w-full">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t('ideas.search')}
-            className="pl-8"
+            className="pl-8 w-full"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
+        
+        <Button
+          variant="outline"
+          className="flex items-center gap-2"
+          disabled={selectedIdeas.length < 2}
+          onClick={handleCompareIdeas}
+        >
+          <ArrowLeftRight className="h-4 w-4" />
+          {t('ideas.compare.button')} ({selectedIdeas.length}/3)
+        </Button>
       </div>
       
       <Tabs defaultValue="all" className="space-y-4">
@@ -324,6 +371,7 @@ const IdeasPage = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10"></TableHead>
                     <TableHead>{t('ideas.table.name')}</TableHead>
                     <TableHead>{t('ideas.table.status')}</TableHead>
                     <TableHead>{t('ideas.table.score')}</TableHead>
@@ -345,6 +393,7 @@ const IdeasPage = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10"></TableHead>
                     <TableHead>{t('ideas.table.name')}</TableHead>
                     <TableHead>{t('ideas.table.status')}</TableHead>
                     <TableHead>{t('ideas.table.score')}</TableHead>
@@ -366,6 +415,7 @@ const IdeasPage = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10"></TableHead>
                     <TableHead>{t('ideas.table.name')}</TableHead>
                     <TableHead>{t('ideas.table.status')}</TableHead>
                     <TableHead>{t('ideas.table.score')}</TableHead>
@@ -387,6 +437,7 @@ const IdeasPage = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10"></TableHead>
                     <TableHead>{t('ideas.table.name')}</TableHead>
                     <TableHead>{t('ideas.table.status')}</TableHead>
                     <TableHead>{t('ideas.table.score')}</TableHead>
@@ -402,6 +453,13 @@ const IdeasPage = () => {
           </Card>
         </TabsContent>
       </Tabs>
+      
+      {/* Compare Ideas Modal */}
+      <CompareIdeasModal 
+        isOpen={isCompareModalOpen}
+        onClose={() => setIsCompareModalOpen(false)}
+        ideaIds={selectedIdeas}
+      />
     </div>
   );
 };
