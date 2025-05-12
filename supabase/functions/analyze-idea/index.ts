@@ -208,7 +208,10 @@ serve(async (req) => {
   }
   
   try {
-    const { ideaData, userId, ideaId, isReanalyzing } = await req.json();
+    // First parse the request to get the data, fixing the "Cannot access ideaData before initialization" error
+    const requestData = await req.json();
+    const { ideaData, userId, ideaId, isReanalyzing } = requestData;
+    
     console.log("Request received for idea analysis:", { ideaId, isReanalyzing });
     
     // Validate required data
