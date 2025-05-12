@@ -106,7 +106,7 @@
     },
     "step3": {
       "number": "03",
-4 "title": "Receba insights completos",
+      "title": "Receba insights completos",
       "description": "Obtenha uma análise detalhada com sugestões de nome, slogan, persona ideal, MVP e estratégias de monetização."
     },
     "step4": {
@@ -157,12 +157,6 @@
     "subtitle": "Preencha o formulário e receba uma análise detalhada do potencial de negócio",
     "success": "Ideia registrada com sucesso!",
     "error": "Erro ao processar sua solicitação",
-    "draftSaved": "Rascunho salvo com sucesso!",
-    "viewDrafts": "Ver rascunhos",
-    "saveAsDraft": "Salvar como rascunho",
-    "savingDraft": "Salvando...",
-    "reanalyzeTitle": "Reanálise de Ideia",
-    "reanalyzeSubtitle": "Refine sua ideia para uma nova análise",
     "idea": {
       "title": "Qual é a sua ideia de negócio?",
       "placeholder": "Descreva brevemente sua ideia de negócio..."
@@ -621,7 +615,6 @@
     "newIdea": "Nova Ideia",
     "loading": "Carregando ideias...",
     "noIdeasFound": "Nenhuma ideia encontrada.",
-    "viewDrafts": "Ver rascunhos",
     "table": {
       "name": "Nome",
       "status": "Status",
@@ -639,7 +632,7 @@
     "search": "Buscar ideias...",
     "statuses": {
       "pending": "Pendente",
-      "analyzed": "Analisado",
+      "analyzed": "Analisada",
       "inProgress": "Em Progresso"
     },
     "errors": {
@@ -649,30 +642,24 @@
       "title": "Você ainda não tem ideias analisadas",
       "button": "Criar minha primeira ideia"
     },
-    "favorite": "Favorito",
+    "favorite": "Favoritar",
     "favorited": "Favoritado",
     "addedToFavorites": "Adicionado aos favoritos",
     "removedFromFavorites": "Removido dos favoritos",
     "favoriteError": "Erro ao atualizar status de favorito",
-    "noFavorites": "Você ainda não tem ideias favoritas",
-    "reanalyze": {
-      "button": "Reanalisar",
-      "noCredits": "Você não tem créditos suficientes",
-      "buyCredits": "Comprar créditos"
-    }
+    "noFavorites": "Você ainda não tem ideias favoritas"
   },
   
   "nav": {
-    "backToHome": "Voltar para página inicial",
-    "dashboard": "Painel",
+    "backToHome": "Voltar para a página inicial",
+    "dashboard": "Dashboard",
     "ideas": "Ideias",
     "credits": "Créditos",
     "profile": "Perfil",
     "resources": "Recursos",
-    "logout": "Sair",
-    "drafts": "Rascunhos"
+    "logout": "Sair"
   },
-
+  
   "notifications": {
     "title": "Notificações",
     "lowCredits": "Créditos baixos",
@@ -705,7 +692,7 @@
     "angola": "Angola",
     "brazil": "Brasil",
     "portugal": "Portugal",
-    "mozambique": "Mo��ambique",
+    "mozambique": "Moçambique",
     "unitedstates": "Estados Unidos",
     "canada": "Canadá",
     "unitedkingdom": "Reino Unido",

@@ -158,9 +158,9 @@ const IdeasPage = () => {
   // Handler for reanalyze action
   const handleReanalyze = (ideaId: string) => {
     if (!userHasCredits) {
-      toast.error(t('ideas.reanalyze.noCredits'), {
+      toast.error(t('ideas.reanalyze.noCredits', "Você não tem créditos suficientes"), {
         action: {
-          label: t('ideas.reanalyze.buyCredits'),
+          label: t('ideas.reanalyze.buyCredits', "Comprar créditos"),
           onClick: () => navigate("/dashboard/creditos")
         }
       });
@@ -263,7 +263,7 @@ const IdeasPage = () => {
               disabled={!userHasCredits}
             >
               <Archive className="h-3.5 w-3.5" />
-              {t('ideas.reanalyze.button')}
+              {t('ideas.reanalyze.button', "Reanalisar")}
             </Button>
           </div>
         </TableCell>
