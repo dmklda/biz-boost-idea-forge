@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Card, CardContent } from "./ui/card";
 import { IdeaFormProvider } from "@/contexts/IdeaFormContext";
 import { IdeaFormHeader } from "./idea-form/IdeaFormHeader";
@@ -7,7 +7,6 @@ import { FormStepsContainer } from "./idea-form/FormStepsContainer";
 import { SaveDraftButton } from "./idea-form/SaveDraftButton";
 import { useFormSubmission } from "./idea-form/useFormSubmission";
 import { useLocation } from "react-router-dom";
-import { Sheet, SheetContent } from "./ui/sheet";
 
 interface IdeaFormProps {
   ideaId?: string;
@@ -33,10 +32,7 @@ const FormContainer: React.FC<{
   wrapInCard: boolean;
   isReanalyzing?: boolean;
 }> = ({ wrapInCard, isReanalyzing }) => {
-  const { handleSubmit, isAnalysisComplete } = useFormSubmission(isReanalyzing);
-  
-  // If analysis is complete and we're in dashboard, we should auto-close
-  const showForm = !isAnalysisComplete;
+  const { handleSubmit } = useFormSubmission(isReanalyzing);
   
   const formContent = (
     <form onSubmit={handleSubmit}>
@@ -60,11 +56,6 @@ const FormContainer: React.FC<{
         </div>
       </section>
     );
-  }
-  
-  // In dashboard, we want to conditionally render the form based on analysis state
-  if (!showForm) {
-    return null;
   }
   
   return formContent;
