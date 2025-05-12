@@ -147,6 +147,9 @@ const ResultsPage = () => {
     suggested_resources: []
   };
 
+  // Fix for TypeScript error - Using string casting for specific translation paths
+  const statusTranslation = t(`results.status.${status.toLowerCase()}`, status) as string;
+  
   return (
     <div className="pb-16 md:pb-8">
       <div className="flex justify-between items-center mb-6">
@@ -191,9 +194,9 @@ const ResultsPage = () => {
                 color: status === "Viable" ? "#16a34a" : 
                        status === "Moderate" ? "#ca8a04" : "#dc2626" 
               }}>
-                {t(`results.status.${status.toLowerCase()}`, status)}
+                {statusTranslation}
               </div>
-              <div className="text-xs md:text-sm text-gray-500">{t('results.status.label', "Status")}</div>
+              <div className="text-xs md:text-sm text-gray-500">{t('results.status.label', "Status") as string}</div>
             </div>
             <div className="p-4 text-center">
               <div className="text-2xl font-bold text-brand-green">
