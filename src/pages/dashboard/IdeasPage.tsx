@@ -6,14 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { PlusCircle, Search } from "lucide-react";
+import { PlusCircle, Search, Tag as TagIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/components/ui/sonner";
 import { useTranslation } from "react-i18next";
+import { FavoriteButton } from "@/components/ideas/FavoriteButton";
+import { TagBadge } from "@/components/ideas/TagBadge";
+import { type TagType } from "@/components/ideas/TagsSelector";
 
-// Tipagem para as ideias
+// Typing for ideas
 interface Idea {
   id: string;
   title: string;
@@ -23,6 +26,8 @@ interface Idea {
   created_at: string;
   score?: number;
   status?: string;
+  is_favorite?: boolean;
+  tags?: TagType[];
 }
 
 const IdeasPage = () => {
@@ -32,7 +37,7 @@ const IdeasPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Buscar ideias do usuário
+  // Fetch user's ideas
   useEffect(() => {
     const fetchIdeas = async () => {
       if (!authState.isAuthenticated) return;
@@ -40,7 +45,7 @@ const IdeasPage = () => {
       try {
         setLoading(true);
         
-        // Buscar ideias do usuário atual
+        // Fetch ideas from the current user
         const { data, error } = await supabase
           .from('ideas')
           .select(`
@@ -54,9 +59,36 @@ const IdeasPage = () => {
           throw error;
         }
 
-        // Formatar os dados para incluir análises
+        // Fetch favorites
+        const { data: favoritesData, error: favoritesError } = await supabase
+          .from('idea_favorites')
+          .select('idea_id')
+          .eq('user_id', authState.user?.id);
+          
+        if (favoritesError) throw favoritesError;
+        
+        const favoriteIds = new Set(favoritesData.map(fav => fav.idea_id));
+        
+        // Fetch tags for all ideas
+        const { data: tagsData, error: tagsError } = await supabase
+          .from('idea_tags')
+          .select('idea_id, tags(id, name, color)')
+          .eq('user_id', authState.user?.id);
+          
+        if (tagsError) throw tagsError;
+        
+        // Group tags by idea_id
+        const tagsByIdeaId = tagsData.reduce((acc: {[key: string]: TagType[]}, item) => {
+          if (item.tags) {
+            if (!acc[item.idea_id]) acc[item.idea_id] = [];
+            acc[item.idea_id].push(item.tags as TagType);
+          }
+          return acc;
+        }, {});
+
+        // Format the data to include analyses and favorite status
         const formattedIdeas = data.map(idea => {
-          // Encontrar a análise correspondente (se existir)
+          // Find the corresponding analysis (if it exists)
           const analysis = idea.idea_analyses && idea.idea_analyses.length > 0 
             ? idea.idea_analyses[0] 
             : null;
@@ -69,7 +101,9 @@ const IdeasPage = () => {
             problem: idea.problem,
             created_at: idea.created_at,
             score: analysis ? analysis.score : 0,
-            status: analysis ? analysis.status : t('ideas.statuses.pending')
+            status: analysis ? analysis.status : t('ideas.statuses.pending'),
+            is_favorite: favoriteIds.has(idea.id),
+            tags: tagsByIdeaId[idea.id] || []
           };
         });
 
@@ -85,24 +119,34 @@ const IdeasPage = () => {
     fetchIdeas();
   }, [authState.isAuthenticated, authState.user?.id, t]);
 
-  // Filtrar ideias baseado na busca
+  // Filter ideas based on search query
   const filteredIdeas = ideas.filter(idea => 
     idea.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (idea.description && idea.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  // Filtrar ideias viáveis (pontuação >= 70)
+  // Filter favorite ideas
+  const favoriteIdeas = filteredIdeas.filter(idea => idea.is_favorite);
+  
+  // Filter viable ideas (score >= 70)
   const viableIdeas = filteredIdeas.filter(idea => (idea.score || 0) >= 70);
   
-  // Filtrar ideias moderadas (pontuação < 70)
+  // Filter moderate ideas (score < 70 and > 0)
   const moderateIdeas = filteredIdeas.filter(idea => (idea.score || 0) < 70 && (idea.score || 0) > 0);
 
-  // Renderização condicional para estados de loading e sem dados
+  // Handler for favorite status changes
+  const handleFavoriteChange = (ideaId: string, isFavorite: boolean) => {
+    setIdeas(ideas.map(idea => 
+      idea.id === ideaId ? { ...idea, is_favorite: isFavorite } : idea
+    ));
+  };
+
+  // Rendering conditional for loading and empty states
   const renderTableContent = (ideasToShow: Idea[]) => {
     if (loading) {
       return (
         <TableRow>
-          <TableCell colSpan={5} className="text-center py-8">
+          <TableCell colSpan={6} className="text-center py-8">
             {t('ideas.loading')}
           </TableCell>
         </TableRow>
@@ -112,7 +156,7 @@ const IdeasPage = () => {
     if (ideasToShow.length === 0) {
       return (
         <TableRow>
-          <TableCell colSpan={5} className="text-center py-8">
+          <TableCell colSpan={6} className="text-center py-8">
             {t('ideas.noIdeasFound')}
           </TableCell>
         </TableRow>
@@ -121,7 +165,28 @@ const IdeasPage = () => {
 
     return ideasToShow.map((idea) => (
       <TableRow key={idea.id}>
-        <TableCell className="font-medium">{idea.title}</TableCell>
+        <TableCell className="font-medium">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <FavoriteButton 
+                ideaId={idea.id} 
+                onFavoriteChange={(isFavorite) => handleFavoriteChange(idea.id, isFavorite)}
+                variant="ghost" 
+                size="icon"
+              />
+              <Link to={`/resultados?id=${idea.id}`} className="hover:underline">
+                {idea.title}
+              </Link>
+            </div>
+            {idea.tags && idea.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-1">
+                {idea.tags.map((tag) => (
+                  <TagBadge key={tag.id} name={tag.name} color={tag.color} className="text-xs" />
+                ))}
+              </div>
+            )}
+          </div>
+        </TableCell>
         <TableCell>
           <Badge variant="outline" className={`
             ${(idea.score || 0) > 80 ? "border-green-500 bg-green-500/10 text-green-600" : 
@@ -192,6 +257,7 @@ const IdeasPage = () => {
       <Tabs defaultValue="all" className="space-y-4">
         <TabsList>
           <TabsTrigger value="all">{t('ideas.filters.all')}</TabsTrigger>
+          <TabsTrigger value="favorites">{t('ideas.filters.favorites')}</TabsTrigger>
           <TabsTrigger value="viable">{t('ideas.filters.viable')}</TabsTrigger>
           <TabsTrigger value="moderate">{t('ideas.filters.moderate')}</TabsTrigger>
         </TabsList>
@@ -210,6 +276,27 @@ const IdeasPage = () => {
                 </TableHeader>
                 <TableBody>
                   {renderTableContent(filteredIdeas)}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="favorites" className="space-y-4">
+          <Card>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t('ideas.table.name')}</TableHead>
+                    <TableHead>{t('ideas.table.status')}</TableHead>
+                    <TableHead>{t('ideas.table.score')}</TableHead>
+                    <TableHead>{t('ideas.table.createdAt')}</TableHead>
+                    <TableHead>{t('ideas.table.actions')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {renderTableContent(favoriteIdeas)}
                 </TableBody>
               </Table>
             </CardContent>

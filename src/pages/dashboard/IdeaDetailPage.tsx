@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -27,6 +26,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { toast } from "@/components/ui/sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { FavoriteButton } from "@/components/ideas/FavoriteButton";
+import { TagsSelector, TagType } from "@/components/ideas/TagsSelector";
 
 // Define types for idea and analysis data
 interface Idea {
@@ -100,6 +101,7 @@ const IdeaDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [tags, setTags] = useState<TagType[]>([]);
   
   // Fetch idea and analysis data
   useEffect(() => {
@@ -194,6 +196,11 @@ const IdeaDetailPage = () => {
     }
   };
   
+  // Handle tags change
+  const handleTagsChange = (updatedTags: TagType[]) => {
+    setTags(updatedTags);
+  };
+  
   // Render loading state
   if (loading) {
     return (
@@ -243,6 +250,13 @@ const IdeaDetailPage = () => {
         </Button>
         
         <div className="flex items-center gap-2">
+          <FavoriteButton 
+            ideaId={idea.id} 
+            variant="outline" 
+            size="sm"
+            showText={true}
+          />
+          
           <Button variant="outline" size="sm" onClick={handleShare} className="flex items-center gap-1">
             <Share2 className="h-4 w-4" />
             <span className="hidden sm:inline">{copySuccess ? (t('common.copied') || "Copiado!") : (t('common.share') || "Compartilhar")}</span>
@@ -257,16 +271,24 @@ const IdeaDetailPage = () => {
       
       {/* Idea header */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{idea.title}</h1>
-        <div className="flex items-center gap-2 text-muted-foreground text-sm mt-1">
-          <Calendar className="h-4 w-4" />
-          <span>{new Date(idea.created_at).toLocaleDateString()}</span>
-          {analysis && (
-            <>
-              <span>•</span>
-              {getStatusBadge(analysis.score)}
-            </>
-          )}
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{idea.title}</h1>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 mt-2">
+          <div className="flex items-center gap-2 text-muted-foreground text-sm">
+            <Calendar className="h-4 w-4" />
+            <span>{new Date(idea.created_at).toLocaleDateString()}</span>
+            {analysis && (
+              <>
+                <span>•</span>
+                {getStatusBadge(analysis.score)}
+              </>
+            )}
+          </div>
+          {/* Add tags selector */}
+          <div className="ml-auto">
+            <TagsSelector ideaId={idea.id} onTagsChange={handleTagsChange} />
+          </div>
         </div>
       </div>
       
