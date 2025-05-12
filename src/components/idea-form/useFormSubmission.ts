@@ -20,6 +20,8 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
     setIsAnalyzing,
     resetForm 
   } = useIdeaFormContext();
+  
+  const [isAnalysisComplete, setIsAnalysisComplete] = useState(false);
 
   // Check if we're in the dashboard
   const isDashboard = location.pathname.includes('/dashboard');
@@ -28,6 +30,7 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
     e.preventDefault();
     setIsSubmitting(true);
     setIsAnalyzing(true);
+    setIsAnalysisComplete(false);
     
     try {
       // If user is authenticated, process with Supabase
@@ -86,6 +89,9 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
         // Success! Navigate to results page
         toast.success(t('ideaForm.analysisSuccess', "Análise concluída com sucesso!"));
         
+        // Mark analysis as complete
+        setIsAnalysisComplete(true);
+        
         // Reset the form to close it
         resetForm();
         
@@ -110,5 +116,5 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
     }
   };
 
-  return { handleSubmit };
+  return { handleSubmit, isAnalysisComplete };
 };
