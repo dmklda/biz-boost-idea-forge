@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -33,6 +33,7 @@ interface Idea {
 const IdeasPage = () => {
   const { t } = useTranslation();
   const { authState } = useAuth();
+  const navigate = useNavigate();
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -161,18 +162,18 @@ const IdeasPage = () => {
       toast.error(t('ideas.reanalyze.noCredits', "Você não tem créditos suficientes"), {
         action: {
           label: t('ideas.reanalyze.buyCredits', "Comprar créditos"),
-          onClick: () => window.location.href = "/dashboard/creditos"
+          onClick: () => navigate("/dashboard/creditos")
         }
       });
       return;
     }
     
-    window.location.href = `/dashboard/ideias/editar?id=${ideaId}&reanalyze=true`;
+    navigate(`/dashboard/ideias/editar?id=${ideaId}&reanalyze=true`);
   };
 
   // Link to drafts page
   const handleViewDrafts = () => {
-    window.location.href = "/dashboard/rascunhos";
+    navigate("/dashboard/rascunhos");
   };
 
   // Rendering conditional for loading and empty states
