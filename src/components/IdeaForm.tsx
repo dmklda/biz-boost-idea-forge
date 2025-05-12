@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { 
   Card, 
   CardContent, 
@@ -46,112 +46,66 @@ export const IdeaForm = ({ ideaId, isReanalyzing }: IdeaFormProps) => {
   
   // Check if we're in the dashboard
   const isDashboard = location.pathname.includes('/dashboard');
+  
+  // Add state for loading during analysis
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setIsAnalyzing(true);
     
     try {
-      // Se o usuário está autenticado, salvar no Supabase
+      // If user is authenticated, process with Supabase
       if (authState.isAuthenticated && authState.user) {
-        let idea;
         
-        if (isReanalyzing && editingIdeaId) {
-          // Atualizar ideia existente se for reanálise
-          const { data: updatedIdea, error: updateError } = await supabase
-            .from('ideas')
-            .update({
-              title: formData.idea,
-              description: formData.idea,
-              audience: formData.audience,
-              problem: formData.problem,
-              has_competitors: formData.hasCompetitors,
-              monetization: formData.monetization,
-              budget: formData.budget,
-              location: formData.location,
-              is_draft: false,
-              status: 'complete'
-            })
-            .eq('id', editingIdeaId)
-            .select('id')
-            .single();
-            
-          if (updateError) throw updateError;
-          idea = updatedIdea;
+        // Call the analyze-idea edge function
+        const { data: analysisData, error: analysisError } = await supabase.functions
+          .invoke('analyze-idea', {
+            body: {
+              ideaData: formData,
+              userId: authState.user.id,
+              ideaId: editingIdeaId,
+              isReanalyzing
+            }
+          });
           
-          // Cobrar um crédito pela reanálise
-          const { error: creditError } = await supabase
-            .from('credit_transactions')
-            .insert({
-              user_id: authState.user.id,
-              amount: -1,
-              description: 'Reanálise de ideia'
-            });
+        if (analysisError) {
+          console.error("Analysis error:", analysisError);
+          
+          // Special handling for insufficient credits
+          if (analysisError.message && analysisError.message.includes('INSUFFICIENT_CREDITS')) {
+            toast.error(t('ideaForm.insufficientCredits', "Créditos insuficientes para análise"));
             
-          if (creditError) {
-            console.error("Error charging credit:", creditError);
-            // Continue anyway, we'll handle credits separately
+            if (isDashboard) {
+              navigate("/dashboard/creditos");
+            }
+            return;
           }
           
-        } else {
-          // Inserir nova ideia ou atualizar rascunho
-          const ideaData = {
-            user_id: authState.user.id,
-            title: formData.idea,
-            description: formData.idea,
-            audience: formData.audience,
-            problem: formData.problem,
-            has_competitors: formData.hasCompetitors,
-            monetization: formData.monetization,
-            budget: formData.budget,
-            location: formData.location,
-            is_draft: false,
-            status: 'complete'
-          };
-          
-          let response;
-          
-          if (editingIdeaId) {
-            // Atualizar rascunho existente
-            response = await supabase
-              .from('ideas')
-              .update(ideaData)
-              .eq('id', editingIdeaId)
-              .select('id')
-              .single();
-          } else {
-            // Criar nova ideia
-            response = await supabase
-              .from('ideas')
-              .insert(ideaData)
-              .select('id')
-              .single();
-          }
-
-          if (response.error) throw response.error;
-          idea = response.data;
+          throw new Error(analysisError.message || "Erro ao analisar ideia");
         }
-
-        // Redirecionar para a página de resultados
-        toast.success(t('ideaForm.success') || "Ideia registrada com sucesso!");
+        
+        // Success! Navigate to results page
+        toast.success(t('ideaForm.analysisSuccess') || "Análise concluída com sucesso!");
         
         // If we're in the dashboard, navigate within the dashboard
         if (isDashboard) {
-          navigate(`/dashboard/ideias?id=${idea.id}`);
+          navigate(`/dashboard/ideias?id=${analysisData.ideaId}`);
         } else {
-          navigate(`/resultados?id=${idea.id}`);
+          navigate(`/resultados?id=${analysisData.ideaId}`);
         }
       } else {
-        // Se não está autenticado, redirecionar para login
-        // O formData já está salvo no localStorage pelo useIdeaForm hook
-        toast.success(t('ideaForm.success') || "Ideia registrada com sucesso!");
+        // Not authenticated, redirect to login
+        toast.info(t('ideaForm.loginRequired') || "É necessário fazer login para analisar ideias");
         navigate("/login");
       }
     } catch (error) {
       console.error("Form submission error:", error);
-      toast.error(t('ideaForm.error') || "Erro ao processar sua solicitação");
+      toast.error(t('ideaForm.analysisError') || "Erro ao analisar sua ideia. Tente novamente.");
     } finally {
       setIsSubmitting(false);
+      setIsAnalyzing(false);
     }
   };
   
@@ -212,7 +166,8 @@ export const IdeaForm = ({ ideaId, isReanalyzing }: IdeaFormProps) => {
           formData={formData}
           updateFormData={updateFormData}
           onPrev={handlePrevStep}
-          isSubmitting={isSubmitting}
+          isSubmitting={isSubmitting || isAnalyzing}
+          isAnalyzing={isAnalyzing}
         />
       )}
       
@@ -223,7 +178,7 @@ export const IdeaForm = ({ ideaId, isReanalyzing }: IdeaFormProps) => {
             type="button"
             variant="outline"
             onClick={handleSaveAsDraft}
-            disabled={isSavingDraft || !formData.idea.trim()}
+            disabled={isSavingDraft || !formData.idea.trim() || isAnalyzing}
             className="flex items-center gap-2"
           >
             <SaveIcon className="w-4 h-4" />
