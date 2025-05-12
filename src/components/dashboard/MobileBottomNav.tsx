@@ -3,7 +3,7 @@ import React from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Lightbulb, Plus, CreditCard, User, Save } from "lucide-react";
+import { LayoutDashboard, Lightbulb, Plus, CreditCard, User } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { IdeaForm } from "@/components/IdeaForm";
 import { useAuth } from "@/hooks/useAuth";
@@ -48,13 +48,6 @@ export const MobileBottomNav = () => {
       badge: false
     },
     {
-      title: t('nav.drafts', "Rascunhos"),
-      icon: Save,
-      path: '/dashboard/rascunhos',
-      onClick: undefined,
-      badge: false
-    },
-    {
       title: t('nav.credits'),
       icon: CreditCard,
       path: '/dashboard/creditos',
@@ -92,7 +85,7 @@ export const MobileBottomNav = () => {
                     <Badge className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-red-500" />
                   )}
                 </div>
-                <span className="text-xs font-medium">{item.title}</span>
+                <span className="text-xs font-medium truncate max-w-[60px] text-center">{item.title}</span>
               </Link>
             );
           })}
