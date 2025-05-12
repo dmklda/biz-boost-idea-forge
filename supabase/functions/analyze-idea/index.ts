@@ -79,7 +79,7 @@ Deno.serve(async (req) => {
       if (ideaError) throw ideaError;
       finalIdeaId = newIdea.id;
     } else {
-      // Update the existing idea
+      // Update the existing idea and explicitly set is_draft to false
       const { error: updateError } = await supabase
         .from('ideas')
         .update({
@@ -91,7 +91,7 @@ Deno.serve(async (req) => {
           monetization: ideaData.monetization,
           budget: ideaData.budget,
           location: ideaData.location,
-          is_draft: false,
+          is_draft: false, // Ensure draft is set to false when analyzed
           status: 'analyzed'
         })
         .eq('id', ideaId)
