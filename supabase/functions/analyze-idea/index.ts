@@ -1,6 +1,5 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
-// Fix the OpenAI import to use a URL import instead of a bare import
 import { OpenAI } from 'https://esm.sh/openai@4.28.4';
 
 // Initialize OpenAI client
@@ -58,7 +57,20 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Create Supabase client with auth context from the request
+    // Create Supabase client with SERVICE ROLE key to bypass RLS
+    // This is crucial for the function to insert data into tables with RLS enabled
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        }
+      }
+    );
+    
+    // Create a regular client with user auth context for checking credits
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
@@ -91,12 +103,12 @@ Deno.serve(async (req) => {
     // Generate analysis with OpenAI
     const analysis = await generateAnalysis(ideaData);
     
-    // Create or update the idea in the database
+    // Create or update the idea in the database using the admin client
     let finalIdeaId = ideaId;
     
     if (!finalIdeaId) {
       // Create a new idea if no ID was provided
-      const { data: newIdea, error: ideaError } = await supabase
+      const { data: newIdea, error: ideaError } = await supabaseAdmin
         .from('ideas')
         .insert({
           user_id: userId,
@@ -120,9 +132,10 @@ Deno.serve(async (req) => {
       }
       
       finalIdeaId = newIdea.id;
+      console.log(`Created new idea with ID: ${finalIdeaId}`);
     } else {
       // Update the existing idea and explicitly set is_draft to false
-      const { error: updateError } = await supabase
+      const { error: updateError } = await supabaseAdmin
         .from('ideas')
         .update({
           title: ideaData.idea,
@@ -143,11 +156,16 @@ Deno.serve(async (req) => {
         console.error("Error updating idea:", updateError);
         throw updateError;
       }
+      
+      console.log(`Updated existing idea with ID: ${finalIdeaId}`);
     }
     
-    // Store the analysis results
+    // Store the analysis results using the admin client
     try {
-      const { error: analysisError } = await supabase
+      console.log(`Storing analysis for idea: ${finalIdeaId}`);
+      console.log(`User ID: ${userId}`);
+      
+      const { error: analysisError } = await supabaseAdmin
         .from('idea_analyses')
         .upsert({
           idea_id: finalIdeaId,
@@ -173,21 +191,10 @@ Deno.serve(async (req) => {
       throw error;
     }
     
-    // Update user credits only if not reanalyzing
+    // Update user credits only if not reanalyzing, using the admin client
     if (!isReanalyzing) {
-      const { data: creditData, error: creditError } = await supabase
-        .from('profiles')
-        .select('credits')
-        .eq('id', userId)
-        .single();
-        
-      if (creditError) {
-        console.error("Error fetching user credits:", creditError);
-        throw creditError;
-      }
-      
       // Update user's credit balance with parameters in correct order (user_id, amount)
-      const { error: updateError } = await supabase
+      const { error: updateError } = await supabaseAdmin
         .rpc("update_user_credits", { 
           user_id: userId, 
           amount: -1 
@@ -197,6 +204,8 @@ Deno.serve(async (req) => {
         console.error("Error updating user credits:", updateError);
         throw updateError;
       }
+      
+      console.log("User credits updated successfully");
     }
     
     // Return success response

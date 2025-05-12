@@ -46,6 +46,11 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
         if (analysisError) {
           console.error("Analysis error:", analysisError);
           
+          // Log the full error details
+          if (typeof analysisError === 'object' && analysisError !== null) {
+            console.error("Analysis error details:", JSON.stringify(analysisError, null, 2));
+          }
+          
           // Special handling for insufficient credits
           if (analysisError.message && analysisError.message.includes('INSUFFICIENT_CREDITS')) {
             toast.error(t('ideaForm.insufficientCredits', "Créditos insuficientes para análise"));
@@ -53,6 +58,13 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
             if (isDashboard) {
               navigate("/dashboard/creditos");
             }
+            return;
+          }
+          
+          // Handle RLS policy violations
+          if (analysisError.message && analysisError.message.includes('row-level security policy')) {
+            toast.error(t('ideaForm.securityError', "Erro de segurança ao processar sua ideia"));
+            console.error("Row-Level Security Policy violation. Check Supabase RLS policies.");
             return;
           }
           
