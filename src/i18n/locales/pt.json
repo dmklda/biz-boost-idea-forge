@@ -106,7 +106,7 @@
     },
     "step3": {
       "number": "03",
-      "title": "Receba insights completos",
+4 "title": "Receba insights completos",
       "description": "Obtenha uma análise detalhada com sugestões de nome, slogan, persona ideal, MVP e estratégias de monetização."
     },
     "step4": {
@@ -809,5 +809,35 @@
       "updateFailed": "Falha ao atualizar tag",
       "deleteFailed": "Falha ao excluir tag"
     }
+  },
+  
+  "drafts": {
+    "title": "Meus Rascunhos",
+    "subtitle": "Continue trabalhando nas suas ideias salvas",
+    "listTitle": "Ideias em Rascunho",
+    "viewCompleted": "Ver Ideias Completas",
+    "search": "Buscar rascunhos...",
+    "table": {
+      "title": "Título",
+      "created": "Criado",
+      "updated": "Atualizado",
+      "status": "Status",
+      "actions": "Ações"
+    },
+    "status": {
+      "draft": "Rascunho"
+    },
+    "continue": "Editar",
+    "empty": "Você ainda não tem rascunhos.",
+    "noResults": "Nenhum rascunho encontrado para sua busca.",
+    "errors": {
+      "fetchFailed": "Falha ao buscar rascunhos"
+    },
+    "delete": {
+      "title": "Excluir Rascunho",
+      "description": "Tem certeza que deseja excluir este rascunho? Esta ação não pode ser desfeita."
+    },
+    "deleteSuccess": "Rascunho excluído com sucesso",
+    "deleteError": "Erro ao excluir rascunho"
   }
 }

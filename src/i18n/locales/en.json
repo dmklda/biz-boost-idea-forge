@@ -776,13 +776,29 @@
   "drafts": {
     "title": "My Drafts",
     "subtitle": "Continue working on your saved ideas",
-    "noDrafts": "You don't have any drafts yet",
-    "createDraft": "Create a draft",
-    "lastEdited": "Last edited",
-    "continue": "Continue",
-    "delete": "Delete",
-    "confirmDelete": "Are you sure you want to delete this draft?",
-    "confirmDeleteDescription": "This action cannot be undone",
+    "listTitle": "Draft Ideas",
+    "viewCompleted": "View Completed Ideas",
+    "search": "Search drafts...",
+    "table": {
+      "title": "Title",
+      "created": "Created",
+      "updated": "Updated",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "draft": "Draft"
+    },
+    "continue": "Edit",
+    "empty": "You don't have any drafts yet.",
+    "noResults": "No drafts found for your search.",
+    "errors": {
+      "fetchFailed": "Failed to fetch drafts"
+    },
+    "delete": {
+      "title": "Delete Draft",
+      "description": "Are you sure you want to delete this draft? This action cannot be undone."
+    },
     "deleteSuccess": "Draft deleted successfully",
     "deleteError": "Error deleting draft"
   }
