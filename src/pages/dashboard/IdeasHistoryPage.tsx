@@ -15,7 +15,7 @@ import {
   ArrowUp,
   ArrowDown,
   ChevronDown,
-  Compare,
+  GitCompare,
   Trash2,
   MoreHorizontal
 } from "lucide-react";
@@ -466,7 +466,7 @@ const IdeasHistoryPage = () => {
               onClick={handleCompareClick}
               disabled={selectedIdeas.length < 2}
             >
-              <Compare className="h-4 w-4" />
+              <GitCompare className="h-4 w-4" />
               {t('ideas.compare.button') || "Comparar"}
             </Button>
           </div>
