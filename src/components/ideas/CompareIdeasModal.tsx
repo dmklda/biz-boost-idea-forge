@@ -29,7 +29,6 @@ interface Idea {
   description: string;
   audience: string | null;
   problem: string | null;
-  solution: string | null;
   monetization: string | null;
   created_at: string;
   score?: number;
@@ -65,16 +64,26 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
       try {
         setLoading(true);
         const promises = ideaIds.map(async (id) => {
+          // First query to get the basic idea information (excluding the solution field)
           const { data, error } = await supabase
             .from('ideas')
             .select(`
-              id, title, description, audience, problem, solution, monetization, created_at,
-              idea_analyses (score, status, market_size, strengths, weaknesses, differentiation)
+              id, title, description, audience, problem, monetization, created_at
             `)
             .eq('id', id)
             .single();
             
           if (error) throw error;
+          if (!data) throw new Error("Idea not found");
+          
+          // Fetch idea analyses separately
+          const { data: analysesData, error: analysesError } = await supabase
+            .from('idea_analyses')
+            .select('score, status, market_size, strengths, weaknesses, differentiation')
+            .eq('idea_id', id)
+            .maybeSingle();
+            
+          if (analysesError) throw analysesError;
           
           // Fetch tags
           const { data: tagsData, error: tagsError } = await supabase
@@ -94,18 +103,17 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
             description: data.description,
             audience: data.audience,
             problem: data.problem,
-            solution: data.solution,
             monetization: data.monetization,
             created_at: data.created_at,
-            score: data.idea_analyses && data.idea_analyses[0]?.score,
-            status: data.idea_analyses && data.idea_analyses[0]?.status,
+            score: analysesData?.score,
+            status: analysesData?.status,
             tags,
-            analysis: {
-              market_size: data.idea_analyses && data.idea_analyses[0]?.market_size,
-              strengths: data.idea_analyses && data.idea_analyses[0]?.strengths,
-              weaknesses: data.idea_analyses && data.idea_analyses[0]?.weaknesses,
-              differentiation: data.idea_analyses && data.idea_analyses[0]?.differentiation,
-            }
+            analysis: analysesData ? {
+              market_size: analysesData.market_size,
+              strengths: analysesData.strengths,
+              weaknesses: analysesData.weaknesses,
+              differentiation: analysesData.differentiation,
+            } : undefined
           };
         });
         
@@ -312,11 +320,6 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
                             <div>
                               <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.differentiation')}</h3>
                               <p className="text-sm">{idea.analysis?.differentiation || t('ideas.compare.notAnalyzed')}</p>
-                            </div>
-                            
-                            <div>
-                              <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.solution')}</h3>
-                              <p className="text-sm">{idea.solution || t('ideas.compare.notSpecified')}</p>
                             </div>
                             
                             <div>
