@@ -106,7 +106,7 @@
     },
     "step3": {
       "number": "03",
-      "title": "Receba insights completos",
+4 "title": "Receba insights completos",
       "description": "Obtenha uma análise detalhada com sugestões de nome, slogan, persona ideal, MVP e estratégias de monetização."
     },
     "step4": {
@@ -588,7 +588,7 @@
       "description": "Seu saldo atual de créditos para análises",
       "freePlan": "Plano Free (3 créditos/mês)",
       "proPlan": "Plano Pro (créditos ilimitados)",
-      "upgradeBtn": "Fazer upgrade para o plano Pro"
+      "upgradeBtn": "Atualizar para o plano Pro"
     },
     "buyCredits": {
       "title": "Comprar Créditos",
@@ -605,7 +605,10 @@
       "details": "Detalhes",
       "amount": "Quantidade",
       "loading": "Carregando histórico de transações...",
-      "noTransactions": "Nenhuma transação encontrada."
+      "noTransactions": "Nenhuma transação encontrada.",
+      "purchase": "Compra",
+      "usage": "Uso",
+      "addedSuccess": "Créditos adicionados com sucesso!"
     }
   },
   

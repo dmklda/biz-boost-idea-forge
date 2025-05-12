@@ -93,7 +93,10 @@
       "details": "詳細",
       "amount": "金額",
       "loading": "取引履歴を読み込み中...",
-      "noTransactions": "取引が見つかりません。"
+      "noTransactions": "取引が見つかりません。",
+      "purchase": "購入",
+      "usage": "使用",
+      "addedSuccess": "クレジットが正常に追加されました！"
     }
   },
   
@@ -181,7 +184,7 @@
     },
     "monetization": {
       "title": "どのように収益化する予定ですか？",
-      "placeholder": "あなたのビジネスがどのように収益を生み出すか説明���てください..."
+      "placeholder": "あなたのビジネスがどのように収益を生み出すか説������てください..."
     },
     "competitors": {
       "title": "市場に競合他社はいますか？",
@@ -387,7 +390,7 @@
     "dangerZone": "危険ゾーン",
     "dangerZoneDesc": "アカウントの取り返しのつかないアクション",
     "deleteAccount": "アカウント削除",
-    "deleteAccountDesc": "アカウントを削除すると、すべ���のデータが完全に削除されます。この操作は元に戻せません。",
+    "deleteAccountDesc": "アカウントを削除すると���すべ���のデータが完全に削除されます。この操作は元に戻せません。",
     "notificationPreferences": "通知設定",
     "notificationPreferencesDesc": "通知の受け取り方を設定する",
     "emailNotifications": "メール通知",
@@ -470,7 +473,7 @@
       "description": "この操作は元に戻せません。下書きは完全に削除されます。"
     },
     "deleteSuccess": "下書きが正常に削除されました",
-    "deleteError": "下書きの削除中にエラーが発生しました",
+    "deleteError": "下書きの削除中��エラーが発生しました",
     "noDrafts": "まだ下書きがありません",
     "createDraft": "下書きを作成",
     "lastEdited": "最終編集",

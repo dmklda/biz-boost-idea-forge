@@ -90,10 +90,13 @@
       "description": "Su historial de compras y uso de créditos",
       "date": "Fecha",
       "type": "Tipo",
-      "details": "Detalhes",
+      "details": "Detalles",
       "amount": "Cantidad",
       "loading": "Cargando historial de transacciones...",
-      "noTransactions": "No se encontraron transacciones."
+      "noTransactions": "No se encontraron transacciones.",
+      "purchase": "Compra",
+      "usage": "Uso",
+      "addedSuccess": "¡Créditos añadidos con éxito!"
     }
   },
   

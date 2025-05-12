@@ -483,7 +483,10 @@
       "details": "Details",
       "amount": "Amount",
       "loading": "Loading transaction history...",
-      "noTransactions": "No transactions found."
+      "noTransactions": "No transactions found.",
+      "purchase": "Purchase",
+      "usage": "Usage",
+      "addedSuccess": "Credits added successfully!"
     }
   },
   

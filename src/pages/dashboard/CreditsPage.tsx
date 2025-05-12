@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { CreditCard, Plus } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 
 // Tipagem para pacotes de créditos
 interface CreditPackage {
@@ -34,6 +35,7 @@ const creditPackages: CreditPackage[] = [
 ];
 
 const CreditsPage = () => {
+  const { t } = useTranslation();
   const { authState, updateUserCredits } = useAuth();
   const { user } = authState;
   const [isLoading, setIsLoading] = useState<number | null>(null);
@@ -81,7 +83,7 @@ const CreditsPage = () => {
         const formattedTransactions: Transaction[] = transactionData.map((transaction) => {
           // Determinar se é uma compra ou uso
           const isPositive = transaction.amount > 0;
-          const type = isPositive ? "Compra" : "Uso";
+          const type = isPositive ? t("credits.transactions.purchase") : t("credits.transactions.usage");
           
           // Tentar associar com uma ideia se for "Uso"
           let ideaInfo = undefined;
@@ -103,14 +105,14 @@ const CreditsPage = () => {
         setTransactions(formattedTransactions);
       } catch (error) {
         console.error("Error fetching transactions:", error);
-        toast.error("Erro ao carregar histórico de transações");
+        toast.error(t("credits.transactions.loadingError", "Error loading transaction history"));
       } finally {
         setLoadingTransactions(false);
       }
     };
 
     fetchTransactions();
-  }, [authState.isAuthenticated, authState.user?.id]);
+  }, [authState.isAuthenticated, authState.user?.id, t]);
   
   const handleBuyCredits = async (packageId: number, amount: number) => {
     if (!user) return;
@@ -125,10 +127,10 @@ const CreditsPage = () => {
       // Chamada para atualizar créditos
       updateUserCredits(newCredits);
       
-      toast.success(`${amount} créditos adicionados com sucesso!`);
+      toast.success(t("credits.transactions.addedSuccess"));
     } catch (error) {
       console.error("Error buying credits:", error);
-      toast.error("Erro ao adicionar créditos");
+      toast.error(t("credits.buyCredits.error", "Error adding credits"));
     } finally {
       setIsLoading(null);
     }
@@ -140,7 +142,7 @@ const CreditsPage = () => {
       return (
         <TableRow>
           <TableCell colSpan={4} className="text-center py-8">
-            Carregando histórico de transações...
+            {t("credits.transactions.loading")}
           </TableCell>
         </TableRow>
       );
@@ -150,7 +152,7 @@ const CreditsPage = () => {
       return (
         <TableRow>
           <TableCell colSpan={4} className="text-center py-8">
-            Nenhuma transação encontrada.
+            {t("credits.transactions.noTransactions")}
           </TableCell>
         </TableRow>
       );
@@ -173,18 +175,18 @@ const CreditsPage = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Meus Créditos</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t("credits.title")}</h1>
         <p className="text-muted-foreground">
-          Gerencie seus créditos para análise de ideias
+          {t("credits.subtitle")}
         </p>
       </div>
       
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Créditos Disponíveis</CardTitle>
+            <CardTitle>{t("credits.availableCredits.title")}</CardTitle>
             <CardDescription>
-              Seu saldo atual de créditos para análises
+              {t("credits.availableCredits.description")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -196,8 +198,8 @@ const CreditsPage = () => {
                 <div className="text-3xl font-bold">{user?.credits || 0}</div>
                 <p className="text-sm text-muted-foreground">
                   {user?.plan === "free" 
-                    ? "Plano Free (3 créditos/mês)" 
-                    : "Plano Pro (créditos ilimitados)"}
+                    ? t("credits.availableCredits.freePlan") 
+                    : t("credits.availableCredits.proPlan")}
                 </p>
               </div>
             </div>
@@ -205,7 +207,7 @@ const CreditsPage = () => {
           {user?.plan === "free" && (
             <CardFooter>
               <Button variant="outline" className="w-full" asChild>
-                <a href="/planos">Fazer upgrade para o plano Pro</a>
+                <a href="/planos">{t("credits.availableCredits.upgradeBtn")}</a>
               </Button>
             </CardFooter>
           )}
@@ -213,9 +215,9 @@ const CreditsPage = () => {
         
         <Card>
           <CardHeader>
-            <CardTitle>Comprar Créditos</CardTitle>
+            <CardTitle>{t("credits.buyCredits.title")}</CardTitle>
             <CardDescription>
-              Adquira mais créditos para análises
+              {t("credits.buyCredits.description")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -225,7 +227,7 @@ const CreditsPage = () => {
                 className="flex items-center justify-between p-4 border rounded-md hover:border-brand-purple/50 hover:bg-muted/50 transition-colors"
               >
                 <div>
-                  <div className="font-medium">{pkg.amount} créditos</div>
+                  <div className="font-medium">{pkg.amount} {t("credits.buyCredits.credits")}</div>
                   <div className="text-sm text-muted-foreground">{pkg.price}</div>
                   {pkg.savings && (
                     <div className="text-xs text-green-500 mt-1">{pkg.savings}</div>
@@ -237,11 +239,11 @@ const CreditsPage = () => {
                   className="bg-brand-purple hover:bg-brand-purple/90"
                 >
                   {isLoading === pkg.id ? (
-                    "Processando..."
+                    t("credits.buyCredits.processing")
                   ) : (
                     <>
                       <Plus className="h-4 w-4 mr-1" />
-                      Comprar
+                      {t("credits.buyCredits.buy")}
                     </>
                   )}
                 </Button>
@@ -253,19 +255,19 @@ const CreditsPage = () => {
       
       <Card>
         <CardHeader>
-          <CardTitle>Histórico de Transações</CardTitle>
+          <CardTitle>{t("credits.transactions.title")}</CardTitle>
           <CardDescription>
-            Seu histórico de compra e uso de créditos
+            {t("credits.transactions.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Data</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Detalhes</TableHead>
-                <TableHead className="text-right">Quantidade</TableHead>
+                <TableHead>{t("credits.transactions.date")}</TableHead>
+                <TableHead>{t("credits.transactions.type")}</TableHead>
+                <TableHead>{t("credits.transactions.details")}</TableHead>
+                <TableHead className="text-right">{t("credits.transactions.amount")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
