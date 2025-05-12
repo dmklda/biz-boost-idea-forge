@@ -277,6 +277,237 @@ async function generateAnalysis(ideaData) {
 
 // Function to generate the analysis prompt
 function generateAnalysisPrompt(ideaData) {
+  // Try to extract language from request headers or fall back to English
+  const preferredLanguage = ideaData.language || 'pt'; // Default to Portuguese if not specified
+  
+  // Determine the language for the prompt
+  let systemPrompt = "You are a business analyst expert that evaluates business ideas and provides detailed analysis.";
+  
+  // Adjust language based on preference
+  if (preferredLanguage === 'pt') {
+    systemPrompt = "Você é um especialista em análise de negócios que avalia ideias de negócios e fornece análises detalhadas. IMPORTANTE: Responda sempre em português brasileiro.";
+  } else if (preferredLanguage === 'es') {
+    systemPrompt = "Eres un experto en análisis de negocios que evalúa ideas de negocios y proporciona análisis detallados. IMPORTANTE: Responde siempre en español.";
+  } else if (preferredLanguage === 'ja') {
+    systemPrompt = "あなたはビジネスのアイデアを評価し、詳細な分析を提供するビジネスアナリストの専門家です。重要：常に日本語で回答してください。";
+  }
+  
+  return {
+    systemPrompt,
+    userPrompt: `
+    ${preferredLanguage === 'pt' ? 'Por favor, analise a seguinte ideia de negócio e forneça uma avaliação completa:' : 
+      preferredLanguage === 'es' ? 'Por favor, analiza la siguiente idea de negocio y proporciona una evaluación completa:' :
+      preferredLanguage === 'ja' ? '次のビジネスアイデアを分析し、包括的な評価を提供してください:' :
+      'Please analyze the following business idea and provide a comprehensive evaluation:'}
+    
+    ${preferredLanguage === 'pt' ? 'Ideia de Negócio:' : 
+      preferredLanguage === 'es' ? 'Idea de Negocio:' :
+      preferredLanguage === 'ja' ? 'ビジネスアイデア:' :
+      'Business Idea:'} ${ideaData.idea}
+    
+    ${preferredLanguage === 'pt' ? 'Público-Alvo:' : 
+      preferredLanguage === 'es' ? 'Público Objetivo:' :
+      preferredLanguage === 'ja' ? 'ターゲットオーディエンス:' :
+      'Target Audience:'} ${ideaData.audience || (preferredLanguage === 'pt' ? 'Não especificado' : 
+                             preferredLanguage === 'es' ? 'No especificado' :
+                             preferredLanguage === 'ja' ? '指定なし' :
+                             'Not specified')}
+    
+    ${preferredLanguage === 'pt' ? 'Problema Resolvido:' : 
+      preferredLanguage === 'es' ? 'Problema Resuelto:' :
+      preferredLanguage === 'ja' ? '解決する問題:' :
+      'Problem Solved:'} ${ideaData.problem || (preferredLanguage === 'pt' ? 'Não especificado' : 
+                           preferredLanguage === 'es' ? 'No especificado' :
+                           preferredLanguage === 'ja' ? '指定なし' :
+                           'Not specified')}
+    
+    ${preferredLanguage === 'pt' ? 'Concorrentes:' : 
+      preferredLanguage === 'es' ? 'Competidores:' :
+      preferredLanguage === 'ja' ? '競合他社:' :
+      'Competitors:'} ${ideaData.hasCompetitors || (preferredLanguage === 'pt' ? 'Não especificado' : 
+                        preferredLanguage === 'es' ? 'No especificado' :
+                        preferredLanguage === 'ja' ? '指定なし' :
+                        'Not specified')}
+    
+    ${preferredLanguage === 'pt' ? 'Estratégia de Monetização:' : 
+      preferredLanguage === 'es' ? 'Estrategia de Monetización:' :
+      preferredLanguage === 'ja' ? '収益化戦略:' :
+      'Monetization Strategy:'} ${ideaData.monetization || (preferredLanguage === 'pt' ? 'Não especificado' : 
+                                  preferredLanguage === 'es' ? 'No especificado' :
+                                  preferredLanguage === 'ja' ? '指定なし' :
+                                  'Not specified')}
+    
+    ${preferredLanguage === 'pt' ? 'Orçamento:' : 
+      preferredLanguage === 'es' ? 'Presupuesto:' :
+      preferredLanguage === 'ja' ? '予算:' :
+      'Budget:'} ${ideaData.budget || (preferredLanguage === 'pt' ? 'Não especificado' : 
+                   preferredLanguage === 'es' ? 'No especificado' :
+                   preferredLanguage === 'ja' ? '指定なし' :
+                   'Not specified')}
+    
+    ${preferredLanguage === 'pt' ? 'Localização:' : 
+      preferredLanguage === 'es' ? 'Ubicación:' :
+      preferredLanguage === 'ja' ? '場所:' :
+      'Location:'} ${ideaData.location || (preferredLanguage === 'pt' ? 'Não especificado' : 
+                     preferredLanguage === 'es' ? 'No especificado' :
+                     preferredLanguage === 'ja' ? '指定なし' :
+                     'Not specified')}
+    
+    ${preferredLanguage === 'pt' ? 'Forneça sua análise em formato JSON com a seguinte estrutura:' : 
+      preferredLanguage === 'es' ? 'Proporciona tu análisis en formato JSON con la siguiente estructura:' :
+      preferredLanguage === 'ja' ? '次の構造でJSONフォーマットで分析を提供してください:' :
+      'Provide your analysis in JSON format with the following structure:'}
+    {
+      "score": [${preferredLanguage === 'pt' ? 'Um número de 0-100 representando a pontuação geral de viabilidade' : 
+                 preferredLanguage === 'es' ? 'Un número de 0-100 que representa la puntuación general de viabilidad' :
+                 preferredLanguage === 'ja' ? '実現可能性の全体スコアを表す0-100の数値' :
+                 'A number from 0-100 representing the overall viability score'}],
+      "status": [${preferredLanguage === 'pt' ? 'Uma string: "Viável", "Moderado", ou "Desafiador"' : 
+                  preferredLanguage === 'es' ? 'Una string: "Viable", "Moderado", o "Desafiante"' :
+                  preferredLanguage === 'ja' ? '文字列: "実行可能", "適度", または "困難"' :
+                  'A string: "Viable", "Moderate", or "Challenging"'}],
+      "swotAnalysis": {
+        "strengths": [${preferredLanguage === 'pt' ? 'Array de pontos fortes' : 
+                       preferredLanguage === 'es' ? 'Array de fortalezas' :
+                       preferredLanguage === 'ja' ? '強みの配列' :
+                       'Array of strengths'}],
+        "weaknesses": [${preferredLanguage === 'pt' ? 'Array de pontos fracos' : 
+                        preferredLanguage === 'es' ? 'Array de debilidades' :
+                        preferredLanguage === 'ja' ? '弱みの配列' :
+                        'Array of weaknesses'}],
+        "opportunities": [${preferredLanguage === 'pt' ? 'Array de oportunidades' : 
+                           preferredLanguage === 'es' ? 'Array de oportunidades' :
+                           preferredLanguage === 'ja' ? '機会の配列' :
+                           'Array of opportunities'}],
+        "threats": [${preferredLanguage === 'pt' ? 'Array de ameaças' : 
+                     preferredLanguage === 'es' ? 'Array de amenazas' :
+                     preferredLanguage === 'ja' ? '脅威の配列' :
+                     'Array of threats'}]
+      },
+      "marketAnalysis": {
+        "market_size": [${preferredLanguage === 'pt' ? 'String descrevendo o tamanho do mercado' : 
+                         preferredLanguage === 'es' ? 'String describiendo el tamaño del mercado' :
+                         preferredLanguage === 'ja' ? '市場規模を説明する文字列' :
+                         'String describing market size'}],
+        "target_audience": [${preferredLanguage === 'pt' ? 'String descrevendo o público-alvo' : 
+                             preferredLanguage === 'es' ? 'String describiendo el público objetivo' :
+                             preferredLanguage === 'ja' ? 'ターゲットオーディエンスを説明する文字列' :
+                             'String describing target audience'}],
+        "growth_potential": [${preferredLanguage === 'pt' ? 'String descrevendo o potencial de crescimento' : 
+                              preferredLanguage === 'es' ? 'String describiendo el potencial de crecimiento' :
+                              preferredLanguage === 'ja' ? '成長可能性を説明する文字列' :
+                              'String describing growth potential'}],
+        "barriers_to_entry": [${preferredLanguage === 'pt' ? 'Array de barreiras' : 
+                               preferredLanguage === 'es' ? 'Array de barreras' :
+                               preferredLanguage === 'ja' ? '参入障壁の配列' :
+                               'Array of barriers'}]
+      },
+      "competitorAnalysis": {
+        "key_competitors": [${preferredLanguage === 'pt' ? 'Array de concorrentes potenciais' : 
+                             preferredLanguage === 'es' ? 'Array de competidores potenciales' :
+                             preferredLanguage === 'ja' ? '主要競合他社の配列' :
+                             'Array of potential competitors'}],
+        "competitive_advantage": [${preferredLanguage === 'pt' ? 'String descrevendo vantagem potencial' : 
+                                   preferredLanguage === 'es' ? 'String describiendo ventaja potencial' :
+                                   preferredLanguage === 'ja' ? '潜在的な優位性を説明する文字列' :
+                                   'String describing potential advantage'}],
+        "market_gaps": [${preferredLanguage === 'pt' ? 'Array de lacunas de mercado' : 
+                         preferredLanguage === 'es' ? 'Array de brechas del mercado' :
+                         preferredLanguage === 'ja' ? '市場ギャップの配列' :
+                         'Array of market gaps'}]
+      },
+      "financialAnalysis": {
+        "revenue_potential": [${preferredLanguage === 'pt' ? 'String descrevendo potencial de receita' : 
+                               preferredLanguage === 'es' ? 'String describiendo potencial de ingresos' :
+                               preferredLanguage === 'ja' ? '収益可能性を説明する文字列' :
+                               'String describing revenue potential'}],
+        "initial_investment": [${preferredLanguage === 'pt' ? 'String descrevendo investimento necessário' : 
+                                preferredLanguage === 'es' ? 'String describiendo inversión necesaria' :
+                                preferredLanguage === 'ja' ? '初期投資を説明する文字列' :
+                                'String describing investment needed'}],
+        "break_even_estimate": [${preferredLanguage === 'pt' ? 'String com estimativa do ponto de equilíbrio' : 
+                                 preferredLanguage === 'es' ? 'String con estimación del punto de equilibrio' :
+                                 preferredLanguage === 'ja' ? '収支均衡点の見積もりを含む文字列' :
+                                 'String with break-even estimate'}],
+        "funding_suggestions": [${preferredLanguage === 'pt' ? 'Array de opções de financiamento' : 
+                                 preferredLanguage === 'es' ? 'Array de opciones de financiación' :
+                                 preferredLanguage === 'ja' ? '資金調達オプションの配列' :
+                                 'Array of funding options'}]
+      },
+      "recommendations": {
+        "action_items": [${preferredLanguage === 'pt' ? 'Array de itens de ação' : 
+                          preferredLanguage === 'es' ? 'Array de elementos de acción' :
+                          preferredLanguage === 'ja' ? 'アクションアイテムの配列' :
+                          'Array of action items'}],
+        "next_steps": [${preferredLanguage === 'pt' ? 'Array de próximos passos' : 
+                        preferredLanguage === 'es' ? 'Array de próximos pasos' :
+                        preferredLanguage === 'ja' ? '次のステップの配列' :
+                        'Array of next steps'}],
+        "potential_challenges": [${preferredLanguage === 'pt' ? 'Array de desafios' : 
+                                 preferredLanguage === 'es' ? 'Array de desafíos' :
+                                 preferredLanguage === 'ja' ? '潜在的な課題の配列' :
+                                 'Array of challenges'}],
+        "suggested_resources": [${preferredLanguage === 'pt' ? 'Array de recursos' : 
+                                preferredLanguage === 'es' ? 'Array de recursos' :
+                                preferredLanguage === 'ja' ? '提案されるリソースの配列' :
+                                'Array of resources'}]
+      }
+    }
+  `
+  };
+}
+
+// Function to generate analysis using OpenAI with better error handling and language support
+async function generateAnalysis(ideaData) {
+  try {
+    const { systemPrompt, userPrompt } = generateAnalysisPrompt(ideaData);
+    
+    console.log("Sending request to OpenAI with language setting...");
+    
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini", // Using a more modern model
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user",
+          content: userPrompt
+        }
+      ],
+      temperature: 0.7,
+      response_format: { type: "json_object" }
+    });
+    
+    if (!response.choices || response.choices.length === 0) {
+      throw new Error("OpenAI returned an empty response");
+    }
+    
+    const content = response.choices[0].message.content;
+    
+    if (!content) {
+      throw new Error("OpenAI returned empty content");
+    }
+    
+    console.log("Received OpenAI response, parsing JSON...");
+    
+    try {
+      const analysisResult = JSON.parse(content);
+      return analysisResult;
+    } catch (parseError) {
+      console.error("Error parsing OpenAI response:", parseError);
+      console.log("Raw OpenAI response content:", content);
+      throw new Error("Failed to parse OpenAI JSON response");
+    }
+  } catch (error) {
+    console.error("Error generating analysis:", error);
+    throw new Error(`Failed to generate analysis: ${error.message}`);
+  }
+}
+
+// Function to generate the analysis prompt
+function generateAnalysisPrompt(ideaData) {
   return `
     Please analyze the following business idea and provide a comprehensive evaluation:
     

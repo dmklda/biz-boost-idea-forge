@@ -34,4 +34,9 @@ i18n
     returnObjects: false
   });
 
+// Export the current language for use in other files
+export const getCurrentLanguage = () => {
+  return i18n.language || 'pt';
+};
+
 export default i18n;

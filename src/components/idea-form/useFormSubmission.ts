@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useIdeaFormContext } from "@/contexts/IdeaFormContext";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { getCurrentLanguage } from "@/i18n/config";
 
 export const useFormSubmission = (isReanalyzing?: boolean) => {
   const { t } = useTranslation();
@@ -33,11 +34,18 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
       if (authState.isAuthenticated && authState.user) {
         console.log("Sending form data:", formData);
         
-        // Call the analyze-idea edge function
+        // Get current language
+        const currentLanguage = getCurrentLanguage();
+        console.log("Current language for analysis:", currentLanguage);
+        
+        // Call the analyze-idea edge function with language included
         const { data: analysisData, error: analysisError } = await supabase.functions
           .invoke('analyze-idea', {
             body: JSON.stringify({
-              ideaData: formData,
+              ideaData: {
+                ...formData,
+                language: currentLanguage
+              },
               userId: authState.user.id,
               ideaId: editingIdeaId,
               isReanalyzing
@@ -72,14 +80,22 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
           throw new Error(analysisError.message || "Erro ao analisar ideia");
         }
         
+        // Log successful response for debugging
+        console.log("Analysis completed successfully:", analysisData);
+        
         // Success! Navigate to results page
         toast.success(t('ideaForm.analysisSuccess', "Análise concluída com sucesso!"));
         
         // Reset the form to close it
         resetForm();
         
-        // Sempre navegar para a página de resultados no dashboard
-        navigate(`/dashboard/resultados?id=${analysisData.ideaId}`);
+        // Always navigate to the results page in the dashboard
+        if (analysisData && analysisData.ideaId) {
+          navigate(`/dashboard/resultados?id=${analysisData.ideaId}`);
+        } else {
+          console.error("Missing ideaId in response:", analysisData);
+          toast.error(t('ideaForm.missingData', "Dados da análise incompletos. Entre em contato com o suporte."));
+        }
       } else {
         // Not authenticated, redirect to login
         toast.info(t('ideaForm.loginRequired', "É necessário fazer login para analisar ideias"));
