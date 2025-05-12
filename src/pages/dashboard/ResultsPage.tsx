@@ -247,7 +247,7 @@ const ResultsPage = () => {
                       {score}%
                     </div>
                     <div>
-                      <p className="font-medium">{t(`results.status.${status.toLowerCase()}`, status)}</p>
+                      <p className="font-medium">{statusTranslation}</p>
                       <p className="text-sm text-muted-foreground">{t('results.scoreExplanation', "Baseado na análise geral da ideia")}</p>
                     </div>
                   </div>

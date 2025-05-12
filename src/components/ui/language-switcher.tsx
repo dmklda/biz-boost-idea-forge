@@ -9,6 +9,7 @@ import {
 } from "./dropdown-menu";
 import { Button } from "./button";
 import { useEffect, useState } from "react";
+import { toast } from "../ui/sonner";
 
 const languages = {
   pt: "Português",
@@ -42,8 +43,8 @@ export function LanguageSwitcher() {
     // Atualizando o estado local
     setCurrentLang(code);
     
-    // Recarregando a página para garantir que todas as traduções sejam aplicadas
-    window.location.reload();
+    // Mostrar confirmação ao invés de recarregar a página
+    toast.success(`Idioma alterado para ${languages[code as keyof typeof languages]}`);
   };
 
   // Função auxiliar para verificar se o código de idioma corresponde ao idioma atual
