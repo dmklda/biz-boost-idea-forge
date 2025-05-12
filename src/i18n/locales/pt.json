@@ -725,6 +725,7 @@
       "notAnalyzed": "Não analisado",
       "insights": "Insights",
       "noInsights": "Sem insights disponíveis",
+        "noAiInsights": "Sem insights de IA",
       "completeAnalysis": "Complete a análise para gerar insights",
       "aiInsights": "Análise de IA",
       "generateAiInsightsDescription": "Gere insights avançados de IA para comparar suas ideias e descobrir qual tem maior potencial de mercado",
