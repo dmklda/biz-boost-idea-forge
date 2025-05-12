@@ -1,7 +1,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Home, BarChart, CreditCard, Settings, LogOut, Calendar, PlusCircle } from "lucide-react";
+import { Home, BarChart, CreditCard, Settings, LogOut, Calendar, PlusCircle, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -43,6 +43,12 @@ export const DashboardSidebar = ({
       path: '#',
       onClick: handleNewAnalysis
     }, 
+    {
+      title: t('nav.drafts', "Rascunhos"),
+      icon: Save,
+      path: '/dashboard/rascunhos',
+      onClick: undefined
+    },
     {
       title: t('nav.credits'),
       icon: CreditCard,

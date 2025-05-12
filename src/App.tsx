@@ -28,6 +28,8 @@ import IdeaDetailPage from "./pages/dashboard/IdeaDetailPage";
 import UserSettingsPage from "./pages/dashboard/UserSettingsPage";
 import ResourceCenterPage from "./pages/dashboard/ResourceCenterPage";
 import AdvancedMetricsPage from "./pages/dashboard/AdvancedMetricsPage";
+import DraftsPage from "./pages/dashboard/DraftsPage";
+import EditIdeaPage from "./pages/dashboard/EditIdeaPage";
 
 // Platform pages
 import ApiPage from "./pages/platform/ApiPage";
@@ -122,6 +124,8 @@ const App = () => {
                     <Route path="ideias" element={<IdeasPage />} />
                     <Route path="ideias/historico" element={<IdeasHistoryPage />} />
                     <Route path="ideias/:id" element={<IdeaDetailPage />} />
+                    <Route path="ideias/editar" element={<EditIdeaPage />} />
+                    <Route path="rascunhos" element={<DraftsPage />} />
                     <Route path="creditos" element={<CreditsPage />} />
                     <Route path="configuracoes" element={<UserSettingsPage />} />
                     <Route path="recursos" element={<ResourceCenterPage />} />

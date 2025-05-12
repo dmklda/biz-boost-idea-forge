@@ -1,4 +1,5 @@
 
+import React from "react";
 import { 
   Card, 
   CardContent, 
@@ -16,8 +17,15 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from "@/components/ui/sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "./ui/button";
+import { SaveIcon } from "lucide-react";
 
-export const IdeaForm = () => {
+interface IdeaFormProps {
+  ideaId?: string;
+  isReanalyzing?: boolean;
+}
+
+export const IdeaForm = ({ ideaId, isReanalyzing }: IdeaFormProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,12 +34,15 @@ export const IdeaForm = () => {
     currentStep,
     formData,
     isSubmitting,
+    isSavingDraft,
+    editingIdeaId,
     setIsSubmitting,
     updateFormData,
     handleNextStep,
     handlePrevStep,
-    resetForm
-  } = useIdeaForm();
+    resetForm,
+    saveAsDraft
+  } = useIdeaForm(ideaId);
   
   // Check if we're in the dashboard
   const isDashboard = location.pathname.includes('/dashboard');
@@ -43,10 +54,48 @@ export const IdeaForm = () => {
     try {
       // Se o usuário está autenticado, salvar no Supabase
       if (authState.isAuthenticated && authState.user) {
-        // Inserir a ideia no banco de dados
-        const { data: idea, error: ideaError } = await supabase
-          .from('ideas')
-          .insert({
+        let idea;
+        
+        if (isReanalyzing && editingIdeaId) {
+          // Atualizar ideia existente se for reanálise
+          const { data: updatedIdea, error: updateError } = await supabase
+            .from('ideas')
+            .update({
+              title: formData.idea,
+              description: formData.idea,
+              audience: formData.audience,
+              problem: formData.problem,
+              has_competitors: formData.hasCompetitors,
+              monetization: formData.monetization,
+              budget: formData.budget,
+              location: formData.location,
+              is_draft: false,
+              status: 'complete'
+            })
+            .eq('id', editingIdeaId)
+            .select('id')
+            .single();
+            
+          if (updateError) throw updateError;
+          idea = updatedIdea;
+          
+          // Cobrar um crédito pela reanálise
+          const { error: creditError } = await supabase
+            .from('credit_transactions')
+            .insert({
+              user_id: authState.user.id,
+              amount: -1,
+              description: 'Reanálise de ideia'
+            });
+            
+          if (creditError) {
+            console.error("Error charging credit:", creditError);
+            // Continue anyway, we'll handle credits separately
+          }
+          
+        } else {
+          // Inserir nova ideia ou atualizar rascunho
+          const ideaData = {
             user_id: authState.user.id,
             title: formData.idea,
             description: formData.idea,
@@ -55,14 +104,32 @@ export const IdeaForm = () => {
             has_competitors: formData.hasCompetitors,
             monetization: formData.monetization,
             budget: formData.budget,
-            location: formData.location
-          })
-          .select('id')
-          .single();
+            location: formData.location,
+            is_draft: false,
+            status: 'complete'
+          };
+          
+          let response;
+          
+          if (editingIdeaId) {
+            // Atualizar rascunho existente
+            response = await supabase
+              .from('ideas')
+              .update(ideaData)
+              .eq('id', editingIdeaId)
+              .select('id')
+              .single();
+          } else {
+            // Criar nova ideia
+            response = await supabase
+              .from('ideas')
+              .insert(ideaData)
+              .select('id')
+              .single();
+          }
 
-        if (ideaError) {
-          console.error("Error saving idea:", ideaError);
-          throw new Error("Erro ao salvar ideia");
+          if (response.error) throw response.error;
+          idea = response.data;
         }
 
         // Redirecionar para a página de resultados
@@ -85,6 +152,28 @@ export const IdeaForm = () => {
       toast.error(t('ideaForm.error') || "Erro ao processar sua solicitação");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+  
+  const handleSaveAsDraft = async () => {
+    if (!authState.isAuthenticated || !authState.user) {
+      toast.error(t('auth.requiredForDraft', "É necessário estar logado para salvar rascunhos"));
+      navigate("/login");
+      return;
+    }
+    
+    const saved = await saveAsDraft(authState.user.id);
+    if (saved && isDashboard) {
+      // Se salvou com sucesso e está no dashboard, oferece navegação para a página de rascunhos
+      toast.success(
+        t('ideaForm.draftSaved', "Rascunho salvo com sucesso!"), 
+        {
+          action: {
+            label: t('ideaForm.viewDrafts', "Ver rascunhos"),
+            onClick: () => navigate("/dashboard/rascunhos")
+          }
+        }
+      );
     }
   };
   
@@ -126,6 +215,24 @@ export const IdeaForm = () => {
           isSubmitting={isSubmitting}
         />
       )}
+      
+      {/* Botão de salvar como rascunho */}
+      {authState.isAuthenticated && (
+        <div className="mt-4 flex justify-center">
+          <Button 
+            type="button"
+            variant="outline"
+            onClick={handleSaveAsDraft}
+            disabled={isSavingDraft || !formData.idea.trim()}
+            className="flex items-center gap-2"
+          >
+            <SaveIcon className="w-4 h-4" />
+            {isSavingDraft
+              ? t('ideaForm.savingDraft', "Salvando...")
+              : t('ideaForm.saveAsDraft', "Salvar como rascunho")}
+          </Button>
+        </div>
+      )}
     </form>
   );
 
@@ -137,10 +244,14 @@ export const IdeaForm = () => {
             <Card className="overflow-hidden border-0 shadow-lg dark:bg-gray-800 dark:border-gray-700">
               <CardHeader className="bg-gradient-to-r from-brand-blue to-brand-purple rounded-t-lg">
                 <CardTitle className="text-white text-2xl font-poppins">
-                  {t('ideaForm.title')}
+                  {isReanalyzing 
+                    ? t('ideaForm.reanalyzeTitle', "Reanálise de Ideia") 
+                    : t('ideaForm.title', "Análise de Negócio")}
                 </CardTitle>
                 <CardDescription className="text-white/80 font-inter">
-                  {t('ideaForm.subtitle')}
+                  {isReanalyzing 
+                    ? t('ideaForm.reanalyzeSubtitle', "Refine sua ideia para uma nova análise")
+                    : t('ideaForm.subtitle', "Vamos analisar sua ideia de negócio")}
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-6">

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { PlusCircle, Search, Tag as TagIcon } from "lucide-react";
+import { PlusCircle, Search, Save, Archive } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -36,10 +36,11 @@ const IdeasPage = () => {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [userHasCredits, setUserHasCredits] = useState(false);
 
-  // Fetch user's ideas
+  // Fetch user's ideas and check credits
   useEffect(() => {
-    const fetchIdeas = async () => {
+    const fetchData = async () => {
       if (!authState.isAuthenticated) return;
 
       try {
@@ -53,6 +54,7 @@ const IdeasPage = () => {
             idea_analyses (score, status)
           `)
           .eq('user_id', authState.user?.id)
+          .eq('is_draft', false)
           .order('created_at', { ascending: false });
           
         if (error) {
@@ -108,6 +110,18 @@ const IdeasPage = () => {
         });
 
         setIdeas(formattedIdeas);
+        
+        // Check if user has credits for reanalysis
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('credits')
+          .eq('id', authState.user?.id)
+          .single();
+          
+        if (profileData && profileData.credits > 0) {
+          setUserHasCredits(true);
+        }
+        
       } catch (error) {
         console.error("Error fetching ideas:", error);
         toast.error(t('ideas.errors.fetchFailed'));
@@ -116,7 +130,7 @@ const IdeasPage = () => {
       }
     };
 
-    fetchIdeas();
+    fetchData();
   }, [authState.isAuthenticated, authState.user?.id, t]);
 
   // Filter ideas based on search query
@@ -139,6 +153,26 @@ const IdeasPage = () => {
     setIdeas(ideas.map(idea => 
       idea.id === ideaId ? { ...idea, is_favorite: isFavorite } : idea
     ));
+  };
+
+  // Handler for reanalyze action
+  const handleReanalyze = (ideaId: string) => {
+    if (!userHasCredits) {
+      toast.error(t('ideas.reanalyze.noCredits', "Você não tem créditos suficientes"), {
+        action: {
+          label: t('ideas.reanalyze.buyCredits', "Comprar créditos"),
+          onClick: () => window.location.href = "/dashboard/creditos"
+        }
+      });
+      return;
+    }
+    
+    window.location.href = `/dashboard/ideias/editar?id=${ideaId}&reanalyze=true`;
+  };
+
+  // Link to drafts page
+  const handleViewDrafts = () => {
+    window.location.href = "/dashboard/rascunhos";
   };
 
   // Rendering conditional for loading and empty states
@@ -217,9 +251,21 @@ const IdeasPage = () => {
         </TableCell>
         <TableCell>{new Date(idea.created_at).toLocaleDateString()}</TableCell>
         <TableCell>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to={`/resultados?id=${idea.id}`}>{t('ideas.table.view')}</Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" asChild>
+              <Link to={`/resultados?id=${idea.id}`}>{t('ideas.table.view')}</Link>
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-1"
+              onClick={() => handleReanalyze(idea.id)}
+              disabled={!userHasCredits}
+            >
+              <Archive className="h-3.5 w-3.5" />
+              {t('ideas.reanalyze.button', "Reanalisar")}
+            </Button>
+          </div>
         </TableCell>
       </TableRow>
     ));
@@ -234,12 +280,18 @@ const IdeasPage = () => {
             {t('ideas.subtitle')}
           </p>
         </div>
-        <Link to="/">
-          <Button className="bg-brand-purple hover:bg-brand-purple/90">
-            <PlusCircle className="h-4 w-4 mr-2" />
-            {t('ideas.newIdea')}
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button variant="outline" onClick={handleViewDrafts} className="flex items-center gap-2">
+            <Save className="h-4 w-4" />
+            {t('ideas.viewDrafts', "Ver rascunhos")}
           </Button>
-        </Link>
+          <Link to="/">
+            <Button className="bg-brand-purple hover:bg-brand-purple/90">
+              <PlusCircle className="h-4 w-4 mr-2" />
+              {t('ideas.newIdea')}
+            </Button>
+          </Link>
+        </div>
       </div>
       
       <div className="flex items-center gap-4">
