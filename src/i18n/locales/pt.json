@@ -626,21 +626,28 @@
     "filters": {
       "all": "Todas as Ideias",
       "viable": "Viáveis",
-      "moderate": "Moderadas"
+      "moderate": "Moderadas",
+      "favorites": "Favoritas"
     },
     "search": "Buscar ideias...",
     "statuses": {
       "pending": "Pendente",
-      "analyzed": "Analisado",
+      "analyzed": "Analisada",
       "inProgress": "Em Progresso"
     },
     "errors": {
       "fetchFailed": "Erro ao carregar ideias"
     },
     "emptyState": {
-      "title": "Você ainda não tem nenhuma ideia analisada",
+      "title": "Você ainda não tem ideias analisadas",
       "button": "Criar minha primeira ideia"
-    }
+    },
+    "favorite": "Favoritar",
+    "favorited": "Favoritado",
+    "addedToFavorites": "Adicionado aos favoritos",
+    "removedFromFavorites": "Removido dos favoritos",
+    "favoriteError": "Erro ao atualizar status de favorito",
+    "noFavorites": "Você ainda não tem ideias favoritas"
   },
   
   "nav": {
@@ -778,5 +785,29 @@
     "languageUpdated": "Idioma atualizado com sucesso",
     "confirmDeleteAccount": "Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.",
     "accountDeleted": "Conta excluída com sucesso"
+  },
+  
+  "tags": {
+    "title": "Tags",
+    "add": "Adicionar tags",
+    "create": "Criar nova tag",
+    "edit": "Editar tag",
+    "delete": "Excluir tag",
+    "empty": "Nenhuma tag criada ainda",
+    "nameLabel": "Nome da tag",
+    "namePlaceholder": "Digite o nome da tag",
+    "colorLabel": "Cor da tag",
+    "success": {
+      "created": "Tag criada com sucesso",
+      "updated": "Tag atualizada com sucesso",
+      "deleted": "Tag excluída com sucesso"
+    },
+    "errors": {
+      "emptyName": "O nome da tag não pode estar vazio",
+      "duplicate": "Já existe uma tag com este nome",
+      "createFailed": "Falha ao criar tag",
+      "updateFailed": "Falha ao atualizar tag",
+      "deleteFailed": "Falha ao excluir tag"
+    }
   }
 }

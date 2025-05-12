@@ -498,7 +498,8 @@
     "filters": {
       "all": "All Ideas",
       "viable": "Viable",
-      "moderate": "Moderate"
+      "moderate": "Moderate",
+      "favorites": "Favorites"
     },
     "search": "Search ideas...",
     "statuses": {
@@ -512,7 +513,13 @@
     "emptyState": {
       "title": "You don't have any analyzed ideas yet",
       "button": "Create my first idea"
-    }
+    },
+    "favorite": "Favorite",
+    "favorited": "Favorited",
+    "addedToFavorites": "Added to favorites",
+    "removedFromFavorites": "Removed from favorites",
+    "favoriteError": "Error updating favorite status",
+    "noFavorites": "You don't have any favorite ideas yet"
   },
   
   "nav": {
@@ -728,5 +735,29 @@
     "languageUpdated": "Language updated successfully",
     "confirmDeleteAccount": "Are you sure you want to delete your account? This action cannot be undone.",
     "accountDeleted": "Account deleted successfully"
+  },
+  
+  "tags": {
+    "title": "Tags",
+    "add": "Add tags",
+    "create": "Create new tag",
+    "edit": "Edit tag",
+    "delete": "Delete tag",
+    "empty": "No tags created yet",
+    "nameLabel": "Tag name",
+    "namePlaceholder": "Enter tag name",
+    "colorLabel": "Tag color",
+    "success": {
+      "created": "Tag created successfully",
+      "updated": "Tag updated successfully",
+      "deleted": "Tag deleted successfully"
+    },
+    "errors": {
+      "emptyName": "Tag name cannot be empty",
+      "duplicate": "A tag with this name already exists",
+      "createFailed": "Failed to create tag",
+      "updateFailed": "Failed to update tag",
+      "deleteFailed": "Failed to delete tag"
+    }
   }
 }

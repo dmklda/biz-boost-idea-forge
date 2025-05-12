@@ -114,7 +114,8 @@
     "filters": {
       "all": "すべてのアイデア",
       "viable": "実現可能",
-      "moderate": "適度"
+      "moderate": "適度",
+      "favorites": "お気に入り"
     },
     "search": "アイデアを検索...",
     "statuses": {
@@ -128,7 +129,13 @@
     "emptyState": {
       "title": "まだ分析されたアイデアがありません",
       "button": "最初のアイデアを作成する"
-    }
+    },
+    "favorite": "お気に入り",
+    "favorited": "お気に入り済み",
+    "addedToFavorites": "お気に入りに追加しました",
+    "removedFromFavorites": "お気に入りから削除しました",
+    "favoriteError": "お気に入り状態の更新中にエラーが発生しました",
+    "noFavorites": "まだお気に入りのアイデアがありません"
   },
   
   "nav": {
@@ -397,5 +404,29 @@
     "languageUpdated": "言語が正常に更新されました",
     "confirmDeleteAccount": "本当にアカウントを削除しますか？この操作は元に戻せません。",
     "accountDeleted": "アカウントが正常に削除されました"
+  },
+  
+  "tags": {
+    "title": "タグ",
+    "add": "タグを追加",
+    "create": "新しいタグを作成",
+    "edit": "タグを編集",
+    "delete": "タグを削除",
+    "empty": "作成されたタグはありません",
+    "nameLabel": "タグ名",
+    "namePlaceholder": "タグ名を入力",
+    "colorLabel": "タグの色",
+    "success": {
+      "created": "タグが正常に作成されました",
+      "updated": "タグが正常に更新されました",
+      "deleted": "タグが正常に削除されました"
+    },
+    "errors": {
+      "emptyName": "タグ名を空にすることはできません",
+      "duplicate": "この名前のタグは既に存在します",
+      "createFailed": "タグの作成に失敗しました",
+      "updateFailed": "タグの更新に失敗しました",
+      "deleteFailed": "タグの削除に失敗しました"
+    }
   }
 }

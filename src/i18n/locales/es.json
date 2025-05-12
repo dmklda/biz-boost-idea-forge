@@ -114,7 +114,8 @@
     "filters": {
       "all": "Todas las Ideas",
       "viable": "Viables",
-      "moderate": "Moderadas"
+      "moderate": "Moderadas",
+      "favorites": "Favoritas"
     },
     "search": "Buscar ideas...",
     "statuses": {
@@ -128,7 +129,13 @@
     "emptyState": {
       "title": "Aún no tiene ideas analizadas",
       "button": "Crear mi primera idea"
-    }
+    },
+    "favorite": "Favorito",
+    "favorited": "Favorito",
+    "addedToFavorites": "Añadido a favoritos",
+    "removedFromFavorites": "Eliminado de favoritos",
+    "favoriteError": "Error al actualizar el estado de favorito",
+    "noFavorites": "Aún no tiene ideas favoritas"
   },
   
   "nav": {
@@ -397,5 +404,29 @@
     "languageUpdated": "Idioma actualizado exitosamente",
     "confirmDeleteAccount": "¿Está seguro de que desea eliminar su cuenta? Esta acción no se puede deshacer.",
     "accountDeleted": "Cuenta eliminada exitosamente"
+  },
+  
+  "tags": {
+    "title": "Etiquetas",
+    "add": "Añadir etiquetas",
+    "create": "Crear nueva etiqueta",
+    "edit": "Editar etiqueta",
+    "delete": "Eliminar etiqueta",
+    "empty": "No hay etiquetas creadas",
+    "nameLabel": "Nombre de etiqueta",
+    "namePlaceholder": "Ingrese nombre de etiqueta",
+    "colorLabel": "Color de etiqueta",
+    "success": {
+      "created": "Etiqueta creada exitosamente",
+      "updated": "Etiqueta actualizada exitosamente",
+      "deleted": "Etiqueta eliminada exitosamente"
+    },
+    "errors": {
+      "emptyName": "El nombre de la etiqueta no puede estar vacío",
+      "duplicate": "Ya existe una etiqueta con este nombre",
+      "createFailed": "Error al crear la etiqueta",
+      "updateFailed": "Error al actualizar la etiqueta",
+      "deleteFailed": "Error al eliminar la etiqueta"
+    }
   }
 }
