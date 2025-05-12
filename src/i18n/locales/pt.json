@@ -1,3 +1,4 @@
+
 {
   "testimonials": {
     "tagline": "Depoimentos",
@@ -310,7 +311,7 @@
         "excerpt": "As inovações e tecnologias que criam novas oportunidades para empreendedores em todo o continente.",
         "date": "30 de março de 2025",
         "category": "Tecnologia",
-        "content": "De soluções de pagamento móvel a tecnologias de energia sustentável, várias inovações-chave estão criando oportunidades sem precedentes para empreendedores africanos. Este artigo examina como essas tecnologias estão resolvendo desafios exclusivamente africanos enquanto criam modelos de negócios escaláveis com potencial de expansão global. Destacamos histórias de sucesso de várias regiões e setores."
+        "content": "De soluções de pagamento móvel a tecnologias de energia sustentável, várias inovações-chave estão criando oportunidades sem precedentes para empreendedores africanos. Este artigo examina como essas tecnologias estão resolvendo desafios únicamente africanos enquanto criam modelos de negócios escaláveis com potencial de expansão global. Destacamos histórias de sucesso de várias regiões e setores."
       },
       "post6": {
         "title": "Da Ideia ao Mercado: A Jornada da Plataforma de Startup da DMK",
@@ -595,7 +596,8 @@
       "description": "Adquira mais créditos para análises",
       "credits": "créditos",
       "processing": "Processando...",
-      "buy": "Comprar"
+      "buy": "Comprar",
+      "error": "Erro ao adicionar créditos"
     },
     "transactions": {
       "title": "Histórico de Transações",
@@ -608,6 +610,7 @@
       "noTransactions": "Nenhuma transação encontrada.",
       "purchase": "Compra",
       "usage": "Uso",
+      "loadingError": "Erro ao carregar histórico de transações",
       "addedSuccess": "Créditos adicionados com sucesso!"
     }
   },
