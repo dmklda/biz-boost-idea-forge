@@ -246,7 +246,7 @@ const IdeasPage = () => {
                 variant="ghost" 
                 size="icon"
               />
-              <Link to={`/resultados?id=${idea.id}`} className="hover:underline">
+              <Link to={`/dashboard/resultados?id=${idea.id}`} className="hover:underline">
                 {idea.title}
               </Link>
             </div>
@@ -291,7 +291,7 @@ const IdeasPage = () => {
         <TableCell>
           <div className="flex gap-2">
             <Button variant="ghost" size="sm" asChild>
-              <Link to={`/resultados?id=${idea.id}`}>{t('ideas.table.view')}</Link>
+              <Link to={`/dashboard/resultados?id=${idea.id}`}>{t('ideas.table.view')}</Link>
             </Button>
             <Button 
               variant="outline" 

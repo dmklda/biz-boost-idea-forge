@@ -16,7 +16,8 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
     formData, 
     editingIdeaId, 
     setIsSubmitting, 
-    setIsAnalyzing 
+    setIsAnalyzing,
+    resetForm 
   } = useIdeaFormContext();
 
   // Check if we're in the dashboard
@@ -73,6 +74,9 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
         
         // Success! Navigate to results page
         toast.success(t('ideaForm.analysisSuccess', "Análise concluída com sucesso!"));
+        
+        // Reset the form to close it
+        resetForm();
         
         // Sempre navegar para a página de resultados no dashboard
         navigate(`/dashboard/resultados?id=${analysisData.ideaId}`);

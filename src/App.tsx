@@ -65,9 +65,13 @@ const LanguageInitializer = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const savedLanguage = localStorage.getItem("i18nextLng");
     if (savedLanguage && savedLanguage.length > 1) {
-      i18n.changeLanguage(savedLanguage).catch(error => {
-        console.error("Error changing language:", error);
-      });
+      // Use this flag to avoid unnecessarily changing language if it's already set
+      const currentLanguage = i18n.language;
+      if (currentLanguage !== savedLanguage) {
+        i18n.changeLanguage(savedLanguage).catch(error => {
+          console.error("Error changing language:", error);
+        });
+      }
     }
   }, [i18n]);
   
