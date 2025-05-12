@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState } from "react";
 import { FormData, FormStep } from "@/types/form";
 import { useIdeaForm } from "@/hooks/useIdeaForm";
+import { useAuth } from "@/hooks/useAuth";
 
 type IdeaFormContextType = {
   currentStep: FormStep;
@@ -38,10 +39,10 @@ export const IdeaFormProvider: React.FC<{
   } = useIdeaForm(ideaId);
   
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const { authState } = useAuth();
 
   // Wrap saveAsDraft to include user ID from auth
   const saveAsDraft = async () => {
-    const { authState } = await import('@/hooks/useAuth');
     if (!authState.isAuthenticated || !authState.user) {
       return false;
     }
