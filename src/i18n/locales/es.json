@@ -109,7 +109,8 @@
       "score": "Puntuación",
       "createdAt": "Creado el",
       "actions": "Acciones",
-      "view": "Ver análisis"
+      "view": "Ver análisis",
+      "reanalyze": "Reanalizar"
     },
     "filters": {
       "all": "Todas las Ideas",
@@ -142,6 +143,7 @@
     "backToHome": "Volver a la página principal",
     "dashboard": "Panel",
     "ideas": "Ideas",
+    "drafts": "Borradores",
     "credits": "Créditos",
     "profile": "Perfil",
     "resources": "Recursos",
@@ -191,7 +193,69 @@
       "placeholder": "Seleccione una ubicación..."
     },
     "submit": "Enviar para análisis",
-    "submitting": "Analizando..."
+    "submitting": "Analizando...",
+    "saveAsDraft": "Guardar como borrador",
+    "savingDraft": "Guardando...",
+    "draftSaved": "Borrador guardado con éxito",
+    "draftSaveError": "Error al guardar borrador",
+    "loginToSaveDraft": "Inicie sesión para guardar un borrador",
+    "errors": {
+      "loadDraft": "Error al cargar el borrador"
+    }
+  },
+
+  "drafts": {
+    "title": "Borradores",
+    "subtitle": "Ideas guardadas como borradores para continuar después",
+    "newDraft": "Nueva idea",
+    "search": "Buscar borradores...",
+    "continue": "Continuar",
+    "untitled": "Sin título",
+    "noDescription": "Sin descripción",
+    "lastUpdated": "Actualizado el",
+    "empty": {
+      "title": "No hay borradores",
+      "description": "Aún no ha guardado ninguna idea como borrador",
+      "button": "Crear una nueva idea"
+    },
+    "edit": {
+      "title": "Editar borrador",
+      "subtitle": "Continúe completando su idea desde el borrador guardado",
+      "description": "Continúe completando su idea desde el borrador guardado"
+    },
+    "delete": {
+      "title": "Eliminar borrador",
+      "description": "¿Está seguro de que desea eliminar este borrador? Esta acción no se puede deshacer."
+    },
+    "deleteSuccess": "Borrador eliminado con éxito",
+    "errors": {
+      "fetchFailed": "Error al cargar los borradores",
+      "deleteFailed": "Error al eliminar el borrador",
+      "notFound": "Borrador no encontrado",
+      "accessDenied": "Acceso denegado"
+    }
+  },
+
+  "reanalyze": {
+    "title": "Reanalizar Idea",
+    "subtitle": "Mejore su idea y obtenga un nuevo análisis de viabilidad",
+    "ideaDetails": "Detalles de la Idea",
+    "ideaDetailsDescription": "Revise los detalles de su idea antes de iniciar un nuevo análisis",
+    "startButton": "Iniciar Reanálisis",
+    "insufficientCredits": {
+      "title": "Créditos insuficientes",
+      "description": "No tiene créditos suficientes para realizar un nuevo análisis. Adquiera más créditos para continuar.",
+      "action": "Adquirir créditos"
+    },
+    "note": {
+      "title": "Nota",
+      "description": "El reanálisis utilizará 1 crédito de su cuenta y le permitirá editar los detalles de la idea antes de enviarla."
+    },
+    "errors": {
+      "ideaNotFound": "Idea no encontrada",
+      "loadFailed": "Error al cargar los datos de la idea",
+      "noCredits": "No tiene créditos suficientes"
+    }
   },
 
   "notifications": {

@@ -16,8 +16,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from "@/components/ui/sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "./ui/button";
+import { Save } from "lucide-react";
 
-export const IdeaForm = () => {
+export const IdeaForm = ({ draftId }: { draftId?: string }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,15 +28,28 @@ export const IdeaForm = () => {
     currentStep,
     formData,
     isSubmitting,
+    isSavingDraft,
     setIsSubmitting,
     updateFormData,
     handleNextStep,
     handlePrevStep,
-    resetForm
+    resetForm,
+    saveAsDraft,
+    loadDraft
   } = useIdeaForm();
   
   // Check if we're in the dashboard
   const isDashboard = location.pathname.includes('/dashboard');
+
+  // Efeito para carregar rascunho se um ID for fornecido
+  React.useEffect(() => {
+    if (draftId && authState.isAuthenticated) {
+      loadDraft(draftId).catch(error => {
+        console.error("Failed to load draft:", error);
+        toast.error(t('ideaForm.errors.loadDraft') || "Erro ao carregar rascunho");
+      });
+    }
+  }, [draftId, authState.isAuthenticated]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,36 +58,55 @@ export const IdeaForm = () => {
     try {
       // Se o usuário está autenticado, salvar no Supabase
       if (authState.isAuthenticated && authState.user) {
-        // Inserir a ideia no banco de dados
-        const { data: idea, error: ideaError } = await supabase
-          .from('ideas')
-          .insert({
-            user_id: authState.user.id,
-            title: formData.idea,
-            description: formData.idea,
-            audience: formData.audience,
-            problem: formData.problem,
-            has_competitors: formData.hasCompetitors,
-            monetization: formData.monetization,
-            budget: formData.budget,
-            location: formData.location
-          })
-          .select('id')
-          .single();
+        // Dados para inserção/atualização
+        const ideaData = {
+          user_id: authState.user.id,
+          title: formData.idea,
+          description: formData.idea,
+          audience: formData.audience,
+          problem: formData.problem,
+          has_competitors: formData.hasCompetitors,
+          monetization: formData.monetization,
+          budget: formData.budget,
+          location: formData.location,
+          is_draft: false,
+          status: 'complete'
+        };
 
-        if (ideaError) {
-          console.error("Error saving idea:", ideaError);
+        // Se estamos editando um rascunho, atualizar
+        let response;
+        if (draftId) {
+          response = await supabase
+            .from('ideas')
+            .update(ideaData)
+            .eq('id', draftId)
+            .select('id')
+            .single();
+        } else {
+          // Inserir a ideia no banco de dados
+          response = await supabase
+            .from('ideas')
+            .insert(ideaData)
+            .select('id')
+            .single();
+        }
+
+        if (response.error) {
+          console.error("Error saving idea:", response.error);
           throw new Error("Erro ao salvar ideia");
         }
+
+        // Limpar dados do rascunho do localStorage após envio completo
+        resetForm();
 
         // Redirecionar para a página de resultados
         toast.success(t('ideaForm.success') || "Ideia registrada com sucesso!");
         
         // If we're in the dashboard, navigate within the dashboard
         if (isDashboard) {
-          navigate(`/dashboard/ideias?id=${idea.id}`);
+          navigate(`/dashboard/ideias?id=${response.data.id}`);
         } else {
-          navigate(`/resultados?id=${idea.id}`);
+          navigate(`/resultados?id=${response.data.id}`);
         }
       } else {
         // Se não está autenticado, redirecionar para login
@@ -88,44 +122,85 @@ export const IdeaForm = () => {
     }
   };
   
+  const handleSaveAsDraft = async () => {
+    try {
+      if (authState.isAuthenticated && authState.user) {
+        await saveAsDraft(authState.user.id);
+        toast.success(t('ideaForm.draftSaved') || "Rascunho salvo com sucesso!");
+        
+        // Se estiver no dashboard, redirecionar para a lista de rascunhos
+        if (isDashboard) {
+          navigate('/dashboard/rascunhos');
+        }
+      } else {
+        // Se não estiver autenticado, redirecionar para login
+        toast.info(t('ideaForm.loginToSaveDraft') || "Faça login para salvar rascunho");
+        // Salvar dados no localStorage e redirecionar
+        navigate('/login');
+      }
+    } catch (error) {
+      console.error("Error saving draft:", error);
+      toast.error(t('ideaForm.draftSaveError') || "Erro ao salvar rascunho");
+    }
+  };
+  
   const wrapInCard = isDashboard === false;
 
   const formContent = (
     <form onSubmit={handleSubmit}>
-      {currentStep === 1 && (
-        <IdeaStep 
-          formData={formData}
-          updateFormData={updateFormData}
-          onNext={handleNextStep}
-        />
-      )}
+      <div className="mb-8">
+        {currentStep === 1 && (
+          <IdeaStep 
+            formData={formData}
+            updateFormData={updateFormData}
+            onNext={handleNextStep}
+          />
+        )}
 
-      {currentStep === 2 && (
-        <AudienceStep 
-          formData={formData}
-          updateFormData={updateFormData}
-          onNext={handleNextStep}
-          onPrev={handlePrevStep}
-        />
-      )}
+        {currentStep === 2 && (
+          <AudienceStep 
+            formData={formData}
+            updateFormData={updateFormData}
+            onNext={handleNextStep}
+            onPrev={handlePrevStep}
+          />
+        )}
 
-      {currentStep === 3 && (
-        <CompetitorsStep 
-          formData={formData}
-          updateFormData={updateFormData}
-          onNext={handleNextStep}
-          onPrev={handlePrevStep}
-        />
-      )}
+        {currentStep === 3 && (
+          <CompetitorsStep 
+            formData={formData}
+            updateFormData={updateFormData}
+            onNext={handleNextStep}
+            onPrev={handlePrevStep}
+          />
+        )}
 
-      {currentStep === 4 && (
-        <BudgetLocationStep 
-          formData={formData}
-          updateFormData={updateFormData}
-          onPrev={handlePrevStep}
-          isSubmitting={isSubmitting}
-        />
-      )}
+        {currentStep === 4 && (
+          <BudgetLocationStep 
+            formData={formData}
+            updateFormData={updateFormData}
+            onPrev={handlePrevStep}
+            isSubmitting={isSubmitting}
+          />
+        )}
+      </div>
+      
+      {/* Botão "Salvar como rascunho" disponível em todas as etapas */}
+      <div className="flex justify-center mb-4">
+        <Button 
+          type="button"
+          variant="outline"
+          className="flex items-center gap-2"
+          onClick={handleSaveAsDraft}
+          disabled={isSavingDraft || isSubmitting || !formData.idea.trim()}
+        >
+          <Save className="h-4 w-4" />
+          {isSavingDraft 
+            ? (t('ideaForm.savingDraft') || "Salvando...") 
+            : (t('ideaForm.saveAsDraft') || "Salvar como rascunho")
+          }
+        </Button>
+      </div>
     </form>
   );
 

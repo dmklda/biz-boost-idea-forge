@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -217,9 +216,20 @@ const IdeasPage = () => {
         </TableCell>
         <TableCell>{new Date(idea.created_at).toLocaleDateString()}</TableCell>
         <TableCell>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to={`/resultados?id=${idea.id}`}>{t('ideas.table.view')}</Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" asChild>
+              <Link to={`/resultados?id=${idea.id}`}>{t('ideas.table.view')}</Link>
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              asChild
+            >
+              <Link to={`/dashboard/idea/${idea.id}/reanalise`}>
+                {t('ideas.table.reanalyze') || "Reanalisar"}
+              </Link>
+            </Button>
+          </div>
         </TableCell>
       </TableRow>
     ));
