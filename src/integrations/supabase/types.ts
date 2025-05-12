@@ -43,12 +43,14 @@ export type Database = {
       }
       idea_analyses: {
         Row: {
+          ai_insights: Json | null
           competitor_analysis: Json | null
           created_at: string
           differentiation: string | null
           financial_analysis: Json | null
           id: string
           idea_id: string
+          last_insight_generation: string | null
           market_analysis: Json | null
           market_size: string | null
           recommendations: Json | null
@@ -60,12 +62,14 @@ export type Database = {
           weaknesses: string[] | null
         }
         Insert: {
+          ai_insights?: Json | null
           competitor_analysis?: Json | null
           created_at?: string
           differentiation?: string | null
           financial_analysis?: Json | null
           id?: string
           idea_id: string
+          last_insight_generation?: string | null
           market_analysis?: Json | null
           market_size?: string | null
           recommendations?: Json | null
@@ -77,12 +81,14 @@ export type Database = {
           weaknesses?: string[] | null
         }
         Update: {
+          ai_insights?: Json | null
           competitor_analysis?: Json | null
           created_at?: string
           differentiation?: string | null
           financial_analysis?: Json | null
           id?: string
           idea_id?: string
+          last_insight_generation?: string | null
           market_analysis?: Json | null
           market_size?: string | null
           recommendations?: Json | null
@@ -109,6 +115,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      idea_comparisons: {
+        Row: {
+          comparison_insights: Json | null
+          created_at: string
+          id: string
+          idea_ids: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comparison_insights?: Json | null
+          created_at?: string
+          id?: string
+          idea_ids: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comparison_insights?: Json | null
+          created_at?: string
+          id?: string
+          idea_ids?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       idea_favorites: {
         Row: {

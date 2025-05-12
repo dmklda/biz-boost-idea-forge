@@ -218,7 +218,18 @@
       "investmentRequired": "Inversión necesaria",
       "scalabilityPotential": "Potencial de escalabilidad",
       "innovationLevel": "Nivel de innovación",
-      "riskLevel": "Nivel de riesgo"
+      "riskLevel": "Nivel de riesgo",
+      "aiInsights": "Insights IA",
+      "generateAiInsights": "Generar Insights con IA",
+      "generatingInsights": "Generando Insights",
+      "pleaseWait": "Por favor espera mientras analizamos tus ideas",
+      "noAiInsights": "Sin insights de IA disponibles",
+      "generateAiInsightsDescription": "Genera insights personalizados basados en IA para comparar tus ideas en profundidad",
+      "insightsGenerated": "Insights de IA generados con éxito",
+      "insightsError": "Error al generar insights de IA",
+      "noCreditsForInsights": "Necesitas créditos para generar insights de IA",
+      "overallRecommendation": "Recomendación general",
+      "recommendedFocus": "Enfoque recomendado"
     }
   },
   "credits": {

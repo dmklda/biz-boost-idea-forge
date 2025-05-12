@@ -17,13 +17,14 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { X, ChevronLeft, ChevronRight, ArrowLeftRight, BarChart3, Shield, Target, TrendingUp, Users, AlertTriangle, Award, Zap, DollarSign, TrendingDown } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, ArrowLeftRight, BarChart3, Shield, Target, TrendingUp, Users, AlertTriangle, Award, Zap, DollarSign, TrendingDown, Loader2, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TagBadge } from "@/components/ideas/TagBadge";
 import { type TagType } from "@/components/ideas/TagsSelector";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Idea {
   id: string;
@@ -41,6 +42,8 @@ interface Idea {
     strengths?: string[];
     weaknesses?: string[];
     differentiation?: string;
+    ai_insights?: any;
+    last_insight_generation?: string;
   };
 }
 
@@ -53,10 +56,16 @@ interface CompareIdeasModalProps {
 export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModalProps) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
+  const { authState } = useAuth();
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<string>('viability');
   const [visibleIdeas, setVisibleIdeas] = useState<number[]>([0, 1]);
+  
+  // Estados para insights de IA
+  const [aiInsights, setAiInsights] = useState<any>(null);
+  const [isGeneratingInsights, setIsGeneratingInsights] = useState(false);
+  const [insightError, setInsightError] = useState<string | null>(null);
   
   // Fetch detailed idea data
   useEffect(() => {
@@ -81,7 +90,7 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
           // Fetch idea analyses separately
           const { data: analysesData, error: analysesError } = await supabase
             .from('idea_analyses')
-            .select('score, status, market_size, strengths, weaknesses, differentiation')
+            .select('score, status, market_size, strengths, weaknesses, differentiation, ai_insights, last_insight_generation')
             .eq('idea_id', id)
             .maybeSingle();
             
@@ -118,12 +127,20 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
               strengths: analysesData.strengths,
               weaknesses: analysesData.weaknesses,
               differentiation: analysesData.differentiation,
+              ai_insights: analysesData.ai_insights,
+              last_insight_generation: analysesData.last_insight_generation
             } : undefined
           };
         });
         
         const ideasData = await Promise.all(promises);
         setIdeas(ideasData);
+        
+        // Check if there are saved AI insights
+        const hasMatchingInsights = await checkForExistingComparison(ideasData.map(idea => idea.id));
+        if (hasMatchingInsights) {
+          setAiInsights(hasMatchingInsights);
+        }
         
         // Set visible ideas based on screen size and available ideas
         if (isMobile) {
@@ -143,6 +160,84 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
       fetchIdeasData();
     }
   }, [isOpen, ideaIds, isMobile, t]);
+  
+  // Verificar se já existe uma comparação salva para as mesmas ideias
+  const checkForExistingComparison = async (ideaIds: string[]) => {
+    try {
+      const { data, error } = await supabase
+        .from('idea_comparisons')
+        .select('comparison_insights')
+        .contains('idea_ids', ideaIds)
+        .order('created_at', { ascending: false })
+        .limit(1);
+        
+      if (error) throw error;
+      
+      if (data && data.length > 0 && data[0].comparison_insights) {
+        return data[0].comparison_insights;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error("Error checking for existing comparison:", error);
+      return null;
+    }
+  };
+
+  // Gerar novos insights de IA
+  const generateAiInsights = async () => {
+    if (!authState.isAuthenticated || !authState.user || isGeneratingInsights) return;
+    
+    try {
+      setIsGeneratingInsights(true);
+      setInsightError(null);
+      
+      // Preparar dados das ideias para enviar para a Edge Function
+      const ideasData = ideas.map(idea => ({
+        id: idea.id,
+        title: idea.title,
+        description: idea.description,
+        audience: idea.audience,
+        problem: idea.problem,
+        monetization: idea.monetization,
+        score: idea.score,
+        status: idea.status,
+        strengths: idea.analysis?.strengths,
+        weaknesses: idea.analysis?.weaknesses,
+        market_size: idea.analysis?.market_size,
+        differentiation: idea.analysis?.differentiation
+      }));
+      
+      // Obter token de autorização
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Sessão expirada");
+      
+      // Chamar a Edge Function
+      const { data, error } = await supabase.functions.invoke('compare-ideas', {
+        body: { ideas: ideasData },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          "Content-Type": "application/json"
+        }
+      });
+      
+      if (error) throw error;
+      
+      if (data && data.insights) {
+        setAiInsights(data.insights);
+        toast.success(t('ideas.compare.insightsGenerated'));
+        setActiveTab('aiInsights');
+      } else {
+        throw new Error("Resposta inválida da API");
+      }
+    } catch (error) {
+      console.error("Error generating AI insights:", error);
+      setInsightError(t('ideas.compare.insightsError'));
+      toast.error(t('ideas.compare.insightsError'));
+    } finally {
+      setIsGeneratingInsights(false);
+    }
+  };
   
   // Navigate between ideas in mobile view
   const shiftVisibleIdeas = (direction: 'next' | 'prev') => {
@@ -268,6 +363,49 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
     return insights;
   };
 
+  // Renderizar a card de rating (nível baixo, médio, alto)
+  const renderRatingCard = (title: string, ratings: any, icon: React.ReactNode) => {
+    return (
+      <Card className="overflow-hidden">
+        <CardHeader className="bg-muted/50 pb-2 pt-4">
+          <div className="flex items-center gap-2">
+            {icon}
+            <CardTitle className="text-md">{title}</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-4">
+          <div className="grid grid-cols-1 gap-4">
+            {ideas.map((idea, idx) => {
+              const rating = ratings?.[idx] || 'médio';
+              let ratingClass = "bg-amber-100 text-amber-800 border-amber-200";
+              let ratingIcon = <AlertTriangle className="h-4 w-4" />;
+              
+              if (rating.toLowerCase() === 'alto' || rating.toLowerCase() === 'high') {
+                ratingClass = "bg-green-100 text-green-800 border-green-200";
+                ratingIcon = <TrendingUp className="h-4 w-4" />;
+              } else if (rating.toLowerCase() === 'baixo' || rating.toLowerCase() === 'low') {
+                ratingClass = "bg-red-100 text-red-800 border-red-200";
+                ratingIcon = <TrendingDown className="h-4 w-4" />;
+              }
+              
+              return (
+                <div key={idea.id} className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-1/4 font-medium text-sm truncate">
+                    {idea.title}:
+                  </div>
+                  <div className={cn("px-2 py-1 rounded text-xs flex items-center gap-1.5 border", ratingClass)}>
+                    {ratingIcon}
+                    {rating}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-[95vw] w-full h-[90vh] max-h-[90vh] p-0 flex flex-col">
@@ -284,7 +422,7 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
           </div>
           
           <Tabs defaultValue="viability" value={activeTab} onValueChange={setActiveTab} className="w-full mt-4">
-            <TabsList className="grid grid-cols-3 md:grid-cols-4">
+            <TabsList className="grid grid-cols-3 md:grid-cols-5">
               <TabsTrigger value="viability" className="flex items-center gap-1">
                 <Target className="h-4 w-4 hidden sm:block" />
                 {t('ideas.compare.viability')}
@@ -300,6 +438,10 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
               <TabsTrigger value="insights" className="flex items-center gap-1">
                 <TrendingUp className="h-4 w-4 hidden sm:block" />
                 {t('ideas.compare.insights')}
+              </TabsTrigger>
+              <TabsTrigger value="aiInsights" className="flex items-center gap-1">
+                <Sparkles className="h-4 w-4 hidden sm:block" />
+                {t('ideas.compare.aiInsights')}
               </TabsTrigger>
             </TabsList>
             
@@ -629,6 +771,110 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
                         );
                       })}
                     </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="aiInsights" className="mt-0">
+                  <div className="p-4">
+                    {isGeneratingInsights ? (
+                      <div className="flex flex-col items-center justify-center p-12 text-center">
+                        <Loader2 className="h-8 w-8 text-primary animate-spin mb-4" />
+                        <h3 className="text-lg font-medium">{t('ideas.compare.generatingInsights')}</h3>
+                        <p className="text-muted-foreground mt-2">
+                          {t('ideas.compare.pleaseWait')}
+                        </p>
+                      </div>
+                    ) : aiInsights ? (
+                      <div className="space-y-6">
+                        {/* Exibir a recomendação geral */}
+                        <Card className="overflow-hidden border-2 border-primary/20 bg-primary/5">
+                          <CardHeader className="bg-primary/10 pb-2 pt-4">
+                            <div className="flex items-center gap-2">
+                              <Sparkles className="h-5 w-5 text-primary" />
+                              <CardTitle className="text-lg text-primary">
+                                {t('ideas.compare.overallRecommendation')}
+                              </CardTitle>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="pt-4 pb-5">
+                            <p className="text-sm">
+                              {aiInsights.overallRecommendation}
+                            </p>
+                          </CardContent>
+                        </Card>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Vantagem competitiva */}
+                          <Card className="overflow-hidden">
+                            <CardHeader className="bg-muted/50 pb-2 pt-4">
+                              <div className="flex items-center gap-2">
+                                <Target className="h-4 w-4 text-blue-600" />
+                                <CardTitle className="text-md">{t('ideas.compare.competitiveAdvantage')}</CardTitle>
+                              </div>
+                            </CardHeader>
+                            <CardContent className="pt-4">
+                              <p className="text-sm">{aiInsights.competitiveAdvantage}</p>
+                            </CardContent>
+                          </Card>
+                          
+                          {/* Ratings de diferentes aspectos */}
+                          {renderRatingCard(t('ideas.compare.marketPotential'), aiInsights.marketPotential, <BarChart3 className="h-4 w-4 text-blue-600" />)}
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {renderRatingCard(t('ideas.compare.executionDifficulty'), aiInsights.executionDifficulty, <Shield className="h-4 w-4 text-blue-600" />)}
+                          {renderRatingCard(t('ideas.compare.investmentRequired'), aiInsights.investmentRequired, <DollarSign className="h-4 w-4 text-blue-600" />)}
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {renderRatingCard(t('ideas.compare.scalabilityPotential'), aiInsights.scalabilityPotential, <TrendingUp className="h-4 w-4 text-blue-600" />)}
+                          {renderRatingCard(t('ideas.compare.innovationLevel'), aiInsights.innovationLevel, <Zap className="h-4 w-4 text-blue-600" />)}
+                        </div>
+                        
+                        {/* Recomendações específicas */}
+                        <Card className="overflow-hidden">
+                          <CardHeader className="bg-muted/50 pb-2 pt-4">
+                            <div className="flex items-center gap-2">
+                              <Sparkles className="h-5 w-5 text-indigo-600" />
+                              <CardTitle className="text-md">{t('ideas.compare.recommendedFocus')}</CardTitle>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="pt-4">
+                            <p className="text-sm whitespace-pre-wrap">{aiInsights.recommendedFocus}</p>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-10 text-center">
+                        <div className="rounded-full bg-muted p-3 mb-4">
+                          <Sparkles className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                        <h3 className="text-lg font-medium">{t('ideas.compare.noAiInsights')}</h3>
+                        <p className="text-muted-foreground max-w-md mt-2 mb-6">
+                          {t('ideas.compare.generateAiInsightsDescription')}
+                        </p>
+                        <Button 
+                          onClick={generateAiInsights}
+                          className="gap-2"
+                          disabled={!authState.isAuthenticated || authState.user?.credits === 0}
+                        >
+                          <Sparkles className="h-4 w-4" />
+                          {t('ideas.compare.generateAiInsights')}
+                        </Button>
+                        
+                        {authState.user?.credits === 0 && (
+                          <p className="text-sm text-amber-600 mt-3">
+                            {t('ideas.compare.noCreditsForInsights')}
+                          </p>
+                        )}
+                        
+                        {insightError && (
+                          <p className="text-sm text-red-600 mt-3">
+                            {insightError}
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
               </>

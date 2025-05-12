@@ -218,7 +218,18 @@
       "investmentRequired": "必要な投資",
       "scalabilityPotential": "スケーラビリティの可能性",
       "innovationLevel": "革新性のレベル",
-      "riskLevel": "リスクレベル"
+      "riskLevel": "リスクレベル",
+      "aiInsights": "AIインサイト",
+      "generateAiInsights": "AIインサイトを生成",
+      "generatingInsights": "インサイト生成中",
+      "pleaseWait": "アイデアを分析している間お待ちください",
+      "noAiInsights": "AIインサイトが利用できません",
+      "generateAiInsightsDescription": "AIを活用した詳細な比較インサイトを生成します",
+      "insightsGenerated": "AIインサイトの生成に成功しました",
+      "insightsError": "AIインサイトの生成に失敗しました",
+      "noCreditsForInsights": "AIインサイトを生成するにはクレジットが必要です",
+      "overallRecommendation": "総合的な推奨事項",
+      "recommendedFocus": "推奨される焦点"
     }
   },
   "credits": {
