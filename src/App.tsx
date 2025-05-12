@@ -1,93 +1,160 @@
 
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import i18n from './i18n/config';
-import { AuthProvider, useAuth } from './hooks/useAuth';
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import Index from "./pages/Index";
+import NotFound from "./pages/NotFound";
+import ResultsPage from "./pages/ResultsPage";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import '@/i18n/config';
+import { AuthProvider } from "./hooks/useAuth";
 
-// Import page components
-import LandingPage from './pages/Index';
-import LoginPage from './pages/auth/LoginPage';
-import RegisterPage from './pages/auth/RegisterPage';
-import DashboardHome from './pages/dashboard/DashboardHome';
-import IdeasPage from './pages/dashboard/IdeasPage';
-import IdeasHistoryPage from './pages/dashboard/IdeasHistoryPage';
-import UserSettingsPage from './pages/dashboard/UserSettingsPage';
-import CreditsPage from './pages/dashboard/CreditsPage';
-import ResourceCenterPage from './pages/dashboard/ResourceCenterPage';
-import AdvancedMetricsPage from './pages/dashboard/AdvancedMetricsPage';
-import PricingPage from './pages/plans/PlansPage';
-import IdeaDetailPage from './pages/dashboard/IdeaDetailPage';
-import DashboardLayout from './pages/dashboard/DashboardLayout';
-import PublicLayout from './layouts/PublicLayout';
-import NotFound from './pages/NotFound';
+// Auth pages
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
+import PlansPage from "./pages/plans/PlansPage";
 
-// Adicionar essas importações
-import DraftsPage from "./pages/dashboard/DraftsPage";
-import EditDraftPage from "./pages/dashboard/EditDraftPage";
-import ReanalyzeIdeaPage from "./pages/dashboard/ReanalyzeIdeaPage";
+// Dashboard pages
+import DashboardLayout from "./pages/dashboard/DashboardLayout";
+import DashboardHome from "./pages/dashboard/DashboardHome";
+import IdeasPage from "./pages/dashboard/IdeasPage";
+import CreditsPage from "./pages/dashboard/CreditsPage";
+import IdeasHistoryPage from "./pages/dashboard/IdeasHistoryPage";
+import IdeaDetailPage from "./pages/dashboard/IdeaDetailPage";
+import UserSettingsPage from "./pages/dashboard/UserSettingsPage";
+import ResourceCenterPage from "./pages/dashboard/ResourceCenterPage";
+import AdvancedMetricsPage from "./pages/dashboard/AdvancedMetricsPage";
 
-const App: React.FC = () => {
+// Platform pages
+import ApiPage from "./pages/platform/ApiPage";
+
+// Resources pages
+import BlogPage from "./pages/resources/BlogPage";
+import BlogPostPage from "./pages/resources/BlogPostPage";
+import GuidesPage from "./pages/resources/GuidesPage";
+import GuideDetailPage from "./pages/resources/GuideDetailPage";
+import SuccessCasesPage from "./pages/resources/SuccessCasesPage";
+import SuccessCaseDetailPage from "./pages/resources/SuccessCaseDetailPage";
+import WebinarsPage from "./pages/resources/WebinarsPage";
+
+// Company pages
+import AboutUsPage from "./pages/company/AboutUsPage";
+import ContactPage from "./pages/company/ContactPage";
+import PrivacyPolicyPage from "./pages/company/PrivacyPolicyPage";
+import TermsOfUsePage from "./pages/company/TermsOfUsePage";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 1
+    }
+  }
+});
+
+const LanguageInitializer = ({ children }: { children: React.ReactNode }) => {
   const { i18n } = useTranslation();
-  const { authState } = useAuth();
-
+  
   useEffect(() => {
-    const storedLanguage = localStorage.getItem('i18nextLng');
-    if (storedLanguage && i18n.language !== storedLanguage) {
-      i18n.changeLanguage(storedLanguage);
+    const savedLanguage = localStorage.getItem("i18nextLng");
+    if (savedLanguage && savedLanguage.length > 1) {
+      i18n.changeLanguage(savedLanguage).catch(error => {
+        console.error("Error changing language:", error);
+      });
     }
   }, [i18n]);
+  
+  return <>{children}</>;
+};
 
-  // Authentication wrapper
-  const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    return authState.isAuthenticated ? (
-      <>{children}</>
-    ) : (
-      <Navigate to="/login" replace />
-    );
-  };
+// Obtendo o tema armazenado para inicialização
+const getStoredTheme = (): "dark" | "light" | "system" => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem("theme") as "dark" | "light" | "system" || "system";
+  }
+  return "system";
+};
+
+const App = () => {
+  // Aplicando o tema no corpo do documento para evitar flash ao carregar
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const theme = getStoredTheme();
+      const root = document.documentElement;
+      
+      // Remover classes para evitar conflitos
+      root.classList.remove('dark', 'light');
+      
+      if (theme === 'system') {
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        root.classList.add(systemTheme);
+      } else {
+        root.classList.add(theme);
+      }
+    }
+  }, []);
 
   return (
-    <Router>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<PublicLayout />}>
-            <Route index element={<LandingPage />} />
-            <Route path="login" element={<LoginPage />} />
-            <Route path="register" element={<RegisterPage />} />
-            <Route path="planos" element={<PricingPage />} />
-          </Route>
-
-          {/* Dashboard Routes - Protected */}
-          <Route
-            path="/dashboard"
-            element={
-              <RequireAuth>
-                <DashboardLayout />
-              </RequireAuth>
-            }
-          >
-            <Route index element={<DashboardHome />} />
-            <Route path="ideias" element={<IdeasPage />} />
-            <Route path="historico" element={<IdeasHistoryPage />} />
-            <Route path="configuracoes" element={<UserSettingsPage />} />
-            <Route path="creditos" element={<CreditsPage />} />
-            <Route path="recursos" element={<ResourceCenterPage />} />
-            <Route path="metricas" element={<AdvancedMetricsPage />} />
-            <Route path="ideias/:id" element={<IdeaDetailPage />} />
-            
-            {/* Novas rotas */}
-            <Route path="rascunhos" element={<DraftsPage />} />
-            <Route path="rascunho/:draftId" element={<EditDraftPage />} />
-            <Route path="idea/:ideaId/reanalise" element={<ReanalyzeIdeaPage />} />
-          </Route>
-          
-          {/* Catch all routes - 404 */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Toaster />
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme={getStoredTheme()} storageKey="theme">
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner theme="system" />
+            <LanguageInitializer>
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/resultados" element={<ResultsPage />} />
+                  
+                  {/* Auth Routes */}
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/registro" element={<RegisterPage />} />
+                  <Route path="/planos" element={<PlansPage />} />
+                  
+                  {/* Dashboard Routes */}
+                  <Route path="/dashboard" element={<DashboardLayout />}>
+                    <Route index element={<DashboardHome />} />
+                    <Route path="ideias" element={<IdeasPage />} />
+                    <Route path="ideias/historico" element={<IdeasHistoryPage />} />
+                    <Route path="ideias/:id" element={<IdeaDetailPage />} />
+                    <Route path="creditos" element={<CreditsPage />} />
+                    <Route path="configuracoes" element={<UserSettingsPage />} />
+                    <Route path="recursos" element={<ResourceCenterPage />} />
+                    <Route path="metricas" element={<AdvancedMetricsPage />} />
+                  </Route>
+                  
+                  {/* Platform Pages */}
+                  <Route path="/plataforma/api" element={<ApiPage />} />
+                  
+                  {/* Resources Pages */}
+                  <Route path="/recursos/blog" element={<BlogPage />} />
+                  <Route path="/recursos/blog/:id" element={<BlogPostPage />} />
+                  <Route path="/recursos/guias" element={<GuidesPage />} />
+                  <Route path="/recursos/guias/:id" element={<GuideDetailPage />} />
+                  <Route path="/recursos/casos-de-sucesso" element={<SuccessCasesPage />} />
+                  <Route path="/recursos/casos-de-sucesso/:id" element={<SuccessCaseDetailPage />} />
+                  <Route path="/recursos/webinars" element={<WebinarsPage />} />
+                  
+                  {/* Company Pages */}
+                  <Route path="/empresa/sobre-nos" element={<AboutUsPage />} />
+                  <Route path="/empresa/contato" element={<ContactPage />} />
+                  <Route path="/empresa/politica-de-privacidade" element={<PrivacyPolicyPage />} />
+                  <Route path="/empresa/termos-de-uso" element={<TermsOfUsePage />} />
+                  
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </LanguageInitializer>
+          </TooltipProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };
 

@@ -174,11 +174,9 @@ export type Database = {
           description: string
           has_competitors: string | null
           id: string
-          is_draft: boolean
           location: string | null
           monetization: string | null
           problem: string | null
-          status: string
           title: string
           updated_at: string
           user_id: string
@@ -190,11 +188,9 @@ export type Database = {
           description: string
           has_competitors?: string | null
           id?: string
-          is_draft?: boolean
           location?: string | null
           monetization?: string | null
           problem?: string | null
-          status?: string
           title: string
           updated_at?: string
           user_id: string
@@ -206,11 +202,9 @@ export type Database = {
           description?: string
           has_competitors?: string | null
           id?: string
-          is_draft?: boolean
           location?: string | null
           monetization?: string | null
           problem?: string | null
-          status?: string
           title?: string
           updated_at?: string
           user_id?: string
