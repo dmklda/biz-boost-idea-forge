@@ -1,4 +1,3 @@
-
 {
   "auth": {
     "login": "ログイン",
@@ -152,7 +151,8 @@
     "credits": "クレジット",
     "profile": "プロフィール",
     "resources": "リソース",
-    "logout": "ログアウト"
+    "logout": "ログアウト",
+    "drafts": "下書き"
   },
   
   "header": {
@@ -181,7 +181,7 @@
     },
     "monetization": {
       "title": "どのように収益化する予定ですか？",
-      "placeholder": "あなたのビジネスがどのように収益を生み出すか説明してください..."
+      "placeholder": "あなたのビジネスがどのように収益を生み出すか説明���てください..."
     },
     "competitors": {
       "title": "市場に競合他社はいますか？",
@@ -387,7 +387,7 @@
     "dangerZone": "危険ゾーン",
     "dangerZoneDesc": "アカウントの取り返しのつかないアクション",
     "deleteAccount": "アカウント削除",
-    "deleteAccountDesc": "アカウントを削除すると、すべてのデータが完全に削除されます。この操作は元に戻せません。",
+    "deleteAccountDesc": "アカウントを削除すると、すべ���のデータが完全に削除されます。この操作は元に戻せません。",
     "notificationPreferences": "通知設定",
     "notificationPreferencesDesc": "通知の受け取り方を設定する",
     "emailNotifications": "メール通知",

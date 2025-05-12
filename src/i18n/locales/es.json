@@ -1,4 +1,3 @@
-
 {
   "auth": {
     "login": "Iniciar Sesión",
@@ -152,7 +151,8 @@
     "credits": "Créditos",
     "profile": "Perfil",
     "resources": "Recursos",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "drafts": "Borradores"
   },
   
   "header": {

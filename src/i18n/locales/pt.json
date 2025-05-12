@@ -651,13 +651,14 @@
   },
   
   "nav": {
-    "backToHome": "Voltar para a página inicial",
-    "dashboard": "Dashboard",
+    "backToHome": "Voltar à página inicial",
+    "dashboard": "Painel",
     "ideas": "Ideias",
     "credits": "Créditos",
     "profile": "Perfil",
     "resources": "Recursos",
-    "logout": "Sair"
+    "logout": "Sair",
+    "drafts": "Rascunhos"
   },
   
   "notifications": {
@@ -813,31 +814,36 @@
   
   "drafts": {
     "title": "Meus Rascunhos",
-    "subtitle": "Continue trabalhando nas suas ideias salvas",
-    "listTitle": "Ideias em Rascunho",
-    "viewCompleted": "Ver Ideias Completas",
+    "subtitle": "Continue trabalhando em suas ideias salvas",
+    "viewCompleted": "Ver ideias completas",
     "search": "Buscar rascunhos...",
+    "listTitle": "Seus rascunhos",
+    "empty": "Você ainda não tem rascunhos salvos",
+    "noResults": "Nenhum rascunho foi encontrado para sua pesquisa",
+    "errors": {
+      "fetchFailed": "Erro ao carregar os rascunhos"
+    },
     "table": {
       "title": "Título",
-      "created": "Criado",
-      "updated": "Atualizado",
+      "created": "Criado em",
+      "updated": "Atualizado em",
       "status": "Status",
       "actions": "Ações"
     },
+    "continue": "Continuar",
     "status": {
       "draft": "Rascunho"
     },
-    "continue": "Editar",
-    "empty": "Você ainda não tem rascunhos.",
-    "noResults": "Nenhum rascunho encontrado para sua busca.",
-    "errors": {
-      "fetchFailed": "Falha ao buscar rascunhos"
-    },
     "delete": {
-      "title": "Excluir Rascunho",
-      "description": "Tem certeza que deseja excluir este rascunho? Esta ação não pode ser desfeita."
+      "title": "Excluir rascunho?",
+      "description": "Esta ação não pode ser desfeita. O rascunho será excluído permanentemente."
     },
     "deleteSuccess": "Rascunho excluído com sucesso",
-    "deleteError": "Erro ao excluir rascunho"
+    "deleteError": "Erro ao excluir o rascunho",
+    "noDrafts": "Você ainda não tem rascunhos",
+    "createDraft": "Criar rascunho",
+    "lastEdited": "Última edição",
+    "confirmDelete": "Tem certeza que deseja excluir este rascunho?",
+    "confirmDeleteDescription": "Esta ação não pode ser desfeita"
   }
 }

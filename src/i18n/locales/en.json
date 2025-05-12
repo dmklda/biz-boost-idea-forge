@@ -541,7 +541,8 @@
     "credits": "Credits",
     "profile": "Profile",
     "resources": "Resources",
-    "logout": "Logout"
+    "logout": "Logout",
+    "drafts": "Drafts"
   },
   
   "notifications": {
@@ -550,7 +551,7 @@
     "lowCreditsDesc": "Your credits are running out. Add more to continue analyzing ideas.",
     "noNotifications": "No notifications at this time"
   },
-
+  
   "search": {
     "placeholder": "Search ideas..."
   },
@@ -800,6 +801,11 @@
       "description": "Are you sure you want to delete this draft? This action cannot be undone."
     },
     "deleteSuccess": "Draft deleted successfully",
-    "deleteError": "Error deleting draft"
+    "deleteError": "Error deleting draft",
+    "noDrafts": "You don't have any drafts yet",
+    "createDraft": "Create a draft",
+    "lastEdited": "Last edited",
+    "confirmDelete": "Are you sure you want to delete this draft?",
+    "confirmDeleteDescription": "This action cannot be undone"
   }
 }
