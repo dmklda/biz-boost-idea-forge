@@ -74,17 +74,8 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
         // Success! Navigate to results page
         toast.success(t('ideaForm.analysisSuccess', "Análise concluída com sucesso!"));
         
-        // If we're in the dashboard, navigate within the dashboard
-        if (isDashboard) {
-          // If coming from drafts, redirect back to drafts with analyzed parameter
-          if (location.pathname.includes('editar') && editingIdeaId) {
-            navigate(`/dashboard/rascunhos?analyzed=${analysisData.ideaId}`);
-          } else {
-            navigate(`/dashboard/ideias?id=${analysisData.ideaId}`);
-          }
-        } else {
-          navigate(`/resultados?id=${analysisData.ideaId}`);
-        }
+        // Sempre navegar para a página de resultados no dashboard
+        navigate(`/dashboard/resultados?id=${analysisData.ideaId}`);
       } else {
         // Not authenticated, redirect to login
         toast.info(t('ideaForm.loginRequired', "É necessário fazer login para analisar ideias"));

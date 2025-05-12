@@ -30,6 +30,7 @@ import ResourceCenterPage from "./pages/dashboard/ResourceCenterPage";
 import AdvancedMetricsPage from "./pages/dashboard/AdvancedMetricsPage";
 import DraftsPage from "./pages/dashboard/DraftsPage";
 import EditIdeaPage from "./pages/dashboard/EditIdeaPage";
+import DashboardResultsPage from "./pages/dashboard/ResultsPage";
 
 // Platform pages
 import ApiPage from "./pages/platform/ApiPage";
@@ -130,6 +131,7 @@ const App = () => {
                     <Route path="configuracoes" element={<UserSettingsPage />} />
                     <Route path="recursos" element={<ResourceCenterPage />} />
                     <Route path="metricas" element={<AdvancedMetricsPage />} />
+                    <Route path="resultados" element={<DashboardResultsPage />} />
                   </Route>
                   
                   {/* Platform Pages */}
