@@ -446,14 +446,35 @@
   "drafts": {
     "title": "下書き",
     "subtitle": "保存したアイデアの作業を続ける",
+    "viewCompleted": "完成したアイデアを見る",
+    "search": "下書きを検索...",
+    "listTitle": "あなたの下書き",
+    "empty": "まだ保存された下書きはありません",
+    "noResults": "検索に一致する下書きが見つかりませんでした",
+    "errors": {
+      "fetchFailed": "下書きの読み込みに失敗しました"
+    },
+    "table": {
+      "title": "タイトル",
+      "created": "作成日",
+      "updated": "更新日",
+      "status": "ステータス",
+      "actions": "操作"
+    },
+    "continue": "続ける",
+    "status": {
+      "draft": "下書き"
+    },
+    "delete": {
+      "title": "下書きを削除しますか？",
+      "description": "この操作は元に戻せません。下書きは完全に削除されます。"
+    },
+    "deleteSuccess": "下書きが正常に削除されました",
+    "deleteError": "下書きの削除中にエラーが発生しました",
     "noDrafts": "まだ下書きがありません",
     "createDraft": "下書きを作成",
     "lastEdited": "最終編集",
-    "continue": "続ける",
-    "delete": "削除",
     "confirmDelete": "この下書きを削除してもよろしいですか？",
-    "confirmDeleteDescription": "この操作は元に戻せません",
-    "deleteSuccess": "下書きが正常に削除されました",
-    "deleteError": "下書きの削除中にエラーが発生しました"
+    "confirmDeleteDescription": "この操作は元に戻せません"
   }
 }

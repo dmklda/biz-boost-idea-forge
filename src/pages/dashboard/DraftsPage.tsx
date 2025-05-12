@@ -62,7 +62,7 @@ const DraftsPage = () => {
         setDrafts(data || []);
       } catch (error) {
         console.error("Error fetching drafts:", error);
-        toast.error(t('drafts.errors.fetchFailed', "Falha ao buscar rascunhos"));
+        toast.error(t('drafts.errors.fetchFailed'));
       } finally {
         setLoading(false);
       }
@@ -85,15 +85,15 @@ const DraftsPage = () => {
         .from('ideas')
         .delete()
         .eq('id', draftToDelete)
-        .eq('user_id', authState.user?.id); // Segurança adicional
+        .eq('user_id', authState.user?.id); // Additional security
         
       if (error) throw error;
       
       setDrafts(drafts.filter(draft => draft.id !== draftToDelete));
-      toast.success(t('drafts.deleteSuccess', "Rascunho excluído com sucesso"));
+      toast.success(t('drafts.deleteSuccess'));
     } catch (error) {
       console.error("Error deleting draft:", error);
-      toast.error(t('drafts.deleteError', "Erro ao excluir rascunho"));
+      toast.error(t('drafts.deleteError'));
     } finally {
       setDeleteDialogOpen(false);
       setDraftToDelete(null);
@@ -110,15 +110,15 @@ const DraftsPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t('drafts.title', "Rascunhos")}</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('drafts.title')}</h1>
           <p className="text-muted-foreground">
-            {t('drafts.subtitle', "Gerencie seus rascunhos de ideias")}
+            {t('drafts.subtitle')}
           </p>
         </div>
         <Link to="/dashboard/ideias">
           <Button className="bg-brand-purple hover:bg-brand-purple/90">
             <Save className="h-4 w-4 mr-2" />
-            {t('drafts.viewCompleted', "Ver ideias completas")}
+            {t('drafts.viewCompleted')}
           </Button>
         </Link>
       </div>
@@ -127,7 +127,7 @@ const DraftsPage = () => {
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder={t('drafts.search', "Buscar rascunhos...")}
+            placeholder={t('drafts.search')}
             className="pl-8"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -137,17 +137,17 @@ const DraftsPage = () => {
       
       <Card>
         <CardHeader>
-          <CardTitle>{t('drafts.listTitle', "Seus rascunhos")}</CardTitle>
+          <CardTitle>{t('drafts.listTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('drafts.table.title', "Título")}</TableHead>
-                <TableHead>{t('drafts.table.created', "Criado em")}</TableHead>
-                <TableHead>{t('drafts.table.updated', "Atualizado em")}</TableHead>
-                <TableHead>{t('drafts.table.status', "Status")}</TableHead>
-                <TableHead>{t('drafts.table.actions', "Ações")}</TableHead>
+                <TableHead>{t('drafts.table.title')}</TableHead>
+                <TableHead>{t('drafts.table.created')}</TableHead>
+                <TableHead>{t('drafts.table.updated')}</TableHead>
+                <TableHead>{t('drafts.table.status')}</TableHead>
+                <TableHead>{t('drafts.table.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -173,7 +173,7 @@ const DraftsPage = () => {
                     <TableCell>{new Date(draft.updated_at).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="border-amber-500 bg-amber-500/10 text-amber-600">
-                        {t('drafts.status.draft', "Rascunho")}
+                        {t('drafts.status.draft')}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -181,7 +181,7 @@ const DraftsPage = () => {
                         <Button variant="outline" size="sm" asChild>
                           <Link to={`/dashboard/ideias/editar?id=${draft.id}`} className="flex items-center gap-1">
                             <Edit className="h-3.5 w-3.5" />
-                            {t('drafts.continue', "Continuar")}
+                            {t('drafts.continue')}
                           </Link>
                         </Button>
                         <Button 
@@ -199,8 +199,8 @@ const DraftsPage = () => {
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8">
                     {searchQuery 
-                      ? t('drafts.noResults', "Nenhum rascunho encontrado para sua busca") 
-                      : t('drafts.empty', "Você ainda não tem rascunhos salvos")}
+                      ? t('drafts.noResults') 
+                      : t('drafts.empty')}
                   </TableCell>
                 </TableRow>
               )}
@@ -209,22 +209,22 @@ const DraftsPage = () => {
         </CardContent>
       </Card>
       
-      {/* Diálogo de confirmação para exclusão */}
+      {/* Confirmation dialog for deletion */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('drafts.delete.title', "Excluir rascunho?")}</AlertDialogTitle>
+            <AlertDialogTitle>{t('drafts.delete.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('drafts.delete.description', "Esta ação não pode ser desfeita. O rascunho será permanentemente excluído.")}
+              {t('drafts.delete.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel', "Cancelar")}</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDeleteDraft}
               className="bg-red-500 hover:bg-red-600"
             >
-              {t('common.delete', "Excluir")}
+              {t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

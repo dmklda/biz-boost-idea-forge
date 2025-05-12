@@ -446,14 +446,35 @@
   "drafts": {
     "title": "Mis Borradores",
     "subtitle": "Continúe trabajando en sus ideas guardadas",
+    "viewCompleted": "Ver ideas completas",
+    "search": "Buscar borradores...",
+    "listTitle": "Sus borradores",
+    "empty": "Aún no tiene borradores guardados",
+    "noResults": "No se encontraron borradores que coincidan con su búsqueda",
+    "errors": {
+      "fetchFailed": "Error al cargar los borradores"
+    },
+    "table": {
+      "title": "Título",
+      "created": "Creado en",
+      "updated": "Actualizado en",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "continue": "Continuar",
+    "status": {
+      "draft": "Borrador"
+    },
+    "delete": {
+      "title": "¿Eliminar borrador?",
+      "description": "Esta acción no puede ser revertida. El borrador será eliminado permanentemente."
+    },
+    "deleteSuccess": "Borrador eliminado con éxito",
+    "deleteError": "Error al eliminar el borrador",
     "noDrafts": "Aún no tiene ningún borrador",
     "createDraft": "Crear un borrador",
     "lastEdited": "Última edición",
-    "continue": "Continuar",
-    "delete": "Eliminar",
     "confirmDelete": "¿Está seguro de que desea eliminar este borrador?",
-    "confirmDeleteDescription": "Esta acción no se puede deshacer",
-    "deleteSuccess": "Borrador eliminado exitosamente",
-    "deleteError": "Error al eliminar el borrador"
+    "confirmDeleteDescription": "Esta acción no se puede deshacer"
   }
 }
