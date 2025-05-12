@@ -19,7 +19,7 @@ import ResourceCenterPage from './pages/dashboard/ResourceCenterPage';
 import AdvancedMetricsPage from './pages/dashboard/AdvancedMetricsPage';
 import PricingPage from './pages/plans/PlansPage';
 import IdeaDetailPage from './pages/dashboard/IdeaDetailPage';
-import { DashboardLayout } from './pages/dashboard/DashboardLayout';
+import DashboardLayout from './pages/dashboard/DashboardLayout';
 import PublicLayout from './layouts/PublicLayout';
 import NotFound from './pages/NotFound';
 
