@@ -556,7 +556,7 @@
     "redirect": "A redirecionar..."
   },
   "dashboard": {
-    "title": "Painel",
+    "title": "Dashboard",
     "newAnalysis": "Nova Análise",
     "statistics": {
       "totalAnalyses": "Total de Análises",
@@ -755,7 +755,7 @@
   },
   "nav": {
     "backToHome": "Voltar para a página inicial",
-    "dashboard": "Painel",
+    "dashboard": "Dashboard",
     "ideas": "Ideias",
     "credits": "Créditos",
     "profile": "Perfil",
