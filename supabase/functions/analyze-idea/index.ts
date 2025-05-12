@@ -187,9 +187,12 @@ async function storeAnalysis(ideaId: string, userId: string, analysis: any) {
       
     if (creditError) throw creditError;
     
-    // Update user's credit balance
+    // Update user's credit balance - Note: parameter order is (user_id, amount)
     const { error: updateError } = await supabase
-      .rpc("update_user_credits", { user_id: userId, amount: -1 });
+      .rpc("update_user_credits", { 
+        user_id: userId, 
+        amount: -1 
+      });
       
     if (updateError) throw updateError;
     
