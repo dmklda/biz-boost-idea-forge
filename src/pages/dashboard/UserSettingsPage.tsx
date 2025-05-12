@@ -157,21 +157,21 @@ const UserSettingsPage = () => {
       </div>
       
       <Tabs defaultValue="profile" className="space-y-4">
-        <TabsList className="grid grid-cols-2 md:grid-cols-4">
-          <TabsTrigger value="profile">
-            <User className="h-4 w-4 mr-2" />
+        <TabsList className={`grid ${isMobile ? 'grid-cols-2 gap-1' : 'md:grid-cols-4'} w-full`}>
+          <TabsTrigger value="profile" className="flex items-center gap-1 text-xs md:text-sm">
+            <User className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} mr-1 md:mr-2`} />
             {t('settings.profile')}
           </TabsTrigger>
-          <TabsTrigger value="account">
-            <Lock className="h-4 w-4 mr-2" />
+          <TabsTrigger value="account" className="flex items-center gap-1 text-xs md:text-sm">
+            <Lock className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} mr-1 md:mr-2`} />
             {t('settings.account')}
           </TabsTrigger>
-          <TabsTrigger value="notifications">
-            <Bell className="h-4 w-4 mr-2" />
+          <TabsTrigger value="notifications" className="flex items-center gap-1 text-xs md:text-sm">
+            <Bell className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} mr-1 md:mr-2`} />
             {t('settings.notifications')}
           </TabsTrigger>
-          <TabsTrigger value="plan">
-            <CreditCard className="h-4 w-4 mr-2" />
+          <TabsTrigger value="plan" className="flex items-center gap-1 text-xs md:text-sm">
+            <CreditCard className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} mr-1 md:mr-2`} />
             {t('settings.plan')}
           </TabsTrigger>
         </TabsList>
@@ -325,10 +325,11 @@ const UserSettingsPage = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex flex-row items-center justify-between">
+                {/* Notification settings switches with improved mobile layout */}
+                <div className="flex flex-row items-start md:items-center justify-between gap-2">
                   <div className="space-y-0.5">
                     <Label>{t('settings.emailNotifications')}</Label>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs md:text-sm text-muted-foreground">
                       {t('settings.emailNotificationsDesc')}
                     </p>
                   </div>
@@ -340,15 +341,16 @@ const UserSettingsPage = () => {
                         emailNotifications: checked
                       })
                     }
+                    className="mt-1 md:mt-0"
                   />
                 </div>
                 
                 <Separator />
                 
-                <div className="flex flex-row items-center justify-between">
+                <div className="flex flex-row items-start md:items-center justify-between gap-2">
                   <div className="space-y-0.5">
                     <Label>{t('settings.accountAlerts')}</Label>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs md:text-sm text-muted-foreground">
                       {t('settings.accountAlertsDesc')}
                     </p>
                   </div>
@@ -360,15 +362,16 @@ const UserSettingsPage = () => {
                         accountAlerts: checked
                       })
                     }
+                    className="mt-1 md:mt-0"
                   />
                 </div>
                 
                 <Separator />
                 
-                <div className="flex flex-row items-center justify-between">
+                <div className="flex flex-row items-start md:items-center justify-between gap-2">
                   <div className="space-y-0.5">
                     <Label>{t('settings.marketingEmails')}</Label>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs md:text-sm text-muted-foreground">
                       {t('settings.marketingEmailsDesc')}
                     </p>
                   </div>
@@ -380,15 +383,16 @@ const UserSettingsPage = () => {
                         marketingEmails: checked
                       })
                     }
+                    className="mt-1 md:mt-0"
                   />
                 </div>
                 
                 <Separator />
                 
-                <div className="flex flex-row items-center justify-between">
+                <div className="flex flex-row items-start md:items-center justify-between gap-2">
                   <div className="space-y-0.5">
                     <Label>{t('settings.newFeatures')}</Label>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs md:text-sm text-muted-foreground">
                       {t('settings.newFeaturesDesc')}
                     </p>
                   </div>
@@ -400,15 +404,16 @@ const UserSettingsPage = () => {
                         newFeatures: checked
                       })
                     }
+                    className="mt-1 md:mt-0"
                   />
                 </div>
                 
                 <Separator />
                 
-                <div className="flex flex-row items-center justify-between">
+                <div className="flex flex-row items-start md:items-center justify-between gap-2">
                   <div className="space-y-0.5">
                     <Label>{t('settings.tips')}</Label>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs md:text-sm text-muted-foreground">
                       {t('settings.tipsDesc')}
                     </p>
                   </div>
@@ -420,6 +425,7 @@ const UserSettingsPage = () => {
                         tips: checked
                       })
                     }
+                    className="mt-1 md:mt-0"
                   />
                 </div>
                 
