@@ -1,14 +1,15 @@
+
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import i18n from './i18n/config';
 import { AuthProvider, useAuth } from './hooks/useAuth';
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner";
 
 // Import page components
-import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+import LandingPage from './pages/Index';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
 import DashboardHome from './pages/dashboard/DashboardHome';
 import IdeasPage from './pages/dashboard/IdeasPage';
 import IdeasHistoryPage from './pages/dashboard/IdeasHistoryPage';
@@ -16,10 +17,11 @@ import UserSettingsPage from './pages/dashboard/UserSettingsPage';
 import CreditsPage from './pages/dashboard/CreditsPage';
 import ResourceCenterPage from './pages/dashboard/ResourceCenterPage';
 import AdvancedMetricsPage from './pages/dashboard/AdvancedMetricsPage';
-import PricingPage from './pages/PricingPage';
+import PricingPage from './pages/plans/PlansPage';
 import IdeaDetailPage from './pages/dashboard/IdeaDetailPage';
-import { DashboardLayout } from './layouts/DashboardLayout';
+import { DashboardLayout } from './pages/dashboard/DashboardLayout';
 import PublicLayout from './layouts/PublicLayout';
+import NotFound from './pages/NotFound';
 
 // Adicionar essas importações
 import DraftsPage from "./pages/dashboard/DraftsPage";
@@ -48,7 +50,6 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <AuthProvider>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<PublicLayout />}>
@@ -60,10 +61,13 @@ const App: React.FC = () => {
 
           {/* Dashboard Routes - Protected */}
           <Route
-            path="/dashboard/*"
-            element={<RequireAuth><DashboardLayout /></RequireAuth>}
-          />
-          <Route path="/dashboard" element={<DashboardLayout />}>
+            path="/dashboard"
+            element={
+              <RequireAuth>
+                <DashboardLayout />
+              </RequireAuth>
+            }
+          >
             <Route index element={<DashboardHome />} />
             <Route path="ideias" element={<IdeasPage />} />
             <Route path="historico" element={<IdeasHistoryPage />} />
@@ -78,9 +82,11 @@ const App: React.FC = () => {
             <Route path="rascunho/:draftId" element={<EditDraftPage />} />
             <Route path="idea/:ideaId/reanalise" element={<ReanalyzeIdeaPage />} />
           </Route>
+          
+          {/* Catch all routes - 404 */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
-      </AuthProvider>
     </Router>
   );
 };

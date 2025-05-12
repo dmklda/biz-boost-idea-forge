@@ -1,4 +1,4 @@
-
+import React, { useState, useEffect } from "react";
 import { 
   Card, 
   CardContent, 
@@ -42,108 +42,15 @@ export const IdeaForm = ({ draftId }: { draftId?: string }) => {
   const isDashboard = location.pathname.includes('/dashboard');
 
   // Efeito para carregar rascunho se um ID for fornecido
-  React.useEffect(() => {
+  useEffect(() => {
     if (draftId && authState.isAuthenticated) {
       loadDraft(draftId).catch(error => {
         console.error("Failed to load draft:", error);
         toast.error(t('ideaForm.errors.loadDraft') || "Erro ao carregar rascunho");
       });
     }
-  }, [draftId, authState.isAuthenticated]);
+  }, [draftId, authState.isAuthenticated, loadDraft, t]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      // Se o usuário está autenticado, salvar no Supabase
-      if (authState.isAuthenticated && authState.user) {
-        // Dados para inserção/atualização
-        const ideaData = {
-          user_id: authState.user.id,
-          title: formData.idea,
-          description: formData.idea,
-          audience: formData.audience,
-          problem: formData.problem,
-          has_competitors: formData.hasCompetitors,
-          monetization: formData.monetization,
-          budget: formData.budget,
-          location: formData.location,
-          is_draft: false,
-          status: 'complete'
-        };
-
-        // Se estamos editando um rascunho, atualizar
-        let response;
-        if (draftId) {
-          response = await supabase
-            .from('ideas')
-            .update(ideaData)
-            .eq('id', draftId)
-            .select('id')
-            .single();
-        } else {
-          // Inserir a ideia no banco de dados
-          response = await supabase
-            .from('ideas')
-            .insert(ideaData)
-            .select('id')
-            .single();
-        }
-
-        if (response.error) {
-          console.error("Error saving idea:", response.error);
-          throw new Error("Erro ao salvar ideia");
-        }
-
-        // Limpar dados do rascunho do localStorage após envio completo
-        resetForm();
-
-        // Redirecionar para a página de resultados
-        toast.success(t('ideaForm.success') || "Ideia registrada com sucesso!");
-        
-        // If we're in the dashboard, navigate within the dashboard
-        if (isDashboard) {
-          navigate(`/dashboard/ideias?id=${response.data.id}`);
-        } else {
-          navigate(`/resultados?id=${response.data.id}`);
-        }
-      } else {
-        // Se não está autenticado, redirecionar para login
-        // O formData já está salvo no localStorage pelo useIdeaForm hook
-        toast.success(t('ideaForm.success') || "Ideia registrada com sucesso!");
-        navigate("/login");
-      }
-    } catch (error) {
-      console.error("Form submission error:", error);
-      toast.error(t('ideaForm.error') || "Erro ao processar sua solicitação");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  
-  const handleSaveAsDraft = async () => {
-    try {
-      if (authState.isAuthenticated && authState.user) {
-        await saveAsDraft(authState.user.id);
-        toast.success(t('ideaForm.draftSaved') || "Rascunho salvo com sucesso!");
-        
-        // Se estiver no dashboard, redirecionar para a lista de rascunhos
-        if (isDashboard) {
-          navigate('/dashboard/rascunhos');
-        }
-      } else {
-        // Se não estiver autenticado, redirecionar para login
-        toast.info(t('ideaForm.loginToSaveDraft') || "Faça login para salvar rascunho");
-        // Salvar dados no localStorage e redirecionar
-        navigate('/login');
-      }
-    } catch (error) {
-      console.error("Error saving draft:", error);
-      toast.error(t('ideaForm.draftSaveError') || "Erro ao salvar rascunho");
-    }
-  };
-  
   const wrapInCard = isDashboard === false;
 
   const formContent = (
@@ -229,6 +136,112 @@ export const IdeaForm = ({ draftId }: { draftId?: string }) => {
   }
   
   return formContent;
+  
+  // Função handleSubmit
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      // Se o usuário está autenticado, salvar no Supabase
+      if (authState.isAuthenticated && authState.user) {
+        // Dados para inserção/atualização
+        const ideaData = {
+          user_id: authState.user.id,
+          title: formData.idea,
+          description: formData.idea,
+          audience: formData.audience,
+          problem: formData.problem,
+          has_competitors: formData.hasCompetitors,
+          monetization: formData.monetization,
+          budget: formData.budget,
+          location: formData.location,
+          is_draft: false,
+          status: 'complete'
+        };
+
+        // Se estamos editando um rascunho, atualizar
+        let response;
+        if (draftId) {
+          response = supabase
+            .from('ideas')
+            .update(ideaData)
+            .eq('id', draftId)
+            .select('id')
+            .single();
+        } else {
+          // Inserir a ideia no banco de dados
+          response = supabase
+            .from('ideas')
+            .insert(ideaData)
+            .select('id')
+            .single();
+        }
+
+        response.then(({ data, error }) => {
+          if (error) {
+            console.error("Error saving idea:", error);
+            throw new Error("Erro ao salvar ideia");
+          }
+
+          // Limpar dados do rascunho do localStorage após envio completo
+          resetForm();
+
+          // Redirecionar para a página de resultados
+          toast.success(t('ideaForm.success') || "Ideia registrada com sucesso!");
+          
+          // If we're in the dashboard, navigate within the dashboard
+          if (isDashboard) {
+            navigate(`/dashboard/ideias?id=${data.id}`);
+          } else {
+            navigate(`/resultados?id=${data.id}`);
+          }
+        }).catch((error) => {
+          console.error("Form submission error:", error);
+          toast.error(t('ideaForm.error') || "Erro ao processar sua solicitação");
+        }).finally(() => {
+          setIsSubmitting(false);
+        });
+      } else {
+        // Se não está autenticado, redirecionar para login
+        // O formData já está salvo no localStorage pelo useIdeaForm hook
+        toast.success(t('ideaForm.success') || "Ideia registrada com sucesso!");
+        navigate("/login");
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast.error(t('ideaForm.error') || "Erro ao processar sua solicitação");
+      setIsSubmitting(false);
+    }
+  }
+
+  // Função handleSaveAsDraft
+  function handleSaveAsDraft() {
+    try {
+      if (authState.isAuthenticated && authState.user) {
+        saveAsDraft(authState.user.id).then(savedDraftId => {
+          toast.success(t('ideaForm.draftSaved') || "Rascunho salvo com sucesso!");
+          
+          // Se estiver no dashboard, redirecionar para a lista de rascunhos
+          if (isDashboard) {
+            navigate('/dashboard/rascunhos');
+          }
+        }).catch(error => {
+          console.error("Error saving draft:", error);
+          toast.error(t('ideaForm.draftSaveError') || "Erro ao salvar rascunho");
+        });
+      } else {
+        // Se não estiver autenticado, redirecionar para login
+        toast.info(t('ideaForm.loginToSaveDraft') || "Faça login para salvar rascunho");
+        // Salvar dados no localStorage e redirecionar
+        navigate('/login');
+      }
+    } catch (error) {
+      console.error("Error saving draft:", error);
+      toast.error(t('ideaForm.draftSaveError') || "Erro ao salvar rascunho");
+    }
+  }
 };
 
 export default IdeaForm;
