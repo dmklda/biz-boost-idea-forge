@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 
 interface FavoriteButtonProps {
   ideaId: string;
-  variant?: "default" | "outline" | "ghost" | "icon";
+  variant?: "default" | "outline" | "ghost" | "secondary"; // Updated to match buttonVariants
   size?: "default" | "sm" | "lg" | "icon";
   onFavoriteChange?: (isFavorite: boolean) => void;
   className?: string;
@@ -57,7 +57,7 @@ export const FavoriteButton = ({
     };
     
     checkFavoriteStatus();
-  }, [ideaId, authState.isAuthenticated]);
+  }, [ideaId, authState.isAuthenticated, authState.user?.id]);
   
   const toggleFavorite = async () => {
     if (!authState.isAuthenticated) {
