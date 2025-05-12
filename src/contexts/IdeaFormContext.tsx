@@ -17,6 +17,7 @@ type IdeaFormContextType = {
   setIsSubmitting: (value: boolean) => void;
   setIsAnalyzing: (value: boolean) => void;
   saveAsDraft: () => Promise<boolean>;
+  resetForm: () => void;
 };
 
 const IdeaFormContext = createContext<IdeaFormContextType | undefined>(undefined);
@@ -35,7 +36,8 @@ export const IdeaFormProvider: React.FC<{
     updateFormData,
     handleNextStep,
     handlePrevStep,
-    saveAsDraft: saveAsDraftFn
+    saveAsDraft: saveAsDraftFn,
+    resetForm
   } = useIdeaForm(ideaId);
   
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -63,7 +65,8 @@ export const IdeaFormProvider: React.FC<{
         handlePrevStep,
         setIsSubmitting,
         setIsAnalyzing,
-        saveAsDraft
+        saveAsDraft,
+        resetForm
       }}
     >
       {children}
