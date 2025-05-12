@@ -14,13 +14,27 @@ const TabsList = React.forwardRef<
     ref={ref}
     className={cn(
       "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground",
-      "w-full overflow-x-auto scrollbar-hide", // Adicionado largura completa e scroll horizontal
+      "w-full overflow-x-auto scrollbar-hide", // Added full width and horizontal scroll
+      "hide-scrollbar", // Added custom class to hide scrollbar
       className
     )}
+    style={{
+      msOverflowStyle: "none", // IE and Edge
+      scrollbarWidth: "none", // Firefox
+    }}
     {...props}
   />
 ))
 TabsList.displayName = TabsPrimitive.List.displayName
+
+// Add CSS to hide scrollbar for Webkit browsers (Chrome, Safari)
+const style = document.createElement('style');
+style.textContent = `
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+`;
+document.head.appendChild(style);
 
 const TabsTrigger = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Trigger>,
@@ -30,7 +44,7 @@ const TabsTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
-      "flex-shrink-0", // Evita que as abas encolham demais
+      "flex-shrink-0", // Prevent tabs from shrinking too much
       className
     )}
     {...props}
