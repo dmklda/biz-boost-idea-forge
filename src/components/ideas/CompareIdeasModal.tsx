@@ -15,13 +15,15 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { X, ChevronLeft, ChevronRight, ArrowLeftRight, BarChart3, Shield, Target } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, ArrowLeftRight, BarChart3, Shield, Target, TrendingUp, Users, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TagBadge } from "@/components/ideas/TagBadge";
 import { type TagType } from "@/components/ideas/TagsSelector";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "@/components/ui/sonner";
+import { cn } from "@/lib/utils";
 
 interface Idea {
   id: string;
@@ -53,7 +55,7 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
   const isMobile = useIsMobile();
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState<'viability' | 'market' | 'strengths'>('viability');
+  const [activeTab, setActiveTab] = useState<string>('viability');
   const [visibleIdeas, setVisibleIdeas] = useState<number[]>([0, 1]);
   
   // Fetch detailed idea data
@@ -156,12 +158,21 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
           return [(currentIndex - 1 + ideas.length) % ideas.length];
         }
       } else {
-        // For desktop, show 2 at a time
+        // For desktop, show 2 or 3 at a time depending on screen size
         const firstVisible = current[0];
+        const idealCount = ideas.length > 2 ? 3 : 2;
+        const visibleCount = Math.min(idealCount, ideas.length);
+        
         if (direction === 'next') {
-          return [(firstVisible + 1) % ideas.length, (firstVisible + 2) % ideas.length];
+          const nextFirst = (firstVisible + 1) % ideas.length;
+          return Array.from({ length: visibleCount }, (_, i) => 
+            (nextFirst + i) % ideas.length
+          );
         } else {
-          return [(firstVisible - 1 + ideas.length) % ideas.length, firstVisible];
+          const prevFirst = (firstVisible - 1 + ideas.length) % ideas.length;
+          return Array.from({ length: visibleCount }, (_, i) => 
+            (prevFirst + i) % ideas.length
+          );
         }
       }
     });
@@ -173,6 +184,63 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
     if (score >= 70) return "border-green-500 bg-green-500/10 text-green-600";
     if (score >= 40) return "border-amber-500 bg-amber-500/10 text-amber-600";
     return "border-red-500 bg-red-500/10 text-red-600";
+  };
+  
+  // Get comparable insights by comparing idea dimensions
+  const getComparableInsights = (ideaIndex: number) => {
+    if (!ideas[ideaIndex]) return null;
+    
+    const currentIdea = ideas[ideaIndex];
+    const otherIdeas = ideas.filter((_, idx) => idx !== ideaIndex);
+    
+    const insights: {title: string, content: string, type: 'positive' | 'neutral' | 'negative'}[] = [];
+    
+    // Compare scores
+    if (currentIdea.score) {
+      const avgOtherScore = otherIdeas.reduce((acc, idea) => acc + (idea.score || 0), 0) / otherIdeas.length;
+      if (currentIdea.score >= avgOtherScore + 15) {
+        insights.push({
+          title: t('ideas.compare.highScoreAdvantage'),
+          content: t('ideas.compare.scoreAdvantageDesc'),
+          type: 'positive'
+        });
+      } else if (currentIdea.score <= avgOtherScore - 15) {
+        insights.push({
+          title: t('ideas.compare.lowScoreDisadvantage'),
+          content: t('ideas.compare.scoreDisadvantageDesc'),
+          type: 'negative'
+        });
+      }
+    }
+    
+    // Compare market information
+    if (currentIdea.analysis?.market_size && otherIdeas.some(idea => idea.analysis?.market_size)) {
+      insights.push({
+        title: t('ideas.compare.marketInsight'),
+        content: currentIdea.analysis.market_size,
+        type: 'neutral'
+      });
+    }
+    
+    // Check for unique strengths
+    if (currentIdea.analysis?.strengths?.length) {
+      insights.push({
+        title: t('ideas.compare.keyStrength'),
+        content: currentIdea.analysis.strengths[0],
+        type: 'positive'
+      });
+    }
+    
+    // Check for potential challenges
+    if (currentIdea.analysis?.weaknesses?.length) {
+      insights.push({
+        title: t('ideas.compare.keyChallenge'),
+        content: currentIdea.analysis.weaknesses[0],
+        type: 'negative'
+      });
+    }
+    
+    return insights;
   };
 
   return (
@@ -190,35 +258,26 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
             </DialogClose>
           </div>
           
-          <div className="flex mt-4 gap-2">
-            <Button
-              variant={activeSection === 'viability' ? 'default' : 'outline'}
-              size="sm"
-              className="flex items-center gap-1"
-              onClick={() => setActiveSection('viability')}
-            >
-              <Target className="h-4 w-4" />
-              {t('ideas.compare.viability')}
-            </Button>
-            <Button
-              variant={activeSection === 'market' ? 'default' : 'outline'}
-              size="sm"
-              className="flex items-center gap-1"
-              onClick={() => setActiveSection('market')}
-            >
-              <BarChart3 className="h-4 w-4" />
-              {t('ideas.compare.market')}
-            </Button>
-            <Button
-              variant={activeSection === 'strengths' ? 'default' : 'outline'}
-              size="sm"
-              className="flex items-center gap-1"
-              onClick={() => setActiveSection('strengths')}
-            >
-              <Shield className="h-4 w-4" />
-              {t('ideas.compare.strengthsWeaknesses')}
-            </Button>
-          </div>
+          <Tabs defaultValue="viability" value={activeTab} onValueChange={setActiveTab} className="w-full mt-4">
+            <TabsList className="grid grid-cols-3 md:grid-cols-4">
+              <TabsTrigger value="viability" className="flex items-center gap-1">
+                <Target className="h-4 w-4 hidden sm:block" />
+                {t('ideas.compare.viability')}
+              </TabsTrigger>
+              <TabsTrigger value="market" className="flex items-center gap-1">
+                <BarChart3 className="h-4 w-4 hidden sm:block" />
+                {t('ideas.compare.market')}
+              </TabsTrigger>
+              <TabsTrigger value="strengths" className="flex items-center gap-1">
+                <Shield className="h-4 w-4 hidden sm:block" />
+                {t('ideas.compare.strengthsWeaknesses')}
+              </TabsTrigger>
+              <TabsTrigger value="insights" className="flex items-center gap-1">
+                <TrendingUp className="h-4 w-4 hidden sm:block" />
+                {t('ideas.compare.insights') || "Insights"}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </DialogHeader>
         
         {loading ? (
@@ -230,55 +289,54 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
           </div>
         ) : (
           <div className="flex-1 overflow-auto">
-            {/* Ideas comparison grid */}
-            <div className="relative">
-              {/* Navigation buttons */}
-              {ideas.length > (isMobile ? 1 : 2) && (
-                <>
-                  <Button 
-                    variant="outline" 
-                    size="icon"
-                    className="absolute left-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
-                    onClick={() => shiftVisibleIdeas('prev')}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="icon"
-                    className="absolute right-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
-                    onClick={() => shiftVisibleIdeas('next')}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </>
-              )}
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                {visibleIdeas.map((idx) => {
-                  const idea = ideas[idx];
-                  if (!idea) return null;
-                  
-                  return (
-                    <Card key={idea.id} className="h-full overflow-hidden">
-                      <CardHeader className="border-b pb-3">
-                        <div className="flex items-start justify-between">
-                          <CardTitle className="text-lg">{idea.title}</CardTitle>
-                          <Badge variant="outline" className={getStatusBadgeClass(idea.score)}>
-                            {idea.score ? `${idea.score}%` : t('ideas.statuses.pending')}
-                          </Badge>
-                        </div>
-                        {idea.tags && idea.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {idea.tags.map((tag) => (
-                              <TagBadge key={tag.id} name={tag.name} color={tag.color} className="text-xs" />
-                            ))}
+            <TabsContent value="viability" className="mt-0">
+              <div className="relative">
+                {/* Navigation buttons */}
+                {ideas.length > (isMobile ? 1 : 2) && (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      className="absolute left-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                      onClick={() => shiftVisibleIdeas('prev')}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                      onClick={() => shiftVisibleIdeas('next')}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </>
+                )}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                  {visibleIdeas.map((idx) => {
+                    const idea = ideas[idx];
+                    if (!idea) return null;
+                    
+                    return (
+                      <Card key={idea.id} className="h-full overflow-hidden">
+                        <CardHeader className="border-b pb-3">
+                          <div className="flex items-start justify-between">
+                            <CardTitle className="text-lg">{idea.title}</CardTitle>
+                            <Badge variant="outline" className={getStatusBadgeClass(idea.score)}>
+                              {idea.score ? `${idea.score}%` : t('ideas.statuses.pending')}
+                            </Badge>
                           </div>
-                        )}
-                      </CardHeader>
-                      
-                      <CardContent className="pt-4">
-                        {activeSection === 'viability' && (
+                          {idea.tags && idea.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {idea.tags.map((tag) => (
+                                <TagBadge key={tag.id} name={tag.name} color={tag.color} className="text-xs" />
+                              ))}
+                            </div>
+                          )}
+                        </CardHeader>
+                        
+                        <CardContent className="pt-4">
                           <div className="space-y-4">
                             <div>
                               <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.description')}</h3>
@@ -311,9 +369,53 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
                               </p>
                             </div>
                           </div>
-                        )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="market" className="mt-0">
+              <div className="relative">
+                {/* Navigation buttons (same as above) */}
+                {ideas.length > (isMobile ? 1 : 2) && (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      className="absolute left-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                      onClick={() => shiftVisibleIdeas('prev')}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                      onClick={() => shiftVisibleIdeas('next')}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </>
+                )}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                  {visibleIdeas.map((idx) => {
+                    const idea = ideas[idx];
+                    if (!idea) return null;
+                    
+                    return (
+                      <Card key={idea.id} className="h-full overflow-hidden">
+                        <CardHeader className="border-b pb-3">
+                          <div className="flex items-start justify-between">
+                            <CardTitle className="text-lg">{idea.title}</CardTitle>
+                            <Users className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                        </CardHeader>
                         
-                        {activeSection === 'market' && (
+                        <CardContent className="pt-4">
                           <div className="space-y-4">
                             <div>
                               <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.marketSize')}</h3>
@@ -329,10 +431,59 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
                               <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.monetization')}</h3>
                               <p className="text-sm">{idea.monetization || t('ideas.compare.notSpecified')}</p>
                             </div>
+                            
+                            <div>
+                              <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('ideas.compare.audience')}</h3>
+                              <p className="text-sm">{idea.audience || t('ideas.compare.notSpecified')}</p>
+                            </div>
                           </div>
-                        )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="strengths" className="mt-0">
+              <div className="relative">
+                {/* Navigation buttons (same as above) */}
+                {ideas.length > (isMobile ? 1 : 2) && (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      className="absolute left-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                      onClick={() => shiftVisibleIdeas('prev')}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                      onClick={() => shiftVisibleIdeas('next')}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </>
+                )}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                  {visibleIdeas.map((idx) => {
+                    const idea = ideas[idx];
+                    if (!idea) return null;
+                    
+                    return (
+                      <Card key={idea.id} className="h-full overflow-hidden">
+                        <CardHeader className="border-b pb-3">
+                          <div className="flex items-start justify-between">
+                            <CardTitle className="text-lg">{idea.title}</CardTitle>
+                            <Shield className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                        </CardHeader>
                         
-                        {activeSection === 'strengths' && (
+                        <CardContent className="pt-4">
                           <div className="space-y-4">
                             <div>
                               <h3 className="text-sm font-medium text-green-600 mb-1">{t('ideas.compare.strengths')}</h3>
@@ -360,13 +511,92 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
                               )}
                             </div>
                           </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  );
-                })}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            </TabsContent>
+            
+            <TabsContent value="insights" className="mt-0">
+              <div className="relative">
+                {/* Navigation buttons (same as above) */}
+                {ideas.length > (isMobile ? 1 : 2) && (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      className="absolute left-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                      onClick={() => shiftVisibleIdeas('prev')}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 z-10 bg-background/80 rounded-full"
+                      onClick={() => shiftVisibleIdeas('next')}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </>
+                )}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                  {visibleIdeas.map((idx) => {
+                    const idea = ideas[idx];
+                    if (!idea) return null;
+                    
+                    const insights = getComparableInsights(idx);
+                    
+                    return (
+                      <Card key={idea.id} className="h-full overflow-hidden">
+                        <CardHeader className="border-b pb-3">
+                          <div className="flex items-start justify-between">
+                            <CardTitle className="text-lg">{idea.title}</CardTitle>
+                            <TrendingUp className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                        </CardHeader>
+                        
+                        <CardContent className="pt-4">
+                          <div className="space-y-4">
+                            {insights && insights.length > 0 ? (
+                              insights.map((insight, i) => (
+                                <div key={i} className={cn(
+                                  "rounded-md p-3",
+                                  insight.type === 'positive' ? "bg-green-50 border border-green-200" : 
+                                  insight.type === 'negative' ? "bg-red-50 border border-red-200" : 
+                                  "bg-blue-50 border border-blue-200"
+                                )}>
+                                  <h3 className={cn(
+                                    "text-sm font-semibold mb-1",
+                                    insight.type === 'positive' ? "text-green-700" : 
+                                    insight.type === 'negative' ? "text-red-700" : 
+                                    "text-blue-700"
+                                  )}>
+                                    {insight.title}
+                                  </h3>
+                                  <p className="text-sm">{insight.content}</p>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="flex flex-col items-center justify-center text-center p-6">
+                                <AlertTriangle className="h-8 w-8 text-amber-500 mb-2" />
+                                <h3 className="text-sm font-medium">{t('ideas.compare.noInsights') || "Sem insights disponíveis"}</h3>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {t('ideas.compare.completeAnalysis') || "Complete a análise desta ideia para obter insights comparativos"}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
+            </TabsContent>
           </div>
         )}
       </DialogContent>

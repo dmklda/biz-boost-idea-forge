@@ -14,7 +14,10 @@ import {
   FileText,
   ArrowUp,
   ArrowDown,
-  ChevronDown
+  ChevronDown,
+  Compare,
+  Trash2,
+  MoreHorizontal
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,9 +41,11 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
-import { DateRange } from "react-day-picker"; // Add this import
+import { DateRange } from "react-day-picker"; 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
+import { CompareIdeasModal } from "@/components/ideas/CompareIdeasModal";
+import { TagBadge } from "@/components/ideas/TagBadge";
 
 // Interfaces
 interface Idea {
@@ -50,6 +55,7 @@ interface Idea {
   created_at: string;
   score: number | null;
   status: string | null;
+  tags?: {id: string, name: string, color: string}[];
 }
 
 interface SortConfig {
@@ -61,6 +67,7 @@ interface FilterOptions {
   date: DateRange | undefined;
   score: string;
   keywords: string;
+  tags: string[];
 }
 
 const IdeasHistoryPage = () => {
@@ -79,9 +86,13 @@ const IdeasHistoryPage = () => {
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     date: undefined,
     score: 'all',
-    keywords: ''
+    keywords: '',
+    tags: []
   });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [selectedIdeas, setSelectedIdeas] = useState<string[]>([]);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+  const [availableTags, setAvailableTags] = useState<{id: string, name: string, color: string}[]>([]);
 
   // Fetch ideas
   useEffect(() => {
@@ -91,6 +102,7 @@ const IdeasHistoryPage = () => {
       try {
         setLoading(true);
         
+        // Fetch ideas with their analyses
         const { data, error } = await supabase
           .from('ideas')
           .select(`
@@ -102,7 +114,33 @@ const IdeasHistoryPage = () => {
           
         if (error) throw error;
         
-        // Process the data to get score and status
+        // Fetch all tags at once
+        const { data: allTags, error: tagsFetchError } = await supabase
+          .from('tags')
+          .select('id, name, color')
+          .eq('user_id', authState.user.id);
+          
+        if (tagsFetchError) throw tagsFetchError;
+        
+        setAvailableTags(allTags || []);
+        
+        // Fetch idea tags
+        const { data: ideaTags, error: ideaTagsError } = await supabase
+          .from('idea_tags')
+          .select('idea_id, tags(id, name, color)')
+          .eq('user_id', authState.user.id);
+          
+        if (ideaTagsError) throw ideaTagsError;
+        
+        // Create a mapping of idea_id to tags
+        const ideaToTags = {};
+        ideaTags.forEach(item => {
+          const ideaId = item.idea_id;
+          if (!ideaToTags[ideaId]) ideaToTags[ideaId] = [];
+          ideaToTags[ideaId].push(item.tags);
+        });
+        
+        // Process the data to get score, status, and tags
         const processedData: Idea[] = data.map((idea: any) => ({
           id: idea.id,
           title: idea.title,
@@ -110,6 +148,7 @@ const IdeasHistoryPage = () => {
           created_at: idea.created_at,
           score: idea.idea_analyses && idea.idea_analyses[0]?.score,
           status: idea.idea_analyses && idea.idea_analyses[0]?.status,
+          tags: ideaToTags[idea.id] || []
         }));
         
         setIdeas(processedData);
@@ -161,6 +200,13 @@ const IdeasHistoryPage = () => {
       );
     }
     
+    // Filter by tags
+    if (filterOptions.tags && filterOptions.tags.length > 0) {
+      result = result.filter(idea => 
+        idea.tags && idea.tags.some(tag => filterOptions.tags.includes(tag.id))
+      );
+    }
+    
     // Filter by date range
     if (filterOptions.date?.from && filterOptions.date?.to) {
       const fromDate = new Date(filterOptions.date.from);
@@ -203,6 +249,30 @@ const IdeasHistoryPage = () => {
     navigate(`/dashboard/ideias/${id}`);
   };
 
+  // Handle idea selection for comparison
+  const toggleIdeaSelection = (id: string) => {
+    setSelectedIdeas(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(ideaId => ideaId !== id);
+      } else {
+        if (prev.length >= 3) {
+          toast.warning(t('ideas.compare.maxSelected'));
+          return prev;
+        }
+        return [...prev, id];
+      }
+    });
+  };
+
+  // Handle comparison button click
+  const handleCompareClick = () => {
+    if (selectedIdeas.length < 2) {
+      toast.warning(t('ideas.compare.needMoreIdeas'));
+      return;
+    }
+    setIsCompareModalOpen(true);
+  };
+
   // Get status badge
   const getStatusBadge = (score: number | null) => {
     if (score === null) return <Badge variant="outline">Pendente</Badge>;
@@ -221,10 +291,16 @@ const IdeasHistoryPage = () => {
     setFilterOptions({
       date: undefined,
       score: 'all',
-      keywords: ''
+      keywords: '',
+      tags: []
     });
     setSearchQuery('');
     setIsFilterOpen(false);
+  };
+  
+  // Clear selected ideas
+  const clearSelection = () => {
+    setSelectedIdeas([]);
   };
 
   return (
@@ -298,6 +374,36 @@ const IdeasHistoryPage = () => {
                   />
                 </div>
                 
+                {availableTags.length > 0 && (
+                  <div className="space-y-2">
+                    <Label>Tags</Label>
+                    <div className="max-h-32 overflow-y-auto border rounded-md p-2 space-y-2">
+                      {availableTags.map(tag => (
+                        <div key={tag.id} className="flex items-center space-x-2">
+                          <Checkbox 
+                            id={`tag-${tag.id}`}
+                            checked={filterOptions.tags.includes(tag.id)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setFilterOptions({...filterOptions, tags: [...filterOptions.tags, tag.id]});
+                              } else {
+                                setFilterOptions({
+                                  ...filterOptions, 
+                                  tags: filterOptions.tags.filter(id => id !== tag.id)
+                                });
+                              }
+                            }}
+                          />
+                          <Label htmlFor={`tag-${tag.id}`} className="flex items-center cursor-pointer">
+                            <div className="w-3 h-3 rounded-full mr-1" style={{ backgroundColor: tag.color }} />
+                            <span>{tag.name}</span>
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
                 <div className="flex justify-between pt-2">
                   <Button variant="outline" size="sm" onClick={resetFilters}>
                     {t('common.reset') || "Resetar"}
@@ -335,6 +441,38 @@ const IdeasHistoryPage = () => {
         </div>
       </div>
 
+      {/* Compare section */}
+      {selectedIdeas.length > 0 && (
+        <div className="bg-muted/40 px-4 py-3 rounded-lg border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <div>
+            <span className="font-medium">
+              {selectedIdeas.length} {selectedIdeas.length === 1 ? 
+                t('ideas.compare.ideaSelected') || "ideia selecionada" : 
+                t('ideas.compare.ideasSelected') || "ideias selecionadas"}
+            </span>
+            <p className="text-sm text-muted-foreground">
+              {selectedIdeas.length === 1 ? 
+                t('ideas.compare.selectMoreToCompare') || "Selecione mais ideias para comparar" : 
+                t('ideas.compare.readyToCompare') || "Pronto para comparar"}
+            </p>
+          </div>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button variant="outline" size="sm" onClick={clearSelection}>
+              {t('common.cancel') || "Cancelar"}
+            </Button>
+            <Button 
+              size="sm" 
+              className="flex items-center gap-1"
+              onClick={handleCompareClick}
+              disabled={selectedIdeas.length < 2}
+            >
+              <Compare className="h-4 w-4" />
+              {t('ideas.compare.button') || "Comparar"}
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Ideas history content */}
       {isMobile ? (
         // Mobile view - cards
@@ -357,22 +495,39 @@ const IdeasHistoryPage = () => {
             </div>
           ) : filteredIdeas.length > 0 ? (
             filteredIdeas.map((idea) => (
-              <Card key={idea.id} className="shadow-sm">
+              <Card key={idea.id} className={`shadow-sm ${selectedIdeas.includes(idea.id) ? 'border-primary' : ''}`}>
                 <CardContent className="p-4">
                   <div className="flex flex-col space-y-3">
                     <div>
                       <div className="font-medium line-clamp-2">{idea.title}</div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs text-muted-foreground mt-1">
                         <Calendar className="inline h-3 w-3 mr-1" />
                         {new Date(idea.created_at).toLocaleDateString()}
                       </div>
+                      {idea.tags && idea.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {idea.tags.slice(0, 3).map(tag => (
+                            <TagBadge key={tag.id} name={tag.name} color={tag.color} className="text-xs" />
+                          ))}
+                          {idea.tags.length > 3 && (
+                            <Badge variant="outline" className="text-xs">+{idea.tags.length - 3}</Badge>
+                          )}
+                        </div>
+                      )}
                     </div>
                     
                     <div className="flex items-center justify-between">
                       {getStatusBadge(idea.score)}
-                      <Button size="sm" variant="outline" onClick={() => handleViewIdea(idea.id)}>
-                        {t('common.view') || "Visualizar"}
-                      </Button>
+                      <div className="flex gap-2">
+                        <Checkbox 
+                          checked={selectedIdeas.includes(idea.id)} 
+                          onCheckedChange={() => toggleIdeaSelection(idea.id)}
+                          aria-label={t('ideas.compare.selectForComparison')}
+                        />
+                        <Button size="sm" variant="outline" onClick={() => handleViewIdea(idea.id)}>
+                          {t('common.view') || "Visualizar"}
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -398,6 +553,9 @@ const IdeasHistoryPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10">
+                    <span className="sr-only">{t('ideas.compare.selectForComparison')}</span>
+                  </TableHead>
                   <TableHead onClick={() => requestSort('title')} className="cursor-pointer">
                     <div className="flex items-center">
                       {t('ideas.history.title') || "Título"}
@@ -421,6 +579,9 @@ const IdeasHistoryPage = () => {
                   <TableHead>
                     {t('ideas.history.status') || "Status"}
                   </TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Tags
+                  </TableHead>
                   <TableHead onClick={() => requestSort('created_at')} className="cursor-pointer">
                     <div className="flex items-center">
                       {t('ideas.history.date') || "Data"}
@@ -441,16 +602,25 @@ const IdeasHistoryPage = () => {
                   // Loading state
                   Array.from({ length: 5 }).map((_, index) => (
                     <TableRow key={index} className="animate-pulse">
+                      <TableCell><div className="h-4 w-4 bg-muted rounded"></div></TableCell>
                       <TableCell><div className="h-4 bg-muted rounded w-40"></div></TableCell>
                       <TableCell><div className="h-4 bg-muted rounded w-16"></div></TableCell>
                       <TableCell><div className="h-6 bg-muted rounded w-20"></div></TableCell>
+                      <TableCell className="hidden md:table-cell"><div className="h-4 bg-muted rounded w-24"></div></TableCell>
                       <TableCell><div className="h-4 bg-muted rounded w-24"></div></TableCell>
                       <TableCell><div className="h-8 bg-muted rounded w-24"></div></TableCell>
                     </TableRow>
                   ))
                 ) : filteredIdeas.length > 0 ? (
                   filteredIdeas.map((idea) => (
-                    <TableRow key={idea.id}>
+                    <TableRow key={idea.id} className={selectedIdeas.includes(idea.id) ? 'bg-muted/20' : ''}>
+                      <TableCell>
+                        <Checkbox 
+                          checked={selectedIdeas.includes(idea.id)} 
+                          onCheckedChange={() => toggleIdeaSelection(idea.id)} 
+                          aria-label={t('ideas.compare.selectForComparison')}
+                        />
+                      </TableCell>
                       <TableCell className="font-medium max-w-xs truncate">
                         {idea.title}
                       </TableCell>
@@ -460,6 +630,16 @@ const IdeasHistoryPage = () => {
                       <TableCell>
                         {getStatusBadge(idea.score)}
                       </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <div className="flex flex-wrap gap-1">
+                          {idea.tags && idea.tags.slice(0, 2).map(tag => (
+                            <TagBadge key={tag.id} name={tag.name} color={tag.color} className="text-xs" />
+                          ))}
+                          {idea.tags && idea.tags.length > 2 && (
+                            <Badge variant="outline" className="text-xs">+{idea.tags.length - 2}</Badge>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         {new Date(idea.created_at).toLocaleDateString()}
                       </TableCell>
@@ -468,16 +648,39 @@ const IdeasHistoryPage = () => {
                           <Button size="sm" variant="outline" onClick={() => handleViewIdea(idea.id)}>
                             {t('common.view') || "Visualizar"}
                           </Button>
-                          <Button size="icon" variant="ghost">
-                            <Share2 className="h-4 w-4" />
-                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button size="icon" variant="ghost">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleViewIdea(idea.id)}>
+                                {t('common.view') || "Visualizar"}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => toggleIdeaSelection(idea.id)}>
+                                {selectedIdeas.includes(idea.id) ? 
+                                  t('ideas.compare.deselectForComparison') || "Desselecionar" : 
+                                  t('ideas.compare.selectForComparison') || "Selecionar para comparação"}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Share2 className="h-4 w-4 mr-2" />
+                                {t('common.share') || "Compartilhar"}
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem className="text-red-500">
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                {t('common.delete') || "Excluir"}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-6">
+                    <TableCell colSpan={7} className="text-center py-6">
                       <div className="text-muted-foreground">
                         {t('ideas.history.noIdeas') || "Nenhuma ideia encontrada"}
                       </div>
@@ -492,6 +695,13 @@ const IdeasHistoryPage = () => {
           </CardContent>
         </Card>
       )}
+      
+      {/* Compare Modal */}
+      <CompareIdeasModal 
+        isOpen={isCompareModalOpen} 
+        onClose={() => setIsCompareModalOpen(false)} 
+        ideaIds={selectedIdeas}
+      />
     </div>
   );
 };
