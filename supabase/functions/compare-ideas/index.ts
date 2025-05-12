@@ -121,38 +121,57 @@ Por favor, forneça uma análise comparativa das ideias em formato JSON com os s
 10. "recommendedFocus": Recomendações específicas para melhorar cada ideia
 11. "overallRecommendation": Uma recomendação final sobre qual ideia parece mais promissora e por quê
 
-Forneça o resultado apenas em formato JSON, sem qualquer texto adicional.
+Forneça o resultado apenas em formato JSON válido, sem qualquer texto adicional antes ou depois do JSON. Certifique-se de que a resposta seja um objeto JSON completo, sem erros de sintaxe.
 `;
 
     console.log("Enviando prompt para o OpenAI...");
 
-    // Chamar a API OpenAI
+    // Chamar a API OpenAI com parâmetros mais seguros para garantir resposta completa
     const completion = await openai.createCompletion({
       model: "gpt-3.5-turbo-instruct",
       prompt: prompt,
-      max_tokens: 1500,
-      temperature: 0.7,
+      max_tokens: 2048, // Aumentar o limite de tokens para garantir resposta completa
+      temperature: 0.5, // Reduzir a temperatura para maior previsibilidade
+      stop: null, // Remover qualquer stop token para garantir resposta completa
     });
 
-    // Processar a resposta
-    const response = completion.data.choices[0].text?.trim() || "";
+    // Processar a resposta com tratamento de erro aprimorado
+    const rawResponse = completion.data.choices[0].text?.trim() || "";
     
     console.log("Resposta recebida do OpenAI");
     
     let insights;
     try {
-      insights = JSON.parse(response);
+      // Limpar a resposta para garantir que temos apenas JSON válido
+      // Encontra o primeiro '{' e o último '}'
+      const startIndex = rawResponse.indexOf('{');
+      const endIndex = rawResponse.lastIndexOf('}');
+      
+      if (startIndex === -1 || endIndex === -1 || startIndex > endIndex) {
+        throw new Error("Não foi possível encontrar um objeto JSON válido na resposta");
+      }
+      
+      const jsonStr = rawResponse.substring(startIndex, endIndex + 1);
+      insights = JSON.parse(jsonStr);
+      
+      // Validar se temos os campos esperados
+      const requiredFields = [
+        'competitiveAdvantage', 'marketPotential', 'executionDifficulty', 
+        'investmentRequired', 'scalabilityPotential', 'overallRecommendation'
+      ];
+      
+      const missingFields = requiredFields.filter(field => !insights[field]);
+      
+      if (missingFields.length > 0) {
+        console.log(`Campos ausentes na resposta: ${missingFields.join(', ')}`);
+        insights = createFallbackInsights(ideasData, missingFields, insights);
+      }
     } catch (e) {
       console.error("Erro ao parsear resposta JSON:", e);
-      console.log("Resposta recebida:", response);
+      console.log("Resposta recebida:", rawResponse);
       
-      return new Response(
-        JSON.stringify({ error: 'Erro ao processar a resposta da IA' }),
-        { 
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      )
+      // Criar um insights de fallback em caso de falha no parsing
+      insights = createFallbackInsights(ideasData);
     }
 
     // Criar cliente Supabase
@@ -244,7 +263,7 @@ Forneça o resultado apenas em formato JSON, sem qualquer texto adicional.
     console.error("Erro:", error);
     
     return new Response(
-      JSON.stringify({ error: 'Erro interno do servidor' }),
+      JSON.stringify({ error: 'Erro interno do servidor', details: error.message }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -252,3 +271,26 @@ Forneça o resultado apenas em formato JSON, sem qualquer texto adicional.
     )
   }
 })
+
+// Função para criar insights básicos quando a IA não retornar dados adequados
+function createFallbackInsights(ideasData: any[], missingFields: string[] = [], partialInsights: any = {}) {
+  const fallbackInsights = {
+    competitiveAdvantage: "Não foi possível gerar uma análise detalhada das vantagens competitivas. Recomendamos rever os dados das ideias e tentar novamente.",
+    marketPotential: ideasData.map(() => "médio"),
+    executionDifficulty: ideasData.map(() => "média"),
+    investmentRequired: ideasData.map(() => "médio"),
+    scalabilityPotential: ideasData.map(() => "médio"),
+    innovationLevel: ideasData.map(() => "médio"),
+    riskLevel: ideasData.map(() => "médio"),
+    keyStrengthComparison: "Não foi possível comparar os pontos fortes em detalhes.",
+    keyWeaknessComparison: "Não foi possível comparar os pontos fracos em detalhes.",
+    recommendedFocus: "Recomendamos focar na validação adicional destas ideias com potenciais clientes e especialistas do setor.",
+    overallRecommendation: "Devido a limitações na análise, não foi possível determinar qual ideia é mais promissora. Sugerimos revisar os dados fornecidos e tentar novamente, ou consultar um especialista no setor."
+  };
+  
+  // Manter qualquer campo que já tenha sido retornado corretamente
+  return {
+    ...fallbackInsights,
+    ...partialInsights
+  };
+}
