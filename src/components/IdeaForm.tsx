@@ -32,7 +32,12 @@ const FormContainer: React.FC<{
   wrapInCard: boolean;
   isReanalyzing?: boolean;
 }> = ({ wrapInCard, isReanalyzing }) => {
-  const { handleSubmit } = useFormSubmission(isReanalyzing);
+  const { handleSubmit, isAnalysisComplete } = useFormSubmission(isReanalyzing);
+  
+  // Se a análise foi completada, não renderizar o formulário
+  if (isAnalysisComplete) {
+    return null;
+  }
   
   const formContent = (
     <form onSubmit={handleSubmit}>
