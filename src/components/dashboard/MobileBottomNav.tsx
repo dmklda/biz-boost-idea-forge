@@ -41,28 +41,28 @@ export const MobileBottomNav = () => {
       badge: false
     }, 
     {
-      title: '',
+      title: t('dashboard.newAnalysis'),
       icon: Plus,
       path: '#',
       onClick: () => setIsAnalysisDialogOpen(true),
       badge: false
     },
     {
-      title: '',
+      title: t('nav.drafts', "Rascunhos"),
       icon: Save,
       path: '/dashboard/rascunhos',
       onClick: undefined,
       badge: false
     },
     {
-      title: '',
+      title: t('nav.credits'),
       icon: CreditCard,
       path: '/dashboard/creditos',
       onClick: undefined,
       badge: hasNotifications
     }, 
     {
-      title: '',
+      title: t('nav.profile'),
       icon: User,
       path: '/dashboard/configuracoes',
       onClick: undefined,
@@ -81,7 +81,7 @@ export const MobileBottomNav = () => {
                 key={item.path + item.title}
                 to={item.onClick ? "#" : item.path}
                 className={cn(
-                  "flex flex-col items-center py-2 px-2 rounded-lg transition-colors",
+                  "flex flex-col items-center py-2 px-3 rounded-lg transition-colors",
                   isActive ? "text-brand-purple" : "text-muted-foreground",
                 )}
                 onClick={item.onClick}
@@ -92,9 +92,7 @@ export const MobileBottomNav = () => {
                     <Badge className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-red-500" />
                   )}
                 </div>
-                {item.title && (
-                  <span className="text-[10px] font-medium line-clamp-1">{item.title}</span>
-                )}
+                <span className="text-xs font-medium">{item.title}</span>
               </Link>
             );
           })}

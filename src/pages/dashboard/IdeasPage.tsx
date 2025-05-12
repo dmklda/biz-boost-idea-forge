@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -280,17 +281,13 @@ const IdeasPage = () => {
             {t('ideas.subtitle')}
           </p>
         </div>
-        <div className="flex flex-row gap-2 w-full sm:w-auto">
-          <Button 
-            variant="outline" 
-            onClick={handleViewDrafts} 
-            className="flex items-center gap-2 flex-1 sm:flex-auto justify-center"
-          >
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button variant="outline" onClick={handleViewDrafts} className="flex items-center gap-2">
             <Save className="h-4 w-4" />
             {t('ideas.viewDrafts', "Ver rascunhos")}
           </Button>
-          <Link to="/" className="flex-1 sm:flex-auto">
-            <Button className="bg-brand-purple hover:bg-brand-purple/90 w-full">
+          <Link to="/">
+            <Button className="bg-brand-purple hover:bg-brand-purple/90">
               <PlusCircle className="h-4 w-4 mr-2" />
               {t('ideas.newIdea')}
             </Button>
