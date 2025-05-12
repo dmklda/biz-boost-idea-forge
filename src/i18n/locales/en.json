@@ -221,7 +221,6 @@
     "termsOfUse": "Terms of use",
     "copyright": "All rights reserved."
   },
-  
   "api": {
     "tagline": "API",
     "title": "API Documentation",
@@ -272,7 +271,6 @@
       "community": "Developer Community"
     }
   },
-  
   "blog": {
     "tagline": "Blog",
     "title": "Latest Insights & Trends",
@@ -324,9 +322,11 @@
         "category": "Success Story",
         "content": "In this exclusive case study, we share the development journey of Startupideia, from initial concept to market launch. Founder Marciairo Kumbuessa discusses the challenges faced as a solo developer building a tech startup in Angola, and how the platform evolved based on local entrepreneur needs and feedback from early users."
       }
-    }
+    },
+"showLess": "Show Less",
+"postNotFound": "Item not found",
+"backToBlog": "Back to Blog"
   },
-  
   "guides": {
     "tagline": "Guides",
     "title": "Step-by-Step Guides",
@@ -338,29 +338,31 @@
         "title": "Complete Guide to Idea Validation",
         "description": "A comprehensive walkthrough of the entire validation process, from initial concept to market testing.",
         "category": "Idea Validation",
-        "level": "Beginner"
-      },
+        "level": "Beginner",
+"content": "Idea validation is the crucial first step before starting any venture. In this guide, we explore a 7-day process that includes market research, interviews with potential customers, competitor analysis, concept testing, and feedback evaluation. By following this methodology, you can save time and money by determining whether your idea has real potential before investing significant resources."      },
       "guide2": {
         "title": "Building Your Customer Persona",
         "description": "Learn how to create detailed customer personas that help you understand your target audience better.",
         "category": "Market Research",
-        "level": "Intermediate"
-      },
+        "level": "Intermediate",
+"content": "A thorough competitive analysis allows you to identify opportunities in the market and develop a unique value proposition. This guide covers how to map your direct and indirect competitors, how to analyze their strengths and weaknesses, and how to use this information to define your positioning. You will learn how to create a competition matrix and identify gaps in the market that your startup can fill."      },
       "guide3": {
         "title": "Competitive Analysis Framework",
         "description": "Tools and techniques to analyze your competitors and identify market opportunities.",
         "category": "Strategy",
-        "level": "Advanced"
-      },
+        "level": "Advanced",
+"content": "A Minimum Viable Product (MVP) is a simplified version of your product that includes only the essential features. This guide explains how to scope your MVP, how to build it with limited resources, how to test it with real users, and how to analyze the results to inform the next iteration. The focus is on maximizing learning while minimizing time and upfront investment."      },
       "guide4": {
         "title": "Financial Modeling for Startups",
         "description": "Create realistic financial projections that will help you secure funding and plan your business growth.",
         "category": "Finance",
-        "level": "Advanced"
-      }
-    }
+        "level": "Advanced",
+"content": "This guide explores the specifics of raising investment for startups in the African context, with a special focus on the Angolan market. We cover the available funding sources, from bootstrapping and angel investing to venture capital and government funding. We discuss how to adapt your pitch to different types of investors and how to navigate the specific challenges of the local ecosystem, including regulatory aspects and valuations."      }
+    },
+"hideGuide": "Hide Guide",
+"guideNotFound": "Guide not found",
+"backToGuides": "Back to Guides"
   },
-  
   "successCases": {
     "tagline": "Success Cases",
     "title": "Success Stories",
@@ -386,9 +388,30 @@
     "submitSuccess": {
       "title": "Success Story Submitted!",
       "description": "Thank you for sharing your story. Our team will review it and contact you soon."
+    },
+   "showLess": "Show Less",
+"caseNotFound": "Case Not Found",
+"backToCases": "Back to Case Studies",
+"cta": {
+"title": "Be our next case study",
+"subtitle": "Start validating your ideas today and turn them into successful businesses",
+"button": "Start Now"
+    },
+    "cases": {
+      "case1": {
+       "company": "FinTech Angola",
+"description": "A fintech startup based in Luanda that was struggling to validate its mobile payments business model. Using the Startupideia platform, they were able to refine their target audience, adjust their revenue model, and identify strategic partners. The detailed analytics provided helped them better understand the financial behavior of their potential users and adapt their product to meet the specific needs of the Angolan market.",
+"result": "150% increase in conversion rate and raised $500,000 seed investment after refining the business model based on platform recommendations." },
+"case2": {
+"company": "EcoSolutions Huíla",
+"description": "A sustainable solutions company based in Lubango that was developing an innovative water purification system for rural communities. The challenge was to find a business model that was economically viable while serving communities with limited resources. The Startupideia platform helped the company develop a hybrid model that combines commercial sales with funded social initiatives, enabling it to scale its impact.",
+"result": "Implementation in 12 rural communities, benefiting more than 5,000 people in the first year, and establishing partnerships with 3 international NGOs to expand the project." },
+"case3": {
+"company": "EdTech Benguela",
+"description": "An educational technology startup that was developing a mobile learning platform adapted to the Angolan reality. Facing a competitive market with connectivity challenges, they used Startupideia to refine their value proposition and go-to-market strategy. Detailed analysis of user behavior and the local educational ecosystem provided valuable insights that guided product development.",
+"result": "200% growth in user base in 6 months and partnership with the Ministry of Education to deploy the solution in 50 public schools." }
     }
   },
-  
   "auth": {
     "login": "Login",
     "loginSubtitle": "Access your account to see your analyses",
@@ -412,7 +435,6 @@
       "nameLength": "Name must be at least 2 characters"
     }
   },
-  
   "dashboard": {
     "title": "Dashboard",
     "newAnalysis": "New Analysis",
@@ -457,7 +479,6 @@
       "needsCredits": "Add credits to continue analyzing ideas."
     }
   },
-  
   "credits": {
     "title": "My Credits",
     "subtitle": "Manage your credits for idea analysis",
@@ -473,7 +494,8 @@
       "description": "Acquire more credits for analyses",
       "credits": "credits",
       "processing": "Processing...",
-      "buy": "Buy"
+      "buy": "Buy",
+"error": "Error adding credits"
     },
     "transactions": {
       "title": "Transaction History",
@@ -486,10 +508,9 @@
       "noTransactions": "No transactions found.",
       "purchase": "Purchase",
       "usage": "Usage",
-      "addedSuccess": "Credits added successfully!"
-    }
+      "addedSuccess": "Credits added successfully!",
+"loadingError": "Error loading transaction history"    }
   },
-  
   "ideas": {
     "title": "My Ideas",
     "subtitle": "Manage and analyze your business ideas",
@@ -536,7 +557,6 @@
       "buyCredits": "Buy Credits"
     }
   },
-  
   "nav": {
     "backToHome": "Back to home page",
     "dashboard": "Dashboard",
@@ -547,18 +567,15 @@
     "logout": "Logout",
     "drafts": "Drafts"
   },
-  
   "notifications": {
     "title": "Notifications",
     "lowCredits": "Low Credits",
     "lowCreditsDesc": "Your credits are running out. Add more to continue analyzing ideas.",
     "noNotifications": "No notifications at this time"
   },
-  
   "search": {
     "placeholder": "Search ideas..."
   },
-  
   "common": {
     "back": "Back",
     "next": "Next",
@@ -574,7 +591,6 @@
     "characters": "characters",
     "dontKnow": "I don't know"
   },
-  
   "countries": {
     "global": "Global",
     "angola": "Angola",
@@ -591,7 +607,6 @@
     "china": "China",
     "other": "Other"
   },
-  
   "profile": {
     "title": "My Profile",
     "subtitle": "Manage your personal information and account preferences",
@@ -628,7 +643,6 @@
     },
     "save": "Save Changes"
   },
-  
   "metrics": {
     "title": "Advanced Metrics",
     "subtitle": "Detailed analysis and insights about your projects",
@@ -669,14 +683,12 @@
     "improvementNeeded": "Needs Improvement",
     "recommendations": "Recommendations"
   },
-  
   "monitoringStatus": {
     "title": "System Status",
     "active": "All Systems Active",
     "partial": "Partial Issues",
     "down": "System Down"
   },
-  
   "formSteps": {
     "marketAnalysis": "Market Analysis",
     "financialViability": "Financial Viability",
@@ -688,7 +700,6 @@
     "analyses": "Analyses",
     "average": "Average"
   },
-  
   "dashboardCharts": {
     "marketAnalysis": "Market Analysis",
     "financialViability": "Financial Viability",
@@ -697,7 +708,6 @@
     "analyses": "Analyses",
     "average": "Average"
   },
-  
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your account and profile preferences",
@@ -752,7 +762,6 @@
     "confirmDeleteAccount": "Are you sure you want to delete your account? This action cannot be undone.",
     "accountDeleted": "Account deleted successfully"
   },
-  
   "tags": {
     "title": "Tags",
     "add": "Add tags",
@@ -776,7 +785,6 @@
       "deleteFailed": "Failed to delete tag"
     }
   },
-  
   "drafts": {
     "title": "My Drafts",
     "subtitle": "Continue working on your saved ideas",
@@ -810,5 +818,116 @@
     "lastEdited": "Last edited",
     "confirmDelete": "Are you sure you want to delete this draft?",
     "confirmDeleteDescription": "This action cannot be undone"
-  }
+  },
+ "webinars": {
+"tagline": "Webinars",
+"title": "Learn from the Experts",
+"subtitle": "Join our live webinars or watch recordings of past sessions",
+"upcoming": "Upcoming Webinars",
+"past": "Past Webinars",
+"registerNow": "Register Now",
+"watchRecording": "Watch Recording",
+"hostInfo": "Hosted by:",
+"items": {
+"webinar1": {
+"title": "Idea Validation: From Conception to Proof of Concept",
+"description": "Learn practical techniques for testing the viability of your business concept with minimal resources.",
+"date": "May 10, 2025",
+"time": "19:00 WAT",
+"host": "Marciairo Kumbuessa",
+"role": "CEO and Founder of DMK, Ltd"
+},
+      "webinar2": {
+"title": "Fundraising: What African Investors Look For",
+"description": "A panel of experienced investors discussing what they look for in African startups.",
+"date": "May 17, 2025",
+"time": "18:00 WAT",
+"host": "Expert Panel",
+"role": "Angel Investors and VCs"
+},
+"webinar3": {
+"title": "Effective Market Analysis for Entrepreneurs",
+"description": "Market research methodologies that can be applied on limited budgets.",
+"date": "May 24, 2025",
+"time": "19:00 WAT",
+"host": "Dneisy Kumbuessa",
+"role": "VP & Sales Director at DMK, Ltd"
+},
+"webinar4": {
+"title": "Building MVPs that Customers Actually Want",
+"description": "How to efficiently create minimum viable products that validate your business case.",
+"date": "April 5, 2025",
+"time": "19:00 WAT",
+"host": "Marciairo Kumbuessa",
+"role": "CEO & Founder at DMK, Ltd",
+"recording": "https://www.youtube.com/watch?v=example1"
+},
+"webinar5": {
+"title": "Growth Strategies for Angolan Startups",
+"description": "Growth tactics adapted to the reality of the Angolan market.",
+"date": "March 15, 2025",
+"time": "18:00 WAT",
+"host": "Dneisy Kumbuessa",
+"role": "VP and Sales Director at DMK, Ltda",
+"recording": "https://www.youtube.com/watch?v=example2"
+}
+}
+},
+  "aboutUs": {
+"tagline": "About Us",
+"title": "Our Mission",
+"subtitle": "We are on a mission to help entrepreneurs validate their business ideas and increase their chances of success",
+"mission": {
+"title": "Why We Started",
+"description1": "Startupideia was founded by Marciairo Kumbuessa, a solo developer with a vision to make business idea validation accessible to entrepreneurs in Angola and beyond. After experiencing first-hand the challenges of launching businesses without proper validation, he created Startupideia to solve this critical problem.",
+"description2": "Today, DMK, Lda is helping entrepreneurs across Angola make data-driven decisions about their business ideas before investing significant resources." },
+"company": {
+"title": "DMK, Ltd",
+"description": "Startupideia is owned and operated by DMK, Lda, an Angolan technology company based in Lubango, Huíla Province. Founded with the mission of creating innovative solutions for local entrepreneurs, DMK is committed to promoting technological advancement in Angola.",
+"location": "Lubango, Huíla Province, Angola",
+"emails": "contact@startupideia.com, contact@dmklda.online"
+},
+"values": {
+"title": "Our Values",
+"subtitle": "The principles that guide our work and our relationships with clients",
+"value1": {
+"title": "Decisions Data-Driven",
+"description": "We believe that successful businesses are built on evidence and insights, not just intuition and passion."
+},
+"value2": {
+"title": "Entrepreneurship Training",
+"description": "Our goal is to democratize access to business validation tools and knowledge for entrepreneurs in Angola and Africa."
+},
+"value3": {
+"title": "Continuous Innovation",
+"description": "We are constantly improving our algorithms and methodologies to provide the most accurate validation possible."
+}
+},
+    "team": {
+"title": "Our Leadership",
+"subtitle": "The visionaries behind Startupideia",
+"member1": {
+"name": "Marciairo Kumbuessa",
+"role": "CEO and Founder",
+"bio": "Solo developer and entrepreneur with a passion for creating technology solutions that address local challenges."
+},
+"member2": {
+"name": "Dneisy Kumbuessa",
+"role": "Vice President and Sales Director",
+"bio": "Leads customer relationships and sales operations, ensuring our solutions meet the needs of local entrepreneurs." }
+}
+},
+"contact": {
+"title": "Contact",
+"subtitle": "Contact us for more information about our services",
+"email": "contact@startupideia.com",
+"phone": "+244 912 345 678",
+"address": "Lubango, Huila Province, Angola",
+"companyInfo": {
+"name": "DMK, Ltd",
+"location": "Lubango, Huila Province, Angola",
+"email1": "contact@startupideia.com",
+"email2": "contact@dmklda.online"
+}
+}
 }
