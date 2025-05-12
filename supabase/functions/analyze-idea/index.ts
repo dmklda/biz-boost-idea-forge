@@ -1,5 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
-import { OpenAI } from 'openai';
+
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+// Fix the OpenAI import to use a URL import instead of a bare import
+import { OpenAI } from 'https://esm.sh/openai@4.28.4';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -133,7 +135,7 @@ Deno.serve(async (req) => {
         
       if (creditError) throw creditError;
       
-      // Update user's credit balance - Note: parameter order is (user_id, amount)
+      // Update user's credit balance with parameters in correct order (user_id, amount)
       const { error: updateError } = await supabase
         .rpc("update_user_credits", { 
           user_id: userId, 
