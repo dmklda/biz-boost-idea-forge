@@ -45,41 +45,53 @@ export type Database = {
         Row: {
           competitor_analysis: Json | null
           created_at: string
+          differentiation: string | null
           financial_analysis: Json | null
           id: string
           idea_id: string
           market_analysis: Json | null
+          market_size: string | null
           recommendations: Json | null
           score: number
           status: string
+          strengths: string[] | null
           swot_analysis: Json | null
           user_id: string
+          weaknesses: string[] | null
         }
         Insert: {
           competitor_analysis?: Json | null
           created_at?: string
+          differentiation?: string | null
           financial_analysis?: Json | null
           id?: string
           idea_id: string
           market_analysis?: Json | null
+          market_size?: string | null
           recommendations?: Json | null
           score: number
           status: string
+          strengths?: string[] | null
           swot_analysis?: Json | null
           user_id: string
+          weaknesses?: string[] | null
         }
         Update: {
           competitor_analysis?: Json | null
           created_at?: string
+          differentiation?: string | null
           financial_analysis?: Json | null
           id?: string
           idea_id?: string
           market_analysis?: Json | null
+          market_size?: string | null
           recommendations?: Json | null
           score?: number
           status?: string
+          strengths?: string[] | null
           swot_analysis?: Json | null
           user_id?: string
+          weaknesses?: string[] | null
         }
         Relationships: [
           {

@@ -64,7 +64,7 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
       try {
         setLoading(true);
         const promises = ideaIds.map(async (id) => {
-          // First query to get the basic idea information (excluding the solution field)
+          // First query to get the basic idea information
           const { data, error } = await supabase
             .from('ideas')
             .select(`
@@ -83,7 +83,10 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
             .eq('idea_id', id)
             .maybeSingle();
             
-          if (analysesError) throw analysesError;
+          if (analysesError) {
+            console.error("Error fetching analyses:", analysesError);
+            // Continue without analysis data if there's an error
+          }
           
           // Fetch tags
           const { data: tagsData, error: tagsError } = await supabase
