@@ -1,4 +1,3 @@
-
 {
   "testimonials": {
     "tagline": "Depoimentos",
@@ -189,7 +188,13 @@
       "placeholder": "Selecione uma localização..."
     },
     "submit": "Enviar para Análise",
-    "submitting": "Analisando..."
+    "submitting": "Analisando...",
+	"saveAsDraft": "Guardar como rascunho",
+	"savingDraft": "Salvar...",
+	"draftSaved": "Rascunho guardado com sucesso!",
+	"viewDrafts": "Ver rascunhos",
+	"reanalyzeTitle": "Reanálise de Ideia",
+	"reanalyzeSubtitle": "Refine a sua ideia para uma nova análise"
   },
   "cta": {
     "title": "Pronto para transformar sua ideia em realidade?",
@@ -216,7 +221,6 @@
     "termsOfUse": "Termos de uso",
     "copyright": "Todos os direitos reservados."
   },
-  
   "api": {
     "tagline": "API",
     "title": "Documentação da API",
@@ -267,7 +271,6 @@
       "community": "Comunidade de Desenvolvedores"
     }
   },
-  
   "blog": {
     "tagline": "Blog",
     "title": "Últimos Insights e Tendências",
@@ -320,9 +323,10 @@
         "category": "História de Sucesso",
         "content": "Neste estudo de caso exclusivo, compartilhamos a jornada de desenvolvimento do Startupideia, desde o conceito inicial até o lançamento no mercado. O fundador Marciairo Kumbuessa discute os desafios enfrentados como desenvolvedor solo na construção de uma startup de tecnologia em Angola, e como a plataforma evoluiu com base nas necessidades dos empreendedores locais e no feedback dos primeiros usuários."
       }
-    }
+    },
+"submitCasePromo": "Tem uma história de sucesso? Envie o caso de estudo da sua startup para o nosso blog.",
+"submitCaseLink": "Partilhe a sua história"
   },
-  
   "guides": {
     "tagline": "Guias",
     "title": "Guias e Tutoriais",
@@ -363,7 +367,6 @@
       }
     }
   },
-  
   "successCases": {
     "tagline": "Casos de Sucesso",
     "title": "Histórias de Sucesso",
@@ -394,9 +397,28 @@
         "description": "Uma startup de tecnologia educacional que estava desenvolvendo uma plataforma de aprendizado móvel adaptada para a realidade angolana. Enfrentando um mercado competitivo e com desafios de conectividade, eles usaram o Startupideia para refinar sua proposta de valor e estratégia go-to-market. A análise detalhada do comportamento dos usuários e do ecossistema educacional local forneceu insights valiosos que direcionaram o desenvolvimento do produto.",
         "result": "Crescimento de 200% na base de usuários em 6 meses e parceria com o Ministério da Educação para implementar a solução em 50 escolas públicas."
       }
-    }
+    },
+    "submitButton": "Enviar Caso de Sucesso",
+"submitForm": {
+"title": "Envie a sua História de Sucesso",
+"description": "Partilhe como construiu a sua startup e como a nossa plataforma o ajudou a ter sucesso. Casos selecionados serão apresentados no nosso blog.",
+"nameLabel": "O Seu Nome",
+"namePlaceholder": "Introduza o seu nome completo",
+"emailLabel": "Endereço de E-mail",
+"emailPlaceholder": "Introduza o seu endereço de e-mail",
+"companyNameLabel": "Nome da Empresa",
+"companyNamePlaceholder": "Introduza o nome da sua empresa",
+"descriptionLabel": "Caso de Sucesso",
+"descriptionPlaceholder": "Descreva a sua jornada, desafios e como os superou",
+"submit": "Enviar História",
+"submitting": "Enviando...",
+"thankYou": "Obrigado pelo seu envio!"
+},
+"submitSuccess": {
+"title": "Caso de Sucesso Enviado!",
+"description": "Obrigado por partilhar a sua história. A nossa equipa irá analisá-la e entrar em contacto consigo em breve."
+}
   },
-  
   "webinars": {
     "tagline": "Webinars",
     "title": "Aprenda com Especialistas",
@@ -451,7 +473,6 @@
       }
     }
   },
-  
   "aboutUs": {
     "tagline": "Sobre Nós",
     "title": "Nossa Missão",
@@ -498,7 +519,6 @@
       }
     }
   },
-  
   "contact": {
     "title": "Contato",
     "subtitle": "Entre em contato conosco para obter mais informações sobre nossos serviços",
@@ -512,7 +532,6 @@
       "email2": "contact@dmklda.online"
     }
   },
-  
   "auth": {
     "login": "Entrar",
     "loginSubtitle": "Acesse sua conta para ver suas análises",
@@ -533,9 +552,8 @@
       "invalidEmail": "Email inválido",
       "passwordLength": "A senha deve ter pelo menos 6 caracteres",
       "nameLength": "O nome deve ter pelo menos 2 caracteres"
-    }
-  },
-  
+    },
+"redirect": "Redirecionar..."  },
   "dashboard": {
     "title": "Dashboard",
     "newAnalysis": "Nova Análise",
@@ -580,7 +598,6 @@
       "needsCredits": "Adicione créditos para continuar analisando ideias."
     }
   },
-  
   "credits": {
     "title": "Meus Créditos",
     "subtitle": "Gerencie seus créditos para análise de ideias",
@@ -614,7 +631,6 @@
       "addedSuccess": "Créditos adicionados com sucesso!"
     }
   },
-  
   "ideas": {
     "title": "Minhas Ideias",
     "subtitle": "Gerencie e analise suas ideias de negócio",
@@ -654,9 +670,13 @@
     "removedFromFavorites": "Removido dos favoritos",
     "favoriteError": "Erro ao atualizar status de favorito",
     "noFavorites": "Você ainda não tem ideias favoritas",
-    "viewDrafts": "Ver Rascunhos"
+    "viewDrafts": "Ver Rascunhos",
+    "reanalyze": {
+"button": "Reanalisar",
+"noCredits": "Não tens créditos suficientes",
+"buyCredits": "Comprar Créditos"
+    }
   },
-  
   "nav": {
     "backToHome": "Voltar à página inicial",
     "dashboard": "Painel",
@@ -667,18 +687,15 @@
     "logout": "Sair",
     "drafts": "Rascunhos"
   },
-  
   "notifications": {
     "title": "Notificações",
     "lowCredits": "Créditos baixos",
     "lowCreditsDesc": "Seus créditos estão acabando. Adicione mais para continuar analisando ideias.",
     "noNotifications": "Nenhuma notificação no momento"
   },
-  
   "search": {
     "placeholder": "Pesquisar ideias..."
   },
-  
   "common": {
     "back": "Voltar",
     "next": "Próximo",
@@ -694,7 +711,6 @@
     "characters": "caracteres",
     "dontKnow": "Não sei"
   },
-  
   "countries": {
     "global": "Global",
     "angola": "Angola",
@@ -711,14 +727,12 @@
     "china": "China",
     "other": "Outros"
   },
-  
   "monitoringStatus": {
     "title": "Estado do sistema",
     "active": "Todos os sistemas ativos",
     "partial": "Problemas parciais",
     "down": "Sistema inoperante"
   },
-  
   "formSteps": {
     "marketAnalysis": "Análise de Mercado",
     "financialViability": "Viabilidade Financeira",
@@ -730,7 +744,6 @@
     "analyses": "Análises",
     "average": "Média"
   },
-  
   "dashboardCharts": {
     "marketAnalysis": "Análise de Mercado",
     "financialViability": "Viabilidade Financeira",
@@ -739,7 +752,6 @@
     "analyses": "Análises",
     "average": "Média"
   },
-  
   "settings": {
     "title": "Configurações",
     "subtitle": "Gerencie suas preferências de conta e perfil",
@@ -794,7 +806,6 @@
     "confirmDeleteAccount": "Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.",
     "accountDeleted": "Conta excluída com sucesso"
   },
-  
   "tags": {
     "title": "Tags",
     "add": "Adicionar tags",
@@ -818,7 +829,6 @@
       "deleteFailed": "Falha ao excluir tag"
     }
   },
-  
   "drafts": {
     "title": "Meus Rascunhos",
     "subtitle": "Continue trabalhando em suas ideias salvas",
@@ -852,5 +862,81 @@
     "lastEdited": "Última edição",
     "confirmDelete": "Tem certeza que deseja excluir este rascunho?",
     "confirmDeleteDescription": "Esta ação não pode ser desfeita"
-  }
+  },
+ "perfil": {
+"title": "O Meu Perfil",
+"subtitle": "Gerir as suas informações pessoais e preferências de conta",
+"informações pessoais": {
+"title": "Informação Pessoal",
+"nome": "Nome Completo",
+"e-mail": "E-mail",
+"telefone": "Telefone",
+"país": "País",
+"língua": "Língua preferida"
+},
+"configurações de Conta": {
+"title": "Definições da conta",
+"changePassword": "Alterar Palavra-passe",
+"currentPassword": "Palavra-passe Atual",
+"newPassword": "Nova Palavra-passe",
+"confirmPassword": "Confirmar nova palavra-passe",
+"twoFactor": "Autenticação de dois fatores",
+"enabled": "Habilitado",
+"disabled": "Desativado"
+},
+"notificações": {
+"title": "Preferências de Notificação",
+"análise": "Notificações de Análise",
+"marketing": "Notificações de Marketing",
+"newsletter": "Boletim informativo [TRADUZIR]",
+"updates": "Atualizações do Produto"
+},
+"zona de perigo": {
+"título": "Zona de Perigo",
+"deleteAccount": "Apagar conta",
+"deleteWarning": "Esta ação não pode ser anulada. Todos os seus dados serão removidos permanentemente.",
+"confirmDelete": "Sim, apagar a minha conta"
+},
+"guardar": "Guardar alterações"
+},
+	"metrics": {
+	"title": "Métricas Avançadas",
+	"subtitle": "Análise detalhada e insights sobre os seus projetos",
+	"exportData": "Exportar Dados",
+	"exportSuccess": "Dados exportados com sucesso",
+	"timeRange": "Intervalo de Tempo",
+	"selectTimeRange": "Selecionar intervalo de tempo",
+	"last7Days": "Últimos 7 dias",
+	"last30Days": "Últimos 30 dias",
+	"last90Days": "Últimos 90 dias",
+	"lastYear": "O ano passado",
+	"allTime": "Todo o tempo",
+	"granularity": "Granularidade",
+	"selectGranularity": "Selecionar granularidade",
+	"daily": "Diariamente",
+	"semanalmente": "Semanalmente",
+	"mensalmente": "Mensalmente",
+	"totalAnalyses": "Análises Totais",
+	"averageScore": "Pontuação Média",
+	"topCategory": "Categoria Principal",
+	"viableIdeas": "Ideias Viáveis",
+	"trends": "Tendências",
+	"distribution": "Distribuição",
+	"desempenho": "Desempenho",
+	"analysisAndScoreTrend": "Tendência de Análise e Pontuação",
+	"analysisAndScoreTrendDesc": "Evolução da contagem de análises e pontuação média ao longo do tempo",
+	"analyses": "Análises",
+	"ideaCount": "Contagem de Ideias",
+	"scoreDistribution": "Distribuição de Pontuações",
+	"scoreDistributionDesc": "Distribuição de pontuações por intervalos",
+	"categoryDistribution": "Distribuição de Categorias",
+	"categoryDistributionDesc": "Distribuição percentual das ideias por categoria",
+	"ideaRadar": "Radar de Ideias",
+	"ideaRadarDesc": "Desempenho em diferentes dimensões de análise",
+	"performanceInsights": "Insights de Desempenho",
+	"performanceInsightsDesc": "Análise de desempenho das suas ideias",
+	"topPerforming": "Melhor desempenho",
+	"improvementNeeded": "Necessita de melhorias",
+	"recommendations": "Recomendações"
+}
 }
