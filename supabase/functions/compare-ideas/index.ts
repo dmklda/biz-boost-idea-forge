@@ -33,19 +33,34 @@ serve(async (req) => {
   }
 
   try {
-    // Verificar se é um POST
-    if (req.method !== 'POST') {
+    // Verificar o corpo da requisição antes de fazer o parse como JSON
+    const text = await req.text();
+    if (!text || text.trim() === '') {
       return new Response(
-        JSON.stringify({ error: 'Method not allowed' }),
+        JSON.stringify({ error: 'Corpo da requisição vazio' }),
         { 
-          status: 405,
+          status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       )
     }
 
-    // Extrair o corpo da requisição
-    const { ideas, apiKey } = await req.json()
+    // Parse do corpo da requisição com tratamento de erro
+    let requestBody;
+    try {
+      requestBody = JSON.parse(text);
+    } catch (parseError) {
+      console.error("Erro ao parsear o corpo da requisição:", parseError);
+      return new Response(
+        JSON.stringify({ error: 'Corpo da requisição inválido', details: parseError.message }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
+    }
+
+    const { ideas, apiKey } = requestBody;
 
     // Validar os dados de entrada
     if (!Array.isArray(ideas) || ideas.length < 2 || ideas.length > 3) {
@@ -122,6 +137,21 @@ Por favor, forneça uma análise comparativa das ideias em formato JSON com os s
 11. "overallRecommendation": Uma recomendação final sobre qual ideia parece mais promissora e por quê
 
 Forneça o resultado apenas em formato JSON válido, sem qualquer texto adicional antes ou depois do JSON. Certifique-se de que a resposta seja um objeto JSON completo, sem erros de sintaxe.
+
+Formato da resposta:
+{
+  "competitiveAdvantage": "análise aqui",
+  "marketPotential": ["baixo", "médio", "alto"],
+  "executionDifficulty": ["baixa", "média", "alta"],
+  "investmentRequired": ["baixo", "médio", "alto"],
+  "scalabilityPotential": ["baixo", "médio", "alto"],
+  "innovationLevel": ["baixo", "médio", "alto"],
+  "riskLevel": ["baixo", "médio", "alto"],
+  "keyStrengthComparison": "análise aqui",
+  "keyWeaknessComparison": "análise aqui",
+  "recommendedFocus": "recomendações aqui",
+  "overallRecommendation": "recomendação final aqui"
+}
 `;
 
     console.log("Enviando prompt para o OpenAI...");
@@ -130,28 +160,35 @@ Forneça o resultado apenas em formato JSON válido, sem qualquer texto adiciona
     const completion = await openai.createCompletion({
       model: "gpt-3.5-turbo-instruct",
       prompt: prompt,
-      max_tokens: 2048, // Aumentar o limite de tokens para garantir resposta completa
-      temperature: 0.5, // Reduzir a temperatura para maior previsibilidade
+      max_tokens: 3000, // Aumentar o limite de tokens ainda mais
+      temperature: 0.3, // Reduzir ainda mais a temperatura para maior previsibilidade
       stop: null, // Remover qualquer stop token para garantir resposta completa
     });
+
+    // Verificar se a resposta da OpenAI existe e tem o conteúdo esperado
+    if (!completion.data || !completion.data.choices || completion.data.choices.length === 0) {
+      console.error("Resposta da OpenAI inválida ou vazia");
+      throw new Error("A API OpenAI retornou uma resposta inválida ou vazia");
+    }
 
     // Processar a resposta com tratamento de erro aprimorado
     const rawResponse = completion.data.choices[0].text?.trim() || "";
     
     console.log("Resposta recebida do OpenAI");
+    console.log("Tamanho da resposta:", rawResponse.length);
     
     let insights;
     try {
-      // Limpar a resposta para garantir que temos apenas JSON válido
-      // Encontra o primeiro '{' e o último '}'
-      const startIndex = rawResponse.indexOf('{');
-      const endIndex = rawResponse.lastIndexOf('}');
+      // Tentar encontrar um objeto JSON válido na resposta, usando regex para maior precisão
+      const jsonRegex = /{[\s\S]*}/;
+      const jsonMatch = rawResponse.match(jsonRegex);
       
-      if (startIndex === -1 || endIndex === -1 || startIndex > endIndex) {
-        throw new Error("Não foi possível encontrar um objeto JSON válido na resposta");
+      if (!jsonMatch) {
+        console.error("Não foi possível encontrar um objeto JSON válido na resposta da OpenAI");
+        throw new Error("Formato de resposta inválido da API OpenAI");
       }
       
-      const jsonStr = rawResponse.substring(startIndex, endIndex + 1);
+      const jsonStr = jsonMatch[0];
       insights = JSON.parse(jsonStr);
       
       // Validar se temos os campos esperados
@@ -167,7 +204,7 @@ Forneça o resultado apenas em formato JSON válido, sem qualquer texto adiciona
         insights = createFallbackInsights(ideasData, missingFields, insights);
       }
     } catch (e) {
-      console.error("Erro ao parsear resposta JSON:", e);
+      console.error("Erro ao processar resposta JSON:", e);
       console.log("Resposta recebida:", rawResponse);
       
       // Criar um insights de fallback em caso de falha no parsing
