@@ -30,16 +30,17 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
     try {
       // If user is authenticated, process with Supabase
       if (authState.isAuthenticated && authState.user) {
+        console.log("Sending form data:", formData);
         
         // Call the analyze-idea edge function
         const { data: analysisData, error: analysisError } = await supabase.functions
           .invoke('analyze-idea', {
-            body: {
+            body: JSON.stringify({
               ideaData: formData,
               userId: authState.user.id,
               ideaId: editingIdeaId,
               isReanalyzing
-            }
+            })
           });
           
         if (analysisError) {

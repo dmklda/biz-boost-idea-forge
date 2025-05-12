@@ -8,18 +8,53 @@ const openai = new OpenAI({
   apiKey: Deno.env.get("OPENAI_API_KEY"),
 });
 
+// CORS headers for cross-origin requests
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
 // Request handler for the analyze-idea function
 Deno.serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+  
   try {
-    // Parse the request body
-    const requestData = await req.json();
+    // Parse the request body more carefully
+    let requestData;
+    try {
+      const text = await req.text();
+      
+      // Log the received data for debugging
+      console.log("Received request body:", text);
+      
+      // Check if the text is empty
+      if (!text || text.trim() === '') {
+        return new Response(
+          JSON.stringify({ error: "Empty request body" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      requestData = JSON.parse(text);
+    } catch (parseError) {
+      console.error("Error parsing request body:", parseError);
+      return new Response(
+        JSON.stringify({ error: "Invalid JSON in request body" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
+    // Extract data from the parsed request
     const { ideaData, userId, ideaId, isReanalyzing = false } = requestData;
     
     // Validate required data
     if (!ideaData || !userId) {
       return new Response(
-        JSON.stringify({ error: "Missing required data" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        JSON.stringify({ error: "Missing required data", received: { hasIdeaData: !!ideaData, hasUserId: !!userId } }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -40,12 +75,15 @@ Deno.serve(async (req) => {
         .eq('id', userId)
         .single();
         
-      if (userError) throw userError;
+      if (userError) {
+        console.error("Error fetching user credits:", userError);
+        throw userError;
+      }
       
       if (!userData || userData.credits <= 0) {
         return new Response(
           JSON.stringify({ error: "INSUFFICIENT_CREDITS" }),
-          { status: 400, headers: { "Content-Type": "application/json" } }
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
     }
@@ -76,7 +114,11 @@ Deno.serve(async (req) => {
         .select('id')
         .single();
         
-      if (ideaError) throw ideaError;
+      if (ideaError) {
+        console.error("Error creating new idea:", ideaError);
+        throw ideaError;
+      }
+      
       finalIdeaId = newIdea.id;
     } else {
       // Update the existing idea and explicitly set is_draft to false
@@ -97,7 +139,10 @@ Deno.serve(async (req) => {
         .eq('id', ideaId)
         .eq('user_id', userId);
         
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error("Error updating idea:", updateError);
+        throw updateError;
+      }
     }
     
     // Store the analysis results
@@ -116,7 +161,10 @@ Deno.serve(async (req) => {
           financial_analysis: analysis.financialAnalysis,
         });
         
-      if (analysisError) throw analysisError;
+      if (analysisError) {
+        console.error("Error storing analysis:", analysisError);
+        throw analysisError;
+      }
       
       console.log(`Analysis stored successfully for idea ID: ${finalIdeaId}`);
       
@@ -133,7 +181,10 @@ Deno.serve(async (req) => {
         .eq('id', userId)
         .single();
         
-      if (creditError) throw creditError;
+      if (creditError) {
+        console.error("Error fetching user credits:", creditError);
+        throw creditError;
+      }
       
       // Update user's credit balance with parameters in correct order (user_id, amount)
       const { error: updateError } = await supabase
@@ -142,7 +193,10 @@ Deno.serve(async (req) => {
           amount: -1 
         });
         
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error("Error updating user credits:", updateError);
+        throw updateError;
+      }
     }
     
     // Return success response
@@ -151,25 +205,27 @@ Deno.serve(async (req) => {
         success: true,
         ideaId: finalIdeaId
       }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
     
   } catch (error) {
     console.error("Error in analyze-idea function:", error);
     return new Response(
       JSON.stringify({ error: error.message || "Internal server error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
 
-// Function to generate analysis using OpenAI
+// Function to generate analysis using OpenAI with better error handling
 async function generateAnalysis(ideaData) {
   try {
     const prompt = generateAnalysisPrompt(ideaData);
     
+    console.log("Sending request to OpenAI...");
+    
     const response = await openai.chat.completions.create({
-      model: "gpt-4-turbo",
+      model: "gpt-4o-mini", // Using a more modern model
       messages: [
         {
           role: "system",
@@ -184,11 +240,29 @@ async function generateAnalysis(ideaData) {
       response_format: { type: "json_object" }
     });
     
-    const analysisResult = JSON.parse(response.choices[0].message.content);
-    return analysisResult;
+    if (!response.choices || response.choices.length === 0) {
+      throw new Error("OpenAI returned an empty response");
+    }
+    
+    const content = response.choices[0].message.content;
+    
+    if (!content) {
+      throw new Error("OpenAI returned empty content");
+    }
+    
+    console.log("Received OpenAI response, parsing JSON...");
+    
+    try {
+      const analysisResult = JSON.parse(content);
+      return analysisResult;
+    } catch (parseError) {
+      console.error("Error parsing OpenAI response:", parseError);
+      console.log("Raw OpenAI response content:", content);
+      throw new Error("Failed to parse OpenAI JSON response");
+    }
   } catch (error) {
     console.error("Error generating analysis:", error);
-    throw new Error("Failed to generate analysis");
+    throw new Error(`Failed to generate analysis: ${error.message}`);
   }
 }
 
