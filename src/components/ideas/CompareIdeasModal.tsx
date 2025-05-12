@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { X, ChevronLeft, ChevronRight, ArrowLeftRight, BarChart3, Shield, Target, TrendingUp, Users, AlertTriangle } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, ArrowLeftRight, BarChart3, Shield, Target, TrendingUp, Users, AlertTriangle, Award, Zap, DollarSign, TrendingDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TagBadge } from "@/components/ideas/TagBadge";
 import { type TagType } from "@/components/ideas/TagsSelector";
@@ -193,7 +193,7 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
     const currentIdea = ideas[ideaIndex];
     const otherIdeas = ideas.filter((_, idx) => idx !== ideaIndex);
     
-    const insights: {title: string, content: string, type: 'positive' | 'neutral' | 'negative'}[] = [];
+    const insights: {title: string, content: string, type: 'positive' | 'neutral' | 'negative', icon?: React.ReactNode}[] = [];
     
     // Compare scores
     if (currentIdea.score) {
@@ -202,13 +202,15 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
         insights.push({
           title: t('ideas.compare.highScoreAdvantage'),
           content: t('ideas.compare.scoreAdvantageDesc'),
-          type: 'positive'
+          type: 'positive',
+          icon: <Award className="h-4 w-4" />
         });
       } else if (currentIdea.score <= avgOtherScore - 15) {
         insights.push({
           title: t('ideas.compare.lowScoreDisadvantage'),
           content: t('ideas.compare.scoreDisadvantageDesc'),
-          type: 'negative'
+          type: 'negative',
+          icon: <TrendingDown className="h-4 w-4" />
         });
       }
     }
@@ -218,7 +220,8 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
       insights.push({
         title: t('ideas.compare.marketInsight'),
         content: currentIdea.analysis.market_size,
-        type: 'neutral'
+        type: 'neutral',
+        icon: <Users className="h-4 w-4" />
       });
     }
     
@@ -227,7 +230,8 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
       insights.push({
         title: t('ideas.compare.keyStrength'),
         content: currentIdea.analysis.strengths[0],
-        type: 'positive'
+        type: 'positive',
+        icon: <Zap className="h-4 w-4" />
       });
     }
     
@@ -236,7 +240,28 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
       insights.push({
         title: t('ideas.compare.keyChallenge'),
         content: currentIdea.analysis.weaknesses[0],
-        type: 'negative'
+        type: 'negative',
+        icon: <AlertTriangle className="h-4 w-4" />
+      });
+    }
+    
+    // Add monetization insight if available
+    if (currentIdea.monetization) {
+      insights.push({
+        title: t('ideas.compare.marketPotential'),
+        content: currentIdea.monetization,
+        type: 'neutral',
+        icon: <DollarSign className="h-4 w-4" />
+      });
+    }
+    
+    // Add competitive advantage if differentiation exists
+    if (currentIdea.analysis?.differentiation) {
+      insights.push({
+        title: t('ideas.compare.competitiveAdvantage'),
+        content: currentIdea.analysis.differentiation,
+        type: 'positive',
+        icon: <Target className="h-4 w-4" />
       });
     }
     
@@ -274,7 +299,7 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
               </TabsTrigger>
               <TabsTrigger value="insights" className="flex items-center gap-1">
                 <TrendingUp className="h-4 w-4 hidden sm:block" />
-                {t('ideas.compare.insights') || "Insights"}
+                {t('ideas.compare.insights')}
               </TabsTrigger>
             </TabsList>
             
@@ -563,27 +588,38 @@ export function CompareIdeasModal({ isOpen, onClose, ideaIds }: CompareIdeasModa
                                   insights.map((insight, i) => (
                                     <div key={i} className={cn(
                                       "rounded-md p-3",
-                                      insight.type === 'positive' ? "bg-green-50 border border-green-200" : 
-                                      insight.type === 'negative' ? "bg-red-50 border border-red-200" : 
-                                      "bg-blue-50 border border-blue-200"
+                                      insight.type === 'positive' ? "bg-green-50 border border-green-200 dark:bg-green-900/10 dark:border-green-900" : 
+                                      insight.type === 'negative' ? "bg-red-50 border border-red-200 dark:bg-red-900/10 dark:border-red-900" : 
+                                      "bg-blue-50 border border-blue-200 dark:bg-blue-900/10 dark:border-blue-900"
                                     )}>
-                                      <h3 className={cn(
-                                        "text-sm font-semibold mb-1",
-                                        insight.type === 'positive' ? "text-green-700" : 
-                                        insight.type === 'negative' ? "text-red-700" : 
-                                        "text-blue-700"
-                                      )}>
-                                        {insight.title}
-                                      </h3>
+                                      <div className="flex items-center gap-2 mb-1">
+                                        {insight.icon && (
+                                          <span className={cn(
+                                            insight.type === 'positive' ? "text-green-700 dark:text-green-400" : 
+                                            insight.type === 'negative' ? "text-red-700 dark:text-red-400" : 
+                                            "text-blue-700 dark:text-blue-400"
+                                          )}>
+                                            {insight.icon}
+                                          </span>
+                                        )}
+                                        <h3 className={cn(
+                                          "text-sm font-semibold",
+                                          insight.type === 'positive' ? "text-green-700 dark:text-green-400" : 
+                                          insight.type === 'negative' ? "text-red-700 dark:text-red-400" : 
+                                          "text-blue-700 dark:text-blue-400"
+                                        )}>
+                                          {insight.title}
+                                        </h3>
+                                      </div>
                                       <p className="text-sm">{insight.content}</p>
                                     </div>
                                   ))
                                 ) : (
                                   <div className="flex flex-col items-center justify-center text-center p-6">
                                     <AlertTriangle className="h-8 w-8 text-amber-500 mb-2" />
-                                    <h3 className="text-sm font-medium">{t('ideas.compare.noInsights') || "Sem insights disponíveis"}</h3>
+                                    <h3 className="text-sm font-medium">{t('ideas.compare.noInsights')}</h3>
                                     <p className="text-xs text-muted-foreground mt-1">
-                                      {t('ideas.compare.completeAnalysis') || "Complete a análise desta ideia para obter insights comparativos"}
+                                      {t('ideas.compare.completeAnalysis')}
                                     </p>
                                   </div>
                                 )}

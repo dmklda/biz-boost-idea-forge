@@ -200,7 +200,25 @@
       "notSpecified": "未指定",
       "notAnalyzed": "未分析",
       "selectForComparison": "比較用に選択",
-      "fetchError": "アイデア詳細の取得中にエラーが発生しました"
+      "fetchError": "アイデア詳細の取得中にエラーが発生しました",
+      "insights": "インサイト",
+      "noInsights": "インサイトが利用できません",
+      "completeAnalysis": "比較インサイトを取得するにはこのアイデアの分析を完了してください",
+      "highScoreAdvantage": "他のアイデアより高いスコア",
+      "scoreAdvantageDesc": "このアイデアは他のアイデアより大幅に高いスコアを持ち、実現可能性が高いことを示しています",
+      "lowScoreDisadvantage": "他のアイデアより低いスコア",
+      "scoreDisadvantageDesc": "このアイデアは他のアイデアより大幅に低いスコアを持ちます、見直しを検討してください",
+      "marketInsight": "市場に関するインサイト",
+      "keyStrength": "主な強み",
+      "keyChallenge": "主な課題",
+      "insightComparison": "インサイト比較",
+      "competitiveAdvantage": "競争上の優位性",
+      "marketPotential": "市場の可能性",
+      "executionDifficulty": "実行の難しさ",
+      "investmentRequired": "必要な投資",
+      "scalabilityPotential": "スケーラビリティの可能性",
+      "innovationLevel": "革新性のレベル",
+      "riskLevel": "リスクレベル"
     }
   },
   "credits": {

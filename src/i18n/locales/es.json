@@ -200,7 +200,25 @@
       "notSpecified": "No especificado",
       "notAnalyzed": "No analizado",
       "selectForComparison": "Seleccionar para comparación",
-      "fetchError": "Error al obtener detalles de la idea"
+      "fetchError": "Error al obtener detalles de la idea",
+      "insights": "Insights",
+      "noInsights": "Sin insights disponibles",
+      "completeAnalysis": "Completa el análisis de esta idea para obtener insights comparativos",
+      "highScoreAdvantage": "Puntuación superior a otras ideas",
+      "scoreAdvantageDesc": "Esta idea tiene una puntuación significativamente mayor que otras, indicando mayor viabilidad",
+      "lowScoreDisadvantage": "Puntuación inferior a otras ideas",
+      "scoreDisadvantageDesc": "Esta idea tiene una puntuación significativamente menor que otras, considera revisarla",
+      "marketInsight": "Insight de mercado",
+      "keyStrength": "Punto fuerte principal",
+      "keyChallenge": "Desafío principal",
+      "insightComparison": "Comparación de insights",
+      "competitiveAdvantage": "Ventaja competitiva",
+      "marketPotential": "Potencial de mercado",
+      "executionDifficulty": "Dificultad de ejecución",
+      "investmentRequired": "Inversión necesaria",
+      "scalabilityPotential": "Potencial de escalabilidad",
+      "innovationLevel": "Nivel de innovación",
+      "riskLevel": "Nivel de riesgo"
     }
   },
   "credits": {
