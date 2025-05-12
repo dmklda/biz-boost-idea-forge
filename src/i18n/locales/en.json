@@ -188,7 +188,13 @@
       "placeholder": "Select a location..."
     },
     "submit": "Submit for Analysis",
-    "submitting": "Analyzing..."
+    "submitting": "Analyzing...",
+    "saveAsDraft": "Save as draft",
+    "savingDraft": "Saving...",
+    "draftSaved": "Draft saved successfully!",
+    "viewDrafts": "View drafts",
+    "reanalyzeTitle": "Idea Reanalysis",
+    "reanalyzeSubtitle": "Refine your idea for a new analysis"
   },
   "cta": {
     "title": "Ready to transform your idea into reality?",
@@ -519,7 +525,13 @@
     "addedToFavorites": "Added to favorites",
     "removedFromFavorites": "Removed from favorites",
     "favoriteError": "Error updating favorite status",
-    "noFavorites": "You don't have any favorite ideas yet"
+    "noFavorites": "You don't have any favorite ideas yet",
+    "viewDrafts": "View Drafts",
+    "reanalyze": {
+      "button": "Reanalyze",
+      "noCredits": "You don't have enough credits",
+      "buyCredits": "Buy Credits"
+    }
   },
   
   "nav": {
@@ -759,5 +771,19 @@
       "updateFailed": "Failed to update tag",
       "deleteFailed": "Failed to delete tag"
     }
+  },
+  
+  "drafts": {
+    "title": "My Drafts",
+    "subtitle": "Continue working on your saved ideas",
+    "noDrafts": "You don't have any drafts yet",
+    "createDraft": "Create a draft",
+    "lastEdited": "Last edited",
+    "continue": "Continue",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete this draft?",
+    "confirmDeleteDescription": "This action cannot be undone",
+    "deleteSuccess": "Draft deleted successfully",
+    "deleteError": "Error deleting draft"
   }
 }

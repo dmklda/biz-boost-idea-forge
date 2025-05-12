@@ -1,3 +1,4 @@
+
 {
   "auth": {
     "login": "ログイン",
@@ -135,7 +136,13 @@
     "addedToFavorites": "お気に入りに追加しました",
     "removedFromFavorites": "お気に入りから削除しました",
     "favoriteError": "お気に入り状態の更新中にエラーが発生しました",
-    "noFavorites": "まだお気に入りのアイデアがありません"
+    "noFavorites": "まだお気に入りのアイデアがありません",
+    "viewDrafts": "下書きを見る",
+    "reanalyze": {
+      "button": "再分析",
+      "noCredits": "クレジットが不足しています",
+      "buyCredits": "クレジットを購入"
+    }
   },
   
   "nav": {
@@ -191,7 +198,13 @@
       "placeholder": "場所を選択してください..."
     },
     "submit": "分析のために提出する",
-    "submitting": "分析中..."
+    "submitting": "分析中...",
+    "saveAsDraft": "下書きとして保存",
+    "savingDraft": "保存中...",
+    "draftSaved": "下書きが正常に保存されました！",
+    "viewDrafts": "下書きを見る",
+    "reanalyzeTitle": "アイデア再分析",
+    "reanalyzeSubtitle": "新しい分析のためにアイデアを洗練する"
   },
 
   "notifications": {
@@ -428,5 +441,19 @@
       "updateFailed": "タグの更新に失敗しました",
       "deleteFailed": "タグの削除に失敗しました"
     }
+  },
+  
+  "drafts": {
+    "title": "下書き",
+    "subtitle": "保存したアイデアの作業を続ける",
+    "noDrafts": "まだ下書きがありません",
+    "createDraft": "下書きを作成",
+    "lastEdited": "最終編集",
+    "continue": "続ける",
+    "delete": "削除",
+    "confirmDelete": "この下書きを削除してもよろしいですか？",
+    "confirmDeleteDescription": "この操作は元に戻せません",
+    "deleteSuccess": "下書きが正常に削除されました",
+    "deleteError": "下書きの削除中にエラーが発生しました"
   }
 }

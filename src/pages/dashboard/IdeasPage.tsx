@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -158,9 +159,9 @@ const IdeasPage = () => {
   // Handler for reanalyze action
   const handleReanalyze = (ideaId: string) => {
     if (!userHasCredits) {
-      toast.error(t('ideas.reanalyze.noCredits', "Você não tem créditos suficientes"), {
+      toast.error(t('ideas.reanalyze.noCredits'), {
         action: {
-          label: t('ideas.reanalyze.buyCredits', "Comprar créditos"),
+          label: t('ideas.reanalyze.buyCredits'),
           onClick: () => navigate("/dashboard/creditos")
         }
       });
@@ -263,7 +264,7 @@ const IdeasPage = () => {
               disabled={!userHasCredits}
             >
               <Archive className="h-3.5 w-3.5" />
-              {t('ideas.reanalyze.button', "Reanalisar")}
+              {t('ideas.reanalyze.button')}
             </Button>
           </div>
         </TableCell>
@@ -287,7 +288,7 @@ const IdeasPage = () => {
             className="flex items-center gap-2 flex-1 sm:flex-auto justify-center"
           >
             <Save className="h-4 w-4" />
-            {t('ideas.viewDrafts', "Ver rascunhos")}
+            {t('ideas.viewDrafts')}
           </Button>
           <Link to="/" className="flex-1 sm:flex-auto">
             <Button className="bg-brand-purple hover:bg-brand-purple/90 w-full">

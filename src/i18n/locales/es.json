@@ -1,3 +1,4 @@
+
 {
   "auth": {
     "login": "Iniciar Sesión",
@@ -135,7 +136,13 @@
     "addedToFavorites": "Añadido a favoritos",
     "removedFromFavorites": "Eliminado de favoritos",
     "favoriteError": "Error al actualizar el estado de favorito",
-    "noFavorites": "Aún no tiene ideas favoritas"
+    "noFavorites": "Aún no tiene ideas favoritas",
+    "viewDrafts": "Ver Borradores",
+    "reanalyze": {
+      "button": "Reanalizar",
+      "noCredits": "No tiene créditos suficientes",
+      "buyCredits": "Comprar créditos"
+    }
   },
   
   "nav": {
@@ -191,7 +198,13 @@
       "placeholder": "Seleccione una ubicación..."
     },
     "submit": "Enviar para análisis",
-    "submitting": "Analizando..."
+    "submitting": "Analizando...",
+    "saveAsDraft": "Guardar como borrador",
+    "savingDraft": "Guardando...",
+    "draftSaved": "¡Borrador guardado con éxito!",
+    "viewDrafts": "Ver borradores",
+    "reanalyzeTitle": "Reanálisis de Idea",
+    "reanalyzeSubtitle": "Refine su idea para un nuevo análisis"
   },
 
   "notifications": {
@@ -428,5 +441,19 @@
       "updateFailed": "Error al actualizar la etiqueta",
       "deleteFailed": "Error al eliminar la etiqueta"
     }
+  },
+
+  "drafts": {
+    "title": "Mis Borradores",
+    "subtitle": "Continúe trabajando en sus ideas guardadas",
+    "noDrafts": "Aún no tiene ningún borrador",
+    "createDraft": "Crear un borrador",
+    "lastEdited": "Última edición",
+    "continue": "Continuar",
+    "delete": "Eliminar",
+    "confirmDelete": "¿Está seguro de que desea eliminar este borrador?",
+    "confirmDeleteDescription": "Esta acción no se puede deshacer",
+    "deleteSuccess": "Borrador eliminado exitosamente",
+    "deleteError": "Error al eliminar el borrador"
   }
 }
