@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   Card, 
@@ -91,7 +90,12 @@ export const IdeaForm = ({ ideaId, isReanalyzing }: IdeaFormProps) => {
         
         // If we're in the dashboard, navigate within the dashboard
         if (isDashboard) {
-          navigate(`/dashboard/ideias?id=${analysisData.ideaId}`);
+          // If coming from drafts, redirect back to drafts with analyzed parameter
+          if (location.pathname.includes('editar') && editingIdeaId) {
+            navigate(`/dashboard/rascunhos?analyzed=${analysisData.ideaId}`);
+          } else {
+            navigate(`/dashboard/ideias?id=${analysisData.ideaId}`);
+          }
         } else {
           navigate(`/resultados?id=${analysisData.ideaId}`);
         }

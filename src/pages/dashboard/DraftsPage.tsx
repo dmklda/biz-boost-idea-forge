@@ -1,11 +1,11 @@
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Save, Search, Trash2 } from "lucide-react";
+import { Edit, Save, Search, Trash2, RefreshCw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -39,37 +39,64 @@ const DraftsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [draftToDelete, setDraftToDelete] = useState<string | null>(null);
-
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  
+  // Check if we have a recently analyzed idea from URL params
+  const analyzedIdeaId = searchParams.get('analyzed');
+  
   // Fetch user's drafts
-  useEffect(() => {
-    const fetchDrafts = async () => {
-      if (!authState.isAuthenticated) return;
+  const fetchDrafts = async () => {
+    if (!authState.isAuthenticated) return;
 
-      try {
-        setLoading(true);
+    try {
+      setLoading(true);
+      
+      const { data, error } = await supabase
+        .from('ideas')
+        .select('id, title, created_at, updated_at')
+        .eq('user_id', authState.user?.id)
+        .eq('is_draft', true)
+        .order('updated_at', { ascending: false });
         
-        const { data, error } = await supabase
-          .from('ideas')
-          .select('id, title, created_at, updated_at')
-          .eq('user_id', authState.user?.id)
-          .eq('is_draft', true)
-          .order('updated_at', { ascending: false });
-          
-        if (error) {
-          throw error;
-        }
-
-        setDrafts(data || []);
-      } catch (error) {
-        console.error("Error fetching drafts:", error);
-        toast.error(t('drafts.errors.fetchFailed'));
-      } finally {
-        setLoading(false);
+      if (error) {
+        throw error;
       }
-    };
 
+      setDrafts(data || []);
+      
+      // If there was a recently analyzed idea, check if it's still a draft
+      if (analyzedIdeaId) {
+        const { data: ideaData } = await supabase
+          .from('ideas')
+          .select('is_draft')
+          .eq('id', analyzedIdeaId)
+          .single();
+          
+        // If it exists and is no longer a draft, show success message
+        if (ideaData && !ideaData.is_draft) {
+          toast.success(t('drafts.analyzedSuccess', 'Ideia analisada com sucesso!'), {
+            action: {
+              label: t('drafts.viewResults', 'Ver resultados'),
+              onClick: () => navigate(`/dashboard/ideias?id=${analyzedIdeaId}`)
+            }
+          });
+          
+          // Remove the param from URL
+          navigate('/dashboard/rascunhos', { replace: true });
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching drafts:", error);
+      toast.error(t('drafts.errors.fetchFailed'));
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
     fetchDrafts();
-  }, [authState.isAuthenticated, authState.user?.id, t]);
+  }, [authState.isAuthenticated, authState.user?.id, analyzedIdeaId, t]);
 
   // Filter drafts based on search query
   const filteredDrafts = drafts.filter(draft => 
@@ -105,6 +132,12 @@ const DraftsPage = () => {
     setDraftToDelete(id);
     setDeleteDialogOpen(true);
   };
+  
+  // Handler for manual refresh
+  const handleRefresh = () => {
+    fetchDrafts();
+    toast.info(t('drafts.refreshed', 'Lista atualizada'));
+  };
 
   return (
     <div className="space-y-6">
@@ -133,6 +166,9 @@ const DraftsPage = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
+        <Button variant="outline" size="icon" onClick={handleRefresh} title={t('drafts.refresh', 'Atualizar lista')}>
+          <RefreshCw className="h-4 w-4" />
+        </Button>
       </div>
       
       <Card>
