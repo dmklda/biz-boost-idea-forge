@@ -226,23 +226,23 @@ Deno.serve(async (req) => {
   }
 });
 
-// Function to generate analysis using OpenAI with better error handling
+// Function to generate analysis using OpenAI with better error handling and language support
 async function generateAnalysis(ideaData) {
   try {
-    const prompt = generateAnalysisPrompt(ideaData);
+    const { systemPrompt, userPrompt } = generateAnalysisPrompt(ideaData);
     
-    console.log("Sending request to OpenAI...");
+    console.log("Sending request to OpenAI with language setting...");
     
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini", // Using a more modern model
       messages: [
         {
           role: "system",
-          content: "You are a business analyst expert that evaluates business ideas and provides detailed analysis."
+          content: systemPrompt
         },
         {
           role: "user",
-          content: prompt
+          content: userPrompt
         }
       ],
       temperature: 0.7,
@@ -455,103 +455,4 @@ function generateAnalysisPrompt(ideaData) {
     }
   `
   };
-}
-
-// Function to generate analysis using OpenAI with better error handling and language support
-async function generateAnalysis(ideaData) {
-  try {
-    const { systemPrompt, userPrompt } = generateAnalysisPrompt(ideaData);
-    
-    console.log("Sending request to OpenAI with language setting...");
-    
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Using a more modern model
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt
-        },
-        {
-          role: "user",
-          content: userPrompt
-        }
-      ],
-      temperature: 0.7,
-      response_format: { type: "json_object" }
-    });
-    
-    if (!response.choices || response.choices.length === 0) {
-      throw new Error("OpenAI returned an empty response");
-    }
-    
-    const content = response.choices[0].message.content;
-    
-    if (!content) {
-      throw new Error("OpenAI returned empty content");
-    }
-    
-    console.log("Received OpenAI response, parsing JSON...");
-    
-    try {
-      const analysisResult = JSON.parse(content);
-      return analysisResult;
-    } catch (parseError) {
-      console.error("Error parsing OpenAI response:", parseError);
-      console.log("Raw OpenAI response content:", content);
-      throw new Error("Failed to parse OpenAI JSON response");
-    }
-  } catch (error) {
-    console.error("Error generating analysis:", error);
-    throw new Error(`Failed to generate analysis: ${error.message}`);
-  }
-}
-
-// Function to generate the analysis prompt
-function generateAnalysisPrompt(ideaData) {
-  return `
-    Please analyze the following business idea and provide a comprehensive evaluation:
-    
-    Business Idea: ${ideaData.idea}
-    Target Audience: ${ideaData.audience || "Not specified"}
-    Problem Solved: ${ideaData.problem || "Not specified"}
-    Competitors: ${ideaData.hasCompetitors || "Not specified"}
-    Monetization Strategy: ${ideaData.monetization || "Not specified"}
-    Budget: ${ideaData.budget || "Not specified"}
-    Location: ${ideaData.location || "Not specified"}
-    
-    Provide your analysis in JSON format with the following structure:
-    {
-      "score": [A number from 0-100 representing the overall viability score],
-      "status": [A string: "Viable", "Moderate", or "Challenging"],
-      "swotAnalysis": {
-        "strengths": [Array of strengths],
-        "weaknesses": [Array of weaknesses],
-        "opportunities": [Array of opportunities],
-        "threats": [Array of threats]
-      },
-      "marketAnalysis": {
-        "market_size": [String describing market size],
-        "target_audience": [String describing target audience],
-        "growth_potential": [String describing growth potential],
-        "barriers_to_entry": [Array of barriers]
-      },
-      "competitorAnalysis": {
-        "key_competitors": [Array of potential competitors],
-        "competitive_advantage": [String describing potential advantage],
-        "market_gaps": [Array of market gaps]
-      },
-      "financialAnalysis": {
-        "revenue_potential": [String describing revenue potential],
-        "initial_investment": [String describing investment needed],
-        "break_even_estimate": [String with break-even estimate],
-        "funding_suggestions": [Array of funding options]
-      },
-      "recommendations": {
-        "action_items": [Array of action items],
-        "next_steps": [Array of next steps],
-        "potential_challenges": [Array of challenges],
-        "suggested_resources": [Array of resources]
-      }
-    }
-  `;
 }
