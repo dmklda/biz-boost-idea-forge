@@ -26,8 +26,8 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    // Correção aqui: Garantir que o caminho esteja correto
-    navigate(`/dashboard/ideas/${idea.id}`);
+    // Corrigindo a rota para usar "ideias" em vez de "ideas"
+    navigate(`/dashboard/ideias/${idea.id}`);
   };
 
   return (
@@ -78,8 +78,8 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
           className="text-muted-foreground hover:text-foreground ml-auto"
           onClick={(e) => {
             e.stopPropagation();
-            // Correção aqui também: Garantir consistência na navegação
-            navigate(`/dashboard/ideas/${idea.id}`);
+            // Corrigindo a rota para usar "ideias" em vez de "ideas"
+            navigate(`/dashboard/ideias/${idea.id}`);
           }}
         >
           <ExternalLink className="h-4 w-4 mr-1" />
