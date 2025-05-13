@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { AdvancedAnalysisModal } from "./AdvancedAnalysisModal";
 
@@ -51,7 +51,24 @@ export function AdvancedAnalysisButton({
     setOpenConfirmDialog(false);
 
     try {
+      // First, check if we already have an analysis for this idea
+      const { data: existingAnalysis, error: checkError } = await supabase
+        .from("advanced_analyses")
+        .select("id")
+        .eq("idea_id", ideaId)
+        .eq("user_id", authState.user.id)
+        .single();
+      
+      // If analysis exists, just open the modal
+      if (existingAnalysis) {
+        console.log("Analysis already exists, opening modal");
+        setOpenAnalysisModal(true);
+        setIsProcessing(false);
+        return;
+      }
+      
       // Call the Supabase Edge Function to start the advanced analysis
+      console.log("Invoking advanced-analysis function for idea:", ideaId);
       const { data, error } = await supabase.functions.invoke('advanced-analysis', {
         body: { ideaId },
       });
@@ -59,6 +76,8 @@ export function AdvancedAnalysisButton({
       if (error) {
         throw new Error(error.message);
       }
+
+      console.log("Advanced analysis function result:", data);
 
       // If user is on free plan, deduct credits
       if (authState.user.plan === 'free') {

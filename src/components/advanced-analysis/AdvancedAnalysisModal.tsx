@@ -17,7 +17,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AdvancedAnalysisContent } from "./AdvancedAnalysisContent";
@@ -63,6 +63,8 @@ export function AdvancedAnalysisModal({
   const [progress, setProgress] = useState(0);
   const [showChat, setShowChat] = useState(false);
   const [idea, setIdea] = useState<IdeaData | null>(null);
+  const [pollInterval, setPollInterval] = useState<number | null>(null);
+  const [attempts, setAttempts] = useState(0);
 
   const motivationalPhrases = [
     t('advancedAnalysis.motivation1', "Analisando potenciais de mercado..."),
@@ -77,10 +79,26 @@ export function AdvancedAnalysisModal({
 
   const [currentPhrase, setCurrentPhrase] = useState(0);
 
+  // Clear any active polling when component unmounts
+  useEffect(() => {
+    return () => {
+      if (pollInterval !== null) {
+        clearInterval(pollInterval);
+      }
+    };
+  }, [pollInterval]);
+
   useEffect(() => {
     if (open && authState.isAuthenticated && ideaId) {
-      fetchAdvancedAnalysis();
       fetchIdeaDetails();
+      fetchAdvancedAnalysis();
+    } else {
+      // Reset states when modal is closed
+      if (!open) {
+        setAnalysis(null);
+        setProgress(0);
+        setCurrentPhrase(0);
+      }
     }
   }, [open, ideaId, authState.isAuthenticated]);
 
@@ -88,10 +106,10 @@ export function AdvancedAnalysisModal({
     if (loading) {
       const interval = setInterval(() => {
         setProgress((prev) => {
-          const newProgress = prev + Math.random() * 10;
-          if (newProgress >= 100) {
+          const newProgress = prev + Math.random() * 5; // Slower progress
+          if (newProgress >= 95) { // Cap at 95% until data is actually loaded
             clearInterval(interval);
-            return 100;
+            return 95;
           }
           return newProgress;
         });
@@ -125,9 +143,10 @@ export function AdvancedAnalysisModal({
   const fetchAdvancedAnalysis = async () => {
     setLoading(true);
     setProgress(0);
+    setAttempts(0); // Reset attempts counter
     
     try {
-      // Using type assertion to fix type error
+      // First check if analysis already exists
       const { data, error } = await supabase
         .from("advanced_analyses")
         .select("*")
@@ -136,14 +155,19 @@ export function AdvancedAnalysisModal({
         .single();
 
       if (error) {
-        // If analysis doesn't exist yet, maybe it's still being processed
-        console.log("Advanced analysis not found yet, waiting...");
+        console.log("Advanced analysis not found yet, will start polling...");
         
-        // Poll for it a few times
-        let attempts = 0;
-        const maxAttempts = 10;
-        const pollInterval = setInterval(async () => {
-          attempts++;
+        // Clear any existing interval and start a new one
+        if (pollInterval !== null) {
+          clearInterval(pollInterval);
+        }
+        
+        // Start polling for results
+        const interval = window.setInterval(async () => {
+          const currentAttempts = attempts + 1;
+          setAttempts(currentAttempts);
+          
+          console.log(`Polling for analysis results (attempt ${currentAttempts}/10)...`);
           
           const { data: pollData, error: pollError } = await supabase
             .from("advanced_analyses")
@@ -153,25 +177,34 @@ export function AdvancedAnalysisModal({
             .single();
           
           if (pollData) {
-            clearInterval(pollInterval);
+            clearInterval(interval);
+            setPollInterval(null);
             setAnalysis(pollData as AdvancedAnalysis);
             setLoading(false);
             setProgress(100);
-          } else if (attempts >= maxAttempts) {
-            clearInterval(pollInterval);
+            console.log("Analysis found:", pollData);
+          } else if (currentAttempts >= 10) {
+            clearInterval(interval);
+            setPollInterval(null);
             toast({
               title: t('errors.analysisNotFound', "Análise não encontrada"),
               description: t('errors.startNewAnalysis', "Inicie uma nova análise"),
               variant: "destructive",
             });
             setLoading(false);
+            console.log("Failed to find analysis after maximum attempts");
           }
+          
+          setAttempts(currentAttempts);
         }, 3000);
         
+        setPollInterval(interval);
         return;
       }
       
       setAnalysis(data as AdvancedAnalysis);
+      setLoading(false);
+      setProgress(100);
     } catch (error) {
       console.error("Error fetching advanced analysis:", error);
       toast({
@@ -179,9 +212,7 @@ export function AdvancedAnalysisModal({
         description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
         variant: "destructive",
       });
-    } finally {
       setLoading(false);
-      setProgress(100);
     }
   };
 

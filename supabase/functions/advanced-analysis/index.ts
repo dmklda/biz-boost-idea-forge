@@ -26,12 +26,33 @@ serve(async (req) => {
       );
     }
 
+    console.log(`Processing advanced analysis for idea: ${ideaId}`);
+
     // Create Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL") as string;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") as string;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Check if we already have an analysis for this idea
+    const { data: existingAnalysis, error: checkError } = await supabase
+      .from("advanced_analyses")
+      .select("id")
+      .eq("idea_id", ideaId)
+      .single();
+
+    if (!checkError && existingAnalysis) {
+      console.log("Analysis already exists for idea:", ideaId);
+      return new Response(
+        JSON.stringify({ 
+          message: "Analysis already exists", 
+          analysis: existingAnalysis 
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Fetch the idea details
+    console.log("Fetching idea details");
     const { data: ideaData, error: ideaError } = await supabase
       .from("ideas")
       .select("*")
@@ -39,6 +60,7 @@ serve(async (req) => {
       .single();
 
     if (ideaError || !ideaData) {
+      console.error("Error fetching idea data:", ideaError);
       return new Response(
         JSON.stringify({ error: "Failed to fetch idea data", details: ideaError }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
@@ -46,158 +68,218 @@ serve(async (req) => {
     }
 
     // Fetch existing analysis for enrichment
-    const { data: analysisData, error: analysisError } = await supabase
+    console.log("Fetching existing basic analysis");
+    const { data: basicAnalysisData, error: analysisError } = await supabase
       .from("idea_analyses")
       .select("*")
       .eq("idea_id", ideaId)
       .single();
+    
+    console.log("Basic analysis data:", basicAnalysisData);
+    console.log("Idea data:", ideaData);
 
     // Generate mock advanced analysis data (replace with actual OpenAI call in production)
     // In a real implementation, this would call OpenAI's GPT-4o API with appropriate data
     const advancedAnalysis = {
       businessName: {
-        name: "TechFlow",
-        slogan: "Simplifying Technology for Everyone",
-        justification: "The name 'TechFlow' conveys both technical expertise and a smooth user experience. It suggests that technology can flow seamlessly into people's lives."
+        name: ideaData.title || "TechFlow",
+        slogan: "Inovação que transforma o mercado",
+        justification: "O nome representa a essência da sua ideia e comunica claramente o valor principal do seu produto/serviço."
       },
-      logoUrl: "https://placehold.co/400x400/3b82f6/FFFFFF/png?text=TF",
+      logoUrl: "https://placehold.co/400x400/3b82f6/FFFFFF/png?text=Logo",
       summary: {
-        description: "TechFlow aims to create intuitive software solutions for everyday technology challenges. By focusing on user experience and accessibility, TechFlow has the potential to capture a significant market share in the consumer tech support and education sector."
+        description: ideaData.description || "Descrição não fornecida.",
+        score: basicAnalysisData?.score || 85,
+        status: basicAnalysisData?.status || "Viable"
       },
       differentials: [
-        "AI-powered troubleshooting", 
-        "Personalized learning paths", 
-        "Community knowledge base", 
-        "Live remote assistance"
+        "Solução inovadora para o mercado", 
+        "Alto potencial de escalabilidade", 
+        "Baixo custo de aquisição de clientes", 
+        "Tecnologia proprietária"
       ],
-      pitch: "TechFlow transforms how people interact with technology by providing intuitive, AI-powered solutions that solve everyday tech problems. Our platform combines automated troubleshooting, personalized learning, and on-demand expert support to help users of all skill levels overcome technology challenges and build confidence with their devices.",
+      pitch: `${ideaData.title || "Sua ideia"} é uma solução inovadora que ${ideaData.problem ? "resolve o problema de " + ideaData.problem : "atende às necessidades do mercado atual"}, focando em ${ideaData.audience || "um público amplo"}. Nossa proposta única combina tecnologia avançada com atendimento personalizado para criar uma experiência superior para os usuários.`,
       marketAnalysis: {
-        size: "The global tech support market is valued at $25 billion annually and growing at 6% CAGR. The consumer segment represents approximately $8.5 billion with higher growth potential.",
-        targetAudience: "Primary: Adults aged 35-65 who use technology daily but lack technical expertise. Secondary: Small businesses without dedicated IT staff.",
+        size: "O mercado global está avaliado em aproximadamente R$ 50 bilhões com taxa de crescimento anual de 8%. No Brasil, representa cerca de R$ 5 bilhões com potencial de crescimento acelerado nos próximos 5 anos.",
+        targetAudience: ideaData.audience || "Adultos entre 25-45 anos com renda média-alta, tecnologicamente informados e que valorizam praticidade e qualidade.",
         trends: [
-          "Increasing dependence on multiple connected devices",
-          "Growing complexity of software ecosystems",
-          "Rising demand for personalized tech education",
-          "Shift toward subscription-based support services"
+          "Crescente demanda por soluções digitais integradas",
+          "Maior conscientização sobre sustentabilidade",
+          "Preferência por experiências personalizadas",
+          "Aumento do trabalho remoto e flexível"
+        ],
+        barriers: [
+          "Regulamentações setoriais em evolução",
+          "Necessidade de educação do mercado",
+          "Grandes players estabelecidos",
+          "Custos iniciais de desenvolvimento"
         ]
       },
       personas: [
         {
-          name: "Maria, 52",
-          description: "Professional who uses technology for work but struggles with updates and new features. Values efficiency and avoiding tech-related stress."
+          name: "Marcelo, 35",
+          description: "Profissional ocupado que busca soluções práticas para otimizar seu tempo. Valoriza qualidade e está disposto a pagar mais por produtos que realmente resolvam seus problemas."
         },
         {
-          name: "João, 38",
-          description: "Small business owner who needs reliable tech but can't afford dedicated IT support. Looking for cost-effective solutions and quick problem resolution."
+          name: "Carla, 28",
+          description: "Empreendedora iniciante que busca ferramentas para crescer seu negócio com orçamento limitado. Prioriza custo-benefício e soluções escaláveis."
         }
       ],
       monetization: {
         models: [
           {
-            name: "Freemium Subscription",
-            description: "Basic troubleshooting free; advanced features and human support require subscription",
-            revenue: "Est. $15-25 per user monthly"
+            name: "Assinatura Mensal",
+            description: "Modelo recorrente com diferentes níveis de acesso e funcionalidades",
+            revenue: "R$29 - R$99 por usuário/mês"
           },
           {
-            name: "Enterprise Licenses",
-            description: "Custom packages for small businesses with multiple users",
-            revenue: "Est. $100-500 per business monthly"
+            name: "Freemium",
+            description: "Versão básica gratuita com recursos premium pagos",
+            revenue: "Conversão média de 5-10% dos usuários gratuitos"
+          },
+          {
+            name: ideaData.monetization || "Licenciamento Empresarial",
+            description: "Pacotes customizados para empresas com múltiplos usuários",
+            revenue: "R$500 - R$5.000 por empresa/mês"
           }
-        ]
+        ],
+        projections: {
+          firstYear: "R$ 250.000 - R$ 500.000",
+          thirdYear: "R$ 2 milhões - R$ 5 milhões",
+          breakEven: "18-24 meses"
+        }
       },
       channels: [
         {
-          name: "Content Marketing",
-          description: "Tech guides, tutorials and troubleshooting articles to drive organic traffic"
+          name: "Marketing de Conteúdo",
+          description: "Blog, YouTube e newsletter para atrair tráfego orgânico"
         },
         {
-          name: "Partnerships",
-          description: "Collaborations with device manufacturers and software companies"
+          name: "Parcerias Estratégicas",
+          description: "Colaborações com empresas complementares"
         },
         {
-          name: "App Store Optimization",
-          description: "Mobile app distribution with targeted keywords and ratings focus"
+          name: "Marketing Digital",
+          description: "Campanhas direcionadas em redes sociais e Google Ads"
+        },
+        {
+          name: "Programa de Indicação",
+          description: "Incentivos para usuários que indicam novos clientes"
         }
       ],
       competitors: [
         {
-          name: "GeekSquad",
-          strengths: ["Established brand", "Physical presence", "Broad service range"],
-          weaknesses: ["Expensive", "Inconsistent quality", "Limited online tools"]
+          name: "Competidor A",
+          strengths: ["Marca estabelecida", "Grande base de usuários", "Altos recursos para marketing"],
+          weaknesses: ["Produto genérico", "Atendimento ao cliente deficiente", "Tecnologia desatualizada"]
         },
         {
-          name: "HelloTech",
-          strengths: ["On-demand service", "Simple pricing", "Good mobile experience"],
-          weaknesses: ["Limited self-help options", "Geographic limitations", "No AI capabilities"]
+          name: "Competidor B",
+          strengths: ["Preços competitivos", "Boa presença online", "Interface amigável"],
+          weaknesses: ["Limitações técnicas", "Pouca personalização", "Foco em mercado de massa"]
         }
       ],
       swot: {
-        strengths: ["AI-powered automation", "Scalable platform", "Lower cost than competitors", "User-friendly interface"],
-        weaknesses: ["New brand, limited recognition", "Requires initial content investment", "Dependent on quality AI training"],
-        opportunities: ["Underserved middle market", "Growing senior tech adoption", "Remote work increasing tech reliance", "Integration with smart home ecosystems"],
-        threats: ["Big tech companies entering market", "Low barriers to entry", "Privacy concerns with remote access", "Free content alternatives"]
+        strengths: [
+          "Proposta de valor única e clara",
+          "Solução centrada no usuário",
+          "Potencial de alta retenção de clientes",
+          "Baixos custos operacionais"
+        ],
+        weaknesses: [
+          "Marca nova no mercado",
+          "Necessidade de investimento inicial substancial",
+          "Dependência de desenvolvimento tecnológico",
+          "Time pequeno inicialmente"
+        ],
+        opportunities: [
+          "Mercado em expansão",
+          "Insatisfação com soluções existentes",
+          "Novas tecnologias disponíveis para integração",
+          "Mudanças comportamentais favoráveis"
+        ],
+        threats: [
+          "Entrada de grandes players no segmento",
+          "Mudanças regulatórias potenciais",
+          "Rápida evolução tecnológica",
+          "Recessão econômica afetando investimentos"
+        ]
       },
       risks: [
         {
-          name: "AI accuracy limitations",
+          name: "Risco Tecnológico",
           level: "Médio",
-          description: "AI may fail to correctly diagnose complex technical problems",
-          mitigation: "Implement human review system and continuous learning from corrections"
+          description: "Desafios no desenvolvimento da solução proposta",
+          mitigation: "Desenvolvimento iterativo com validação constante"
         },
         {
-          name: "User privacy concerns",
-          level: "Alto",
-          description: "Remote troubleshooting requires access to user devices and data",
-          mitigation: "Develop robust security protocols and transparent privacy policies"
+          name: "Risco de Mercado",
+          level: "Baixo",
+          description: "Aceitação da solução pelo público-alvo",
+          mitigation: "Testes beta com early adopters e coleta de feedback"
+        },
+        {
+          name: "Risco Financeiro",
+          level: "Médio",
+          description: "Capital insuficiente para escalar rapidamente",
+          mitigation: "Planejamento de captação de recursos e crescimento controlado"
         }
       ],
       tools: [
-        { name: "Docusaurus", category: "Documentation" },
-        { name: "Intercom", category: "Customer Support" },
-        { name: "Zapier", category: "Automation" },
-        { name: "Mixpanel", category: "Analytics" }
+        { name: "Figma", category: "Design" },
+        { name: "Google Analytics", category: "Análise" },
+        { name: "HubSpot", category: "Marketing" },
+        { name: "Stripe", category: "Pagamentos" }
       ],
       firstSteps: [
-        { name: "Market Validation", icon: "📊" },
-        { name: "MVP Development", icon: "💻" },
-        { name: "Initial Content", icon: "📝" },
-        { name: "Beta Testing", icon: "🧪" }
+        { name: "Validação de Mercado", icon: "📊" },
+        { name: "Desenvolvimento de MVP", icon: "💻" },
+        { name: "Testes com Usuários", icon: "🧪" },
+        { name: "Criação de Marca", icon: "🎨" }
       ],
       plan: {
         thirtyDays: [
-          { name: "Competitor Analysis", description: "Detailed review of top 5 competitors' offerings and gaps" },
-          { name: "User Interviews", description: "Conduct 20+ interviews with target demographic" },
-          { name: "MVP Feature Spec", description: "Define minimum viable product features and architecture" }
+          { name: "Pesquisa de Mercado Detalhada", description: "Entrevistas com 20+ potenciais usuários e análise da concorrência" },
+          { name: "Definição de MVP", description: "Especificação das funcionalidades essenciais e arquitetura" },
+          { name: "Montagem do Time Inicial", description: "Recrutamento de desenvolvedores, designers e especialistas de produto" }
         ],
         sixtyDays: [
-          { name: "Basic AI Model", description: "Develop and train initial troubleshooting AI" },
-          { name: "Knowledge Base", description: "Create first 100 support articles for common issues" },
-          { name: "UI Prototyping", description: "Design and user-test key application flows" }
+          { name: "Protótipo Funcional", description: "Desenvolvimento das principais interfaces e fluxos de usuário" },
+          { name: "Estrutura de Marca", description: "Definição de identidade visual, tom de voz e posicionamento" },
+          { name: "Planejamento de Go-to-Market", description: "Estratégia de lançamento e canais iniciais" }
         ],
         ninetyDays: [
-          { name: "Beta Launch", description: "Release to limited audience of 250 users" },
-          { name: "Feedback Loop", description: "Implement analytics and user feedback mechanisms" },
-          { name: "Growth Strategy", description: "Develop marketing plan for public release" }
+          { name: "Lançamento do MVP", description: "Versão beta para grupo controlado de usuários" },
+          { name: "Implementação de Métricas", description: "Sistema de analytics e acompanhamento de KPIs" },
+          { name: "Captação de Feedback", description: "Processo estruturado para coletar e implementar melhorias" }
         ]
       },
       mindmap: {
         id: "root",
-        label: "TechFlow",
+        label: ideaData.title || "Sua Ideia",
         children: [
           {
             id: "market",
-            label: "Market",
+            label: "Mercado",
             children: [
-              { id: "audience", label: "Target Audience" },
-              { id: "trends", label: "Industry Trends" }
+              { id: "audience", label: "Público-Alvo", children: ideaData.audience ? [{ id: "audSpec", label: ideaData.audience }] : [] },
+              { id: "trends", label: "Tendências" }
             ]
           },
           {
             id: "product",
-            label: "Product",
+            label: "Produto",
             children: [
-              { id: "features", label: "Key Features" },
-              { id: "roadmap", label: "Development Roadmap" }
+              { id: "features", label: "Funcionalidades" },
+              { id: "roadmap", label: "Planejamento" }
+            ]
+          },
+          {
+            id: "business",
+            label: "Negócio",
+            children: [
+              { id: "model", label: "Modelo de Receita" },
+              { id: "growth", label: "Estratégia de Crescimento" }
             ]
           }
         ]
@@ -205,6 +287,7 @@ serve(async (req) => {
     };
 
     // Save the advanced analysis to the database
+    console.log("Saving advanced analysis to database");
     const { data: savedAnalysis, error: saveError } = await supabase
       .from("advanced_analyses")
       .upsert({ 
@@ -218,11 +301,12 @@ serve(async (req) => {
     if (saveError) {
       console.error("Error saving advanced analysis:", saveError);
       return new Response(
-        JSON.stringify({ error: "Failed to save analysis" }),
+        JSON.stringify({ error: "Failed to save analysis", details: saveError }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
       );
     }
 
+    console.log("Advanced analysis created successfully");
     return new Response(
       JSON.stringify({ message: "Advanced analysis created successfully", analysis: savedAnalysis }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
