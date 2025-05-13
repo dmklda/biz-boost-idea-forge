@@ -1,5 +1,5 @@
 
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 
@@ -7,7 +7,6 @@ interface MindMapNode {
   id: string;
   label: string;
   children?: MindMapNode[];
-  className?: string;
 }
 
 interface MindMapProps {
@@ -16,84 +15,177 @@ interface MindMapProps {
 }
 
 export function MindMap({ data, className }: MindMapProps) {
-  const ref = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
+  // Colors
+  const textColor = isDarkMode ? "#f3f4f6" : "#1f2937";
+  const lineColor = isDarkMode ? "#475569" : "#cbd5e1";
+  const nodeColor = isDarkMode ? "#334155" : "#f8fafc";
+  const nodeBorderColor = isDarkMode ? "#475569" : "#cbd5e1";
+  const rootNodeColor = isDarkMode ? "#3b82f6" : "#3b82f6";
+  const rootTextColor = isDarkMode ? "#f3f4f6" : "#ffffff";
+
   useEffect(() => {
-    if (!ref.current) return;
+    const canvas = canvasRef.current;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
 
-    const container = ref.current;
-    
-    // Clear previous content
-    container.innerHTML = "";
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-    // Create mind map
-    const createMindMap = (node: MindMapNode, depth: number = 0, parent?: HTMLElement) => {
-      const nodeEl = document.createElement("div");
-      
-      // Apply styling based on depth
-      nodeEl.className = cn(
-        "relative p-3 rounded-lg transition-all duration-300 font-medium text-sm",
-        depth === 0 
-          ? "bg-gradient-to-r from-brand-blue to-brand-purple text-white text-base font-semibold shadow-lg" 
-          : depth === 1 
-            ? isDarkMode 
-              ? "bg-slate-800 text-white border border-slate-700" 
-              : "bg-white text-slate-800 border border-slate-200 shadow"
-            : isDarkMode 
-              ? "bg-slate-900 text-slate-300" 
-              : "bg-slate-50 text-slate-700",
-        depth === 0 ? "mx-auto w-fit mb-8 px-5" : "",
-        depth === 1 ? "my-2 mx-2" : "my-1 mx-1",
-        node.className || "",
-        depth > 0 && "hover:shadow-md"
-      );
-      
-      nodeEl.textContent = node.label;
-
-      // Append to parent or container
-      if (parent) {
-        parent.appendChild(nodeEl);
-      } else {
-        container.appendChild(nodeEl);
-      }
-
-      // If there are children, create a container for them
-      if (node.children && node.children.length > 0) {
-        const childrenContainer = document.createElement("div");
-        childrenContainer.className = cn(
-          "flex flex-wrap justify-center items-start my-2",
-          depth === 0 ? "gap-4" : "gap-2"
-        );
-        
-        if (depth > 0) {
-          const connector = document.createElement("div");
-          connector.className = isDarkMode 
-            ? "w-0.5 h-4 bg-slate-700 mx-auto" 
-            : "w-0.5 h-4 bg-slate-300 mx-auto";
-          nodeEl.appendChild(connector);
-        }
-        
-        nodeEl.appendChild(childrenContainer);
-
-        // Create children nodes
-        node.children.forEach(childNode => {
-          createMindMap(childNode, depth + 1, childrenContainer);
-        });
-      }
+    const resizeCanvas = () => {
+      const rect = container.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      drawMindMap();
     };
 
-    createMindMap(data);
-  }, [data, theme]);
+    const drawMindMap = () => {
+      if (!ctx || !canvas) return;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Calculate total width and height needed
+      const nodeWidth = 160;
+      const nodeHeight = 40;
+      const horizontalSpacing = 80;
+      const verticalSpacing = 70;
+
+      // Determine number of levels and max nodes per level
+      const levels: MindMapNode[][] = [];
+      const traverseTree = (node: MindMapNode, level: number) => {
+        if (!levels[level]) levels[level] = [];
+        levels[level].push(node);
+        node.children?.forEach(child => traverseTree(child, level + 1));
+      };
+
+      traverseTree(data, 0);
+
+      // Calculate canvas dimensions
+      const totalLevels = levels.length;
+      const maxNodesInLevel = Math.max(...levels.map(level => level.length));
+      
+      // Scale down if we have too many nodes
+      const scale = maxNodesInLevel > 5 ? 0.8 : 1;
+      const scaledNodeWidth = nodeWidth * scale;
+      const scaledNodeHeight = nodeHeight * scale;
+      const scaledHorizSpacing = horizontalSpacing * scale;
+      const scaledVertSpacing = verticalSpacing * scale;
+
+      // Calculate total width and height
+      const totalWidth = (totalLevels * (scaledNodeWidth + scaledHorizSpacing));
+      const totalHeight = maxNodesInLevel * (scaledNodeHeight + scaledVertSpacing);
+
+      // Set minimum canvas size
+      const minWidth = Math.max(container.clientWidth, totalWidth);
+      const minHeight = Math.max(300, totalHeight); // Minimum height of 300px
+      
+      canvas.width = minWidth;
+      canvas.height = minHeight;
+
+      // Center the root node
+      const rootX = canvas.width / 2;
+      const rootY = canvas.height / 2;
+
+      // Draw the mind map
+      const drawNode = (
+        node: MindMapNode, 
+        x: number, 
+        y: number, 
+        isRoot: boolean = false
+      ) => {
+        // Draw node
+        ctx.beginPath();
+        ctx.roundRect(
+          x - scaledNodeWidth / 2, 
+          y - scaledNodeHeight / 2, 
+          scaledNodeWidth, 
+          scaledNodeHeight,
+          8 // Rounded corners
+        );
+        ctx.fillStyle = isRoot ? rootNodeColor : nodeColor;
+        ctx.fill();
+        ctx.strokeStyle = isRoot ? rootNodeColor : nodeBorderColor;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Draw text
+        ctx.fillStyle = isRoot ? rootTextColor : textColor;
+        ctx.font = `${isRoot ? 'bold ' : ''}${12 * scale}px sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        
+        // Handle long text with ellipsis
+        const maxTextWidth = scaledNodeWidth - 20;
+        let displayText = node.label;
+        if (ctx.measureText(displayText).width > maxTextWidth) {
+          let testText = displayText;
+          while (ctx.measureText(testText + "...").width > maxTextWidth && testText.length > 0) {
+            testText = testText.slice(0, -1);
+          }
+          displayText = testText + "...";
+        }
+        
+        ctx.fillText(displayText, x, y);
+
+        // Draw children
+        if (node.children && node.children.length > 0) {
+          const availableRadius = Math.min(canvas.width, canvas.height) / 2 - 100;
+          const radius = isRoot ? availableRadius / 2 : availableRadius / 3;
+          const angleStep = Math.PI * 1.5 / node.children.length;
+          const startAngle = isRoot ? Math.PI / 4 : Math.PI * 0.75;
+
+          node.children.forEach((child, index) => {
+            const angle = startAngle + index * angleStep;
+            const childX = x + Math.cos(angle) * radius;
+            const childY = y + Math.sin(angle) * radius;
+
+            // Draw connecting line
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(childX, childY);
+            ctx.strokeStyle = lineColor;
+            ctx.lineWidth = isRoot ? 2 : 1;
+            ctx.stroke();
+
+            // Draw the child node
+            drawNode(child, childX, childY);
+          });
+        }
+      };
+
+      // Start drawing from the root
+      drawNode(data, rootX, rootY, true);
+    };
+
+    // Initial draw
+    resizeCanvas();
+
+    // Handle window resize
+    window.addEventListener("resize", resizeCanvas);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener("resize", resizeCanvas);
+    };
+  }, [data, isDarkMode, textColor, lineColor, nodeColor, nodeBorderColor, rootNodeColor, rootTextColor]);
 
   return (
-    <div 
-      ref={ref} 
-      className={cn(
-        "mind-map overflow-auto p-4 w-full flex flex-col items-center", 
-        className
-      )}
-    ></div>
+    <div
+      ref={containerRef}
+      className={cn("relative w-full overflow-auto touch-auto", className)}
+      style={{ minHeight: "300px" }}
+    >
+      <canvas
+        ref={canvasRef}
+        className="block"
+      />
+    </div>
   );
 }
+
+export default MindMap;

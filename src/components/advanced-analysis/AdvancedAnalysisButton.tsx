@@ -1,61 +1,66 @@
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { AdvancedAnalysisModal } from './AdvancedAnalysisModal';
-import { cn } from '@/lib/utils';
-import { useTheme } from '@/hooks/use-theme';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { BarChart3, Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { AdvancedAnalysisModal } from "./AdvancedAnalysisModal";
+import { cn } from "@/lib/utils";
+import { useTheme } from "@/hooks/use-theme";
 
 interface AdvancedAnalysisButtonProps {
   ideaId: string;
+  variant?: "default" | "outline" | "ghost" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
+  showLabel?: boolean;
   className?: string;
-  size?: 'default' | 'sm' | 'lg';
-  variant?: 'default' | 'outline' | 'ghost';
   showIcon?: boolean;
-  label?: string;
+  icon?: "chart" | "sparkles";
 }
 
 export function AdvancedAnalysisButton({
   ideaId,
-  className,
-  size = 'default',
-  variant = 'default',
+  variant = "default",
+  size = "default",
+  showLabel = true,
   showIcon = true,
-  label,
+  icon = "chart",
+  className,
 }: AdvancedAnalysisButtonProps) {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+  const handleOpenModal = () => {
+    setIsOpen(true);
+  };
+
+  const IconComponent = icon === "chart" ? BarChart3 : Sparkles;
 
   return (
     <>
       <Button
-        onClick={() => setOpen(true)}
+        onClick={handleOpenModal}
+        variant={variant}
+        size={size}
         className={cn(
           "transition-all",
-          showIcon ? "" : "px-6",
-          variant === 'default' && !className && (
-            isDarkMode 
-              ? "bg-gradient-to-r from-brand-blue/90 to-brand-purple/90 hover:from-brand-blue hover:to-brand-purple"
-              : "bg-gradient-to-r from-brand-blue to-brand-purple hover:opacity-90"
-          ),
+          variant === "default" && "bg-gradient-to-r from-brand-blue to-brand-purple hover:from-brand-blue/90 hover:to-brand-purple/90",
+          isDarkMode && variant === "outline" && "border-slate-700 hover:bg-slate-800",
           className
         )}
-        size={size}
-        variant={variant}
       >
-        {showIcon && (
-          <Sparkles className={cn(
-            "h-4 w-4",
-            label ? "mr-2" : ""
-          )} />
-        )}
-        {label || t('advancedAnalysis.button', 'Análise Avançada com GPT-4o')}
+        {showIcon && <IconComponent className={cn("h-4 w-4", showLabel && "mr-2")} />}
+        {showLabel && t('advancedAnalysis.button', "Análise Avançada")}
       </Button>
-
-      <AdvancedAnalysisModal ideaId={ideaId} open={open} onOpenChange={setOpen} />
+      
+      <AdvancedAnalysisModal
+        ideaId={ideaId}
+        open={isOpen}
+        onOpenChange={setIsOpen}
+      />
     </>
   );
 }
+
+export default AdvancedAnalysisButton;

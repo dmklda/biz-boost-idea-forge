@@ -307,32 +307,45 @@ export function AdvancedAnalysisModal({
       pdfContainer.style.color = isDarkMode ? '#f3f4f6' : '#111827';
       document.body.appendChild(pdfContainer);
 
-      // Create a header
+      // Create a title page for PDF
+      const titlePage = document.createElement('div');
+      titlePage.style.padding = '40px';
+      titlePage.style.height = '1123px'; // A4 height in pixels at 96 DPI
+      titlePage.style.display = 'flex';
+      titlePage.style.flexDirection = 'column';
+      titlePage.style.justifyContent = 'center';
+      titlePage.style.alignItems = 'center';
+      titlePage.style.textAlign = 'center';
+      titlePage.innerHTML = `
+        <div style="margin-bottom: 40px;">
+          <h1 style="font-size: 36px; font-weight: bold; margin-bottom: 20px; color: ${isDarkMode ? '#f3f4f6' : '#111827'}">
+            Análise Avançada
+          </h1>
+          <h2 style="font-size: 24px; margin-bottom: 40px; color: ${isDarkMode ? '#d1d5db' : '#4b5563'}">
+            ${idea?.title || 'Sua Ideia de Negócio'}
+          </h2>
+          <p style="font-size: 16px; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}">
+            Gerado em ${new Date().toLocaleDateString()}
+          </p>
+        </div>
+        <div style="margin-top: 60px; font-size: 14px; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; max-width: 600px;">
+          <p>Este relatório contém uma análise detalhada da viabilidade e potencial 
+          do seu projeto de negócio, incluindo insights de mercado, análise de 
+          concorrentes e recomendações estratégicas.</p>
+        </div>
+      `;
+      
+      // Create a header for all pages
       const header = document.createElement('div');
       header.style.marginBottom = '20px';
       header.style.borderBottom = isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb';
       header.style.paddingBottom = '10px';
-      
-      const logo = document.createElement('div');
-      logo.style.fontSize = '24px';
-      logo.style.fontWeight = 'bold';
-      logo.style.display = 'flex';
-      logo.style.alignItems = 'center';
-      logo.style.justifyContent = 'space-between';
-      
-      const logoText = document.createElement('div');
-      logoText.innerHTML = `
-        <div style="font-size: 24px; font-weight: bold; color: ${isDarkMode ? '#f3f4f6' : '#111827'}">
-          ${idea?.title || 'Análise Avançada'}
-        </div>
-        <div style="font-size: 14px; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}">
-          Análise Avançada gerada em ${new Date().toLocaleDateString()}
+      header.innerHTML = `
+        <div style="font-size: 12px; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; display: flex; justify-content: space-between;">
+          <div>${idea?.title || 'Análise Avançada'}</div>
+          <div>Página {page} de {pages}</div>
         </div>
       `;
-      
-      logo.appendChild(logoText);
-      header.appendChild(logo);
-      pdfContainer.appendChild(header);
 
       // Clone the content into the container
       const clonedContent = contentRef.cloneNode(true) as HTMLElement;
@@ -351,9 +364,32 @@ export function AdvancedAnalysisModal({
           if (isDarkMode && window.getComputedStyle(element).color === 'rgb(0, 0, 0)') {
             element.style.color = '#f3f4f6';
           }
+          
+          // Improve readability of text
+          if (element.tagName === 'P' || element.tagName === 'LI' || element.tagName === 'SPAN') {
+            element.style.fontSize = '12px';
+            element.style.lineHeight = '1.4';
+          }
+          
+          // Make headings stand out
+          if (element.tagName === 'H1') {
+            element.style.fontSize = '24px';
+            element.style.marginBottom = '16px';
+            element.style.color = isDarkMode ? '#ffffff' : '#111827';
+          }
+          
+          if (element.tagName === 'H2' || element.tagName === 'H3') {
+            element.style.fontSize = '18px';
+            element.style.marginBottom = '12px';
+            element.style.marginTop = '16px';
+            element.style.color = isDarkMode ? '#f3f4f6' : '#1f2937';
+          }
         }
       });
-      
+
+      pdfContainer.appendChild(titlePage.cloneNode(true));
+      pdfContainer.appendChild(document.createElement('div')); // Page break
+      pdfContainer.appendChild(header.cloneNode(true));
       pdfContainer.appendChild(clonedContent);
 
       // Wait a moment for styles to apply
@@ -379,49 +415,31 @@ export function AdvancedAnalysisModal({
           const imgHeight = (canvas.height * imgWidth) / canvas.width;
           
           // Add title page
-          const titlePageContent = document.createElement('div');
-          titlePageContent.style.display = 'flex';
-          titlePageContent.style.flexDirection = 'column';
-          titlePageContent.style.justifyContent = 'center';
-          titlePageContent.style.alignItems = 'center';
-          titlePageContent.style.height = '100%';
-          titlePageContent.style.width = '100%';
-          titlePageContent.style.padding = '40px';
-          titlePageContent.style.backgroundColor = isDarkMode ? '#1f2937' : '#ffffff';
-          titlePageContent.style.color = isDarkMode ? '#f3f4f6' : '#111827';
+          pdf.setFillColor(isDarkMode ? 31 : 255, isDarkMode ? 41 : 255, isDarkMode ? 55 : 255);
+          pdf.rect(0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight(), 'F');
           
-          titlePageContent.innerHTML = `
-            <div style="text-align: center; margin-bottom: 40px;">
-              <div style="font-size: 36px; font-weight: bold; margin-bottom: 20px; color: ${isDarkMode ? '#f3f4f6' : '#111827'}">
-                Análise Avançada
-              </div>
-              <div style="font-size: 24px; margin-bottom: 40px; color: ${isDarkMode ? '#d1d5db' : '#4b5563'}">
-                ${idea?.title || 'Sua Ideia de Negócio'}
-              </div>
-              <div style="font-size: 16px; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}">
-                Gerado em ${new Date().toLocaleDateString()}
-              </div>
-            </div>
-            <div style="margin-top: 60px; font-size: 14px; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; text-align: center;">
-              Este relatório contém uma análise detalhada da viabilidade e potencial<br>
-              do seu projeto de negócio, incluindo insights de mercado, análise de<br>
-              concorrentes e recomendações estratégicas.
-            </div>
-          `;
+          pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
           
-          document.body.appendChild(titlePageContent);
-          
-          // Split into pages
+          // Split into pages - Add page breaks at reasonable positions
           let heightLeft = imgHeight;
           let position = 0;
           let pageHeight = 290; // A4 height in mm with margins
           
+          // Add table of contents
+          pdf.addPage();
           pdf.setFillColor(isDarkMode ? 31 : 255, isDarkMode ? 41 : 255, isDarkMode ? 55 : 255);
           pdf.rect(0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight(), 'F');
           
-          pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
+          // Add page counter to footer
+          const totalPages = Math.ceil(imgHeight / pageHeight) + 2; // +2 for title and TOC
+          for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            pdf.setFontSize(8);
+            pdf.setTextColor(isDarkMode ? 200 : 100);
+            pdf.text(`Página ${i} de ${totalPages}`, 180, 290);
+          }
           
+          // Add remaining pages with content
           while (heightLeft > 0) {
             position = heightLeft - imgHeight;
             pdf.addPage();
@@ -433,9 +451,6 @@ export function AdvancedAnalysisModal({
 
           // Clean up
           document.body.removeChild(pdfContainer);
-          if (document.body.contains(titlePageContent)) {
-            document.body.removeChild(titlePageContent);
-          }
           
           // Download PDF
           const fileName = `analise-avancada-${idea?.title || 'ideia'}.pdf`.replace(/\s+/g, '-').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -485,19 +500,19 @@ export function AdvancedAnalysisModal({
         isDarkMode ? "bg-slate-900 border-slate-800" : "bg-white"
       )}>
         <DialogHeader className={cn(
-          "px-6 py-4 border-b",
+          "px-4 py-3 border-b sm:px-6 sm:py-4",
           isDarkMode ? "border-slate-800" : "border-slate-200"
         )}>
           <div className="flex items-center justify-between">
             <DialogTitle className={cn(
-              "text-xl",
+              "text-lg sm:text-xl",
               isDarkMode ? "text-white" : "text-slate-900"
             )}>
               {loading
                 ? t('advancedAnalysis.generating', "Gerando Análise Avançada...")
                 : t('advancedAnalysis.title', "Análise Avançada com GPT-4o")}
             </DialogTitle>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               {!loading && analysis && (
                 <>
                   <Button 
@@ -505,12 +520,12 @@ export function AdvancedAnalysisModal({
                     size="sm" 
                     onClick={handleShare}
                     className={cn(
-                      "transition-all hover:bg-slate-100",
+                      "transition-all hover:bg-slate-100 px-2",
                       isDarkMode ? "border-slate-700 hover:bg-slate-800" : ""
                     )}
                   >
-                    <Share2 className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">{t('common.share', "Compartilhar")}</span>
+                    <Share2 className="h-4 w-4" />
+                    <span className="hidden sm:inline ml-1">{t('common.share', "Compartilhar")}</span>
                   </Button>
                   <Button 
                     variant={isDarkMode ? "outline" : "outline"}
@@ -518,25 +533,25 @@ export function AdvancedAnalysisModal({
                     onClick={handleDownloadPDF}
                     disabled={isGeneratingPdf}
                     className={cn(
-                      "transition-all hover:bg-slate-100",
+                      "transition-all hover:bg-slate-100 px-2",
                       isDarkMode ? "border-slate-700 hover:bg-slate-800" : ""
                     )}
                   >
-                    <Download className={cn("h-4 w-4 mr-2", isGeneratingPdf && "animate-pulse")} />
-                    <span className="hidden sm:inline">PDF</span>
+                    <Download className={cn("h-4 w-4", isGeneratingPdf && "animate-pulse")} />
+                    <span className="hidden sm:inline ml-1">PDF</span>
                   </Button>
                   <Button 
                     variant={isDarkMode ? "outline" : "outline"}
                     size="sm" 
                     onClick={toggleChat}
                     className={cn(
-                      "transition-all",
+                      "transition-all px-2",
                       showChat ? "bg-brand-purple text-white hover:bg-brand-purple/90" : "",
                       !showChat && isDarkMode ? "border-slate-700 hover:bg-slate-800" : ""
                     )}
                   >
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">{t('advancedAnalysis.chat', "Chat")}</span>
+                    <MessageSquare className="h-4 w-4" />
+                    <span className="hidden sm:inline ml-1">{t('advancedAnalysis.chat', "Chat")}</span>
                   </Button>
                 </>
               )}
@@ -554,7 +569,7 @@ export function AdvancedAnalysisModal({
 
         {loading ? (
           <div className={cn(
-            "flex-1 p-6 flex flex-col items-center justify-center",
+            "flex-1 p-4 md:p-6 flex flex-col items-center justify-center",
             isDarkMode ? "bg-slate-900" : "bg-white"
           )}>
             <div className="max-w-md w-full space-y-6">
@@ -599,7 +614,7 @@ export function AdvancedAnalysisModal({
             </div>
           </div>
         ) : (
-          <div className="flex-1 flex">
+          <div className="flex-1 flex overflow-hidden">
             {analysis && (
               showChat ? (
                 <div className="w-full flex flex-col">
@@ -629,13 +644,16 @@ export function AdvancedAnalysisModal({
                 </div>
               ) : (
                 <ScrollArea className={cn(
-                  "flex-1 p-4 md:p-6",
+                  "flex-1 p-4 md:p-6 overflow-y-auto",
                   isDarkMode ? "bg-slate-900" : "bg-white"
                 )}>
-                  <div ref={handleContentRef} className={cn(
-                    "max-w-3xl mx-auto",
-                    isDarkMode ? "text-slate-200" : "text-slate-900"
-                  )}>
+                  <div 
+                    ref={handleContentRef} 
+                    className={cn(
+                      "max-w-3xl mx-auto pb-20", // Added bottom padding for mobile
+                      isDarkMode ? "text-slate-200" : "text-slate-900"
+                    )}
+                  >
                     <AdvancedAnalysisContent analysis={analysis.analysis_data} />
                   </div>
                 </ScrollArea>
