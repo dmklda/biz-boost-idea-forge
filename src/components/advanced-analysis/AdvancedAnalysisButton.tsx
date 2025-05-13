@@ -18,12 +18,17 @@ import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AdvancedAnalysisModal } from "./AdvancedAnalysisModal";
 
-interface AdvancedAnalysisButtonProps {
+export interface AdvancedAnalysisButtonProps {
   ideaId: string;
   className?: string;
+  variant?: "default" | "outline" | "secondary" | "ghost" | "link" | "destructive" | null;
 }
 
-export function AdvancedAnalysisButton({ ideaId, className = "" }: AdvancedAnalysisButtonProps) {
+export function AdvancedAnalysisButton({ 
+  ideaId, 
+  className = "", 
+  variant = "default" 
+}: AdvancedAnalysisButtonProps) {
   const { t } = useTranslation();
   const { authState, updateUserCredits } = useAuth();
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -74,7 +79,7 @@ export function AdvancedAnalysisButton({ ideaId, className = "" }: AdvancedAnaly
   return (
     <>
       <Button
-        variant="default"
+        variant={variant}
         size="sm"
         className={`bg-gradient-to-r from-brand-blue to-brand-purple hover:opacity-90 ${className}`}
         onClick={() => setOpenConfirmDialog(true)}

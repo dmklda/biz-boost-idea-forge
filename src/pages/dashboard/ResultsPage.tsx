@@ -217,7 +217,6 @@ const ResultsPage = () => {
             <div className="p-4 bg-gray-50 flex justify-center">
               <AdvancedAnalysisButton 
                 ideaId={idea.id} 
-                variant="default"
                 className="bg-gradient-to-r from-brand-blue to-brand-purple hover:opacity-90 transition-all"
               />
             </div>
