@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,10 +8,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { SavedAnalysesList } from "@/components/advanced-analysis";
-import { IdeaCard } from "@/components/ideas/IdeaCard";
+import { IdeaCard } from "@/components/ideas";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TagsFilter, TagType } from "@/components/ideas/TagsFilter";
+import { TagsFilter, TagType } from "@/components/ideas";
 
 interface Idea {
   id: string;

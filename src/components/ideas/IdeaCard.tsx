@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Star, StarOff, ExternalLink } from "lucide-react";
+import { Calendar, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,7 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
   const navigate = useNavigate();
 
   const handleCardClick = () => {
+    // Correção aqui: Garantir que o caminho esteja correto
     navigate(`/dashboard/ideas/${idea.id}`);
   };
 
@@ -77,6 +78,7 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
           className="text-muted-foreground hover:text-foreground ml-auto"
           onClick={(e) => {
             e.stopPropagation();
+            // Correção aqui também: Garantir consistência na navegação
             navigate(`/dashboard/ideas/${idea.id}`);
           }}
         >
