@@ -177,6 +177,23 @@ function toast({
   };
 }
 
+// Add helper methods to toast
+toast.error = (description: string, title?: string) => {
+  return toast({
+    title,
+    description,
+    variant: "destructive",
+  });
+};
+
+toast.success = (description: string, title?: string) => {
+  return toast({
+    title, 
+    description,
+    variant: "default",
+  });
+};
+
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState);
 

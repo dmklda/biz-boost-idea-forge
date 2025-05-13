@@ -21,7 +21,7 @@ import { AdvancedAnalysisModal } from "./AdvancedAnalysisModal";
 export interface AdvancedAnalysisButtonProps {
   ideaId: string;
   className?: string;
-  variant?: "default" | "outline" | "secondary" | "ghost" | "link" | "destructive" | null;
+  variant?: "default" | "outline" | "secondary" | "ghost" | "link" | "destructive";
 }
 
 export function AdvancedAnalysisButton({ 
@@ -37,13 +37,21 @@ export function AdvancedAnalysisButton({
 
   const handleStartAnalysis = async () => {
     if (!authState.isAuthenticated || !authState.user) {
-      toast.error(t('errors.loginRequired', "Você precisa estar logado para usar esta funcionalidade"));
+      toast({
+        title: t('errors.loginRequired', "Login Required"),
+        description: t('errors.loginRequired', "Você precisa estar logado para usar esta funcionalidade"),
+        variant: "destructive",
+      });
       return;
     }
 
     // For free users, check if they have enough credits
     if (authState.user.plan === 'free' && (authState.user.credits < 3)) {
-      toast.error(t('errors.insufficientCredits', "Você precisa de pelo menos 3 créditos para realizar uma análise avançada"));
+      toast({
+        title: t('errors.insufficientCredits', "Insufficient Credits"),
+        description: t('errors.insufficientCredits', "Você precisa de pelo menos 3 créditos para realizar uma análise avançada"),
+        variant: "destructive",
+      });
       return;
     }
 
@@ -82,14 +90,22 @@ export function AdvancedAnalysisButton({
       // If user is on free plan, deduct credits
       if (authState.user.plan === 'free') {
         updateUserCredits(authState.user.credits - 3);
-        toast.success(t('advancedAnalysis.creditsUsed', "3 créditos foram utilizados para esta análise avançada"));
+        toast({
+          title: t('advancedAnalysis.creditsUsed', "Credits Used"),
+          description: t('advancedAnalysis.creditsUsed', "3 créditos foram utilizados para esta análise avançada"),
+          variant: "default",
+        });
       }
 
       // Open the modal to show the analysis
       setOpenAnalysisModal(true);
     } catch (error) {
       console.error("Error starting advanced analysis:", error);
-      toast.error(t('errors.analysisError', "Erro ao iniciar análise avançada"));
+      toast({
+        title: t('errors.analysisError', "Analysis Error"),
+        description: t('errors.analysisError', "Erro ao iniciar análise avançada"),
+        variant: "destructive",
+      });
     } finally {
       setIsProcessing(false);
     }

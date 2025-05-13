@@ -22,6 +22,7 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AdvancedAnalysisContent } from "./AdvancedAnalysisContent";
 import { AdvancedAnalysisChat } from "./AdvancedAnalysisChat";
+import { useToast } from "@/hooks/use-toast";
 
 interface AdvancedAnalysisModalProps {
   ideaId: string;
