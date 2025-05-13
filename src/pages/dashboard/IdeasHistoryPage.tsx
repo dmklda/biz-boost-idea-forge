@@ -707,7 +707,7 @@ const IdeasHistoryPage = () => {
       <CompareIdeasModal 
         open={isCompareModalOpen} 
         onOpenChange={(open) => setIsCompareModalOpen(open)} 
-        currentIdeaId={currentIdeaId}
+        ideaIds={selectedIdeas}
       />
     </div>
   );
