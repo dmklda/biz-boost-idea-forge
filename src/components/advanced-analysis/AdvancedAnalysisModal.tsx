@@ -140,18 +140,14 @@ export function AdvancedAnalysisModal({
     const checkIfSaved = async () => {
       if (analysis && authState.isAuthenticated) {
         try {
-          const { data, error } = await supabase
+          const { data } = await supabase
             .from('saved_analyses')
             .select('*')
             .eq('original_analysis_id', analysis.id)
             .eq('user_id', authState.user?.id)
-            .single();
+            .maybeSingle();
           
-          if (data) {
-            setIsSaved(true);
-          } else {
-            setIsSaved(false);
-          }
+          setIsSaved(!!data);
         } catch (error) {
           console.error("Error checking if analysis is saved:", error);
           setIsSaved(false);
@@ -537,18 +533,18 @@ export function AdvancedAnalysisModal({
 
       // Check if already saved
       const { data: existingData, error: checkError } = await supabase
-        .from('saved_analyses')
-        .select('id')
-        .eq('original_analysis_id', analysis.id)
-        .eq('user_id', authState.user?.id)
-        .single();
+        .rpc('get_saved_analysis', {
+          p_original_analysis_id: analysis.id,
+          p_user_id: authState.user?.id
+        });
 
-      if (existingData) {
+      if (existingData && existingData.length > 0) {
         // Already saved - update the timestamp
         const { error: updateError } = await supabase
-          .from('saved_analyses')
-          .update({ updated_at: new Date().toISOString() })
-          .eq('id', existingData.id);
+          .rpc('update_saved_analysis', {
+            p_id: existingData[0].id,
+            p_updated_at: new Date().toISOString()
+          });
 
         if (updateError) throw updateError;
 
@@ -559,13 +555,12 @@ export function AdvancedAnalysisModal({
       } else {
         // Save new
         const { error: saveError } = await supabase
-          .from('saved_analyses')
-          .insert({
-            user_id: authState.user?.id,
-            idea_id: ideaId,
-            idea_title: idea.title,
-            original_analysis_id: analysis.id,
-            analysis_data: analysis.analysis_data
+          .rpc('create_saved_analysis', {
+            p_user_id: authState.user?.id,
+            p_idea_id: ideaId,
+            p_idea_title: idea.title,
+            p_original_analysis_id: analysis.id,
+            p_analysis_data: analysis.analysis_data
           });
 
         if (saveError) throw saveError;

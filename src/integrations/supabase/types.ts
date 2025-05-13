@@ -329,6 +329,39 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_analyses: {
+        Row: {
+          analysis_data: Json
+          created_at: string
+          id: string
+          idea_id: string
+          idea_title: string
+          original_analysis_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analysis_data: Json
+          created_at?: string
+          id?: string
+          idea_id: string
+          idea_title: string
+          original_analysis_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analysis_data?: Json
+          created_at?: string
+          id?: string
+          idea_id?: string
+          idea_title?: string
+          original_analysis_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       tags: {
         Row: {
           color: string | null
