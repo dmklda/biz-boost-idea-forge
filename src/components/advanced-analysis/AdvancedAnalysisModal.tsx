@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -13,7 +12,8 @@ import {
   Share2,
   MessageSquare,
   X, 
-  ChevronLeft
+  ChevronLeft,
+  Save
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
@@ -74,6 +74,8 @@ export function AdvancedAnalysisModal({
   const [attempts, setAttempts] = useState(0);
   const [contentRef, setContentRef] = useState<HTMLDivElement | null>(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
   const motivationalPhrases = [
     t('advancedAnalysis.motivation1', "Analisando potenciais de mercado..."),
@@ -132,6 +134,33 @@ export function AdvancedAnalysisModal({
       return () => clearInterval(interval);
     }
   }, [loading, progress, motivationalPhrases.length]);
+
+  // Check if analysis is already saved
+  useEffect(() => {
+    const checkIfSaved = async () => {
+      if (analysis && authState.isAuthenticated) {
+        try {
+          const { data, error } = await supabase
+            .from('saved_analyses')
+            .select('*')
+            .eq('original_analysis_id', analysis.id)
+            .eq('user_id', authState.user?.id)
+            .single();
+          
+          if (data) {
+            setIsSaved(true);
+          } else {
+            setIsSaved(false);
+          }
+        } catch (error) {
+          console.error("Error checking if analysis is saved:", error);
+          setIsSaved(false);
+        }
+      }
+    };
+    
+    checkIfSaved();
+  }, [analysis, authState.isAuthenticated, authState.user?.id]);
 
   const fetchIdeaDetails = async () => {
     try {
@@ -493,6 +522,73 @@ export function AdvancedAnalysisModal({
     setContentRef(ref);
   };
 
+  const handleSaveAnalysis = async () => {
+    if (!analysis || !idea || !authState.isAuthenticated) {
+      toast({
+        title: t('errors.saveError', "Erro ao salvar análise"),
+        description: t('errors.missingData', "Dados insuficientes para salvar"),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+
+      // Check if already saved
+      const { data: existingData, error: checkError } = await supabase
+        .from('saved_analyses')
+        .select('id')
+        .eq('original_analysis_id', analysis.id)
+        .eq('user_id', authState.user?.id)
+        .single();
+
+      if (existingData) {
+        // Already saved - update the timestamp
+        const { error: updateError } = await supabase
+          .from('saved_analyses')
+          .update({ updated_at: new Date().toISOString() })
+          .eq('id', existingData.id);
+
+        if (updateError) throw updateError;
+
+        toast({
+          title: t('common.updated', "Atualizado!"),
+          description: t('analysis.alreadySaved', "Esta análise já estava salva e foi atualizada"),
+        });
+      } else {
+        // Save new
+        const { error: saveError } = await supabase
+          .from('saved_analyses')
+          .insert({
+            user_id: authState.user?.id,
+            idea_id: ideaId,
+            idea_title: idea.title,
+            original_analysis_id: analysis.id,
+            analysis_data: analysis.analysis_data
+          });
+
+        if (saveError) throw saveError;
+
+        toast({
+          title: t('common.saved', "Salvo!"),
+          description: t('analysis.saveSuccess', "Análise avançada salva com sucesso"),
+        });
+      }
+
+      setIsSaved(true);
+    } catch (error) {
+      console.error("Error saving analysis:", error);
+      toast({
+        title: t('errors.saveError', "Erro ao salvar análise"),
+        description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn(
@@ -515,6 +611,27 @@ export function AdvancedAnalysisModal({
             <div className="flex items-center gap-1 sm:gap-2">
               {!loading && analysis && (
                 <>
+                  <Button 
+                    variant={isDarkMode ? "outline" : "outline"} 
+                    size="sm" 
+                    onClick={handleSaveAnalysis}
+                    disabled={isSaving}
+                    className={cn(
+                      "transition-all px-2",
+                      isSaved ? "bg-green-100 text-green-800 border-green-300 hover:bg-green-200" : "", 
+                      isDarkMode && !isSaved ? "border-slate-700 hover:bg-slate-800" : "",
+                      isDarkMode && isSaved ? "bg-green-900/20 text-green-400 border-green-800 hover:bg-green-900/30" : ""
+                    )}
+                  >
+                    <Save className={cn("h-4 w-4", isSaving && "animate-pulse")} />
+                    <span className="hidden sm:inline ml-1">
+                      {isSaved 
+                        ? t('common.saved', "Salvo") 
+                        : isSaving 
+                          ? t('common.saving', "Salvando...") 
+                          : t('common.save', "Salvar")}
+                    </span>
+                  </Button>
                   <Button 
                     variant={isDarkMode ? "outline" : "outline"} 
                     size="sm" 
