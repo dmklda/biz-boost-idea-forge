@@ -25,55 +25,6 @@ interface Idea {
   tags?: string[];
 }
 
-// Placeholder components until real ones are available
-const IdeaCard = ({ idea, onUpdate }: { idea: Idea, onUpdate: () => void }) => {
-  return (
-    <Card>
-      <CardContent className="p-4">
-        <h3 className="font-semibold">{idea.title}</h3>
-        <p className="text-sm text-muted-foreground">{idea.description}</p>
-      </CardContent>
-    </Card>
-  );
-};
-
-const EmptyState = ({ 
-  icon, 
-  title, 
-  description, 
-  action 
-}: { 
-  icon: React.ReactNode; 
-  title: string; 
-  description: string; 
-  action: React.ReactNode 
-}) => {
-  return (
-    <div className="text-center py-10">
-      <div className="inline-flex justify-center mb-4">{icon}</div>
-      <h2 className="text-xl font-semibold mb-2">{title}</h2>
-      <p className="text-muted-foreground mb-6">{description}</p>
-      {action}
-    </div>
-  );
-};
-
-const TagsFilter = ({
-  allTags, 
-  selectedTags, 
-  onTagsChange
-}: {
-  allTags: any[];
-  selectedTags: any[];
-  onTagsChange: (tags: any[]) => void;
-}) => {
-  return (
-    <div>
-      <p>Tags filter placeholder</p>
-    </div>
-  );
-};
-
 const IdeasPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
