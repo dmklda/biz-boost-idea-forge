@@ -1,115 +1,99 @@
+
 import { useEffect, useRef } from "react";
+import { useTheme } from "@/hooks/use-theme";
+import { cn } from "@/lib/utils";
 
 interface MindMapNode {
   id: string;
   label: string;
   children?: MindMapNode[];
+  className?: string;
 }
 
 interface MindMapProps {
   data: MindMapNode;
+  className?: string;
 }
 
-export function MindMap({ data }: MindMapProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+export function MindMap({ data, className }: MindMapProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   useEffect(() => {
-    if (!containerRef.current || !data) return;
+    if (!ref.current) return;
 
-    // This is a placeholder for a mind map visualization
-    // In a real implementation, you would use a library like react-flow or d3.js
-    // to create an interactive mind map
-    const container = containerRef.current;
-    container.innerHTML = '';
+    const container = ref.current;
+    
+    // Clear previous content
+    container.innerHTML = "";
 
-    // Create a simple visualization with HTML and CSS
-    const rootNode = document.createElement('div');
-    rootNode.className = 'root-node';
-    rootNode.style.cssText = `
-      background-color: #3b82f6;
-      color: white;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-weight: 600;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 10;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    `;
-    rootNode.textContent = data.label || 'Ideia';
-    container.appendChild(rootNode);
+    // Create mind map
+    const createMindMap = (node: MindMapNode, depth: number = 0, parent?: HTMLElement) => {
+      const nodeEl = document.createElement("div");
+      
+      // Apply styling based on depth
+      nodeEl.className = cn(
+        "relative p-3 rounded-lg transition-all duration-300 font-medium text-sm",
+        depth === 0 
+          ? "bg-gradient-to-r from-brand-blue to-brand-purple text-white text-base font-semibold shadow-lg" 
+          : depth === 1 
+            ? isDarkMode 
+              ? "bg-slate-800 text-white border border-slate-700" 
+              : "bg-white text-slate-800 border border-slate-200 shadow"
+            : isDarkMode 
+              ? "bg-slate-900 text-slate-300" 
+              : "bg-slate-50 text-slate-700",
+        depth === 0 ? "mx-auto w-fit mb-8 px-5" : "",
+        depth === 1 ? "my-2 mx-2" : "my-1 mx-1",
+        node.className || "",
+        depth > 0 && "hover:shadow-md"
+      );
+      
+      nodeEl.textContent = node.label;
 
-    // For simplicity, we'll just create a visual representation
-    // that doesn't actually use the full data structure
-    const createBranch = (angle: number, color: string, label: string) => {
-      const distance = 120;
-      const branch = document.createElement('div');
-      branch.className = 'branch-node';
-      
-      // Calculate position based on angle and distance
-      const x = Math.cos(angle) * distance;
-      const y = Math.sin(angle) * distance;
-      
-      branch.style.cssText = `
-        background-color: ${color};
-        color: white;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-weight: 500;
-        font-size: 14px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(calc(-50% + ${x}px), calc(-50% + ${y}px));
-        z-index: 5;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        max-width: 120px;
-        text-align: center;
-      `;
-      branch.textContent = label;
-      
-      // Create the connecting line
-      const line = document.createElement('div');
-      line.style.cssText = `
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: ${distance}px;
-        height: 2px;
-        background-color: ${color};
-        transform: translate(0, 0) rotate(${angle}rad);
-        transform-origin: left center;
-        opacity: 0.6;
-        z-index: 1;
-      `;
-      
-      container.appendChild(line);
-      container.appendChild(branch);
+      // Append to parent or container
+      if (parent) {
+        parent.appendChild(nodeEl);
+      } else {
+        container.appendChild(nodeEl);
+      }
+
+      // If there are children, create a container for them
+      if (node.children && node.children.length > 0) {
+        const childrenContainer = document.createElement("div");
+        childrenContainer.className = cn(
+          "flex flex-wrap justify-center items-start my-2",
+          depth === 0 ? "gap-4" : "gap-2"
+        );
+        
+        if (depth > 0) {
+          const connector = document.createElement("div");
+          connector.className = isDarkMode 
+            ? "w-0.5 h-4 bg-slate-700 mx-auto" 
+            : "w-0.5 h-4 bg-slate-300 mx-auto";
+          nodeEl.appendChild(connector);
+        }
+        
+        nodeEl.appendChild(childrenContainer);
+
+        // Create children nodes
+        node.children.forEach(childNode => {
+          createMindMap(childNode, depth + 1, childrenContainer);
+        });
+      }
     };
 
-    // Create some sample branches
-    const branches = [
-      { angle: 0, color: '#3b82f6', label: 'Mercado' },
-      { angle: Math.PI / 3, color: '#8b5cf6', label: 'Produto' },
-      { angle: 2 * Math.PI / 3, color: '#ec4899', label: 'Monetização' },
-      { angle: Math.PI, color: '#ef4444', label: 'Tecnologia' },
-      { angle: 4 * Math.PI / 3, color: '#f59e0b', label: 'Concorrência' },
-      { angle: 5 * Math.PI / 3, color: '#10b981', label: 'Marketing' }
-    ];
-    
-    branches.forEach(branch => {
-      createBranch(branch.angle, branch.color, branch.label);
-    });
-    
-  }, [data]);
+    createMindMap(data);
+  }, [data, theme]);
 
   return (
     <div 
-      ref={containerRef} 
-      className="w-full h-full relative"
-      style={{ backgroundColor: '#f8fafc' }}
-    />
+      ref={ref} 
+      className={cn(
+        "mind-map overflow-auto p-4 w-full flex flex-col items-center", 
+        className
+      )}
+    ></div>
   );
 }

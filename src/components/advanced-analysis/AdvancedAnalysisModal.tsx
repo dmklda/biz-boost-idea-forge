@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -11,7 +12,8 @@ import {
   Download,
   Share2,
   MessageSquare,
-  X
+  X, 
+  ChevronLeft
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
@@ -21,6 +23,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AdvancedAnalysisContent } from "./AdvancedAnalysisContent";
 import { AdvancedAnalysisChat } from "./AdvancedAnalysisChat";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/hooks/use-theme";
+import { cn } from "@/lib/utils";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -59,6 +63,8 @@ export function AdvancedAnalysisModal({
   const { t } = useTranslation();
   const { toast } = useToast();
   const { authState } = useAuth();
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
   const [analysis, setAnalysis] = useState<AdvancedAnalysis | null>(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -67,6 +73,7 @@ export function AdvancedAnalysisModal({
   const [pollInterval, setPollInterval] = useState<number | null>(null);
   const [attempts, setAttempts] = useState(0);
   const [contentRef, setContentRef] = useState<HTMLDivElement | null>(null);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const motivationalPhrases = [
     t('advancedAnalysis.motivation1', "Analisando potenciais de mercado..."),
@@ -283,6 +290,7 @@ export function AdvancedAnalysisModal({
     }
 
     try {
+      setIsGeneratingPdf(true);
       toast({
         title: t('common.preparing', "Preparando PDF..."),
         description: t('pdf.generating', "Este processo pode levar alguns segundos"),
@@ -290,27 +298,76 @@ export function AdvancedAnalysisModal({
 
       // Create a temporary container to render the content for PDF
       const pdfContainer = document.createElement('div');
-      pdfContainer.style.width = '1000px'; // Fixed width for PDF
-      pdfContainer.style.padding = '20px';
+      pdfContainer.style.width = '900px'; // Wider for better quality
+      pdfContainer.style.padding = '40px';
       pdfContainer.style.position = 'absolute';
       pdfContainer.style.left = '-9999px';
       pdfContainer.style.top = '-9999px';
+      pdfContainer.style.backgroundColor = isDarkMode ? '#1f2937' : '#ffffff';
+      pdfContainer.style.color = isDarkMode ? '#f3f4f6' : '#111827';
       document.body.appendChild(pdfContainer);
 
+      // Create a header
+      const header = document.createElement('div');
+      header.style.marginBottom = '20px';
+      header.style.borderBottom = isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb';
+      header.style.paddingBottom = '10px';
+      
+      const logo = document.createElement('div');
+      logo.style.fontSize = '24px';
+      logo.style.fontWeight = 'bold';
+      logo.style.display = 'flex';
+      logo.style.alignItems = 'center';
+      logo.style.justifyContent = 'space-between';
+      
+      const logoText = document.createElement('div');
+      logoText.innerHTML = `
+        <div style="font-size: 24px; font-weight: bold; color: ${isDarkMode ? '#f3f4f6' : '#111827'}">
+          ${idea?.title || 'Análise Avançada'}
+        </div>
+        <div style="font-size: 14px; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}">
+          Análise Avançada gerada em ${new Date().toLocaleDateString()}
+        </div>
+      `;
+      
+      logo.appendChild(logoText);
+      header.appendChild(logo);
+      pdfContainer.appendChild(header);
+
       // Clone the content into the container
-      pdfContainer.appendChild(contentRef.cloneNode(true));
+      const clonedContent = contentRef.cloneNode(true) as HTMLElement;
+      
+      // Style the cloned content for PDF
+      const allElements = clonedContent.querySelectorAll('*');
+      allElements.forEach(el => {
+        const element = el as HTMLElement;
+        if (element.style) {
+          // Make backgrounds explicit for PDF
+          if (window.getComputedStyle(element).backgroundColor === 'rgba(0, 0, 0, 0)') {
+            element.style.backgroundColor = 'transparent';
+          }
+          
+          // Ensure contrast for text
+          if (isDarkMode && window.getComputedStyle(element).color === 'rgb(0, 0, 0)') {
+            element.style.color = '#f3f4f6';
+          }
+        }
+      });
+      
+      pdfContainer.appendChild(clonedContent);
 
       // Wait a moment for styles to apply
       setTimeout(async () => {
         try {
           const canvas = await html2canvas(pdfContainer, {
-            scale: 1,
+            scale: 1.5, // Higher scale for better quality
             useCORS: true,
             allowTaint: true,
+            backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
             logging: false,
           });
 
-          const imgData = canvas.toDataURL('image/png');
+          const imgData = canvas.toDataURL('image/jpeg', 1.0);
           const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
@@ -321,26 +378,67 @@ export function AdvancedAnalysisModal({
           const imgWidth = 210; // A4 width in mm
           const imgHeight = (canvas.height * imgWidth) / canvas.width;
           
-          // Split into pages if needed
+          // Add title page
+          const titlePageContent = document.createElement('div');
+          titlePageContent.style.display = 'flex';
+          titlePageContent.style.flexDirection = 'column';
+          titlePageContent.style.justifyContent = 'center';
+          titlePageContent.style.alignItems = 'center';
+          titlePageContent.style.height = '100%';
+          titlePageContent.style.width = '100%';
+          titlePageContent.style.padding = '40px';
+          titlePageContent.style.backgroundColor = isDarkMode ? '#1f2937' : '#ffffff';
+          titlePageContent.style.color = isDarkMode ? '#f3f4f6' : '#111827';
+          
+          titlePageContent.innerHTML = `
+            <div style="text-align: center; margin-bottom: 40px;">
+              <div style="font-size: 36px; font-weight: bold; margin-bottom: 20px; color: ${isDarkMode ? '#f3f4f6' : '#111827'}">
+                Análise Avançada
+              </div>
+              <div style="font-size: 24px; margin-bottom: 40px; color: ${isDarkMode ? '#d1d5db' : '#4b5563'}">
+                ${idea?.title || 'Sua Ideia de Negócio'}
+              </div>
+              <div style="font-size: 16px; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}">
+                Gerado em ${new Date().toLocaleDateString()}
+              </div>
+            </div>
+            <div style="margin-top: 60px; font-size: 14px; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; text-align: center;">
+              Este relatório contém uma análise detalhada da viabilidade e potencial<br>
+              do seu projeto de negócio, incluindo insights de mercado, análise de<br>
+              concorrentes e recomendações estratégicas.
+            </div>
+          `;
+          
+          document.body.appendChild(titlePageContent);
+          
+          // Split into pages
           let heightLeft = imgHeight;
           let position = 0;
-          let pageHeight = 295; // A4 height in mm
+          let pageHeight = 290; // A4 height in mm with margins
           
-          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          pdf.setFillColor(isDarkMode ? 31 : 255, isDarkMode ? 41 : 255, isDarkMode ? 55 : 255);
+          pdf.rect(0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight(), 'F');
+          
+          pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
           heightLeft -= pageHeight;
           
           while (heightLeft > 0) {
             position = heightLeft - imgHeight;
             pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            pdf.setFillColor(isDarkMode ? 31 : 255, isDarkMode ? 41 : 255, isDarkMode ? 55 : 255);
+            pdf.rect(0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight(), 'F');
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
             heightLeft -= pageHeight;
           }
 
           // Clean up
           document.body.removeChild(pdfContainer);
+          if (document.body.contains(titlePageContent)) {
+            document.body.removeChild(titlePageContent);
+          }
           
           // Download PDF
-          const fileName = `analise-avancada-${idea?.title || 'ideia'}.pdf`.replace(/\s+/g, '-');
+          const fileName = `analise-avancada-${idea?.title || 'ideia'}.pdf`.replace(/\s+/g, '-').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
           pdf.save(fileName);
           
           toast({
@@ -356,11 +454,14 @@ export function AdvancedAnalysisModal({
             description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
             variant: "destructive",
           });
+        } finally {
+          setIsGeneratingPdf(false);
         }
       }, 500);
       
     } catch (error) {
       console.error("Error downloading PDF:", error);
+      setIsGeneratingPdf(false);
       toast({
         title: t('errors.pdfError', "Erro ao gerar PDF"),
         description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
@@ -379,10 +480,19 @@ export function AdvancedAnalysisModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 gap-0">
-        <DialogHeader className="px-6 py-4 border-b">
+      <DialogContent className={cn(
+        "max-w-4xl h-[90vh] flex flex-col p-0 gap-0",
+        isDarkMode ? "bg-slate-900 border-slate-800" : "bg-white"
+      )}>
+        <DialogHeader className={cn(
+          "px-6 py-4 border-b",
+          isDarkMode ? "border-slate-800" : "border-slate-200"
+        )}>
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl">
+            <DialogTitle className={cn(
+              "text-xl",
+              isDarkMode ? "text-white" : "text-slate-900"
+            )}>
               {loading
                 ? t('advancedAnalysis.generating', "Gerando Análise Avançada...")
                 : t('advancedAnalysis.title', "Análise Avançada com GPT-4o")}
@@ -390,21 +500,52 @@ export function AdvancedAnalysisModal({
             <div className="flex items-center gap-2">
               {!loading && analysis && (
                 <>
-                  <Button variant="outline" size="sm" onClick={handleShare}>
+                  <Button 
+                    variant={isDarkMode ? "outline" : "outline"} 
+                    size="sm" 
+                    onClick={handleShare}
+                    className={cn(
+                      "transition-all hover:bg-slate-100",
+                      isDarkMode ? "border-slate-700 hover:bg-slate-800" : ""
+                    )}
+                  >
                     <Share2 className="h-4 w-4 mr-2" />
-                    {t('common.share', "Compartilhar")}
+                    <span className="hidden sm:inline">{t('common.share', "Compartilhar")}</span>
                   </Button>
-                  <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
-                    <Download className="h-4 w-4 mr-2" />
-                    PDF
+                  <Button 
+                    variant={isDarkMode ? "outline" : "outline"}
+                    size="sm" 
+                    onClick={handleDownloadPDF}
+                    disabled={isGeneratingPdf}
+                    className={cn(
+                      "transition-all hover:bg-slate-100",
+                      isDarkMode ? "border-slate-700 hover:bg-slate-800" : ""
+                    )}
+                  >
+                    <Download className={cn("h-4 w-4 mr-2", isGeneratingPdf && "animate-pulse")} />
+                    <span className="hidden sm:inline">PDF</span>
                   </Button>
-                  <Button variant="outline" size="sm" onClick={toggleChat}>
+                  <Button 
+                    variant={isDarkMode ? "outline" : "outline"}
+                    size="sm" 
+                    onClick={toggleChat}
+                    className={cn(
+                      "transition-all",
+                      showChat ? "bg-brand-purple text-white hover:bg-brand-purple/90" : "",
+                      !showChat && isDarkMode ? "border-slate-700 hover:bg-slate-800" : ""
+                    )}
+                  >
                     <MessageSquare className="h-4 w-4 mr-2" />
-                    {t('advancedAnalysis.chat', "Chat")}
+                    <span className="hidden sm:inline">{t('advancedAnalysis.chat', "Chat")}</span>
                   </Button>
                 </>
               )}
-              <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => onOpenChange(false)}
+                className={isDarkMode ? "hover:bg-slate-800" : ""}
+              >
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -412,24 +553,48 @@ export function AdvancedAnalysisModal({
         </DialogHeader>
 
         {loading ? (
-          <div className="flex-1 p-6 flex flex-col items-center justify-center">
+          <div className={cn(
+            "flex-1 p-6 flex flex-col items-center justify-center",
+            isDarkMode ? "bg-slate-900" : "bg-white"
+          )}>
             <div className="max-w-md w-full space-y-6">
               <div className="text-center">
-                <h2 className="text-xl font-semibold mb-2">
+                <h2 className={cn(
+                  "text-xl font-semibold mb-2",
+                  isDarkMode ? "text-white" : "text-slate-900"
+                )}>
                   {motivationalPhrases[currentPhrase]}
                 </h2>
-                <p className="text-muted-foreground">
+                <p className={cn(
+                  "text-muted-foreground",
+                  isDarkMode ? "text-slate-400" : ""
+                )}>
                   {t('advancedAnalysis.patience', "Este processo pode levar alguns segundos, estamos utilizando GPT-4o para criar uma análise completa")}
                 </p>
               </div>
               
-              <Progress value={progress} className="h-2" />
+              <Progress value={progress} className={cn(
+                "h-2",
+                isDarkMode ? "bg-slate-800" : ""
+              )} />
               
               <div className="grid grid-cols-2 gap-4">
-                <Skeleton className="h-24 rounded-md" />
-                <Skeleton className="h-24 rounded-md" />
-                <Skeleton className="h-24 rounded-md" />
-                <Skeleton className="h-24 rounded-md" />
+                <Skeleton className={cn(
+                  "h-24 rounded-md",
+                  isDarkMode ? "bg-slate-800" : ""
+                )} />
+                <Skeleton className={cn(
+                  "h-24 rounded-md",
+                  isDarkMode ? "bg-slate-800" : ""
+                )} />
+                <Skeleton className={cn(
+                  "h-24 rounded-md",
+                  isDarkMode ? "bg-slate-800" : ""
+                )} />
+                <Skeleton className={cn(
+                  "h-24 rounded-md",
+                  isDarkMode ? "bg-slate-800" : ""
+                )} />
               </div>
             </div>
           </div>
@@ -437,15 +602,40 @@ export function AdvancedAnalysisModal({
           <div className="flex-1 flex">
             {analysis && (
               showChat ? (
-                <AdvancedAnalysisChat 
-                  ideaId={ideaId} 
-                  idea={idea}
-                  analysis={analysis.analysis_data}
-                  onBack={() => setShowChat(false)} 
-                />
+                <div className="w-full flex flex-col">
+                  <div className={cn(
+                    "p-2 flex items-center",
+                    isDarkMode ? "bg-slate-800 border-b border-slate-700" : "bg-slate-50 border-b"
+                  )}>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={toggleChat}
+                      className={cn(
+                        "flex items-center",
+                        isDarkMode ? "hover:bg-slate-700" : ""
+                      )}
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" />
+                      {t('common.back', "Voltar")}
+                    </Button>
+                  </div>
+                  <AdvancedAnalysisChat 
+                    ideaId={ideaId} 
+                    idea={idea}
+                    analysis={analysis.analysis_data}
+                    onBack={() => setShowChat(false)} 
+                  />
+                </div>
               ) : (
-                <ScrollArea className="flex-1 p-6">
-                  <div ref={handleContentRef}>
+                <ScrollArea className={cn(
+                  "flex-1 p-4 md:p-6",
+                  isDarkMode ? "bg-slate-900" : "bg-white"
+                )}>
+                  <div ref={handleContentRef} className={cn(
+                    "max-w-3xl mx-auto",
+                    isDarkMode ? "text-slate-200" : "text-slate-900"
+                  )}>
                     <AdvancedAnalysisContent analysis={analysis.analysis_data} />
                   </div>
                 </ScrollArea>
