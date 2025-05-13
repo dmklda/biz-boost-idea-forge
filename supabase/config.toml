@@ -6,3 +6,9 @@ verify_jwt = true
 
 [functions.compare-ideas]
 verify_jwt = true
+
+[functions.advanced-analysis]
+verify_jwt = true
+
+[functions.gpt-chat]
+verify_jwt = true

@@ -28,6 +28,7 @@ import { toast } from "@/components/ui/sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { FavoriteButton } from "@/components/ideas/FavoriteButton";
 import { TagsSelector, TagType } from "@/components/ideas/TagsSelector";
+import { AdvancedAnalysisButton } from "@/components/advanced-analysis";
 
 // Define types for idea and analysis data
 interface Idea {
@@ -333,6 +334,17 @@ const IdeaDetailPage = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Add Advanced Analysis Button */}
+                {analysis && (
+                  <div className="mt-4 flex justify-center sm:justify-end">
+                    <AdvancedAnalysisButton 
+                      ideaId={idea.id} 
+                      variant="default"
+                      className="bg-gradient-to-r from-brand-blue to-brand-purple hover:opacity-90 transition-all"
+                    />
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}

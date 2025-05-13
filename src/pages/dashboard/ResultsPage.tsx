@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "@/components/ui/sonner";
+import { AdvancedAnalysisButton } from "@/components/advanced-analysis";
 
 const ResultsPage = () => {
   const { t } = useTranslation();
@@ -211,6 +211,17 @@ const ResultsPage = () => {
               <div className="text-xs md:text-sm text-gray-500">{t('results.weaknesses', "Pontos Fracos")}</div>
             </div>
           </div>
+          
+          {/* Add Advanced Analysis Button */}
+          {!loading && idea && analysis && (
+            <div className="p-4 bg-gray-50 flex justify-center">
+              <AdvancedAnalysisButton 
+                ideaId={idea.id} 
+                variant="default"
+                className="bg-gradient-to-r from-brand-blue to-brand-purple hover:opacity-90 transition-all"
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
       
@@ -325,7 +336,7 @@ const ResultsPage = () => {
                       <li key={i} className="text-muted-foreground">{item}</li>
                     ))}
                     {(!swotAnalysis.threats || swotAnalysis.threats.length === 0) && (
-                      <li className="text-muted-foreground">{t('results.noItems', "Nenhum item identificado")}</li>
+                      <li className="text-muted-foreground">{t('results.noItems', "Nenhuma ameaça identificada")}</li>
                     )}
                   </ul>
                 </div>
@@ -498,6 +509,28 @@ const ResultsPage = () => {
           </Card>
         </TabsContent>
       </Tabs>
+      
+      {/* Share button floating (mobile only) */}
+      {isMobile && (
+        <div className="fixed bottom-20 right-4 z-40">
+          <div className="flex flex-col gap-2">
+            <Button 
+              size="icon" 
+              className="rounded-full shadow-lg bg-brand-purple hover:bg-brand-purple/90 h-12 w-12"
+              onClick={() => {}} // Add your share function here
+            >
+              <Share2 className="h-5 w-5" />
+            </Button>
+            <Button 
+              size="icon" 
+              className="rounded-full shadow-lg bg-brand-purple hover:bg-brand-purple/90 h-12 w-12"
+              onClick={() => {}} // Add your download function here
+            >
+              <Download className="h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
