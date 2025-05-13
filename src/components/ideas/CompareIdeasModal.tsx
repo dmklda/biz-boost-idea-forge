@@ -20,10 +20,10 @@ interface Idea {
 export interface CompareIdeasModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  currentIdeaId: string;
+  ideaIds: string[]; // Changed from currentIdeaId: string to ideaIds: string[]
 }
 
-export function CompareIdeasModal({ open, onOpenChange, currentIdeaId }: CompareIdeasModalProps) {
+export function CompareIdeasModal({ open, onOpenChange, ideaIds }: CompareIdeasModalProps) {
   const { t } = useTranslation();
   const { authState } = useAuth();
   const navigate = useNavigate();
@@ -35,16 +35,19 @@ export function CompareIdeasModal({ open, onOpenChange, currentIdeaId }: Compare
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
   
-  // Add current idea to selected ideas initially
+  // Initialize selected ideas with the provided ideaIds
   useEffect(() => {
-    if (open && currentIdeaId) {
-      setSelectedIdeas([currentIdeaId]);
+    if (open && ideaIds && ideaIds.length > 0) {
+      setSelectedIdeas([...ideaIds]); // Use spread to create a new array
     } else {
       setSelectedIdeas([]);
     }
-  }, [open, currentIdeaId]);
+  }, [open, ideaIds]);
   
-  // Fetch all ideas except current one
+  // Get the primary idea (first one in the array)
+  const primaryIdeaId = ideaIds && ideaIds.length > 0 ? ideaIds[0] : '';
+  
+  // Fetch all ideas except those already selected
   useEffect(() => {
     const fetchIdeas = async () => {
       if (!open || !authState.isAuthenticated) return;
@@ -56,7 +59,7 @@ export function CompareIdeasModal({ open, onOpenChange, currentIdeaId }: Compare
           .from('ideas')
           .select('id, title, description')
           .eq('user_id', authState.user?.id)
-          .neq('id', currentIdeaId)
+          .not('id', 'in', `(${ideaIds.join(',')})`)
           .eq('is_draft', false)
           .order('created_at', { ascending: false });
           
@@ -71,7 +74,7 @@ export function CompareIdeasModal({ open, onOpenChange, currentIdeaId }: Compare
     };
     
     fetchIdeas();
-  }, [open, authState.isAuthenticated, authState.user?.id, currentIdeaId]);
+  }, [open, authState.isAuthenticated, authState.user?.id, ideaIds]);
   
   const handleSelectIdea = (ideaId: string, position: number) => {
     let newSelectedIdeas = [...selectedIdeas];
@@ -172,14 +175,20 @@ export function CompareIdeasModal({ open, onOpenChange, currentIdeaId }: Compare
   };
   
   const getIdeaDetail = (id: string) => {
-    if (id === currentIdeaId) {
-      return { title: t('ideaComparison.currentIdea', "Ideia atual"), subtitle: "" };
+    // Check if it's the primary idea (first one in the array)
+    if (id === primaryIdeaId) {
+      return { title: t('ideaComparison.primaryIdea', "Ideia principal"), subtitle: "" };
     }
     
     const idea = ideas.find(idea => idea.id === id);
+    if (!idea) {
+      // If not found in the fetched ideas, it might be one of the already selected ideas
+      // For simplicity, just return a generic title
+      return { title: "Ideia selecionada", subtitle: "" };
+    }
     return { 
-      title: idea?.title || "", 
-      subtitle: idea?.description || ""
+      title: idea.title || "", 
+      subtitle: idea.description || ""
     };
   };
   
@@ -189,18 +198,18 @@ export function CompareIdeasModal({ open, onOpenChange, currentIdeaId }: Compare
         <DialogHeader>
           <DialogTitle>{t('ideaComparison.title', "Comparar ideias")}</DialogTitle>
           <DialogDescription>
-            {t('ideaComparison.description', "Selecione até 2 ideias para comparar com a ideia atual.")}
+            {t('ideaComparison.description', "Selecione até 2 ideias para comparar com a ideia principal.")}
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4">
-          {/* Current Idea (already selected) */}
+          {/* Primary Idea (already selected) */}
           <div className="flex items-center space-x-2">
             <div className="h-8 w-8 rounded-full bg-brand-purple flex items-center justify-center text-white">
               1
             </div>
             <div className="flex-1">
-              <p className="font-medium">{t('ideaComparison.currentIdea', "Ideia atual")}</p>
+              <p className="font-medium">{getIdeaDetail(primaryIdeaId).title}</p>
             </div>
             <Check className="h-5 w-5 text-brand-purple" />
           </div>
