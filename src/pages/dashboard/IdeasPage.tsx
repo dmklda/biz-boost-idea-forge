@@ -25,6 +25,55 @@ interface Idea {
   tags?: string[];
 }
 
+// Placeholder components until real ones are available
+const IdeaCard = ({ idea, onUpdate }: { idea: Idea, onUpdate: () => void }) => {
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <h3 className="font-semibold">{idea.title}</h3>
+        <p className="text-sm text-muted-foreground">{idea.description}</p>
+      </CardContent>
+    </Card>
+  );
+};
+
+const EmptyState = ({ 
+  icon, 
+  title, 
+  description, 
+  action 
+}: { 
+  icon: React.ReactNode; 
+  title: string; 
+  description: string; 
+  action: React.ReactNode 
+}) => {
+  return (
+    <div className="text-center py-10">
+      <div className="inline-flex justify-center mb-4">{icon}</div>
+      <h2 className="text-xl font-semibold mb-2">{title}</h2>
+      <p className="text-muted-foreground mb-6">{description}</p>
+      {action}
+    </div>
+  );
+};
+
+const TagsFilter = ({
+  allTags, 
+  selectedTags, 
+  onTagsChange
+}: {
+  allTags: any[];
+  selectedTags: any[];
+  onTagsChange: (tags: any[]) => void;
+}) => {
+  return (
+    <div>
+      <p>Tags filter placeholder</p>
+    </div>
+  );
+};
+
 const IdeasPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -33,8 +82,8 @@ const IdeasPage = () => {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [favoriteIdeas, setFavoriteIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTags, setSelectedTags] = useState<TagType[]>([]);
-  const [allTags, setAllTags] = useState<TagType[]>([]);
+  const [selectedTags, setSelectedTags] = useState<any[]>([]);
+  const [allTags, setAllTags] = useState<any[]>([]);
   
   useEffect(() => {
     if (authState.isAuthenticated) {
@@ -64,7 +113,7 @@ const IdeasPage = () => {
       
       // Fetch favorites
       const { data: favoritesData, error: favoritesError } = await supabase
-        .from('favorite_ideas')
+        .from('idea_favorites')
         .select('idea_id')
         .eq('user_id', authState.user?.id);
         
@@ -79,11 +128,11 @@ const IdeasPage = () => {
       if (ideaTagsError) throw ideaTagsError;
       
       // Process the data
-      const favoriteIdeaIds = new Set(favoritesData.map((fav: any) => fav.idea_id));
+      const favoriteIdeaIds = new Set(favoritesData?.map((fav: any) => fav.idea_id) || []);
       
       // Create a map of idea_id to tags
       const ideaTagsMap: Record<string, string[]> = {};
-      ideaTagsData.forEach((ideaTag: any) => {
+      ideaTagsData?.forEach((ideaTag: any) => {
         if (!ideaTagsMap[ideaTag.idea_id]) {
           ideaTagsMap[ideaTag.idea_id] = [];
         }
@@ -91,7 +140,7 @@ const IdeasPage = () => {
       });
       
       // Process ideas with their analysis data and favorite status
-      const processedIdeas = ideasData.map((idea: any) => ({
+      const processedIdeas = ideasData?.map((idea: any) => ({
         id: idea.id,
         title: idea.title,
         description: idea.description,
@@ -102,8 +151,8 @@ const IdeasPage = () => {
         tags: ideaTagsMap[idea.id] || []
       }));
       
-      setIdeas(processedIdeas);
-      setFavoriteIdeas(processedIdeas.filter(idea => idea.is_favorite));
+      setIdeas(processedIdeas || []);
+      setFavoriteIdeas(processedIdeas?.filter(idea => idea.is_favorite) || []);
     } catch (error) {
       console.error("Error fetching ideas:", error);
     } finally {

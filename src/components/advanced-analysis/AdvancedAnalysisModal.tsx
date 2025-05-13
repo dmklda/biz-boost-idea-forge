@@ -533,18 +533,17 @@ export function AdvancedAnalysisModal({
 
       // Check if already saved
       const { data: existingData, error: checkError } = await supabase
-        .rpc('get_saved_analysis', {
-          p_original_analysis_id: analysis.id,
-          p_user_id: authState.user?.id
-        });
+        .from('saved_analyses')
+        .select('*')
+        .eq('original_analysis_id', analysis.id)
+        .eq('user_id', authState.user?.id);
 
       if (existingData && existingData.length > 0) {
         // Already saved - update the timestamp
         const { error: updateError } = await supabase
-          .rpc('update_saved_analysis', {
-            p_id: existingData[0].id,
-            p_updated_at: new Date().toISOString()
-          });
+          .from('saved_analyses')
+          .update({ updated_at: new Date().toISOString() })
+          .eq('id', existingData[0].id);
 
         if (updateError) throw updateError;
 
@@ -555,12 +554,13 @@ export function AdvancedAnalysisModal({
       } else {
         // Save new
         const { error: saveError } = await supabase
-          .rpc('create_saved_analysis', {
-            p_user_id: authState.user?.id,
-            p_idea_id: ideaId,
-            p_idea_title: idea.title,
-            p_original_analysis_id: analysis.id,
-            p_analysis_data: analysis.analysis_data
+          .from('saved_analyses')
+          .insert({
+            user_id: authState.user?.id,
+            idea_id: ideaId,
+            idea_title: idea.title,
+            original_analysis_id: analysis.id,
+            analysis_data: analysis.analysis_data
           });
 
         if (saveError) throw saveError;

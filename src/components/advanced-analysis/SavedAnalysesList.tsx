@@ -50,7 +50,8 @@ export function SavedAnalysesList() {
       setLoading(true);
       
       const { data, error } = await supabase
-        .rpc('get_all_saved_analyses')
+        .from('saved_analyses')
+        .select('*')
         .order('updated_at', { ascending: false });
         
       if (error) throw error;
@@ -73,7 +74,10 @@ export function SavedAnalysesList() {
     
     try {
       const { error } = await supabase
-        .rpc('delete_saved_analysis', { p_id: id, p_user_id: authState.user?.id });
+        .from('saved_analyses')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', authState.user?.id);
         
       if (error) throw error;
       
