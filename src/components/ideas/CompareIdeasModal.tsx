@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Check, ChevronsUpDown, Compare, Loader2 } from "lucide-react";
+import { Check, ChevronsUpDown, Compare, Loader2, BarChart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,7 +16,7 @@ interface Idea {
   description: string;
 }
 
-interface CompareIdeasModalProps {
+export interface CompareIdeasModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   currentIdeaId: string;
@@ -341,7 +341,7 @@ export function CompareIdeasModal({ open, onOpenChange, currentIdeaId }: Compare
               </>
             ) : (
               <>
-                <Compare className="mr-2 h-4 w-4" />
+                <BarChart className="mr-2 h-4 w-4" />
                 {t('ideaComparison.compare', "Comparar ideias")}
               </>
             )}

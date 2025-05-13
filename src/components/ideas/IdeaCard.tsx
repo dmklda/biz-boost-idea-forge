@@ -7,7 +7,7 @@ import { Calendar, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { TagBadge } from "./TagBadge";
+import { TagBadge, TagType } from "./TagBadge";
 import { FavoriteButton } from "./FavoriteButton";
 
 interface Idea {
@@ -18,7 +18,7 @@ interface Idea {
   is_favorite?: boolean;
   score?: number | null;
   status?: string | null;
-  tags?: string[];
+  tags?: TagType[];
 }
 
 export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void }) => {
@@ -64,8 +64,8 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
         
         {idea.tags && idea.tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {idea.tags.map((tag, index) => (
-              <TagBadge key={index} tag={tag} />
+            {idea.tags.map((tag) => (
+              <TagBadge key={tag.id} tag={tag} />
             ))}
           </div>
         )}

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { TagBadge } from "./TagBadge";
+import { TagBadge, TagType } from "./TagBadge";
 import { 
   Popover, 
   PopoverContent, 
@@ -27,12 +27,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/components/ui/sonner";
 import { useTranslation } from "react-i18next";
-
-export interface TagType {
-  id: string;
-  name: string;
-  color: string;
-}
 
 interface TagsSelectorProps {
   ideaId: string;
@@ -218,8 +212,7 @@ export const TagsSelector = ({ ideaId, onTagsChange }: TagsSelectorProps) => {
         {selectedTags.map(tag => (
           <TagBadge 
             key={tag.id} 
-            name={tag.name} 
-            color={tag.color}
+            tag={tag}
           />
         ))}
         
