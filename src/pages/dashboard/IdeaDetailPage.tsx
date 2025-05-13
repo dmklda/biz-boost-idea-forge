@@ -340,8 +340,7 @@ const IdeaDetailPage = () => {
                   <div className="mt-4 flex justify-center sm:justify-end">
                     <AdvancedAnalysisButton 
                       ideaId={idea.id} 
-                      variant="default"
-                      className="bg-gradient-to-r from-brand-blue to-brand-purple hover:opacity-90 transition-all"
+                      className="ml-2"
                     />
                   </div>
                 )}

@@ -1,415 +1,475 @@
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
+import React from "react";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { useTranslation } from "react-i18next";
 import { MindMap } from "./MindMap";
+import {
+  AlertTriangle,
+  ChevronRight,
+  ExternalLink,
+  Star,
+  TrendingUp,
+  Users,
+  CheckCircle,
+} from "lucide-react";
 
 interface AdvancedAnalysisContentProps {
   analysis: any;
 }
 
 export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentProps) {
-  const { t } = useTranslation();
-
-  // If analysis is not ready yet, show a message
   if (!analysis) {
     return (
-      <div className="flex flex-col items-center justify-center h-full">
-        <h3 className="text-xl font-semibold mb-2">
-          {t('advancedAnalysis.notReady', "Análise ainda não está pronta")}
-        </h3>
-        <p className="text-muted-foreground">
-          {t('advancedAnalysis.pleaseWait', "Por favor, aguarde enquanto processamos sua análise")}
-        </p>
+      <div className="p-4 text-center">
+        <p>Nenhuma análise encontrada</p>
       </div>
     );
   }
 
+  // Extracting data from the analysis object
+  const {
+    name,
+    slogan,
+    logo,
+    summary,
+    market,
+    competitors,
+    personas,
+    businessModel,
+    swot,
+    risks,
+    channels,
+    financials,
+    actionPlan,
+    tools,
+    trends,
+    pitch
+  } = analysis;
+
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <h2 className="text-3xl font-bold">{analysis.businessName?.name || analysis.title}</h2>
-        {analysis.businessName?.slogan && (
-          <p className="text-xl text-muted-foreground italic">
-            "{analysis.businessName.slogan}"
-          </p>
-        )}
-      </div>
-
-      {/* Branding Section with Logo */}
-      {analysis.logoUrl && (
-        <div className="grid md:grid-cols-2 gap-6 items-center">
-          <div>
-            <h3 className="text-xl font-semibold mb-3">{t('advancedAnalysis.branding', "Identidade Visual")}</h3>
-            <p className="text-muted-foreground mb-4">{analysis.businessName?.justification}</p>
+    <div className="space-y-10 pb-10">
+      {/* Header with Name, Logo and Slogan */}
+      <div className="grid md:grid-cols-2 gap-6 items-center">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">{name}</h1>
+          <p className="text-xl italic text-muted-foreground">{slogan}</p>
+          
+          <div className="mt-6 space-y-4">
+            <h2 className="text-xl font-semibold">Resumo Executivo</h2>
+            <p className="text-muted-foreground">{summary.executive}</p>
           </div>
-          <Card>
-            <CardContent className="p-4">
-              <div className="w-full max-w-[240px] mx-auto">
-                <AspectRatio ratio={1/1}>
-                  <img 
-                    src={analysis.logoUrl} 
-                    alt={`${analysis.businessName?.name} logo`}
-                    className="rounded-md object-contain"
-                  />
-                </AspectRatio>
-              </div>
-            </CardContent>
-          </Card>
         </div>
-      )}
+        
+        <div className="flex justify-center">
+          {logo && (
+            <div className="w-64 h-64 overflow-hidden rounded-xl shadow-lg">
+              <AspectRatio ratio={1/1}>
+                <img
+                  src={logo}
+                  alt={`${name} logo`}
+                  className="object-cover w-full h-full"
+                />
+              </AspectRatio>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Pitch */}
+      <Card className="border-2 border-brand-blue/20">
+        <CardHeader className="bg-brand-blue/5">
+          <CardTitle>Pitch de 1 Minuto</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="p-4 bg-muted rounded-lg italic">
+            "{pitch}"
+          </div>
+        </CardContent>
+      </Card>
 
-      <Tabs defaultValue="summary" className="w-full">
-        <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 mb-6">
-          <TabsTrigger value="summary">{t('common.summary', "Resumo")}</TabsTrigger>
-          <TabsTrigger value="market">{t('advancedAnalysis.market', "Mercado")}</TabsTrigger>
-          <TabsTrigger value="business-model">{t('advancedAnalysis.businessModel', "Modelo de Negócio")}</TabsTrigger>
-          <TabsTrigger value="competitors">{t('advancedAnalysis.competitors', "Concorrentes")}</TabsTrigger>
-          <TabsTrigger value="plan">{t('advancedAnalysis.plan', "Plano de Ação")}</TabsTrigger>
-          <TabsTrigger value="mindmap">{t('advancedAnalysis.mindmap', "Mapa Mental")}</TabsTrigger>
+      {/* Tabs for the rest of the content */}
+      <Tabs defaultValue="market" className="w-full">
+        <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full mb-6">
+          <TabsTrigger value="market">Mercado</TabsTrigger>
+          <TabsTrigger value="business">Negócio</TabsTrigger>
+          <TabsTrigger value="strategy">Estratégia</TabsTrigger>
+          <TabsTrigger value="action">Plano de Ação</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="summary" className="space-y-6">
+        
+        {/* Market Analysis Tab */}
+        <TabsContent value="market" className="space-y-6">
+          {/* Market Analysis */}
           <Card>
-            <CardContent className="p-6">
-              <h3 className="text-xl font-semibold mb-4">{t('advancedAnalysis.strategicSummary', "Resumo Estratégico")}</h3>
-              <div className="prose max-w-none">
-                <p>{analysis.summary?.description}</p>
+            <CardHeader>
+              <CardTitle>Análise de Mercado</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="font-semibold mb-2">Tamanho de Mercado</h3>
+                <p className="text-muted-foreground">{market.size}</p>
               </div>
-
-              <h4 className="text-lg font-medium mt-6 mb-3">{t('advancedAnalysis.keyDifferentials', "Diferenciais Principais")}</h4>
-              <div className="flex flex-wrap gap-2">
-                {analysis.differentials?.map((diff: string, index: number) => (
-                  <Badge key={index} variant="outline" className="bg-brand-blue/10 text-brand-blue border-brand-blue/30">
-                    {diff}
-                  </Badge>
-                ))}
+              
+              <div>
+                <h3 className="font-semibold mb-2">Tendências Principais</h3>
+                <ul className="space-y-2">
+                  {trends && trends.map((trend: string, idx: number) => (
+                    <li key={idx} className="flex gap-2">
+                      <TrendingUp className="h-5 w-5 text-brand-blue shrink-0 mt-0.5" />
+                      <span>{trend}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-
-              <h4 className="text-lg font-medium mt-6 mb-3">{t('advancedAnalysis.pitchTitle', "Pitch de 1 Minuto")}</h4>
-              <Card className="bg-muted/50 border">
-                <CardContent className="p-4">
-                  <p className="italic">{analysis.pitch}</p>
-                </CardContent>
-              </Card>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="market" className="space-y-6">
+          
+          {/* Competitor Analysis */}
           <Card>
-            <CardContent className="p-6">
-              <h3 className="text-xl font-semibold mb-4">{t('advancedAnalysis.marketAnalysis', "Análise de Mercado")}</h3>
-              
-              <div className="grid md:grid-cols-2 gap-6">
+            <CardHeader>
+              <CardTitle>Análise Competitiva</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <h4 className="text-lg font-medium mb-3">{t('advancedAnalysis.marketSize', "Tamanho do Mercado")}</h4>
-                  <p className="text-muted-foreground">{analysis.marketAnalysis?.size}</p>
-                  
-                  <h4 className="text-lg font-medium mt-6 mb-3">{t('advancedAnalysis.trends', "Tendências")}</h4>
+                  <h3 className="font-semibold mb-2">Principais Concorrentes</h3>
                   <ul className="space-y-2">
-                    {analysis.marketAnalysis?.trends?.map((trend: string, index: number) => (
-                      <li key={index} className="flex items-start">
-                        <span className="bg-brand-blue/10 text-brand-blue rounded-full h-5 w-5 flex items-center justify-center text-xs mr-2 mt-0.5">→</span>
-                        <span>{trend}</span>
+                    {competitors && competitors.main && competitors.main.map((competitor: any, idx: number) => (
+                      <li key={idx} className="bg-muted p-3 rounded-md">
+                        <div className="font-medium">{competitor.name}</div>
+                        <div className="text-sm text-muted-foreground">{competitor.description}</div>
                       </li>
                     ))}
                   </ul>
                 </div>
                 
                 <div>
-                  <h4 className="text-lg font-medium mb-3">{t('advancedAnalysis.targetAudience', "Público-Alvo")}</h4>
-                  <p className="text-muted-foreground mb-4">{analysis.marketAnalysis?.targetAudience}</p>
+                  <h3 className="font-semibold mb-2">Seus Diferenciais</h3>
+                  <ul className="space-y-2">
+                    {competitors && competitors.differentiators && competitors.differentiators.map((diff: string, idx: number) => (
+                      <li key={idx} className="flex gap-2">
+                        <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                        <span>{diff}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              
+              {/* Competitive Matrix */}
+              <div className="mt-6">
+                <h3 className="font-semibold mb-2">Matriz Competitiva</h3>
+                {competitors && competitors.matrix && (
+                  <div className="aspect-w-16 aspect-h-9 bg-muted rounded-md p-4">
+                    <p className="text-center text-muted-foreground">
+                      Visualização da matriz competitiva estará disponível em breve
+                    </p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Personas */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Personas</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                {personas && personas.map((persona: any, idx: number) => (
+                  <div key={idx} className="bg-muted p-4 rounded-lg">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="bg-brand-blue/20 p-2 rounded-full">
+                        <Users className="h-5 w-5 text-brand-blue" />
+                      </div>
+                      <h3 className="font-semibold">{persona.name}, {persona.age}</h3>
+                    </div>
+                    
+                    <p className="text-muted-foreground mb-3">{persona.description}</p>
+                    
+                    <div className="space-y-2 mt-4">
+                      <div>
+                        <span className="text-xs font-medium">Necessidades:</span>
+                        <p className="text-sm">{persona.needs}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs font-medium">Desafios:</span>
+                        <p className="text-sm">{persona.challenges}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Business Model Tab */}
+        <TabsContent value="business" className="space-y-6">
+          {/* Business Model */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Modelo de Negócio</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-semibold mb-2">Proposta de Valor</h3>
+                  <p className="text-muted-foreground">{businessModel?.valueProposition}</p>
                   
-                  <h4 className="text-lg font-medium mb-3">{t('advancedAnalysis.personas', "Personas")}</h4>
-                  <div className="space-y-3">
-                    {analysis.personas?.map((persona: any, index: number) => (
-                      <Card key={index} className="bg-muted/50">
-                        <CardContent className="p-3">
-                          <h5 className="font-medium">{persona.name}</h5>
-                          <p className="text-sm text-muted-foreground">{persona.description}</p>
-                        </CardContent>
-                      </Card>
+                  <h3 className="font-semibold mt-4 mb-2">Segmentos de Clientes</h3>
+                  <ul className="space-y-2">
+                    {businessModel?.customerSegments && businessModel.customerSegments.map((segment: string, idx: number) => (
+                      <li key={idx} className="flex gap-2">
+                        <Users className="h-5 w-5 text-brand-blue shrink-0 mt-0.5" />
+                        <span>{segment}</span>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
+                </div>
+                
+                <div>
+                  <h3 className="font-semibold mb-2">Canais de Distribuição</h3>
+                  <ul className="space-y-2">
+                    {channels && channels.map((channel: any, idx: number) => (
+                      <li key={idx} className="flex gap-2 items-start">
+                        <div className="bg-brand-blue/10 p-1 rounded-full mt-0.5">
+                          <ChevronRight className="h-4 w-4 text-brand-blue" />
+                        </div>
+                        <div>
+                          <div className="font-medium">{channel.name}</div>
+                          <div className="text-sm text-muted-foreground">{channel.description}</div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              
+              <div className="mt-6">
+                <h3 className="font-semibold mb-2">Canvas de Modelo de Negócio</h3>
+                <div className="aspect-w-16 aspect-h-9 bg-muted rounded-md p-4">
+                  <p className="text-center text-muted-foreground">
+                    Canvas interativo estará disponível em breve
+                  </p>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="business-model" className="space-y-6">
+          
+          {/* Financials */}
           <Card>
-            <CardContent className="p-6">
-              <h3 className="text-xl font-semibold mb-4">{t('advancedAnalysis.businessModels', "Modelos de Negócio")}</h3>
+            <CardHeader>
+              <CardTitle>Projeções Financeiras</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-semibold mb-2">Estrutura de Custos</h3>
+                  <ul className="space-y-2">
+                    {financials?.costs && financials.costs.map((cost: any, idx: number) => (
+                      <li key={idx} className="flex justify-between border-b pb-1">
+                        <span>{cost.description}</span>
+                        <span className="font-medium">{cost.estimate}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div>
+                  <h3 className="font-semibold mb-2">Fontes de Receita</h3>
+                  <ul className="space-y-2">
+                    {financials?.revenues && financials.revenues.map((revenue: any, idx: number) => (
+                      <li key={idx} className="flex justify-between border-b pb-1">
+                        <span>{revenue.description}</span>
+                        <span className="font-medium text-green-600">{revenue.estimate}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
               
-              <div className="space-y-6">
-                <div>
-                  <h4 className="text-lg font-medium mb-3">{t('advancedAnalysis.monetization', "Monetização")}</h4>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {analysis.monetization?.models?.map((model: any, index: number) => (
-                      <Card key={index}>
-                        <CardContent className="p-4">
-                          <h5 className="font-medium mb-1">{model.name}</h5>
-                          <p className="text-sm text-muted-foreground mb-2">{model.description}</p>
-                          {model.revenue && (
-                            <div className="bg-green-50 text-green-700 px-2 py-1 rounded text-sm">
-                              {t('advancedAnalysis.estimatedRevenue', "Receita estimada")}: {model.revenue}
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <h4 className="text-lg font-medium mb-3">{t('advancedAnalysis.channels', "Canais de Aquisição")}</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {analysis.channels?.map((channel: any, index: number) => (
-                      <Card key={index} className="bg-muted/50">
-                        <CardContent className="p-3">
-                          <h5 className="font-medium">{channel.name}</h5>
-                          <p className="text-xs text-muted-foreground">{channel.description}</p>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <h4 className="text-lg font-medium mb-3">{t('advancedAnalysis.recommendedTools', "Ferramentas Recomendadas")}</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {analysis.tools?.map((tool: any, index: number) => (
-                      <Card key={index} className="bg-brand-blue/5 border border-brand-blue/20">
-                        <CardContent className="p-3">
-                          <h5 className="font-medium">{tool.name}</h5>
-                          <p className="text-xs text-muted-foreground">{tool.category}</p>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
+              <div className="mt-6">
+                <h3 className="font-semibold mb-2">Previsão de Break-Even</h3>
+                <p className="text-muted-foreground">{financials?.breakeven}</p>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-
-        <TabsContent value="competitors" className="space-y-6">
+        
+        {/* Strategy Tab */}
+        <TabsContent value="strategy" className="space-y-6">
+          {/* SWOT Analysis */}
           <Card>
-            <CardContent className="p-6">
-              <h3 className="text-xl font-semibold mb-4">{t('advancedAnalysis.competitors', "Análise Competitiva")}</h3>
-              
-              <div className="space-y-6">
-                <div>
-                  <h4 className="text-lg font-medium mb-3">{t('advancedAnalysis.competitiveMatrix', "Matriz Competitiva")}</h4>
-                  <div className="overflow-x-auto">
-                    <table className="w-full min-w-[600px] border-collapse">
-                      <thead>
-                        <tr className="bg-muted">
-                          <th className="p-2 text-left font-medium">{t('common.name', "Nome")}</th>
-                          <th className="p-2 text-left font-medium">{t('common.strengths', "Forças")}</th>
-                          <th className="p-2 text-left font-medium">{t('common.weaknesses', "Fraquezas")}</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y">
-                        {analysis.competitors?.map((competitor: any, index: number) => (
-                          <tr key={index}>
-                            <td className="p-2 font-medium">{competitor.name}</td>
-                            <td className="p-2">
-                              <ul className="list-disc list-inside text-sm">
-                                {competitor.strengths?.map((strength: string, i: number) => (
-                                  <li key={i}>{strength}</li>
-                                ))}
-                              </ul>
-                            </td>
-                            <td className="p-2">
-                              <ul className="list-disc list-inside text-sm">
-                                {competitor.weaknesses?.map((weakness: string, i: number) => (
-                                  <li key={i}>{weakness}</li>
-                                ))}
-                              </ul>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                
-                <div>
-                  <h4 className="text-lg font-medium mb-3">{t('advancedAnalysis.swot', "Análise SWOT")}</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Card className="bg-green-50 border-green-200">
-                      <CardContent className="p-3">
-                        <h5 className="font-medium text-green-700 mb-2">{t('advancedAnalysis.strengths', "Forças")}</h5>
-                        <ul className="space-y-1 text-sm">
-                          {analysis.swot?.strengths?.map((item: string, i: number) => (
-                            <li key={i}>{item}</li>
-                          ))}
-                        </ul>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-red-50 border-red-200">
-                      <CardContent className="p-3">
-                        <h5 className="font-medium text-red-700 mb-2">{t('advancedAnalysis.weaknesses', "Fraquezas")}</h5>
-                        <ul className="space-y-1 text-sm">
-                          {analysis.swot?.weaknesses?.map((item: string, i: number) => (
-                            <li key={i}>{item}</li>
-                          ))}
-                        </ul>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-blue-50 border-blue-200">
-                      <CardContent className="p-3">
-                        <h5 className="font-medium text-blue-700 mb-2">{t('advancedAnalysis.opportunities', "Oportunidades")}</h5>
-                        <ul className="space-y-1 text-sm">
-                          {analysis.swot?.opportunities?.map((item: string, i: number) => (
-                            <li key={i}>{item}</li>
-                          ))}
-                        </ul>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-amber-50 border-amber-200">
-                      <CardContent className="p-3">
-                        <h5 className="font-medium text-amber-700 mb-2">{t('advancedAnalysis.threats', "Ameaças")}</h5>
-                        <ul className="space-y-1 text-sm">
-                          {analysis.swot?.threats?.map((item: string, i: number) => (
-                            <li key={i}>{item}</li>
-                          ))}
-                        </ul>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-                
-                <div>
-                  <h4 className="text-lg font-medium mb-3">{t('advancedAnalysis.riskMatrix', "Matriz de Riscos")}</h4>
-                  <div className="space-y-3">
-                    {analysis.risks?.map((risk: any, index: number) => (
-                      <Card key={index}>
-                        <CardContent className="p-3">
-                          <div className="flex justify-between items-start">
-                            <h5 className="font-medium">{risk.name}</h5>
-                            <Badge 
-                              variant={risk.level === 'Alto' ? 'destructive' : 
-                                     risk.level === 'Médio' ? 'warning' : 'outline'}
-                            >
-                              {risk.level}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-1">{risk.description}</p>
-                          <div className="mt-2">
-                            <h6 className="text-sm font-medium">{t('advancedAnalysis.mitigation', "Mitigação")}:</h6>
-                            <p className="text-sm">{risk.mitigation}</p>
-                          </div>
-                        </CardContent>
-                      </Card>
+            <CardHeader>
+              <CardTitle>Análise SWOT</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-green-700 mb-3">Forças</h3>
+                  <ul className="space-y-2">
+                    {swot?.strengths && swot.strengths.map((item: string, idx: number) => (
+                      <li key={idx} className="text-sm">{item}</li>
                     ))}
-                  </div>
+                  </ul>
+                </div>
+                
+                <div className="bg-red-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-red-700 mb-3">Fraquezas</h3>
+                  <ul className="space-y-2">
+                    {swot?.weaknesses && swot.weaknesses.map((item: string, idx: number) => (
+                      <li key={idx} className="text-sm">{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-blue-700 mb-3">Oportunidades</h3>
+                  <ul className="space-y-2">
+                    {swot?.opportunities && swot.opportunities.map((item: string, idx: number) => (
+                      <li key={idx} className="text-sm">{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div className="bg-amber-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-amber-700 mb-3">Ameaças</h3>
+                  <ul className="space-y-2">
+                    {swot?.threats && swot.threats.map((item: string, idx: number) => (
+                      <li key={idx} className="text-sm">{item}</li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="plan" className="space-y-6">
+          
+          {/* Risk Matrix */}
           <Card>
-            <CardContent className="p-6">
-              <h3 className="text-xl font-semibold mb-4">{t('advancedAnalysis.actionPlan', "Plano de Ação")}</h3>
-              
+            <CardHeader>
+              <CardTitle>Matriz de Risco</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {risks && risks.map((risk: any, idx: number) => (
+                  <div key={idx} className="border rounded-lg p-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex gap-3">
+                        <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-1" />
+                        <div>
+                          <h3 className="font-medium">{risk.name}</h3>
+                          <p className="text-sm text-muted-foreground">{risk.description}</p>
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="bg-amber-50">
+                        Impacto: {risk.impact}/5
+                      </Badge>
+                    </div>
+                    
+                    <div className="mt-3">
+                      <h4 className="text-sm font-medium mb-1">Estratégia de Mitigação:</h4>
+                      <p className="text-sm text-muted-foreground">{risk.mitigation}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Mind Map */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Mapa Mental</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {analysis.mindMap ? (
+                <div className="bg-muted p-4 rounded-lg h-96">
+                  <MindMap data={analysis.mindMap} />
+                </div>
+              ) : (
+                <p className="text-center text-muted-foreground p-6">
+                  Mapa mental estará disponível em breve
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Action Plan Tab */}
+        <TabsContent value="action" className="space-y-6">
+          {/* Action Plan */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Plano de Ação</CardTitle>
+            </CardHeader>
+            <CardContent>
               <div className="space-y-8">
-                <div>
-                  <h4 className="text-lg font-medium mb-4">{t('advancedAnalysis.firstSteps', "Primeiros Passos")}</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {analysis.firstSteps?.map((step: any, index: number) => (
-                      <Card key={index} className="bg-brand-light">
-                        <CardContent className="p-4 text-center">
-                          <div className="bg-brand-blue text-white w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2">
-                            {step.icon || (index + 1)}
+                {actionPlan && Object.entries(actionPlan).map(([period, actions]: [string, any], idx: number) => (
+                  <div key={idx}>
+                    <h3 className="font-semibold text-lg mb-3">{period}</h3>
+                    <div className="space-y-3">
+                      {actions.map((action: any, actionIdx: number) => (
+                        <div key={actionIdx} className="flex gap-3 items-start border-l-2 border-brand-blue pl-3 py-1">
+                          <div className="bg-brand-blue/10 text-brand-blue rounded-full h-6 w-6 flex items-center justify-center text-sm shrink-0">
+                            {actionIdx + 1}
                           </div>
-                          <h5 className="font-medium text-sm">{step.name}</h5>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <h4 className="text-lg font-medium mb-3">{t('advancedAnalysis.plan30Days', "Plano de 30 Dias")}</h4>
-                  <div className="space-y-3">
-                    {analysis.plan?.thirtyDays?.map((item: any, index: number) => (
-                      <Card key={index}>
-                        <CardContent className="p-3">
-                          <div className="flex gap-3">
-                            <div className="bg-brand-blue/10 text-brand-blue font-medium rounded-full h-6 w-6 flex items-center justify-center text-xs">
-                              {index + 1}
-                            </div>
-                            <div>
-                              <h5 className="font-medium">{item.name}</h5>
-                              <p className="text-sm text-muted-foreground">{item.description}</p>
-                            </div>
+                          <div>
+                            <div className="font-medium">{action.task}</div>
+                            <div className="text-sm text-muted-foreground">{action.description}</div>
                           </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                
-                <div>
-                  <h4 className="text-lg font-medium mb-3">{t('advancedAnalysis.plan60Days', "Plano de 60 Dias")}</h4>
-                  <div className="space-y-3">
-                    {analysis.plan?.sixtyDays?.map((item: any, index: number) => (
-                      <Card key={index}>
-                        <CardContent className="p-3">
-                          <div className="flex gap-3">
-                            <div className="bg-brand-purple/10 text-brand-purple font-medium rounded-full h-6 w-6 flex items-center justify-center text-xs">
-                              {index + 1}
-                            </div>
-                            <div>
-                              <h5 className="font-medium">{item.name}</h5>
-                              <p className="text-sm text-muted-foreground">{item.description}</p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <h4 className="text-lg font-medium mb-3">{t('advancedAnalysis.plan90Days', "Plano de 90 Dias")}</h4>
-                  <div className="space-y-3">
-                    {analysis.plan?.ninetyDays?.map((item: any, index: number) => (
-                      <Card key={index}>
-                        <CardContent className="p-3">
-                          <div className="flex gap-3">
-                            <div className="bg-brand-green/10 text-brand-green font-medium rounded-full h-6 w-6 flex items-center justify-center text-xs">
-                              {index + 1}
-                            </div>
-                            <div>
-                              <h5 className="font-medium">{item.name}</h5>
-                              <p className="text-sm text-muted-foreground">{item.description}</p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="mindmap" className="space-y-6">
+          
+          {/* Checklist */}
           <Card>
-            <CardContent className="p-6">
-              <h3 className="text-xl font-semibold mb-4">{t('advancedAnalysis.mindmap', "Mapa Mental do Negócio")}</h3>
-              <div className="w-full h-[500px] bg-muted/50 rounded-lg overflow-hidden">
-                {analysis.mindmap && <MindMap data={analysis.mindmap} />}
+            <CardHeader>
+              <CardTitle>Checklist de Primeiros Passos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {summary?.checklist && summary.checklist.map((item: string, idx: number) => (
+                  <div key={idx} className="flex gap-3 items-center bg-muted p-3 rounded-md">
+                    <div className="bg-white p-1 rounded">
+                      <CheckCircle className="h-5 w-5 text-green-500" />
+                    </div>
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Recommended Tools */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Ferramentas Recomendadas</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {tools && tools.map((tool: any, idx: number) => (
+                  <div key={idx} className="border rounded-lg p-3 flex flex-col">
+                    <div className="font-medium">{tool.name}</div>
+                    <div className="text-sm text-muted-foreground flex-1">{tool.description}</div>
+                    <div className="mt-2">
+                      <Button variant="outline" size="sm" className="w-full" asChild>
+                        <a href={tool.url} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-4 w-4 mr-1" />
+                          Acessar
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>

@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -147,7 +146,7 @@ const ResultsPage = () => {
                   <FileText size={16} />
                   <span>Exportar para Notion</span>
                 </Button>
-                <AdvancedAnalysisButton ideaId={analysisData.idea} />
+                <AdvancedAnalysisButton ideaId={analysisData.idea} className="" />
               </div>
             </div>
             
