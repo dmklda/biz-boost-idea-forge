@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -507,7 +506,11 @@ const IdeasHistoryPage = () => {
                       {idea.tags && idea.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-2">
                           {idea.tags.slice(0, 3).map(tag => (
-                            <TagBadge key={tag.id} name={tag.name} color={tag.color} className="text-xs" />
+                            <TagBadge 
+                              key={tag.id} 
+                              tag={tag} 
+                              className="text-xs" 
+                            />
                           ))}
                           {idea.tags.length > 3 && (
                             <Badge variant="outline" className="text-xs">+{idea.tags.length - 3}</Badge>
@@ -633,7 +636,11 @@ const IdeasHistoryPage = () => {
                       <TableCell className="hidden md:table-cell">
                         <div className="flex flex-wrap gap-1">
                           {idea.tags && idea.tags.slice(0, 2).map(tag => (
-                            <TagBadge key={tag.id} name={tag.name} color={tag.color} className="text-xs" />
+                            <TagBadge 
+                              key={tag.id} 
+                              tag={tag} 
+                              className="text-xs" 
+                            />
                           ))}
                           {idea.tags && idea.tags.length > 2 && (
                             <Badge variant="outline" className="text-xs">+{idea.tags.length - 2}</Badge>
@@ -698,9 +705,9 @@ const IdeasHistoryPage = () => {
       
       {/* Compare Modal */}
       <CompareIdeasModal 
-        isOpen={isCompareModalOpen} 
-        onClose={() => setIsCompareModalOpen(false)} 
-        ideaIds={selectedIdeas}
+        open={isCompareModalOpen} 
+        onOpenChange={(open) => setIsCompareModalOpen(open)} 
+        currentIdeaId={currentIdeaId}
       />
     </div>
   );

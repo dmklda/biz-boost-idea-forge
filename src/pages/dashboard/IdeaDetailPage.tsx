@@ -156,7 +156,28 @@ const IdeaDetailPage = () => {
       });
       
       if (analysisData) {
-        setAnalysis(analysisData);
+        // Parse JSON fields to ensure they match the required IdeaAnalysis interface
+        const parsedAnalysis: IdeaAnalysis = {
+          score: analysisData.score,
+          status: analysisData.status,
+          market_analysis: typeof analysisData.market_analysis === 'string' 
+            ? JSON.parse(analysisData.market_analysis)
+            : analysisData.market_analysis,
+          competitor_analysis: typeof analysisData.competitor_analysis === 'string'
+            ? JSON.parse(analysisData.competitor_analysis)
+            : analysisData.competitor_analysis,
+          financial_analysis: typeof analysisData.financial_analysis === 'string'
+            ? JSON.parse(analysisData.financial_analysis)
+            : analysisData.financial_analysis,
+          swot_analysis: typeof analysisData.swot_analysis === 'string'
+            ? JSON.parse(analysisData.swot_analysis)
+            : analysisData.swot_analysis,
+          recommendations: typeof analysisData.recommendations === 'string'
+            ? JSON.parse(analysisData.recommendations)
+            : analysisData.recommendations
+        };
+        
+        setAnalysis(parsedAnalysis);
       }
     } catch (error) {
       console.error("Error fetching idea details:", error);

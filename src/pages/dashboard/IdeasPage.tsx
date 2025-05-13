@@ -21,7 +21,7 @@ interface Idea {
   is_favorite?: boolean;
   score?: number;
   status?: string;
-  tags?: string[];
+  tags?: TagType[];
 }
 
 const IdeasPage = () => {
@@ -32,8 +32,8 @@ const IdeasPage = () => {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [favoriteIdeas, setFavoriteIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTags, setSelectedTags] = useState<any[]>([]);
-  const [allTags, setAllTags] = useState<any[]>([]);
+  const [selectedTags, setSelectedTags] = useState<TagType[]>([]);
+  const [allTags, setAllTags] = useState<TagType[]>([]);
   
   useEffect(() => {
     if (authState.isAuthenticated) {
@@ -81,12 +81,16 @@ const IdeasPage = () => {
       const favoriteIdeaIds = new Set(favoritesData?.map((fav: any) => fav.idea_id) || []);
       
       // Create a map of idea_id to tags
-      const ideaTagsMap: Record<string, string[]> = {};
+      const ideaTagsMap: Record<string, TagType[]> = {};
       ideaTagsData?.forEach((ideaTag: any) => {
         if (!ideaTagsMap[ideaTag.idea_id]) {
           ideaTagsMap[ideaTag.idea_id] = [];
         }
-        ideaTagsMap[ideaTag.idea_id].push(ideaTag.tags.name);
+        ideaTagsMap[ideaTag.idea_id].push({
+          id: ideaTag.tags.id,
+          name: ideaTag.tags.name,
+          color: ideaTag.tags.color
+        });
       });
       
       // Process ideas with their analysis data and favorite status
@@ -136,7 +140,7 @@ const IdeasPage = () => {
   const filteredIdeas = selectedTags.length > 0
     ? ideas.filter(idea => 
         selectedTags.every(tag => 
-          idea.tags?.includes(tag.name)
+          idea.tags?.some(ideaTag => ideaTag.id === tag.id)
         )
       )
     : ideas;
