@@ -17,12 +17,13 @@ import {
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AdvancedAnalysisContent } from "./AdvancedAnalysisContent";
 import { AdvancedAnalysisChat } from "./AdvancedAnalysisChat";
 import { useToast } from "@/hooks/use-toast";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 interface AdvancedAnalysisModalProps {
   ideaId: string;
@@ -66,6 +67,7 @@ export function AdvancedAnalysisModal({
   const [idea, setIdea] = useState<IdeaData | null>(null);
   const [pollInterval, setPollInterval] = useState<number | null>(null);
   const [attempts, setAttempts] = useState(0);
+  const [contentRef, setContentRef] = useState<HTMLDivElement | null>(null);
 
   const motivationalPhrases = [
     t('advancedAnalysis.motivation1', "Analisando potenciais de mercado..."),
@@ -148,6 +150,7 @@ export function AdvancedAnalysisModal({
     
     try {
       // First check if analysis already exists
+      console.log("Checking for existing analysis for idea:", ideaId);
       const { data, error } = await supabase
         .from("advanced_analyses")
         .select("*")
@@ -161,6 +164,23 @@ export function AdvancedAnalysisModal({
         // Clear any existing interval and start a new one
         if (pollInterval !== null) {
           clearInterval(pollInterval);
+        }
+        
+        // First make one call to generate the analysis
+        try {
+          console.log("Initiating advanced analysis generation...");
+          const response = await supabase.functions.invoke("advanced-analysis", {
+            body: { ideaId }
+          });
+
+          if (response.error) {
+            throw new Error(response.error.message || "Error starting analysis");
+          }
+
+          console.log("Analysis generation initiated:", response);
+        } catch (error) {
+          console.error("Error initiating advanced analysis:", error);
+          // Continue polling anyway, as the analysis might still be generated
         }
         
         // Start polling for results
@@ -217,29 +237,145 @@ export function AdvancedAnalysisModal({
     }
   };
 
-  const handleShare = () => {
-    // Generate sharing URL
-    const shareUrl = `${window.location.origin}/dashboard/ideias/${ideaId}?tab=advanced`;
-    
-    // Copy to clipboard
-    navigator.clipboard.writeText(shareUrl);
-    
-    toast({
-      title: t('common.copied', "Link copiado!"),
-      description: t('share.linkCopied', "Link copiado para a área de transferência"),
-    });
+  const handleShare = async () => {
+    try {
+      // Generate sharing URL
+      const shareUrl = `${window.location.origin}/dashboard/ideas?id=${ideaId}&tab=advanced`;
+      
+      // Try to use the Web Share API if available
+      if (navigator.share) {
+        await navigator.share({
+          title: idea?.title || "Análise Avançada",
+          text: "Confira esta análise avançada de ideia de negócio!",
+          url: shareUrl
+        });
+        
+        toast({
+          title: t('common.shared', "Compartilhado!"),
+          description: t('share.linkShared', "Conteúdo compartilhado com sucesso"),
+        });
+      } else {
+        // Fallback to clipboard
+        await navigator.clipboard.writeText(shareUrl);
+        
+        toast({
+          title: t('common.copied', "Link copiado!"),
+          description: t('share.linkCopied', "Link copiado para a área de transferência"),
+        });
+      }
+    } catch (error) {
+      console.error("Error sharing:", error);
+      toast({
+        title: t('errors.shareError', "Erro ao compartilhar"),
+        description: t('errors.tryAgain', "Tente novamente mais tarde"),
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDownloadPDF = () => {
-    // This would be implemented with a PDF generation library
-    toast({
-      title: t('features.comingSoon', "Em breve"),
-      description: t('advancedAnalysis.pdfDownload', "Download em PDF será disponibilizado em breve!"),
-    });
+  const handleDownloadPDF = async () => {
+    if (!contentRef) {
+      toast({
+        title: t('errors.pdfError', "Erro ao gerar PDF"),
+        description: t('errors.contentNotReady', "O conteúdo não está pronto para download"),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      toast({
+        title: t('common.preparing', "Preparando PDF..."),
+        description: t('pdf.generating', "Este processo pode levar alguns segundos"),
+      });
+
+      // Create a temporary container to render the content for PDF
+      const pdfContainer = document.createElement('div');
+      pdfContainer.style.width = '1000px'; // Fixed width for PDF
+      pdfContainer.style.padding = '20px';
+      pdfContainer.style.position = 'absolute';
+      pdfContainer.style.left = '-9999px';
+      pdfContainer.style.top = '-9999px';
+      document.body.appendChild(pdfContainer);
+
+      // Clone the content into the container
+      pdfContainer.appendChild(contentRef.cloneNode(true));
+
+      // Wait a moment for styles to apply
+      setTimeout(async () => {
+        try {
+          const canvas = await html2canvas(pdfContainer, {
+            scale: 1,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+          });
+
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4',
+          });
+
+          // Calculate dimensions
+          const imgWidth = 210; // A4 width in mm
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          
+          // Split into pages if needed
+          let heightLeft = imgHeight;
+          let position = 0;
+          let pageHeight = 295; // A4 height in mm
+          
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+          
+          while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+          }
+
+          // Clean up
+          document.body.removeChild(pdfContainer);
+          
+          // Download PDF
+          const fileName = `analise-avancada-${idea?.title || 'ideia'}.pdf`.replace(/\s+/g, '-');
+          pdf.save(fileName);
+          
+          toast({
+            title: t('pdf.downloadComplete', "Download Concluído"),
+            description: t('pdf.pdfReady', "Seu PDF está pronto"),
+          });
+        } catch (error) {
+          console.error("Error generating PDF:", error);
+          document.body.removeChild(pdfContainer);
+          
+          toast({
+            title: t('errors.pdfGenerationError', "Erro ao gerar PDF"),
+            description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
+            variant: "destructive",
+          });
+        }
+      }, 500);
+      
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      toast({
+        title: t('errors.pdfError', "Erro ao gerar PDF"),
+        description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
+        variant: "destructive",
+      });
+    }
   };
 
   const toggleChat = () => {
     setShowChat(!showChat);
+  };
+
+  const handleContentRef = (ref: HTMLDivElement | null) => {
+    setContentRef(ref);
   };
 
   return (
@@ -310,7 +446,9 @@ export function AdvancedAnalysisModal({
                 />
               ) : (
                 <ScrollArea className="flex-1 p-6">
-                  <AdvancedAnalysisContent analysis={analysis.analysis_data} />
+                  <div ref={handleContentRef}>
+                    <AdvancedAnalysisContent analysis={analysis.analysis_data} />
+                  </div>
                 </ScrollArea>
               )
             )}
