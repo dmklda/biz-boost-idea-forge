@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -10,8 +10,8 @@ import { useTranslation } from "react-i18next";
 
 interface FavoriteButtonProps {
   ideaId: string;
-  isFavorite: boolean;
-  onUpdate: () => void;
+  isFavorite?: boolean;
+  onUpdate?: () => void;
   variant?: string;
   size?: string;
   showText?: boolean;
@@ -20,7 +20,7 @@ interface FavoriteButtonProps {
 
 export const FavoriteButton = ({ 
   ideaId, 
-  isFavorite, 
+  isFavorite: initialIsFavorite, 
   onUpdate,
   variant = "ghost",
   size = "sm",
@@ -30,6 +30,34 @@ export const FavoriteButton = ({
   const { t } = useTranslation();
   const { authState } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
+  
+  // Fetch favorite status if not provided
+  useEffect(() => {
+    if (initialIsFavorite !== undefined || !authState.isAuthenticated) {
+      setIsFavorite(initialIsFavorite || false);
+      return;
+    }
+    
+    const fetchFavoriteStatus = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('idea_favorites')
+          .select('*')
+          .eq('idea_id', ideaId)
+          .eq('user_id', authState.user?.id)
+          .maybeSingle();
+          
+        if (!error) {
+          setIsFavorite(!!data);
+        }
+      } catch (error) {
+        console.error("Error fetching favorite status:", error);
+      }
+    };
+    
+    fetchFavoriteStatus();
+  }, [ideaId, authState.isAuthenticated, authState.user?.id, initialIsFavorite]);
   
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -46,6 +74,7 @@ export const FavoriteButton = ({
           .eq('user_id', authState.user?.id);
           
         if (error) throw error;
+        setIsFavorite(false);
         toast.success(t('ideas.removedFromFavorites', "Removido dos favoritos"));
       } else {
         // Add to favorites
@@ -57,11 +86,14 @@ export const FavoriteButton = ({
           });
           
         if (error) throw error;
+        setIsFavorite(true);
         toast.success(t('ideas.addedToFavorites', "Adicionado aos favoritos"));
       }
       
-      // Notify parent component to update
-      onUpdate();
+      // Notify parent component to update if callback provided
+      if (onUpdate) {
+        onUpdate();
+      }
     } catch (error) {
       console.error("Error toggling favorite status:", error);
       toast.error(t('common.errorOccurred', "Ocorreu um erro"));
@@ -75,7 +107,7 @@ export const FavoriteButton = ({
       variant={variant as any}
       size={size as any}
       onClick={toggleFavorite}
-      disabled={isLoading}
+      disabled={isLoading || !authState.isAuthenticated}
       className={cn(
         "hover:text-amber-500",
         isFavorite && "text-amber-500",
