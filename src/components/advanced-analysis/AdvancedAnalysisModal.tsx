@@ -17,7 +17,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AdvancedAnalysisContent } from "./AdvancedAnalysisContent";
@@ -37,6 +37,19 @@ interface AdvancedAnalysis {
   created_at: string;
 }
 
+interface IdeaData {
+  id: string;
+  title: string;
+  description: string;
+  problem?: string | null;
+  audience?: string | null;
+  has_competitors?: string | null;
+  monetization?: string | null;
+  budget?: number | null;
+  location?: string | null;
+  [key: string]: any;
+}
+
 export function AdvancedAnalysisModal({
   ideaId,
   open,
@@ -49,7 +62,7 @@ export function AdvancedAnalysisModal({
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showChat, setShowChat] = useState(false);
-  const [idea, setIdea] = useState<any>(null);
+  const [idea, setIdea] = useState<IdeaData | null>(null);
 
   const motivationalPhrases = [
     t('advancedAnalysis.motivation1', "Analisando potenciais de mercado..."),
@@ -103,7 +116,7 @@ export function AdvancedAnalysisModal({
         .single();
 
       if (error) throw error;
-      setIdea(data);
+      setIdea(data as IdeaData);
     } catch (error) {
       console.error("Error fetching idea details:", error);
     }
@@ -114,6 +127,7 @@ export function AdvancedAnalysisModal({
     setProgress(0);
     
     try {
+      // Using type assertion to fix type error
       const { data, error } = await supabase
         .from("advanced_analyses")
         .select("*")
@@ -140,7 +154,7 @@ export function AdvancedAnalysisModal({
           
           if (pollData) {
             clearInterval(pollInterval);
-            setAnalysis(pollData);
+            setAnalysis(pollData as AdvancedAnalysis);
             setLoading(false);
             setProgress(100);
           } else if (attempts >= maxAttempts) {
@@ -157,7 +171,7 @@ export function AdvancedAnalysisModal({
         return;
       }
       
-      setAnalysis(data);
+      setAnalysis(data as AdvancedAnalysis);
     } catch (error) {
       console.error("Error fetching advanced analysis:", error);
       toast({

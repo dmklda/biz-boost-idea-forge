@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ArrowLeft, Share2, Download, FileText } from "lucide-react";
+import { AdvancedAnalysisButton } from "@/components/advanced-analysis";
 
 const ResultsPage = () => {
   const { authState, updateUserCredits } = useAuth();
@@ -146,6 +147,7 @@ const ResultsPage = () => {
                   <FileText size={16} />
                   <span>Exportar para Notion</span>
                 </Button>
+                <AdvancedAnalysisButton ideaId={analysisData.idea} />
               </div>
             </div>
             
@@ -565,15 +567,13 @@ const ResultsPage = () => {
             <div className="mt-12 text-center">
               <h3 className="text-xl font-semibold mb-4">Quer uma análise mais detalhada?</h3>
               <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                Faça upgrade para o plano Empreendedor e tenha acesso a relatórios completos, 
-                exportações para diversos formatos e mais análises de ideias por mês.
+                Experimente nossa nova Análise Avançada com GPT-4o, que inclui sugestão de nome, logotipo, 
+                análise de mercado detalhada e muito mais.
               </p>
-              <Button 
-                className="bg-brand-blue hover:bg-brand-blue/90"
-                onClick={() => window.location.href = "/#planos"}
-              >
-                Ver Planos Premium
-              </Button>
+              <AdvancedAnalysisButton 
+                ideaId={analysisData.idea} 
+                className="mx-auto"
+              />
             </div>
           </div>
         </main>

@@ -1,86 +1,60 @@
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface ChatMessage {
-  role: "system" | "user" | "assistant";
-  content: string;
-}
+// Mock responses for the chat function
+// In a real implementation, this would use OpenAI's API
+const mockResponses = [
+  "Excelente pergunta! Baseado na sua ideia, recomendo começar focando no problema principal que você está resolvendo. O diferencial competitivo está na solução única que você oferece para este problema.",
+  "Analisando sua ideia, vejo grande potencial no modelo de monetização por assinatura. Considerando seu público-alvo, um modelo freemium poderia atrair usuários iniciais enquanto mantém uma fonte de receita sustentável.",
+  "Sua ideia tem bom potencial de mercado! Para validá-la, sugiro começar com entrevistas com potenciais clientes para confirmar que o problema realmente existe e que sua solução é desejável. Um MVP simples também seria importante para testar suas hipóteses.",
+  "Considerando as tendências atuais do mercado, sua ideia está bem posicionada. Entretanto, recomendo ficar atento à concorrência indireta que poderia entrar nesse espaço. Sua vantagem competitiva precisa ser clara e defensável.",
+  "Para o desenvolvimento inicial, recomendo focar nas funcionalidades essenciais que resolvem o problema central. A arquitetura técnica deve ser escalável, mas não precisa ser perfeita no início. Use tecnologias que permitam desenvolvimento rápido.",
+  "Baseado na análise de mercado, suas projeções de receita parecem otimistas mas alcançáveis. Sugiro revisar seus custos de aquisição de cliente e modelar diferentes cenários de crescimento para ter uma visão mais completa.",
+];
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: corsHeaders,
-    });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Get the request body
-    const body = await req.json();
-    const { messages, model = "gpt-4o" } = body;
+    // Get request body
+    const { ideaId, message, history } = await req.json();
 
-    if (!messages || !Array.isArray(messages)) {
+    // Validate input
+    if (!ideaId || !message) {
       return new Response(
-        JSON.stringify({ error: "messages array is required" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+        JSON.stringify({ error: "Missing required parameters" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
       );
     }
 
-    // Call the OpenAI API
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: model,
-        messages: messages,
-        temperature: 0.7,
-      }),
-    });
+    // In a real implementation, this would:
+    // 1. Fetch the idea details and analysis from Supabase
+    // 2. Format them as context for the OpenAI API
+    // 3. Call GPT-4o with the full context and chat history
+    
+    // For now, provide a mock response
+    const randomIndex = Math.floor(Math.random() * mockResponses.length);
+    const response = mockResponses[randomIndex];
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("Error from OpenAI:", data);
-      return new Response(
-        JSON.stringify({ error: "Failed to get response from OpenAI" }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    // Return the response
     return new Response(
-      JSON.stringify({
-        text: data.choices[0].message.content,
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      JSON.stringify({ response }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error("Error processing request:", error);
+    console.error("Error in gpt-chat function:", error);
     return new Response(
-      JSON.stringify({ error: error.message || "An unexpected error occurred" }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      JSON.stringify({ error: "Internal server error", details: error.message }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
     );
   }
 });

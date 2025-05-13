@@ -1,7 +1,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { 
+import { useTranslation } from "react-i18next";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -11,144 +12,108 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useToast } from "@/hooks/use-toast";
-import { useTranslation } from "react-i18next";
-import { useAuth } from "@/hooks/useAuth";
 import { Sparkles } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AdvancedAnalysisModal } from "./AdvancedAnalysisModal";
 
 interface AdvancedAnalysisButtonProps {
   ideaId: string;
   className?: string;
-  variant?: "default" | "outline" | "ghost" | "link" | "destructive" | "secondary";
 }
 
-export function AdvancedAnalysisButton({ ideaId, className, variant = "default" }: AdvancedAnalysisButtonProps) {
+export function AdvancedAnalysisButton({ ideaId, className = "" }: AdvancedAnalysisButtonProps) {
   const { t } = useTranslation();
-  const { toast } = useToast();
-  const { authState } = useAuth();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  
-  const handleAdvancedAnalysis = async () => {
+  const { authState, updateUserCredits } = useAuth();
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [openAnalysisModal, setOpenAnalysisModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleStartAnalysis = async () => {
     if (!authState.isAuthenticated || !authState.user) {
-      toast({
-        title: t('auth.required', "Autenticação necessária"),
-        description: t('auth.pleaseLogin', "Faça login para continuar"),
-        variant: "destructive",
-      });
+      toast.error(t('errors.loginRequired', "Você precisa estar logado para usar esta funcionalidade"));
       return;
     }
 
-    // Check user credits if not Pro
-    if (authState.user.plan !== "pro") {
-      const { data: userData, error: userError } = await supabase
-        .from("profiles")
-        .select("credits")
-        .eq("id", authState.user.id)
-        .single();
-      
-      if (userError || !userData) {
-        toast({
-          title: t('errors.userDataFetchFailed', "Erro ao buscar dados do usuário"),
-          description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      if (userData.credits < 3) {
-        toast({
-          title: t('credits.insufficient', "Créditos insuficientes"),
-          description: t('advancedAnalysis.requiresCredits', "A análise avançada requer 3 créditos"),
-          variant: "destructive",
-        });
-        return;
-      }
+    // For free users, check if they have enough credits
+    if (authState.user.plan === 'free' && (authState.user.credits < 3)) {
+      toast.error(t('errors.insufficientCredits', "Você precisa de pelo menos 3 créditos para realizar uma análise avançada"));
+      return;
     }
 
-    setIsDialogOpen(true);
-  };
+    setIsProcessing(true);
+    setOpenConfirmDialog(false);
 
-  const startAdvancedAnalysis = async () => {
-    setIsDialogOpen(false);
-    setIsLoading(true);
-    
     try {
-      // Call the edge function
-      const { data, error } = await supabase.functions.invoke("advanced-analysis", {
-        body: {
-          ideaId: ideaId,
-          userId: authState.user!.id
-        }
+      // Call the Supabase Edge Function to start the advanced analysis
+      const { data, error } = await supabase.functions.invoke('advanced-analysis', {
+        body: { ideaId },
       });
-      
-      if (error) throw error;
-      
-      // Show success message
-      toast({
-        title: t('advancedAnalysis.success', "Análise avançada concluída!"),
-        description: t('advancedAnalysis.viewResults', "Visualize os resultados detalhados"),
-        variant: "default",
-      });
-      
-      // Open the results modal
-      setIsAnalysisModalOpen(true);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      // If user is on free plan, deduct credits
+      if (authState.user.plan === 'free') {
+        updateUserCredits(authState.user.credits - 3);
+        toast.success(t('advancedAnalysis.creditsUsed', "3 créditos foram utilizados para esta análise avançada"));
+      }
+
+      // Open the modal to show the analysis
+      setOpenAnalysisModal(true);
     } catch (error) {
-      console.error("Error performing advanced analysis:", error);
-      toast({
-        title: t('errors.analysisError', "Erro ao realizar análise avançada"),
-        description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
-        variant: "destructive",
-      });
+      console.error("Error starting advanced analysis:", error);
+      toast.error(t('errors.analysisError', "Erro ao iniciar análise avançada"));
     } finally {
-      setIsLoading(false);
+      setIsProcessing(false);
     }
   };
-  
+
   return (
     <>
-      <Button 
-        onClick={handleAdvancedAnalysis}
-        className={className}
-        variant={variant}
-        disabled={isLoading}
+      <Button
+        variant="default"
+        size="sm"
+        className={`bg-gradient-to-r from-brand-blue to-brand-purple hover:opacity-90 ${className}`}
+        onClick={() => setOpenConfirmDialog(true)}
+        disabled={isProcessing}
       >
         <Sparkles className="mr-2 h-4 w-4" />
-        {isLoading 
-          ? t('common.processing', "Processando...") 
-          : t('advancedAnalysis.button', "Análise Avançada")}
+        {t('advancedAnalysis.buttonLabel', "Análise Avançada")}
       </Button>
-      
-      <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+
+      <AlertDialog open={openConfirmDialog} onOpenChange={setOpenConfirmDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
               {t('advancedAnalysis.confirmTitle', "Análise Avançada com GPT-4o")}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {authState.user?.plan === "pro" 
-                ? t('advancedAnalysis.confirmDescriptionPro', "Esta análise usa GPT-4o e pode levar alguns segundos para ser concluída. Deseja continuar?")
-                : t('advancedAnalysis.confirmDescription', "Esta análise avançada utilizará 3 créditos e pode levar alguns segundos para ser concluída. Deseja continuar?")}
+              {authState.user?.plan === 'free'
+                ? t('advancedAnalysis.confirmDescriptionFree', "Esta análise avançada utilizará a tecnologia GPT-4o e consumirá 3 créditos. Deseja continuar?")
+                : t('advancedAnalysis.confirmDescriptionPro', "Esta análise avançada utilizará a tecnologia GPT-4o. Como você é um usuário Pro, não serão consumidos créditos adicionais. Deseja continuar?")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>
               {t('common.cancel', "Cancelar")}
             </AlertDialogCancel>
-            <AlertDialogAction onClick={startAdvancedAnalysis}>
+            <AlertDialogAction
+              onClick={handleStartAnalysis}
+              className="bg-brand-blue hover:bg-brand-blue/90"
+            >
               {t('common.continue', "Continuar")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      
+
       <AdvancedAnalysisModal
         ideaId={ideaId}
-        open={isAnalysisModalOpen}
-        onOpenChange={setIsAnalysisModalOpen}
+        open={openAnalysisModal}
+        onOpenChange={setOpenAnalysisModal}
       />
     </>
   );

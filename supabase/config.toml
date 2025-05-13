@@ -1,14 +1,30 @@
 
 project_id = "aebuzslludwlpcbdpljx"
 
-[functions.analyze-idea]
-verify_jwt = true
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage"]
 
-[functions.compare-ideas]
-verify_jwt = true
+[db]
+port = 54322
 
+[realtime]
+enabled = true
+
+[storage]
+enabled = true
+
+[studio]
+enabled = true
+port = 54323
+
+[inbucket]
+enabled = true
+port = 54324
+
+[functions]
 [functions.advanced-analysis]
 verify_jwt = true
-
 [functions.gpt-chat]
 verify_jwt = true

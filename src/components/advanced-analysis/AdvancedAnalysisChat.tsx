@@ -1,15 +1,15 @@
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar } from "@/components/ui/avatar";
-import { ArrowLeft, SendIcon, Sparkles, User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeft, Send } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 
 interface AdvancedAnalysisChatProps {
   ideaId: string;
@@ -18,191 +18,138 @@ interface AdvancedAnalysisChatProps {
   onBack: () => void;
 }
 
-interface Message {
-  id: string;
+interface ChatMessage {
+  role: 'user' | 'assistant';
   content: string;
-  role: "user" | "assistant";
-  timestamp: Date;
 }
 
-export function AdvancedAnalysisChat({
-  ideaId,
-  idea,
-  analysis,
-  onBack,
-}: AdvancedAnalysisChatProps) {
+export function AdvancedAnalysisChat({ ideaId, idea, analysis, onBack }: AdvancedAnalysisChatProps) {
   const { t } = useTranslation();
-  const { toast } = useToast();
   const { authState } = useAuth();
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "system-welcome",
-      content: t('advancedAnalysis.chatWelcome', "Olá! Estou aqui para responder perguntas sobre sua ideia e análise avançada. Como posso ajudar?"),
-      role: "assistant",
-      timestamp: new Date(),
-    },
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { 
+      role: 'assistant', 
+      content: t(
+        'advancedAnalysis.chatWelcome', 
+        "Olá! Sou seu assistente especializado em análise de ideias. Acabei de analisar sua ideia em detalhes e estou pronto para responder suas perguntas. O que gostaria de saber sobre sua ideia de negócio?"
+      )
+    }
   ]);
-  const [inputValue, setInputValue] = useState("");
+  const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return;
-
-    const userMessage: Message = {
-      id: `user-${Date.now()}`,
-      content: inputValue,
-      role: "user",
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInputValue("");
+  const sendMessage = async () => {
+    if (!newMessage.trim() || isLoading) return;
+    
+    // Add user message to chat
+    const userMessage = { role: 'user' as const, content: newMessage };
+    setMessages(prev => [...prev, userMessage]);
+    setNewMessage('');
     setIsLoading(true);
-
+    
     try {
-      // Prepare context from idea and analysis
-      const context = {
-        idea: {
-          title: idea.title,
-          description: idea.description,
-          audience: idea.audience,
-          problem: idea.problem,
-          monetization: idea.monetization,
-          hasCompetitors: idea.has_competitors,
-          budget: idea.budget,
-          location: idea.location,
-        },
-        analysis: analysis,
-      };
-
-      const { data, error } = await supabase.functions.invoke("gpt-chat", {
+      // Call the edge function to process the message
+      const { data, error } = await supabase.functions.invoke('gpt-chat', {
         body: {
-          messages: [
-            {
-              role: "system",
-              content: `You are an AI assistant specializing in business analysis and entrepreneurship. 
-              You are helping the user with their business idea that has gone through advanced analysis.
-              
-              Use the following context about the idea and its analysis to provide informed answers:
-              
-              ${JSON.stringify(context)}
-              
-              Your responses should be:
-              - Helpful and informative
-              - Specific to the user's idea and its analysis
-              - Friendly and conversational
-              - Concise but comprehensive
-              
-              If you're unsure about specific data not provided in the analysis, acknowledge the limitation
-              but try to provide general guidance based on entrepreneurship best practices.`
-            },
-            ...messages.map(msg => ({
-              role: msg.role,
-              content: msg.content
-            })),
-            {
-              role: "user",
-              content: inputValue
-            }
-          ],
-          model: "gpt-4o"
+          ideaId,
+          message: userMessage.content,
+          history: messages,
         }
       });
-
+      
       if (error) throw error;
-
-      const assistantMessage: Message = {
-        id: `assistant-${Date.now()}`,
-        content: data.text || t('errors.noResponse', "Desculpe, não foi possível gerar uma resposta."),
-        role: "assistant",
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
+      
+      // Add assistant response to chat
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: data.response 
+      }]);
     } catch (error) {
       console.error("Error in chat:", error);
-      toast({
-        title: t('errors.chatError', "Erro no chat"),
-        description: t('errors.tryAgainLater', "Por favor, tente novamente mais tarde."),
-        variant: "destructive",
-      });
+      toast.error(t('errors.chatError', "Erro ao processar mensagem"));
+      
+      // Add error message
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: t('errors.chatErrorMessage', "Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, tente novamente.")
+      }]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      sendMessage();
     }
   };
 
   return (
-    <div className="flex flex-col h-full w-full">
-      <div className="p-4 border-b flex justify-between items-center">
-        <Button variant="ghost" size="sm" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          {t('common.back', "Voltar")}
+    <div className="flex flex-col w-full h-full">
+      <div className="p-4 border-b flex items-center">
+        <Button variant="ghost" size="icon" onClick={onBack} className="mr-2">
+          <ArrowLeft className="h-4 w-4" />
         </Button>
-        
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-brand-purple" />
-          <span className="text-sm font-medium">GPT-4o</span>
+        <div>
+          <h3 className="font-semibold">
+            {t('advancedAnalysis.chatWithAI', "Chat sobre sua ideia")}
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            {t('advancedAnalysis.poweredByGPT4o', "Alimentado por GPT-4o")}
+          </p>
         </div>
       </div>
       
       <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4 pb-4">
-          {messages.map((message) => (
-            <div 
-              key={message.id} 
-              className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
-            >
-              <div 
-                className={`flex gap-3 max-w-[80%] ${
-                  message.role === "user" 
-                    ? "flex-row-reverse" 
-                    : "flex-row"
-                }`}
-              >
-                <Avatar className={`h-8 w-8 ${
-                  message.role === "user" 
-                    ? "bg-brand-blue" 
-                    : "bg-brand-purple"
-                }`}>
-                  {message.role === "user" ? (
-                    <User className="h-4 w-4 text-white" />
+        <div className="space-y-4">
+          {messages.map((message, index) => (
+            <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`flex gap-2 max-w-[80%] ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                <Avatar className="h-8 w-8">
+                  {message.role === 'user' ? (
+                    <>
+                      <AvatarFallback>
+                        {authState.user?.name?.charAt(0) || 'U'}
+                      </AvatarFallback>
+                      {authState.user?.avatarUrl && (
+                        <AvatarImage src={authState.user.avatarUrl} />
+                      )}
+                    </>
                   ) : (
-                    <Sparkles className="h-4 w-4 text-white" />
+                    <>
+                      <AvatarFallback className="bg-brand-blue text-white">AI</AvatarFallback>
+                      <AvatarImage src="/lovable-uploads/de1cda05-c7b3-4112-b45f-a03ba18a084a.png" />
+                    </>
                   )}
                 </Avatar>
                 
-                <div 
-                  className={`rounded-lg px-4 py-2 ${
-                    message.role === "user" 
-                      ? "bg-brand-blue text-white" 
-                      : "bg-muted"
-                  }`}
-                >
-                  <p className="whitespace-pre-line">{message.content}</p>
-                </div>
+                <Card className={`${message.role === 'user' ? 'bg-brand-blue text-white' : ''}`}>
+                  <CardContent className="p-3 text-sm whitespace-pre-wrap">
+                    {message.content}
+                  </CardContent>
+                </Card>
               </div>
             </div>
           ))}
+          
           {isLoading && (
             <div className="flex justify-start">
-              <div className="flex gap-3 max-w-[80%]">
-                <Avatar className="h-8 w-8 bg-brand-purple">
-                  <Sparkles className="h-4 w-4 text-white" />
+              <div className="flex gap-2 max-w-[80%]">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-brand-blue text-white">AI</AvatarFallback>
+                  <AvatarImage src="/lovable-uploads/de1cda05-c7b3-4112-b45f-a03ba18a084a.png" />
                 </Avatar>
-                <div className="bg-muted rounded-lg px-4 py-2">
-                  <div className="flex space-x-1">
-                    <div className="h-2 w-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:0ms]"></div>
-                    <div className="h-2 w-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:200ms]"></div>
-                    <div className="h-2 w-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:400ms]"></div>
-                  </div>
-                </div>
+                
+                <Card>
+                  <CardContent className="p-3 text-sm">
+                    <div className="flex items-center gap-1">
+                      <div className="h-2 w-2 bg-brand-blue rounded-full animate-bounce"></div>
+                      <div className="h-2 w-2 bg-brand-blue rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                      <div className="h-2 w-2 bg-brand-blue rounded-full animate-bounce [animation-delay:0.4s]"></div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           )}
@@ -212,19 +159,19 @@ export function AdvancedAnalysisChat({
       <div className="p-4 border-t">
         <div className="flex gap-2">
           <Input
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
             placeholder={t('advancedAnalysis.askQuestion', "Faça uma pergunta sobre sua ideia...")}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleKeyDown}
             disabled={isLoading}
             className="flex-1"
           />
           <Button 
-            onClick={handleSendMessage} 
-            disabled={!inputValue.trim() || isLoading}
+            onClick={sendMessage} 
+            disabled={!newMessage.trim() || isLoading}
+            size="icon"
           >
-            <SendIcon className="h-4 w-4" />
-            <span className="sr-only">{t('common.send', "Enviar")}</span>
+            <Send className="h-4 w-4" />
           </Button>
         </div>
       </div>
