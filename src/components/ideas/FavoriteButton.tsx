@@ -1,69 +1,73 @@
 
-import React, { useState, useEffect } from "react";
-import { Star } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { toast } from "@/components/ui/sonner";
+import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/components/ui/sonner";
+import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
-interface FavoriteButtonProps {
+export interface FavoriteButtonProps {
   ideaId: string;
   isFavorite?: boolean;
-  onUpdate?: () => void;
-  variant?: string;
-  size?: string;
+  variant?: "default" | "outline" | "ghost" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
   showText?: boolean;
   className?: string;
+  onUpdate?: () => void;
 }
 
-export const FavoriteButton = ({ 
-  ideaId, 
-  isFavorite: initialIsFavorite, 
-  onUpdate,
+export function FavoriteButton({
+  ideaId,
+  isFavorite: initialIsFavorite,
   variant = "ghost",
   size = "sm",
   showText = false,
-  className
-}: FavoriteButtonProps) => {
+  className,
+  onUpdate
+}: FavoriteButtonProps) {
   const { t } = useTranslation();
   const { authState } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
+  const [isFavorite, setIsFavorite] = useState<boolean | undefined>(initialIsFavorite);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   
-  // Fetch favorite status if not provided
+  // If isFavorite is not provided via props, fetch it
   useEffect(() => {
-    if (initialIsFavorite !== undefined || !authState.isAuthenticated) {
-      setIsFavorite(initialIsFavorite || false);
-      return;
-    }
-    
     const fetchFavoriteStatus = async () => {
+      if (initialIsFavorite !== undefined || !authState.isAuthenticated) return;
+      
       try {
         const { data, error } = await supabase
           .from('idea_favorites')
-          .select('*')
+          .select('id')
           .eq('idea_id', ideaId)
           .eq('user_id', authState.user?.id)
-          .maybeSingle();
+          .single();
           
-        if (!error) {
+        if (error && error.code !== 'PGRST116') {
+          console.error("Error fetching favorite status:", error);
+        } else {
           setIsFavorite(!!data);
         }
       } catch (error) {
-        console.error("Error fetching favorite status:", error);
+        console.error("Error in fetchFavoriteStatus:", error);
       }
     };
     
     fetchFavoriteStatus();
-  }, [ideaId, authState.isAuthenticated, authState.user?.id, initialIsFavorite]);
+  }, [ideaId, initialIsFavorite, authState.isAuthenticated, authState.user?.id]);
   
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!authState.isAuthenticated) return;
+    
+    if (!authState.isAuthenticated) {
+      toast.error(t('auth.required', "É necessário estar logado para favoritar ideias"));
+      return;
+    }
     
     setIsLoading(true);
+    
     try {
       if (isFavorite) {
         // Remove from favorites
@@ -74,6 +78,7 @@ export const FavoriteButton = ({
           .eq('user_id', authState.user?.id);
           
         if (error) throw error;
+        
         setIsFavorite(false);
         toast.success(t('ideas.removedFromFavorites', "Removido dos favoritos"));
       } else {
@@ -86,17 +91,17 @@ export const FavoriteButton = ({
           });
           
         if (error) throw error;
+        
         setIsFavorite(true);
         toast.success(t('ideas.addedToFavorites', "Adicionado aos favoritos"));
       }
       
-      // Notify parent component to update if callback provided
       if (onUpdate) {
         onUpdate();
       }
     } catch (error) {
-      console.error("Error toggling favorite status:", error);
-      toast.error(t('common.errorOccurred', "Ocorreu um erro"));
+      console.error("Error toggling favorite:", error);
+      toast.error(t('ideas.favoriteError', "Erro ao atualizar favoritos"));
     } finally {
       setIsLoading(false);
     }
@@ -104,18 +109,28 @@ export const FavoriteButton = ({
   
   return (
     <Button
-      variant={variant as any}
-      size={size as any}
+      variant={variant}
+      size={size}
+      disabled={isLoading}
       onClick={toggleFavorite}
-      disabled={isLoading || !authState.isAuthenticated}
-      className={cn(
-        "hover:text-amber-500",
-        isFavorite && "text-amber-500",
-        className
-      )}
+      className={cn("group", className)}
+      aria-label={isFavorite ? t('ideas.removeFromFavorites', "Remover dos favoritos") : t('ideas.addToFavorites', "Adicionar aos favoritos")}
     >
-      <Star className={cn("h-4 w-4", showText && "mr-2")} fill={isFavorite ? "currentColor" : "none"} />
-      {showText && (isFavorite ? t('ideas.unfavorite', "Desfavoritar") : t('ideas.favorite', "Favoritar"))}
+      <Star
+        className={cn(
+          "h-4 w-4 transition-colors",
+          isFavorite
+            ? "fill-yellow-400 text-yellow-400"
+            : "fill-transparent text-muted-foreground group-hover:text-foreground"
+        )}
+      />
+      {showText && (
+        <span className="ml-2">
+          {isFavorite
+            ? t('ideas.favorited', "Favorito")
+            : t('ideas.favorite', "Favoritar")}
+        </span>
+      )}
     </Button>
   );
-};
+}

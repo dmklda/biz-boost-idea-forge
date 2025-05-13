@@ -6,11 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar, ExternalLink, FileText, Search, Trash2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/sonner";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AdvancedAnalysisContent } from "./AdvancedAnalysisContent";
 import { Input } from "@/components/ui/input";
@@ -28,7 +28,6 @@ interface SavedAnalysis {
 
 export function SavedAnalysesList() {
   const { t } = useTranslation();
-  const { toast } = useToast();
   const { authState } = useAuth();
   const { theme } = useTheme();
   const isDarkMode = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
@@ -52,6 +51,7 @@ export function SavedAnalysesList() {
       const { data, error } = await supabase
         .from('saved_analyses')
         .select('*')
+        .eq('user_id', authState.user?.id)
         .order('updated_at', { ascending: false });
         
       if (error) throw error;
@@ -59,11 +59,7 @@ export function SavedAnalysesList() {
       setAnalyses(data as SavedAnalysis[]);
     } catch (error) {
       console.error("Error fetching saved analyses:", error);
-      toast({
-        title: t('errors.fetchError', "Erro ao carregar análises"),
-        description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
-        variant: "destructive",
-      });
+      toast.error(t('errors.fetchError', "Erro ao carregar análises"));
     } finally {
       setLoading(false);
     }
@@ -84,17 +80,10 @@ export function SavedAnalysesList() {
       // Update local state
       setAnalyses(analyses.filter(analysis => analysis.id !== id));
       
-      toast({
-        title: t('common.deleted', "Excluído"),
-        description: t('analysis.deleteSuccess', "Análise removida com sucesso"),
-      });
+      toast.success(t('common.deleted', "Excluído"));
     } catch (error) {
       console.error("Error deleting analysis:", error);
-      toast({
-        title: t('errors.deleteError', "Erro ao excluir análise"),
-        description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
-        variant: "destructive",
-      });
+      toast.error(t('errors.deleteError', "Erro ao excluir análise"));
     }
   };
 
@@ -184,7 +173,7 @@ export function SavedAnalysesList() {
                   size="sm" 
                   onClick={(e) => {
                     e.stopPropagation();
-                    window.open(`/dashboard/ideas/${analysis.idea_id}`, '_blank');
+                    window.open(`/dashboard/ideias/${analysis.idea_id}`, '_blank');
                   }}
                   className={cn(
                     "text-muted-foreground",
