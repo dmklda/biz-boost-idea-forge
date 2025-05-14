@@ -26,7 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+// import html2canvas from "html2canvas"; // Comentado, pois não será usado para o corpo principal
 
 interface AdvancedAnalysisModalProps {
   ideaId: string;
@@ -292,7 +292,7 @@ export function AdvancedAnalysisModal({
   };
 
   const handleDownloadPDF = async () => {
-    if (!contentRef) {
+    if (!analysis || !idea) {
       toast.error(t('errors.pdfError', "Erro ao gerar PDF") + ". " + 
                 t('errors.contentNotReady', "O conteúdo não está pronto para download"));
       return;
@@ -303,184 +303,364 @@ export function AdvancedAnalysisModal({
       toast.info(t('common.preparing', "Preparando PDF...") + ". " + 
                 t('pdf.generating', "Este processo pode levar alguns segundos"));
 
-      // Create a temporary container to render the content for PDF
-      const pdfContainer = document.createElement('div');
-      pdfContainer.style.width = '900px'; // Wider for better quality
-      pdfContainer.style.padding = '40px';
-      pdfContainer.style.position = 'absolute';
-      pdfContainer.style.left = '-9999px';
-      pdfContainer.style.top = '-9999px';
-      pdfContainer.style.backgroundColor = isDarkMode ? '#1f2937' : '#ffffff';
-      pdfContainer.style.color = isDarkMode ? '#f3f4f6' : '#111827';
-      document.body.appendChild(pdfContainer);
-
-      // Create a title page for PDF
-      const titlePage = document.createElement('div');
-      titlePage.style.padding = '40px';
-      titlePage.style.height = '1123px'; // A4 height in pixels at 96 DPI
-      titlePage.style.display = 'flex';
-      titlePage.style.flexDirection = 'column';
-      titlePage.style.justifyContent = 'center';
-      titlePage.style.alignItems = 'center';
-      titlePage.style.textAlign = 'center';
-      titlePage.innerHTML = `
-        <div style="margin-bottom: 40px;">
-          <h1 style="font-size: 36px; font-weight: bold; margin-bottom: 20px; color: ${isDarkMode ? '#f3f4f6' : '#111827'}">
-            Análise Avançada
-          </h1>
-          <h2 style="font-size: 24px; margin-bottom: 40px; color: ${isDarkMode ? '#d1d5db' : '#4b5563'}">
-            ${idea?.title || 'Sua Ideia de Negócio'}
-          </h2>
-          <p style="font-size: 16px; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}">
-            Gerado em ${new Date().toLocaleDateString()}
-          </p>
-        </div>
-        <div style="margin-top: 60px; font-size: 14px; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; max-width: 600px;">
-          <p>Este relatório contém uma análise detalhada da viabilidade e potencial 
-          do seu projeto de negócio, incluindo insights de mercado, análise de 
-          concorrentes e recomendações estratégicas.</p>
-        </div>
-      `;
-      
-      // Create a header for all pages
-      const header = document.createElement('div');
-      header.style.marginBottom = '20px';
-      header.style.borderBottom = isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb';
-      header.style.paddingBottom = '10px';
-      header.innerHTML = `
-        <div style="font-size: 12px; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; display: flex; justify-content: space-between;">
-          <div>${idea?.title || 'Análise Avançada'}</div>
-          <div>Página {page} de {pages}</div>
-        </div>
-      `;
-
-      // Clone the content into the container
-      const clonedContent = contentRef.cloneNode(true) as HTMLElement;
-      
-      // Style the cloned content for PDF
-      const allElements = clonedContent.querySelectorAll('*');
-      allElements.forEach(el => {
-        const element = el as HTMLElement;
-        if (element.style) {
-          // Make backgrounds explicit for PDF
-          if (window.getComputedStyle(element).backgroundColor === 'rgba(0, 0, 0, 0)') {
-            element.style.backgroundColor = 'transparent';
-          }
-          
-          // Ensure contrast for text
-          if (isDarkMode && window.getComputedStyle(element).color === 'rgb(0, 0, 0)') {
-            element.style.color = '#f3f4f6';
-          }
-          
-          // Improve readability of text
-          if (element.tagName === 'P' || element.tagName === 'LI' || element.tagName === 'SPAN') {
-            element.style.fontSize = '12px';
-            element.style.lineHeight = '1.4';
-          }
-          
-          // Make headings stand out
-          if (element.tagName === 'H1') {
-            element.style.fontSize = '24px';
-            element.style.marginBottom = '16px';
-            element.style.color = isDarkMode ? '#ffffff' : '#111827';
-          }
-          
-          if (element.tagName === 'H2' || element.tagName === 'H3') {
-            element.style.fontSize = '18px';
-            element.style.marginBottom = '12px';
-            element.style.marginTop = '16px';
-            element.style.color = isDarkMode ? '#f3f4f6' : '#1f2937';
-          }
-        }
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
       });
 
-      pdfContainer.appendChild(titlePage.cloneNode(true));
-      pdfContainer.appendChild(document.createElement('div')); // Page break
-      pdfContainer.appendChild(header.cloneNode(true));
-      pdfContainer.appendChild(clonedContent);
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 15;
+      let yPos = margin;
+      let pageCount = 1;
 
-      // Wait a moment for styles to apply
-      setTimeout(async () => {
-        try {
-          const canvas = await html2canvas(pdfContainer, {
-            scale: 1.5, // Higher scale for better quality
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
-            logging: false,
-          });
-
-          const imgData = canvas.toDataURL('image/jpeg', 1.0);
-          const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4',
-          });
-
-          // Calculate dimensions
-          const imgWidth = 210; // A4 width in mm
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          
-          // Add title page
-          pdf.setFillColor(isDarkMode ? 31 : 255, isDarkMode ? 41 : 255, isDarkMode ? 55 : 255);
-          pdf.rect(0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight(), 'F');
-          
-          pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
-          
-          // Split into pages - Add page breaks at reasonable positions
-          let heightLeft = imgHeight;
-          let position = 0;
-          let pageHeight = 290; // A4 height in mm with margins
-          
-          // Add table of contents
-          pdf.addPage();
-          pdf.setFillColor(isDarkMode ? 31 : 255, isDarkMode ? 41 : 255, isDarkMode ? 55 : 255);
-          pdf.rect(0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight(), 'F');
-          
-          // Add page counter to footer
-          const totalPages = Math.ceil(imgHeight / pageHeight) + 2; // +2 for title and TOC
-          for (let i = 1; i <= totalPages; i++) {
-            pdf.setPage(i);
+      const addPageHeaderFooter = () => {
+        if (pageCount > 1) {
             pdf.setFontSize(8);
-            pdf.setTextColor(isDarkMode ? 200 : 100);
-            pdf.text(`Página ${i} de ${totalPages}`, 180, 290);
-          }
-          
-          // Add remaining pages with content
-          while (heightLeft > 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.setFillColor(isDarkMode ? 31 : 255, isDarkMode ? 41 : 255, isDarkMode ? 55 : 255);
-            pdf.rect(0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight(), 'F');
-            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-          }
-
-          // Clean up
-          document.body.removeChild(pdfContainer);
-          
-          // Download PDF
-          const fileName = `analise-avancada-${idea?.title || 'ideia'}.pdf`.replace(/\s+/g, '-').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-          pdf.save(fileName);
-          
-          toast.success(t('pdf.downloadComplete', "Download Concluído") + ". " +
-                      t('pdf.pdfReady', "Seu PDF está pronto"));
-        } catch (error) {
-          console.error("Error generating PDF:", error);
-          document.body.removeChild(pdfContainer);
-          
-          toast.error(t('errors.pdfGenerationError', "Erro ao gerar PDF") + ". " +
-                    t('errors.tryAgainLater', "Tente novamente mais tarde"));
-        } finally {
-          setIsGeneratingPdf(false);
+            pdf.setTextColor(isDarkMode ? 200 : 120);
+            pdf.text(t('advancedAnalysis.title', 'Análise Avançada'), margin, margin / 2);
+            // Page number string is removed from here, will be added by the final loop
         }
-      }, 500);
+      };
+
+      const checkNewPage = (neededHeight: number) => {
+        if (yPos + neededHeight > pageHeight - margin) {
+          pdf.addPage();
+          pageCount++;
+          yPos = margin;
+          addPageHeaderFooter();
+        }
+      };
       
+      const addTitle = (titleText: string) => {
+        checkNewPage(25); // Increased needed height for larger font
+        pdf.setFontSize(18);
+        pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(isDarkMode ? 235 : 20);
+        pdf.text(titleText, margin, yPos);
+        yPos += 9; // Adjusted for larger font
+        pdf.setLineWidth(0.35); // Approx 1px
+        pdf.setDrawColor(221, 221, 221); // #DDD
+        pdf.line(margin, yPos, pageWidth - margin, yPos);
+        yPos += 12;
+      };
+
+      const addSubTitle = (titleText: string) => {
+        checkNewPage(18); // Increased needed height for larger font
+        pdf.setFontSize(14);
+        pdf.setFont("helvetica", "bold"); // Using bold for semi-bold
+        // Dark blue for subtitles (approx. Tailwind indigo-600/indigo-400)
+        isDarkMode ? pdf.setTextColor(139, 148, 252) : pdf.setTextColor(59, 73, 223);
+        pdf.text(titleText, margin, yPos);
+        yPos += 9; // Adjusted for larger font
+      };
+      
+      const addParagraph = (text: string | undefined | null, indent = false, customYOffset = 4) => {
+        if (!text) return;
+        pdf.setFontSize(11);
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(isDarkMode ? 190 : 70);
+        const textLines = pdf.splitTextToSize(text, pageWidth - (margin * 2) - (indent ? 7 : 0));
+        const neededHeight = textLines.length * 4.5; // Adjusted line height for 11pt
+        checkNewPage(neededHeight + customYOffset); 
+        pdf.text(textLines, indent ? margin + 7 : margin, yPos);
+        yPos += neededHeight + customYOffset;
+      };
+
+      const addList = (items: string[] | undefined | null) => {
+        if (!items || items.length === 0) {
+          addParagraph(t('common.notSpecified', "Não especificado"), true, 2);
+          return;
+        }
+        items.forEach(item => {
+          addParagraph(`• ${item}`, true, 5);
+        });
+        yPos += 3;
+      };
+      
+      // Função de sanitização de texto
+      const sanitizeText = (text: string | undefined | null): string => {
+        if (!text) return "";
+        let sanitized = text;
+        // Rule 0: Specifically remove REPLACEMENT_CHAR followed by space/punctuation
+        sanitized = sanitized.replace(/\uFFFD\s*(!\'\s*|'\!\s*|!\s*|'\s*)/g, '');
+        // Rule 1: Remove any other non-ASCII characters
+        sanitized = sanitized.replace(/[^\x00-\x7F]/g, "");
+        // Rule 2: Remove leading punctuation if not caught by Rule 0 (e.g., no preceding \uFFFD)
+        sanitized = sanitized.replace(/^(!\'\s*|'\!\s*|!\s*|'\s*)/, '');
+        // Rule 3: Normalize multiple spaces to a single space
+        sanitized = sanitized.replace(/\s+/g, ' ');
+        // Rule 4: Trim leading/trailing whitespace
+        return sanitized.trim();
+      };
+
+      const addKeyValue = (key: string, value: string | number | undefined | null) => {
+        if (value === undefined || value === null) value = t('common.notSpecified', "Não especificado");
+        
+        const keyText = `${key}:`;
+        const valueText = String(value);
+        const indentText = "  → ";
+
+        pdf.setFontSize(11); // Changed to 11pt for key
+        pdf.setTextColor(isDarkMode ? 190 : 70);
+
+        // Key
+        pdf.setFont("helvetica", "bold");
+        const keyLines = pdf.splitTextToSize(keyText, pageWidth - margin * 2);
+        const keyNeededHeight = keyLines.length * 4.5; // Adjusted for 11pt
+        checkNewPage(keyNeededHeight + 2); 
+        pdf.text(keyLines, margin, yPos);
+        yPos += keyNeededHeight + 2;
+
+        // Value (indentado na linha abaixo)
+        pdf.setFont("helvetica", "normal"); // Value text also 11pt
+        const valueAvailableWidthForSplit = pageWidth - (margin + 7 + pdf.getStringUnitWidth(indentText) * 11 * (pdf.internal.scaleFactor / 2.8346)) - margin; 
+        const valueLinesUnindented = pdf.splitTextToSize(valueText, valueAvailableWidthForSplit);
+        const valueNeededHeight = valueLinesUnindented.length * 4.5; // Adjusted for 11pt
+        
+        checkNewPage(valueNeededHeight + 4); 
+        valueLinesUnindented.forEach((line, index) => {
+            const currentLineY = yPos + (index * 4.5); // Adjusted line spacing
+            if (index === 0) {
+                pdf.text(indentText + line, margin + 7, currentLineY);
+            } else {
+                pdf.text(line, margin + 7 + pdf.getStringUnitWidth(indentText) * 11 * (pdf.internal.scaleFactor / 2.8346), currentLineY); 
+            }
+        });
+        yPos += valueNeededHeight + 4; 
+      };
+
+      pdf.setFillColor(isDarkMode ? 31 : 240, isDarkMode ? 41 : 240, isDarkMode ? 55 : 240); 
+      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+      pdf.setFontSize(26);
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(isDarkMode ? 255 : 20);
+      pdf.text(t('advancedAnalysis.title', "Análise Avançada com GPT-4o"), pageWidth / 2, pageHeight / 2 - 40, { align: "center" }); // Ajustar Y para dar espaço ao subtítulo
+      
+      pdf.setFontSize(14); // Tamanho um pouco menor para o subtítulo, mas ainda legível
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(isDarkMode ? 220 : 50);
+      const ideaTitleText = idea.title || 'Sua Ideia de Negócio';
+      const ideaTitleLines = pdf.splitTextToSize(ideaTitleText, pageWidth - (margin * 2)); // Quebrar o título da ideia se for longo
+      // Calcular a altura total do título da ideia para centralizar o bloco
+      const ideaTitleHeight = ideaTitleLines.length * (14 * 0.352778); // 14pt para mm, aproximado
+      let titleYStart = pageHeight / 2 - 20 - (ideaTitleHeight / 2); // Ajuste Y para o bloco do título da ideia
+      pdf.text(ideaTitleLines, pageWidth / 2, titleYStart, { align: "center" });
+
+      pdf.setFontSize(10);
+      pdf.setTextColor(isDarkMode ? 200 : 100);
+      const generatedOnText = `${t('advancedAnalysis.pdf.generatedOn', "Gerado em")} ${new Date().toLocaleDateString()}`;
+      const ideaIdText = `ID da Ideia: ${ideaId}`;
+      pdf.text(generatedOnText, pageWidth / 2, titleYStart + ideaTitleHeight + 10, { align: "center" });
+      pdf.text(ideaIdText, pageWidth / 2, titleYStart + ideaTitleHeight + 15, { align: "center" });
+      
+      pdf.addPage();
+      pageCount++;
+      yPos = margin;
+      addPageHeaderFooter();
+
+      const content = analysis.analysis_data; 
+
+      const addSectionSpacing = () => {
+        yPos += 5;
+      };
+
+      if (content.businessName?.name || content.summary?.description || content.pitch) {
+        addTitle(t('advancedAnalysis.pdf.executiveSummary', "Resumo Executivo"));
+        if(content.businessName?.name) addKeyValue(t('advancedAnalysis.pdf.businessName', "Nome do Negócio"), sanitizeText(content.businessName.name));
+        if(content.businessName?.slogan) addKeyValue(t('advancedAnalysis.pdf.slogan', "Slogan"), sanitizeText(content.businessName.slogan));
+        if(content.summary?.description) addParagraph(sanitizeText(content.summary.description));
+        if(content.pitch) {
+            addSubTitle(t('advancedAnalysis.pdf.concept', "Conceito do Negócio"));
+            addParagraph(sanitizeText(content.pitch));
+        }
+        addSectionSpacing();
+      }
+
+      if (content.differentials && content.differentials.length > 0) {
+        addSubTitle(t('advancedAnalysis.pdf.differentials', "Diferenciais"));
+        addList(content.differentials.map(sanitizeText)); // Sanitizar itens da lista
+        addSectionSpacing();
+      }
+      
+      if (content.firstSteps && content.firstSteps.length > 0) {
+        addSubTitle(t('advancedAnalysis.pdf.firstSteps', "Primeiros Passos"));
+        content.firstSteps.forEach((step: {name: string, icon?: string, description?: string}) => {
+            // Omitir step.icon para evitar caracteres corrompidos
+            addParagraph(sanitizeText(step.name)); 
+            if(step.description) addParagraph(sanitizeText(step.description), true);
+        });
+        addSectionSpacing();
+      }
+      
+      if (content.marketAnalysis) {
+        addTitle(t('advancedAnalysis.pdf.marketAnalysis', "Análise de Mercado"));
+        if(content.marketAnalysis.size) addKeyValue(t('advancedAnalysis.pdf.marketSize', "Tamanho do Mercado"), sanitizeText(content.marketAnalysis.size));
+        if(content.marketAnalysis.targetAudience) addKeyValue(t('advancedAnalysis.pdf.targetAudience', "Público-Alvo"), sanitizeText(content.marketAnalysis.targetAudience));
+        if(content.marketAnalysis.trends?.length > 0) {
+            addSubTitle(t('advancedAnalysis.pdf.marketTrends', "Tendências de Mercado"));
+            addList(content.marketAnalysis.trends.map(sanitizeText)); // Sanitizar itens da lista
+        }
+        if(content.marketAnalysis.barriers?.length > 0) {
+            addSubTitle(t('advancedAnalysis.pdf.entryBarriers', "Barreiras de Entrada"));
+            addList(content.marketAnalysis.barriers.map(sanitizeText)); // Sanitizar itens da lista
+        }
+        addSectionSpacing();
+      }
+      
+      if (content.personas?.length > 0) {
+        addTitle(t('advancedAnalysis.pdf.customerAnalysis', "Análise de Clientes"));
+        addSubTitle(t('advancedAnalysis.pdf.personas', "Personas"));
+        content.personas.forEach((persona: {name: string, description: string, occupation?: string, behavior?: string}, idx: number) => {
+            addParagraph(sanitizeText(`${t('advancedAnalysis.pdf.persona', "Persona")} ${idx + 1}: ${persona.name || ''}`));
+            if(persona.description) addParagraph(sanitizeText(persona.description), true);
+            if(persona.occupation) addKeyValue(t('advancedAnalysis.pdf.occupation', "Ocupação"), sanitizeText(persona.occupation));
+            if(persona.behavior) addKeyValue(t('advancedAnalysis.pdf.behavior', "Comportamento"), sanitizeText(persona.behavior));
+            yPos += 3;
+        });
+        addSectionSpacing();
+      }
+      if (content.channels?.length > 0) {
+        if (!(content.personas?.length > 0)) {
+            addTitle(t('advancedAnalysis.pdf.customerAnalysis', "Análise de Clientes"));
+        }
+        addSubTitle(t('advancedAnalysis.pdf.acquisitionChannels', "Canais de Aquisição"));
+        content.channels.forEach((channel: {name: string, description: string}) => {
+            addParagraph(sanitizeText(channel.name));
+            if(channel.description) addParagraph(sanitizeText(channel.description), true);
+        });
+        addSectionSpacing();
+      }
+
+      if (content.competitors?.length > 0) {
+        addTitle(t('advancedAnalysis.pdf.competitorAnalysis', "Análise de Concorrentes"));
+        content.competitors.forEach((competitor: {name: string, strengths?: string[], weaknesses?: string[]}) => {
+            addSubTitle(sanitizeText(competitor.name || t('advancedAnalysis.pdf.competitor', "Concorrente")));
+            if(competitor.strengths?.length > 0){
+                addParagraph(t('advancedAnalysis.pdf.strengths', "Pontos Fortes") + ":");
+                addList(competitor.strengths.map(sanitizeText));
+            }
+            if(competitor.weaknesses?.length > 0){
+                addParagraph(t('advancedAnalysis.pdf.weaknesses', "Pontos Fracos") + ":");
+                addList(competitor.weaknesses.map(sanitizeText));
+            }
+            yPos += 3;
+        });
+        addSectionSpacing();
+      }
+      
+      if (content.swot) {
+        addTitle(t('advancedAnalysis.pdf.swotAnalysis', "Análise SWOT"));
+        if(content.swot.strengths?.length > 0){
+            addSubTitle(t('advancedAnalysis.pdf.swotStrengths', "Forças"));
+            addList(content.swot.strengths.map(sanitizeText));
+        }
+        if(content.swot.weaknesses?.length > 0){
+            addSubTitle(t('advancedAnalysis.pdf.swotWeaknesses', "Fraquezas"));
+            addList(content.swot.weaknesses.map(sanitizeText));
+        }
+        if(content.swot.opportunities?.length > 0){
+            addSubTitle(t('advancedAnalysis.pdf.swotOpportunities', "Oportunidades"));
+            addList(content.swot.opportunities.map(sanitizeText));
+        }
+        if(content.swot.threats?.length > 0){
+            addSubTitle(t('advancedAnalysis.pdf.swotThreats', "Ameaças"));
+            addList(content.swot.threats.map(sanitizeText));
+        }
+        addSectionSpacing();
+      }
+
+      if (content.monetization) {
+        addTitle(t('advancedAnalysis.pdf.monetizationModels', "Modelos de Monetização"));
+        if(content.monetization.models?.length > 0) {
+            content.monetization.models.forEach((model: {name: string, description: string, revenue?: string}) => {
+                addSubTitle(sanitizeText(model.name));
+                if(model.description) addParagraph(sanitizeText(model.description));
+                if(model.revenue) addKeyValue(t('advancedAnalysis.pdf.revenue', "Receita Estimada"), sanitizeText(model.revenue));
+            });
+        }
+        if(content.monetization.projections) {
+            addSubTitle(t('advancedAnalysis.pdf.financialProjections', "Projeções Financeiras"));
+            if(content.monetization.projections.firstYear) addKeyValue(t('advancedAnalysis.pdf.firstYear', "Receita 1º Ano"), sanitizeText(content.monetization.projections.firstYear));
+            if(content.monetization.projections.thirdYear) addKeyValue(t('advancedAnalysis.pdf.thirdYear', "Receita 3º Ano"), sanitizeText(content.monetization.projections.thirdYear));
+            if(content.monetization.projections.breakEven) addKeyValue(t('advancedAnalysis.pdf.breakEven', "Ponto de Equilíbrio"), sanitizeText(content.monetization.projections.breakEven));
+            if(content.monetization.projections.roi) addKeyValue(t('advancedAnalysis.pdf.expectedROI', "ROI Estimado (3 anos)"), sanitizeText(content.monetization.projections.roi));
+        }
+        addSectionSpacing();
+      }
+
+      if (content.risks?.length > 0) {
+        addTitle(t('advancedAnalysis.pdf.riskAnalysis', "Análise de Riscos"));
+        content.risks.forEach((risk: {name: string, level: string, description: string, mitigation?: string}) => {
+            addSubTitle(sanitizeText(`${risk.name || t('advancedAnalysis.pdf.risk', "Risco")} (${t('advancedAnalysis.pdf.level',"Nível")}: ${risk.level || 'N/A'})`));
+            if(risk.description) addParagraph(sanitizeText(risk.description));
+            if(risk.mitigation) {
+                addParagraph(t('advancedAnalysis.pdf.mitigationStrategy', "Estratégia de Mitigação") + ":");
+                addParagraph(sanitizeText(risk.mitigation), true);
+            }
+        });
+        addSectionSpacing();
+      }
+      
+      if (content.plan) {
+        addTitle(t('advancedAnalysis.pdf.implementationPlan', "Plano de Implementação"));
+        const planPhases = [
+            { titleKey: 'advancedAnalysis.pdf.first30Days', defaultTitle: "Primeiros 30 Dias", data: content.plan.thirtyDays },
+            { titleKey: 'advancedAnalysis.pdf.next60Days', defaultTitle: "Próximos 60 Dias", data: content.plan.sixtyDays }, 
+            { titleKey: 'advancedAnalysis.pdf.next90Days', defaultTitle: "Próximos 90 Dias", data: content.plan.ninetyDays }  
+        ];
+        planPhases.forEach(phase => {
+            if (phase.data?.length > 0) {
+                addSubTitle(t(phase.titleKey, phase.defaultTitle));
+                phase.data.forEach((item: {name: string, description: string}) => {
+                    addParagraph(sanitizeText(item.name));
+                    if(item.description) addParagraph(sanitizeText(item.description), true);
+                });
+            }
+        });
+        addSectionSpacing();
+      }
+
+      if (content.tools?.length > 0) {
+        addTitle(t('advancedAnalysis.pdf.recommendedTools', "Ferramentas Recomendadas"));
+        content.tools.forEach((tool: {category: string, name: string, description: string}) => {
+            addSubTitle(sanitizeText(`${tool.category || t('advancedAnalysis.pdf.category', "Categoria")}: ${tool.name || ''}`));
+            if(tool.description) addParagraph(sanitizeText(tool.description));
+        });
+      }
+      
+      // After all content is added, put total page numbers
+      const totalPages = pdf.internal.pages.length;
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.setFontSize(8);
+        pdf.setTextColor(isDarkMode ? 200 : 120);
+        const pageString = t('pdf.page', { page: i });
+        const totalPagesString = ` de ${totalPages}`;
+        const fullPageStringWidth = pdf.getStringUnitWidth(pageString + totalPagesString) * 8 * (pdf.internal.scaleFactor / 2.8346);
+        const xPos = pageWidth - margin - fullPageStringWidth;
+
+        // Re-draw the idea title/generic title in the header for all pages except title page if needed
+        if (i > 1) { // Assuming page 1 is the title page
+            pdf.text(t('advancedAnalysis.title', 'Análise Avançada'), margin, margin / 2); 
+        }
+        // Draw "Página X de Y"
+        pdf.text(`${pageString}${totalPagesString}`, xPos, pageHeight - margin / 2);
+      }
+
+      const finalFileName = `analise-avancada-${idea?.title?.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'ideia'}.pdf`;
+      pdf.save(finalFileName);
+
+      toast.success(t('pdf.downloadComplete', "Download Concluído") + ". " +
+                  t('pdf.pdfReady', "Seu PDF está pronto"));
+
     } catch (error) {
-      console.error("Error downloading PDF:", error);
-      setIsGeneratingPdf(false);
-      toast.error(t('errors.pdfError', "Erro ao gerar PDF") + ". " +
+      console.error("Error generating PDF programmatically:", error);
+      toast.error(t('errors.pdfGenerationError', "Erro ao gerar PDF") + ". " +
                 t('errors.tryAgainLater', "Tente novamente mais tarde"));
+    } finally {
+      setIsGeneratingPdf(false);
     }
   };
 
@@ -565,7 +745,7 @@ export function AdvancedAnalysisModal({
             )}>
               {loading
                 ? t('advancedAnalysis.generating', "Gerando Análise Avançada...")
-                : t('advancedAnalysis.title', "Análise Avançada com GPT-4o")}
+                : t('advancedAnalysis.title', "Análise Avançada")}
             </DialogTitle>
             <div className="flex items-center gap-1 sm:gap-2">
               {!loading && analysis && (
@@ -660,7 +840,7 @@ export function AdvancedAnalysisModal({
                   "text-muted-foreground",
                   isDarkMode ? "text-slate-400" : ""
                 )}>
-                  {t('advancedAnalysis.patience', "Este processo pode levar alguns segundos, estamos utilizando GPT-4o para criar uma análise completa")}
+                  {t('advancedAnalysis.patience', "Este processo pode levar alguns segundos, estamos criando uma análise completa")}
                 </p>
               </div>
               
@@ -726,7 +906,7 @@ export function AdvancedAnalysisModal({
                   <div 
                     ref={handleContentRef} 
                     className={cn(
-                      "max-w-3xl mx-auto pb-20", // Added bottom padding for mobile
+                      "max-w-3xl mx-auto pb-20",
                       isDarkMode ? "text-slate-200" : "text-slate-900"
                     )}
                   >

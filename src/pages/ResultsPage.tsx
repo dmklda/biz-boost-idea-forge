@@ -566,7 +566,7 @@ const ResultsPage = () => {
             <div className="mt-12 text-center">
               <h3 className="text-xl font-semibold mb-4">Quer uma análise mais detalhada?</h3>
               <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                Experimente nossa nova Análise Avançada com GPT-4o, que inclui sugestão de nome, logotipo, 
+                Experimente nossa nova Análise Avançada, que inclui sugestão de nome, logotipo, 
                 análise de mercado detalhada e muito mais.
               </p>
               <AdvancedAnalysisButton 
