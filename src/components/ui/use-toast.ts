@@ -3,7 +3,8 @@ import { toast as sonnerToast } from "sonner";
 import type { ToasterProps } from "sonner";
 
 export type ToastActionElement = React.ReactElement<HTMLButtonElement>;
-export type ToastProps = ToasterProps["toast"];
+// Fix the type definition
+export type ToastProps = Parameters<typeof sonnerToast>[0];
 
 // Create a function that can be called directly and also has methods
 // This pattern allows both toast() and toast.success() to work

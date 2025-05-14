@@ -3,7 +3,7 @@ import { toast as sonnerToast } from "sonner";
 import type { ToasterProps } from "sonner";
 
 // Export the correct type
-export type ToastProps = ToasterProps["toast"];
+export type ToastProps = Parameters<typeof sonnerToast>[0];
 
 // Create a function that can be called directly and also has methods
 // This pattern allows both toast() and toast.success() to work
