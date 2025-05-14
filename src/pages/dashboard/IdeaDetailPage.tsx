@@ -189,11 +189,11 @@ const IdeaDetailPage = () => {
   // Function to get status badge
   const getStatusBadge = (score: number) => {
     if (score >= 70) {
-      return <Badge className="bg-green-500/10 text-green-600 border-green-500">Ótimo</Badge>;
+      return <Badge className="bg-green-500/10 text-green-600 border-green-500">{t('ideas.scoreStatus.great', "Ótimo")}</Badge>;
     } else if (score >= 40) {
-      return <Badge className="bg-amber-500/10 text-amber-600 border-amber-500">Médio</Badge>;
+      return <Badge className="bg-amber-500/10 text-amber-600 border-amber-500">{t('ideas.scoreStatus.medium', "Médio")}</Badge>;
     } else {
-      return <Badge className="bg-red-500/10 text-red-600 border-red-500">Baixo</Badge>;
+      return <Badge className="bg-red-500/10 text-red-600 border-red-500">{t('ideas.scoreStatus.low', "Baixo")}</Badge>;
     }
   };
   
@@ -265,7 +265,7 @@ const IdeaDetailPage = () => {
           
           <Button variant="outline" size="sm" onClick={handleDownloadPDF} className="flex items-center gap-1">
             <Download className="h-4 w-4" />
-            <span className="hidden sm:inline">PDF</span>
+            <span className="hidden sm:inline">{t('common.pdf', "PDF")}</span>
           </Button>
         </div>
       </div>
@@ -367,7 +367,7 @@ const IdeaDetailPage = () => {
                   <AlertTriangle className="h-4 w-4 text-muted-foreground" />
                   {t('ideas.detail.problemSolved') || "Problema Resolvido"}
                 </h3>
-                <p className="mt-1">{idea.problem || "Não especificado"}</p>
+                <p className="mt-1">{idea.problem || t('common.notSpecified', "Não especificado")}</p>
               </div>
               
               <div>
@@ -375,7 +375,7 @@ const IdeaDetailPage = () => {
                   <Users className="h-4 w-4 text-muted-foreground" />
                   {t('ideas.detail.targetAudience') || "Público-alvo"}
                 </h3>
-                <p className="mt-1">{idea.audience || "Não especificado"}</p>
+                <p className="mt-1">{idea.audience || t('common.notSpecified', "Não especificado")}</p>
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

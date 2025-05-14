@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -38,9 +37,9 @@ const IdeasPage = () => {
             <FileText className="h-4 w-4" />
             {t('ideas.viewDrafts', "Ver Rascunhos")}
           </Button>
-          <Button onClick={() => navigate("/new-idea")} className="bg-brand-purple hover:bg-brand-purple/90">
+          <Button onClick={() => navigate("/dashboard/analise")} className="bg-brand-purple hover:bg-brand-purple/90">
             <Plus className="mr-2 h-4 w-4" />
-            {t('ideas.createNew', "Nova Ideia")}
+            {t('ideas.newIdea', "Nova Ideia")}
           </Button>
         </div>
       </div>

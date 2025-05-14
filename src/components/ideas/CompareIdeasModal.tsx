@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -101,13 +100,13 @@ export const CompareIdeasModalProvider = ({ children }: { children: React.ReactN
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{t('ideas.compareTitle', "Comparar Ideias")}</DialogTitle>
+            <DialogTitle>{t('ideas.compare.title', "Comparar Ideias")}</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
             {selectedIdeas.length > 0 ? (
               <div className="space-y-2">
-                <p className="text-sm font-medium">{t('ideas.selectedIdeas', "Ideias selecionadas")}:</p>
+                <p className="text-sm font-medium">{t('ideas.compare.selectedIdeas', "Ideias selecionadas")}:</p>
                 <ul className="space-y-2">
                   {selectedIdeas.map(idea => (
                     <li key={idea.id} className="flex items-center justify-between bg-muted p-2 rounded-md">
@@ -128,20 +127,20 @@ export const CompareIdeasModalProvider = ({ children }: { children: React.ReactN
               <div className="flex flex-col items-center justify-center py-6">
                 <AlertCircle className="h-10 w-10 text-muted-foreground mb-2" />
                 <p className="text-center text-muted-foreground">
-                  {t('ideas.noIdeasSelected', "Nenhuma ideia selecionada para comparação")}
+                  {t('ideas.compare.noIdeasSelected', "Nenhuma ideia selecionada para comparação")}
                 </p>
               </div>
             )}
             
             <div className="space-y-2">
-              <p className="text-sm font-medium">{t('ideas.addMoreIdeas', "Adicionar mais ideias")}:</p>
+              <p className="text-sm font-medium">{t('ideas.compare.addMoreIdeas', "Adicionar mais ideias")}:</p>
               <div className="flex gap-2">
                 <select 
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   value={selectedIdea || ""}
                   onChange={(e) => setSelectedIdea(e.target.value)}
                 >
-                  <option value="">{t('ideas.selectIdea', "Selecione uma ideia")}</option>
+                  <option value="">{t('ideas.compare.selectIdea', "Selecione uma ideia")}</option>
                   {ideas
                     .filter(idea => !ideaIds.includes(idea.id))
                     .map(idea => (
@@ -173,7 +172,7 @@ export const CompareIdeasModalProvider = ({ children }: { children: React.ReactN
               <FileText className="h-4 w-4 mr-1" />
               {comparing 
                 ? t('common.processing', "Processando...") 
-                : t('ideas.compare', "Comparar")}
+                : t('ideas.compare.button', "Comparar")}
             </Button>
           </div>
         </DialogContent>
@@ -276,13 +275,13 @@ export const CompareIdeasModal = ({
     <Dialog open={isOpen} onOpenChange={() => onClose()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{t('ideas.compareTitle', "Comparar Ideias")}</DialogTitle>
+          <DialogTitle>{t('ideas.compare.title', "Comparar Ideias")}</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4 py-4">
           {selectedIdeasData.length > 0 ? (
             <div className="space-y-2">
-              <p className="text-sm font-medium">{t('ideas.selectedIdeas', "Ideias selecionadas")}:</p>
+              <p className="text-sm font-medium">{t('ideas.compare.selectedIdeas', "Ideias selecionadas")}:</p>
               <ul className="space-y-2">
                 {selectedIdeasData.map(idea => (
                   <li key={idea.id} className="flex items-center justify-between bg-muted p-2 rounded-md">
@@ -303,20 +302,20 @@ export const CompareIdeasModal = ({
             <div className="flex flex-col items-center justify-center py-6">
               <AlertCircle className="h-10 w-10 text-muted-foreground mb-2" />
               <p className="text-center text-muted-foreground">
-                {t('ideas.noIdeasSelected', "Nenhuma ideia selecionada para comparação")}
+                {t('ideas.compare.noIdeasSelected', "Nenhuma ideia selecionada para comparação")}
               </p>
             </div>
           )}
           
           <div className="space-y-2">
-            <p className="text-sm font-medium">{t('ideas.addMoreIdeas', "Adicionar mais ideias")}:</p>
+            <p className="text-sm font-medium">{t('ideas.compare.addMoreIdeas', "Adicionar mais ideias")}:</p>
             <div className="flex gap-2">
               <select 
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 value={selectedIdea || ""}
                 onChange={(e) => setSelectedIdea(e.target.value)}
               >
-                <option value="">{t('ideas.selectIdea', "Selecione uma ideia")}</option>
+                <option value="">{t('ideas.compare.selectIdea', "Selecione uma ideia")}</option>
                 {ideas
                   .filter(idea => !selectedIdeaIds.includes(idea.id))
                   .map(idea => (
@@ -348,7 +347,7 @@ export const CompareIdeasModal = ({
             <FileText className="h-4 w-4 mr-1" />
             {comparing 
               ? t('common.processing', "Processando...") 
-              : t('ideas.compare', "Comparar")}
+              : t('ideas.compare.button', "Comparar")}
           </Button>
         </div>
       </DialogContent>

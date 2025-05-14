@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -100,7 +99,7 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
           onClick={handleCompareClick}
         >
           <FileText className="h-4 w-4 mr-1" />
-          {t('ideas.compare', "Comparar")}
+          {t('ideas.compare.button', "Comparar")}
         </Button>
         
         <Button 

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -49,7 +48,7 @@ export const IdeasGrid = ({ ideas, loading, emptyAction }: IdeasGridProps) => {
           emptyAction || (
             <Button onClick={() => navigate("/new-idea")} className="bg-brand-purple hover:bg-brand-purple/90">
               <Plus className="mr-2 h-4 w-4" />
-              {t('ideas.createNew', "Nova Ideia")}
+              {t('ideas.newIdea', "Nova Ideia")}
             </Button>
           )
         }
