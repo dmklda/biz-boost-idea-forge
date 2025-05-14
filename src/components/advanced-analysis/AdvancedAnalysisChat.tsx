@@ -68,7 +68,7 @@ export function AdvancedAnalysisChat({
 
     try {
       const { data: aiResult, error: aiError } = await supabase.functions.invoke(
-        "ai-chat-handler",
+        "gpt-chat",
         {
           body: {
             userInput: userInput,
