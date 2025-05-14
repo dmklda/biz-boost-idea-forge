@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { Phone, Book, Info, Building } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -67,7 +67,7 @@ const ContactPage = () => {
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     console.log(values);
-    toast({
+    toast.success({
       title: t("contact.form.success.title"),
       description: t("contact.form.success.message"),
     });
