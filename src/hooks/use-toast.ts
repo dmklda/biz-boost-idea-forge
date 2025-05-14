@@ -2,8 +2,13 @@
 import { toast as sonnerToast } from "sonner";
 import type { ToasterProps } from "sonner";
 
-// Export the correct type
-export type ToastProps = Parameters<typeof sonnerToast.success>[0] | Parameters<typeof sonnerToast>[0];
+// Ensure we have the correct type definition that includes title and description
+export interface ToastProps {
+  title?: string;
+  description?: string;
+  action?: React.ReactNode;
+  [key: string]: any;
+}
 
 // Create a function that can be called directly and also has methods
 // This pattern allows both toast() and toast.success() to work

@@ -67,6 +67,8 @@ const ContactPage = () => {
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     console.log(values);
+    
+    // Use toast.success with properly typed parameters
     toast.success({
       title: t("contact.form.success.title"),
       description: t("contact.form.success.message"),
