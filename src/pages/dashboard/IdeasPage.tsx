@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Plus, Lightbulb } from "lucide-react";
+import { Plus, Lightbulb, FileText } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "react-i18next";
 import { IdeasTabs, useIdeasData } from "@/components/ideas";
@@ -25,14 +25,24 @@ const IdeasPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-xl md:text-2xl font-bold">
           {t('ideas.title', "Suas Ideias")}
         </h1>
-        <Button onClick={() => navigate("/new-idea")} className="bg-brand-purple hover:bg-brand-purple/90">
-          <Plus className="mr-2 h-4 w-4" />
-          {t('ideas.createNew', "Nova Ideia")}
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => navigate("/dashboard/rascunhos")}
+            className="flex items-center gap-1"
+          >
+            <FileText className="h-4 w-4" />
+            {t('ideas.viewDrafts', "Ver Rascunhos")}
+          </Button>
+          <Button onClick={() => navigate("/new-idea")} className="bg-brand-purple hover:bg-brand-purple/90">
+            <Plus className="mr-2 h-4 w-4" />
+            {t('ideas.createNew', "Nova Ideia")}
+          </Button>
+        </div>
       </div>
       
       <IdeasTabs

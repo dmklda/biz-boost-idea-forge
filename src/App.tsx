@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import '@/i18n/config';
 import { AuthProvider } from "./hooks/useAuth";
+import { CompareIdeasModalProvider } from "./components/ideas/CompareIdeasModal";
 
 // Auth pages
 import LoginPage from "./pages/auth/LoginPage";
@@ -109,59 +110,62 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme={getStoredTheme()} storageKey="theme">
         <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner theme="system" />
-            <LanguageInitializer>
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/resultados" element={<ResultsPage />} />
-                  
-                  {/* Auth Routes */}
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/registro" element={<RegisterPage />} />
-                  <Route path="/planos" element={<PlansPage />} />
-                  
-                  {/* Dashboard Routes */}
-                  <Route path="/dashboard" element={<DashboardLayout />}>
-                    <Route index element={<DashboardHome />} />
-                    <Route path="ideias" element={<IdeasPage />} />
-                    <Route path="ideias/historico" element={<IdeasHistoryPage />} />
-                    <Route path="ideias/:id" element={<IdeaDetailPage />} />
-                    <Route path="ideias/editar" element={<EditIdeaPage />} />
-                    <Route path="rascunhos" element={<DraftsPage />} />
-                    <Route path="creditos" element={<CreditsPage />} />
-                    <Route path="configuracoes" element={<UserSettingsPage />} />
-                    <Route path="recursos" element={<ResourceCenterPage />} />
-                    <Route path="metricas" element={<AdvancedMetricsPage />} />
-                    <Route path="resultados" element={<DashboardResultsPage />} />
-                  </Route>
-                  
-                  {/* Platform Pages */}
-                  <Route path="/plataforma/api" element={<ApiPage />} />
-                  
-                  {/* Resources Pages */}
-                  <Route path="/recursos/blog" element={<BlogPage />} />
-                  <Route path="/recursos/blog/:id" element={<BlogPostPage />} />
-                  <Route path="/recursos/guias" element={<GuidesPage />} />
-                  <Route path="/recursos/guias/:id" element={<GuideDetailPage />} />
-                  <Route path="/recursos/casos-de-sucesso" element={<SuccessCasesPage />} />
-                  <Route path="/recursos/casos-de-sucesso/:id" element={<SuccessCaseDetailPage />} />
-                  <Route path="/recursos/webinars" element={<WebinarsPage />} />
-                  
-                  {/* Company Pages */}
-                  <Route path="/empresa/sobre-nos" element={<AboutUsPage />} />
-                  <Route path="/empresa/contato" element={<ContactPage />} />
-                  <Route path="/empresa/politica-de-privacidade" element={<PrivacyPolicyPage />} />
-                  <Route path="/empresa/termos-de-uso" element={<TermsOfUsePage />} />
-                  
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </LanguageInitializer>
-          </TooltipProvider>
+          <CompareIdeasModalProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner theme="system" />
+              <LanguageInitializer>
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/resultados" element={<ResultsPage />} />
+                    
+                    {/* Auth Routes */}
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/registro" element={<RegisterPage />} />
+                    <Route path="/planos" element={<PlansPage />} />
+                    
+                    {/* Dashboard Routes */}
+                    <Route path="/dashboard" element={<DashboardLayout />}>
+                      <Route index element={<DashboardHome />} />
+                      <Route path="ideias" element={<IdeasPage />} />
+                      <Route path="ideias/historico" element={<IdeasHistoryPage />} />
+                      <Route path="ideias/:id" element={<IdeaDetailPage />} />
+                      <Route path="ideias/editar" element={<EditIdeaPage />} />
+                      <Route path="rascunhos" element={<DraftsPage />} />
+                      <Route path="creditos" element={<CreditsPage />} />
+                      <Route path="configuracoes" element={<UserSettingsPage />} />
+                      <Route path="recursos" element={<ResourceCenterPage />} />
+                      <Route path="metricas" element={<AdvancedMetricsPage />} />
+                      <Route path="resultados" element={<DashboardResultsPage />} />
+                      <Route path="editar" element={<EditIdeaPage />} />
+                    </Route>
+                    
+                    {/* Platform Pages */}
+                    <Route path="/plataforma/api" element={<ApiPage />} />
+                    
+                    {/* Resources Pages */}
+                    <Route path="/recursos/blog" element={<BlogPage />} />
+                    <Route path="/recursos/blog/:id" element={<BlogPostPage />} />
+                    <Route path="/recursos/guias" element={<GuidesPage />} />
+                    <Route path="/recursos/guias/:id" element={<GuideDetailPage />} />
+                    <Route path="/recursos/casos-de-sucesso" element={<SuccessCasesPage />} />
+                    <Route path="/recursos/casos-de-sucesso/:id" element={<SuccessCaseDetailPage />} />
+                    <Route path="/recursos/webinars" element={<WebinarsPage />} />
+                    
+                    {/* Company Pages */}
+                    <Route path="/empresa/sobre-nos" element={<AboutUsPage />} />
+                    <Route path="/empresa/contato" element={<ContactPage />} />
+                    <Route path="/empresa/politica-de-privacidade" element={<PrivacyPolicyPage />} />
+                    <Route path="/empresa/termos-de-uso" element={<TermsOfUsePage />} />
+                    
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </BrowserRouter>
+              </LanguageInitializer>
+            </TooltipProvider>
+          </CompareIdeasModalProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

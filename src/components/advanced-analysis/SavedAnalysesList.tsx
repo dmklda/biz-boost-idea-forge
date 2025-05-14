@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -5,11 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar, ExternalLink, FileText, Search, Trash2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/sonner";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AdvancedAnalysisContent } from "./AdvancedAnalysisContent";
 import { Input } from "@/components/ui/input";
@@ -27,7 +28,6 @@ interface SavedAnalysis {
 
 export function SavedAnalysesList() {
   const { t } = useTranslation();
-  const { toast } = useToast();
   const { authState } = useAuth();
   const { theme } = useTheme();
   const isDarkMode = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
@@ -72,8 +72,7 @@ export function SavedAnalysesList() {
       const { error } = await supabase
         .from('saved_analyses')
         .delete()
-        .eq('id', id)
-        .eq('user_id', authState.user?.id);
+        .eq('id', id);
         
       if (error) throw error;
       
@@ -175,7 +174,7 @@ export function SavedAnalysesList() {
                   size="sm" 
                   onClick={(e) => {
                     e.stopPropagation();
-                    window.open(`/dashboard/ideas/${analysis.idea_id}`, '_blank');
+                    window.open(`/dashboard/ideias/${analysis.idea_id}`, '_blank');
                   }}
                   className={cn(
                     "text-muted-foreground",
