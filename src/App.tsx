@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -27,6 +28,7 @@ import IdeasHistoryPage from "./pages/dashboard/IdeasHistoryPage";
 import IdeaDetailPage from "./pages/dashboard/IdeaDetailPage";
 import UserSettingsPage from "./pages/dashboard/UserSettingsPage";
 import ResourceCenterPage from "./pages/dashboard/ResourceCenterPage";
+import AdvancedMetricsPage from "./pages/dashboard/AdvancedMetricsPage";
 import AdvancedAnalysisPage from "./pages/dashboard/AdvancedAnalysisPage";
 import DraftsPage from "./pages/dashboard/DraftsPage";
 import EditIdeaPage from "./pages/dashboard/EditIdeaPage";
