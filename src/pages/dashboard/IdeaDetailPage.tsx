@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -640,7 +639,7 @@ const IdeaDetailPage = () => {
       <CompareIdeasModal
         open={isCompareModalOpen}
         onOpenChange={setIsCompareModalOpen}
-        currentIdeaId={idea.id}
+        ideaIds={[idea.id]}
       />
     </div>
   );
