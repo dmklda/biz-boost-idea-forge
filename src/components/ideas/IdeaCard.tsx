@@ -3,12 +3,13 @@ import React from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, ExternalLink } from "lucide-react";
+import { Calendar, ExternalLink, Edit, FileText, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { TagBadge } from "./TagBadge";
 import { FavoriteButton } from "./FavoriteButton";
+import { useCompareIdeasModal } from "./CompareIdeasModal";
 
 interface Idea {
   id: string;
@@ -24,10 +25,20 @@ interface Idea {
 export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { openCompareModal } = useCompareIdeasModal();
 
   const handleCardClick = () => {
-    // Corrigindo a rota para usar "ideias" em vez de "ideas"
     navigate(`/dashboard/ideias/${idea.id}`);
+  };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/dashboard/editar?id=${idea.id}`);
+  };
+
+  const handleCompareClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    openCompareModal([idea.id]);
   };
 
   return (
@@ -71,14 +82,33 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
         )}
       </CardContent>
       
-      <CardFooter className="pt-0 pb-4 px-4">
+      <CardFooter className="pt-0 pb-4 px-4 flex flex-wrap gap-2 justify-end">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-muted-foreground hover:text-foreground"
+          onClick={handleEditClick}
+        >
+          <Edit className="h-4 w-4 mr-1" />
+          {t('common.edit', "Editar")}
+        </Button>
+        
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-muted-foreground hover:text-foreground"
+          onClick={handleCompareClick}
+        >
+          <FileText className="h-4 w-4 mr-1" />
+          {t('ideas.compare', "Comparar")}
+        </Button>
+        
         <Button 
           variant="ghost" 
           size="sm" 
           className="text-muted-foreground hover:text-foreground ml-auto"
           onClick={(e) => {
             e.stopPropagation();
-            // Corrigindo a rota para usar "ideias" em vez de "ideas"
             navigate(`/dashboard/ideias/${idea.id}`);
           }}
         >
