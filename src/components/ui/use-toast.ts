@@ -20,7 +20,11 @@ const createToast = () => {
     if (typeof props === "string") {
       return sonnerToast(props);
     } else {
-      return sonnerToast(props.title || "", props);
+      return sonnerToast(props.title || "", {
+        description: props.description,
+        action: props.action,
+        ...props
+      });
     }
   };
   
@@ -29,7 +33,11 @@ const createToast = () => {
     if (typeof props === "string") {
       return sonnerToast.success(props);
     } else {
-      return sonnerToast.success(props.title || "", props);
+      return sonnerToast.success(props.title || "", {
+        description: props.description,
+        action: props.action,
+        ...props
+      });
     }
   };
 
@@ -37,7 +45,11 @@ const createToast = () => {
     if (typeof props === "string") {
       return sonnerToast.error(props);
     } else {
-      return sonnerToast.error(props.title || "", props);
+      return sonnerToast.error(props.title || "", {
+        description: props.description,
+        action: props.action,
+        ...props
+      });
     }
   };
 
@@ -45,7 +57,11 @@ const createToast = () => {
     if (typeof props === "string") {
       return sonnerToast.info(props);
     } else {
-      return sonnerToast.info(props.title || "", props);
+      return sonnerToast.info(props.title || "", {
+        description: props.description,
+        action: props.action,
+        ...props
+      });
     }
   };
 
@@ -53,7 +69,11 @@ const createToast = () => {
     if (typeof props === "string") {
       return sonnerToast.warning(props);
     } else {
-      return sonnerToast.warning(props.title || "", props);
+      return sonnerToast.warning(props.title || "", {
+        description: props.description,
+        action: props.action,
+        ...props
+      });
     }
   };
   
