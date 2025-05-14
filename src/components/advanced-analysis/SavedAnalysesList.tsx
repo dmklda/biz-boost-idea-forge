@@ -135,6 +135,14 @@ export function SavedAnalysesList() {
         icon={<Brain className="h-10 w-10 text-muted-foreground" />}
         title={t('analysis.noSavedAnalyses', "Nenhuma análise salva")}
         description={t('analysis.saveAnalysisDescription', "Salve análises avançadas para consultá-las posteriormente")}
+        action={
+          <Button 
+            variant="outline" 
+            onClick={() => window.open('/dashboard/ideias', '_blank')}
+          >
+            {t('ideas.viewIdeas', "Ver minhas ideias")}
+          </Button>
+        }
       />
     );
   }
