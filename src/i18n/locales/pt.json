@@ -873,6 +873,7 @@
     "close": "Fechar",
     "saved": "Salvo",
     "saving": "Salvando...",
+    "sending": "Enviando...",
     "page": "Página {{page}}",
     "generatedOn": "Gerado em",
     "generatedBy": "Gerado por",
@@ -1192,5 +1193,20 @@
   },
   "mindmap": {
     "title": "Mapa Mental"
+  },
+  "errors": {
+    "analysisNotFound": "Análise não encontrada",
+    "startNewAnalysis": "Inicie uma nova análise",
+    "fetchError": "Erro ao buscar análise",
+    "tryAgainLater": "Tente novamente mais tarde",
+    "shareError": "Erro ao compartilhar",
+    "tryAgain": "Tente novamente",
+    "pdfError": "Erro ao gerar PDF",
+    "contentNotReady": "O conteúdo não está pronto para download",
+    "pdfGenerationError": "Erro ao gerar PDF",
+    "saveError": "Erro ao salvar análise",
+    "missingData": "Dados insuficientes para salvar",
+    "chatError": "Desculpe, não consegui processar sua mensagem.",
+    "chatErrorDetail": "Não foi possível obter uma resposta da IA."
   }
 }

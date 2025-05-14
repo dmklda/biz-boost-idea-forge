@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send } from "lucide-react";
+import { Send, AlertTriangle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface AdvancedAnalysisChatProps {
   ideaId: string;
@@ -17,6 +19,7 @@ interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
+  error?: boolean;
 }
 
 export function AdvancedAnalysisChat({
@@ -27,6 +30,7 @@ export function AdvancedAnalysisChat({
 }: AdvancedAnalysisChatProps) {
   const { t } = useTranslation();
   const { authState } = useAuth();
+  const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "initial",
@@ -38,47 +42,80 @@ export function AdvancedAnalysisChat({
     },
   ]);
   const [input, setInput] = useState("");
+  const [isSending, setIsSending] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Scroll to bottom on new messages
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const handleSend = async () => {
+    if (!input.trim() || isSending) return;
 
+    const userInput = input.trim();
     const newMessage: Message = {
       id: Date.now().toString(),
       role: "user",
-      content: input,
+      content: userInput,
     };
 
     setMessages((prevMessages) => [...prevMessages, newMessage]);
-    const currentInput = input; // Store input before clearing
     setInput("");
+    setIsSending(true);
 
-    // Simulate AI response (replace with actual API call)
-    setTimeout(() => {
+    try {
+      const { data: aiResult, error: aiError } = await supabase.functions.invoke(
+        "ai-chat-handler",
+        {
+          body: {
+            userInput: userInput,
+            ideaId: ideaId,
+            ideaDetails: idea,
+            analysisData: analysis,
+            chatHistory: messages.slice(-5),
+          },
+        }
+      );
+
+      if (aiError) {
+        throw aiError;
+      }
+
       const aiResponse: Message = {
         id: Date.now().toString() + "-ai",
         role: "assistant",
-        content: currentInput, // Removed hardcoded prefix, AI should provide full response
+        content: aiResult?.reply || t("errors.chatError", "Desculpe, não consegui processar sua mensagem."),
       };
       setMessages((prevMessages) => [...prevMessages, aiResponse]);
-    }, 1000);
+
+    } catch (error) {
+      console.error("Error calling AI chat handler:", error);
+      const errorResponse: Message = {
+        id: Date.now().toString() + "-error",
+        role: "assistant",
+        content: t("errors.chatError", "Desculpe, ocorreu um erro ao conectar com a IA. Tente novamente."),
+        error: true,
+      };
+      setMessages((prevMessages) => [...prevMessages, errorResponse]);
+      toast({
+        variant: "destructive",
+        title: t("common.errorOccurred", "Ocorreu um erro"),
+        description: t("errors.chatErrorDetail", "Não foi possível obter uma resposta da IA."),
+      });
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const chatMessages = messages.map((message) => {
     const isUser = message.role === "user";
     return (
       <div key={message.id} className={`flex gap-3 ${isUser ? "flex-row-reverse" : ""}`}>
-        <div className={`flex-shrink-0 h-8 w-8 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center ${isUser ? "bg-brand-blue text-white" : "bg-gray-200"}`}>
+        <div className={`flex-shrink-0 h-8 w-8 rounded-full overflow-hidden flex items-center justify-center ${isUser ? "bg-brand-blue text-white" : "bg-gray-200"}`}>
           {isUser ? (
-            // Use initials instead of avatarUrl
             <span className="text-sm font-medium">{authState.user?.email?.charAt(0).toUpperCase() || "U"}</span>
           ) : (
             <img
@@ -91,9 +128,14 @@ export function AdvancedAnalysisChat({
         <div className="flex-1">
           <div
             className={`rounded-xl px-4 py-2 ${
-              isUser ? "bg-brand-blue text-white" : "bg-gray-100 text-gray-800"
+              isUser
+                ? "bg-brand-blue text-white"
+                : message.error 
+                  ? "bg-red-100 text-red-700 border border-red-300"
+                  : "bg-gray-100 text-gray-800"
             }`}
           >
+            {message.error && <AlertTriangle className="inline-block h-4 w-4 mr-2 text-red-500" />}
             {message.content}
           </div>
         </div>
@@ -122,14 +164,21 @@ export function AdvancedAnalysisChat({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
+              if (e.key === "Enter" && !isSending) {
                 handleSend();
               }
             }}
+            disabled={isSending}
           />
-          <Button onClick={handleSend}>
-            <Send className="h-4 w-4 mr-2" />
-            {t("common.send", "Enviar")}
+          <Button onClick={handleSend} disabled={isSending}>
+            {isSending ? (
+              <>{t("common.sending", "Enviando...")}</>
+            ) : (
+              <>
+                <Send className="h-4 w-4 mr-2" />
+                {t("common.send", "Enviar")}
+              </>
+            )}
           </Button>
         </div>
       </div>
