@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Send } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const SubmitSuccessCase = () => {
   const { t } = useTranslation();
@@ -58,10 +57,7 @@ const SubmitSuccessCase = () => {
       // Show success message
       setIsSubmitting(false);
       setOpen(false);
-      toast({
-        title: t("successCases.submitSuccess.title"),
-        description: t("successCases.submitSuccess.description"),
-      });
+      toast.success(t("successCases.submitSuccess.title") + ". " + t("successCases.submitSuccess.description"));
       
       // Reset form
       setFormData({
@@ -73,11 +69,7 @@ const SubmitSuccessCase = () => {
     } catch (error) {
       console.error("Error sending email:", error);
       setIsSubmitting(false);
-      toast({
-        title: "Error",
-        description: "There was a problem submitting your story. Please try again.",
-        variant: "destructive"
-      });
+      toast.error("Error: " + "There was a problem submitting your story. Please try again.");
     }
   };
 

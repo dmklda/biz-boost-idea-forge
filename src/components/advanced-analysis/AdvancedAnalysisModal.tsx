@@ -238,11 +238,8 @@ export function AdvancedAnalysisModal({
           } else if (currentAttempts >= 10) {
             clearInterval(interval);
             setPollInterval(null);
-            toast({
-              title: t('errors.analysisNotFound', "Análise não encontrada"),
-              description: t('errors.startNewAnalysis', "Inicie uma nova análise"),
-              variant: "destructive",
-            });
+            toast.error(t('errors.analysisNotFound', "Análise não encontrada") + ". " + 
+                      t('errors.startNewAnalysis', "Inicie uma nova análise"));
             setLoading(false);
             console.log("Failed to find analysis after maximum attempts");
           }
@@ -259,11 +256,8 @@ export function AdvancedAnalysisModal({
       setProgress(100);
     } catch (error) {
       console.error("Error fetching advanced analysis:", error);
-      toast({
-        title: t('errors.fetchError', "Erro ao buscar análise"),
-        description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
-        variant: "destructive",
-      });
+      toast.error(t('errors.fetchError', "Erro ao buscar análise") + ". " + 
+                t('errors.tryAgainLater', "Tente novamente mais tarde"));
       setLoading(false);
     }
   };
@@ -281,45 +275,33 @@ export function AdvancedAnalysisModal({
           url: shareUrl
         });
         
-        toast({
-          title: t('common.shared', "Compartilhado!"),
-          description: t('share.linkShared', "Conteúdo compartilhado com sucesso"),
-        });
+        toast.success(t('common.shared', "Compartilhado!") + ". " + 
+                    t('share.linkShared', "Conteúdo compartilhado com sucesso"));
       } else {
         // Fallback to clipboard
         await navigator.clipboard.writeText(shareUrl);
         
-        toast({
-          title: t('common.copied', "Link copiado!"),
-          description: t('share.linkCopied', "Link copiado para a área de transferência"),
-        });
+        toast.success(t('common.copied', "Link copiado!") + ". " + 
+                    t('share.linkCopied', "Link copiado para a área de transferência"));
       }
     } catch (error) {
       console.error("Error sharing:", error);
-      toast({
-        title: t('errors.shareError', "Erro ao compartilhar"),
-        description: t('errors.tryAgain', "Tente novamente mais tarde"),
-        variant: "destructive",
-      });
+      toast.error(t('errors.shareError', "Erro ao compartilhar") + ". " + 
+                t('errors.tryAgain', "Tente novamente mais tarde"));
     }
   };
 
   const handleDownloadPDF = async () => {
     if (!contentRef) {
-      toast({
-        title: t('errors.pdfError', "Erro ao gerar PDF"),
-        description: t('errors.contentNotReady', "O conteúdo não está pronto para download"),
-        variant: "destructive",
-      });
+      toast.error(t('errors.pdfError', "Erro ao gerar PDF") + ". " + 
+                t('errors.contentNotReady', "O conteúdo não está pronto para download"));
       return;
     }
 
     try {
       setIsGeneratingPdf(true);
-      toast({
-        title: t('common.preparing', "Preparando PDF..."),
-        description: t('pdf.generating', "Este processo pode levar alguns segundos"),
-      });
+      toast.info(t('common.preparing', "Preparando PDF...") + ". " + 
+                t('pdf.generating', "Este processo pode levar alguns segundos"));
 
       // Create a temporary container to render the content for PDF
       const pdfContainer = document.createElement('div');
@@ -481,19 +463,14 @@ export function AdvancedAnalysisModal({
           const fileName = `analise-avancada-${idea?.title || 'ideia'}.pdf`.replace(/\s+/g, '-').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
           pdf.save(fileName);
           
-          toast({
-            title: t('pdf.downloadComplete', "Download Concluído"),
-            description: t('pdf.pdfReady', "Seu PDF está pronto"),
-          });
+          toast.success(t('pdf.downloadComplete', "Download Concluído") + ". " +
+                      t('pdf.pdfReady', "Seu PDF está pronto"));
         } catch (error) {
           console.error("Error generating PDF:", error);
           document.body.removeChild(pdfContainer);
           
-          toast({
-            title: t('errors.pdfGenerationError', "Erro ao gerar PDF"),
-            description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
-            variant: "destructive",
-          });
+          toast.error(t('errors.pdfGenerationError', "Erro ao gerar PDF") + ". " +
+                    t('errors.tryAgainLater', "Tente novamente mais tarde"));
         } finally {
           setIsGeneratingPdf(false);
         }
@@ -502,11 +479,8 @@ export function AdvancedAnalysisModal({
     } catch (error) {
       console.error("Error downloading PDF:", error);
       setIsGeneratingPdf(false);
-      toast({
-        title: t('errors.pdfError', "Erro ao gerar PDF"),
-        description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
-        variant: "destructive",
-      });
+      toast.error(t('errors.pdfError', "Erro ao gerar PDF") + ". " +
+                t('errors.tryAgainLater', "Tente novamente mais tarde"));
     }
   };
 
@@ -520,11 +494,8 @@ export function AdvancedAnalysisModal({
 
   const handleSaveAnalysis = async () => {
     if (!analysis || !idea || !authState.isAuthenticated) {
-      toast({
-        title: t('errors.saveError', "Erro ao salvar análise"),
-        description: t('errors.missingData', "Dados insuficientes para salvar"),
-        variant: "destructive",
-      });
+      toast.error(t('errors.saveError', "Erro ao salvar análise") + ". " +
+                t('errors.missingData', "Dados insuficientes para salvar"));
       return;
     }
 
@@ -547,10 +518,8 @@ export function AdvancedAnalysisModal({
 
         if (updateError) throw updateError;
 
-        toast({
-          title: t('common.updated', "Atualizado!"),
-          description: t('analysis.alreadySaved', "Esta análise já estava salva e foi atualizada"),
-        });
+        toast.success(t('common.updated', "Atualizado!") + ". " +
+                    t('analysis.alreadySaved', "Esta análise já estava salva e foi atualizada"));
       } else {
         // Save new
         const { error: saveError } = await supabase
@@ -565,20 +534,15 @@ export function AdvancedAnalysisModal({
 
         if (saveError) throw saveError;
 
-        toast({
-          title: t('common.saved', "Salvo!"),
-          description: t('analysis.saveSuccess', "Análise avançada salva com sucesso"),
-        });
+        toast.success(t('common.saved', "Salvo!") + ". " +
+                    t('analysis.saveSuccess', "Análise avançada salva com sucesso"));
       }
 
       setIsSaved(true);
     } catch (error) {
       console.error("Error saving analysis:", error);
-      toast({
-        title: t('errors.saveError', "Erro ao salvar análise"),
-        description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
-        variant: "destructive",
-      });
+      toast.error(t('errors.saveError', "Erro ao salvar análise") + ". " +
+                t('errors.tryAgainLater', "Tente novamente mais tarde"));
     } finally {
       setIsSaving(false);
     }

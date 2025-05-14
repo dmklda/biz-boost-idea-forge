@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,11 +58,8 @@ export function SavedAnalysesList() {
       setAnalyses(data as SavedAnalysis[]);
     } catch (error) {
       console.error("Error fetching saved analyses:", error);
-      toast({
-        title: t('errors.fetchError', "Erro ao carregar análises"),
-        description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
-        variant: "destructive",
-      });
+      toast.error(t('errors.fetchError', "Erro ao carregar análises") + ". " +
+                t('errors.tryAgainLater', "Tente novamente mais tarde"));
     } finally {
       setLoading(false);
     }
@@ -84,17 +80,12 @@ export function SavedAnalysesList() {
       // Update local state
       setAnalyses(analyses.filter(analysis => analysis.id !== id));
       
-      toast({
-        title: t('common.deleted', "Excluído"),
-        description: t('analysis.deleteSuccess', "Análise removida com sucesso"),
-      });
+      toast.success(t('common.deleted', "Excluído") + ". " +
+                  t('analysis.deleteSuccess', "Análise removida com sucesso"));
     } catch (error) {
       console.error("Error deleting analysis:", error);
-      toast({
-        title: t('errors.deleteError', "Erro ao excluir análise"),
-        description: t('errors.tryAgainLater', "Tente novamente mais tarde"),
-        variant: "destructive",
-      });
+      toast.error(t('errors.deleteError', "Erro ao excluir análise") + ". " +
+                t('errors.tryAgainLater', "Tente novamente mais tarde"));
     }
   };
 
