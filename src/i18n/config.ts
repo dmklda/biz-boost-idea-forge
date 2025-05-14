@@ -31,7 +31,11 @@ i18n
     },
     returnNull: false,
     returnEmptyString: false,
-    returnObjects: false
+    returnObjects: false,
+    parseMissingKeyHandler: (key) => {
+      console.warn(`Missing translation key: ${key}`);
+      return key.split('.').pop() || key;
+    }
   });
 
 // Export the current language for use in other files
