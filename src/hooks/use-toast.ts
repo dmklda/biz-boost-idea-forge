@@ -3,7 +3,7 @@ import { toast as sonnerToast } from "sonner";
 import type { ToasterProps } from "sonner";
 
 // Export the correct type
-export type ToastProps = Parameters<typeof sonnerToast>[0];
+export type ToastProps = Parameters<typeof sonnerToast.success>[0] | Parameters<typeof sonnerToast>[0];
 
 // Create a function that can be called directly and also has methods
 // This pattern allows both toast() and toast.success() to work
@@ -17,11 +17,38 @@ const createToast = () => {
     }
   };
   
-  // Add method properties
-  toast.success = sonnerToast.success;
-  toast.error = sonnerToast.error;
-  toast.info = sonnerToast.info;
-  toast.warning = sonnerToast.warning;
+  // Add method properties that correctly handle object parameters
+  toast.success = (props: ToastProps | string) => {
+    if (typeof props === "string") {
+      return sonnerToast.success(props);
+    } else {
+      return sonnerToast.success(props);
+    }
+  };
+
+  toast.error = (props: ToastProps | string) => {
+    if (typeof props === "string") {
+      return sonnerToast.error(props);
+    } else {
+      return sonnerToast.error(props);
+    }
+  };
+
+  toast.info = (props: ToastProps | string) => {
+    if (typeof props === "string") {
+      return sonnerToast.info(props);
+    } else {
+      return sonnerToast.info(props);
+    }
+  };
+
+  toast.warning = (props: ToastProps | string) => {
+    if (typeof props === "string") {
+      return sonnerToast.warning(props);
+    } else {
+      return sonnerToast.warning(props);
+    }
+  };
   
   return toast;
 };
