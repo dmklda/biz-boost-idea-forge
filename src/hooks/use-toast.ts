@@ -1,8 +1,9 @@
 
 import { toast as sonnerToast } from "sonner";
-import { ToastProps } from "sonner";
+import type { ToasterProps } from "sonner";
 
-export type { ToastProps };
+// Export the correct type
+export type ToastProps = ToasterProps["toast"];
 
 // Create a function that can be called directly and also has methods
 // This pattern allows both toast() and toast.success() to work
