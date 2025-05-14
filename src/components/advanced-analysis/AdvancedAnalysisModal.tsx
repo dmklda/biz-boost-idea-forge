@@ -811,14 +811,6 @@ export function AdvancedAnalysisModal({
                   </Button>
                 </>
               )}
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => onOpenChange(false)}
-                className={isDarkMode ? "hover:bg-slate-800" : ""}
-              >
-                <X className="h-4 w-4" />
-              </Button>
             </div>
           </div>
         </DialogHeader>
