@@ -1,128 +1,87 @@
 
-import { useState, useEffect } from "react";
+import React from "react";
 import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Check, Tag, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { TagType, TagBadge } from "@/components/ideas";
 
-interface TagsFilterProps {
+export interface TagType {
+  id: string;
+  name: string;
+  color: string;
+}
+
+export const TagsFilter = ({
+  allTags,
+  selectedTags,
+  onTagsChange
+}: {
   allTags: TagType[];
   selectedTags: TagType[];
   onTagsChange: (tags: TagType[]) => void;
-  maxTagsShown?: number;
-}
-
-export function TagsFilter({ 
-  allTags, 
-  selectedTags, 
-  onTagsChange, 
-  maxTagsShown = 20 
-}: TagsFilterProps) {
+}) => {
   const { t } = useTranslation();
-  const [showMore, setShowMore] = useState(false);
-  const [filteredTags, setFilteredTags] = useState<TagType[]>(allTags);
   
-  useEffect(() => {
-    // Always ensure the filtered tags include the selected ones
-    const uniqueTags = new Set([...selectedTags.map(tag => tag.id)]);
-    const availableTags = allTags.filter(tag => !uniqueTags.has(tag.id));
+  const toggleTag = (tag: TagType) => {
+    const isSelected = selectedTags.some(t => t.id === tag.id);
     
-    setFilteredTags(availableTags);
-  }, [allTags, selectedTags]);
-  
-  const handleSelectTag = (tag: TagType) => {
-    onTagsChange([...selectedTags, tag]);
+    if (isSelected) {
+      // Remove tag
+      onTagsChange(selectedTags.filter(t => t.id !== tag.id));
+    } else {
+      // Add tag
+      onTagsChange([...selectedTags, tag]);
+    }
   };
   
-  const handleRemoveTag = (tagIdToRemove: string) => {
-    onTagsChange(selectedTags.filter(tag => tag.id !== tagIdToRemove));
-  };
-  
-  const handleClearAll = () => {
+  const clearAllTags = () => {
     onTagsChange([]);
   };
   
-  const visibleTags = showMore ? filteredTags : filteredTags.slice(0, maxTagsShown);
-  
-  if (allTags.length === 0) {
-    return (
-      <div className="text-center p-4">
-        <p className="text-muted-foreground">{t('tags.noTags', "Nenhuma tag encontrada")}</p>
-      </div>
-    );
-  }
-  
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <span className="text-sm font-medium">{t('tags.selectedTags', "Tags selecionadas")}:</span>
-        
-        {selectedTags.length > 0 ? (
-          <>
-            <div className="flex flex-wrap gap-2">
-              {selectedTags.map(tag => (
-                <TagBadge
-                  key={tag.id}
-                  tag={tag}
-                  size="md"
-                  onRemove={() => handleRemoveTag(tag.id)}
-                />
-              ))}
-            </div>
-            
-            <button
-              onClick={handleClearAll}
-              className="text-xs text-muted-foreground hover:text-foreground ml-auto"
-            >
-              {t('tags.clearAll', "Limpar todos")}
-            </button>
-          </>
-        ) : (
-          <span className="text-sm text-muted-foreground">{t('tags.noneSelected', "Nenhuma selecionada")}</span>
+    <div>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-medium">
+          <Tag className="h-4 w-4 inline mr-1" />
+          {t('ideas.filterByTags', "Filtrar por tags")}
+        </h3>
+        {selectedTags.length > 0 && (
+          <button 
+            onClick={clearAllTags}
+            className="text-xs text-muted-foreground hover:text-foreground flex items-center"
+          >
+            <X className="h-3 w-3 mr-1" />
+            {t('common.clearAll', "Limpar tudo")}
+          </button>
         )}
       </div>
       
-      <div className="border-t pt-4">
-        <div className="text-sm font-medium mb-3">
-          {t('tags.availableTags', "Tags disponíveis")}:
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          {visibleTags.length > 0 ? (
-            <>
-              {visibleTags.map(tag => (
-                <Badge
-                  key={tag.id}
-                  className="cursor-pointer hover:bg-opacity-80 transition-all"
-                  style={{ 
-                    backgroundColor: `${tag.color}30`, 
-                    color: tag.color
-                  }}
-                  onClick={() => handleSelectTag(tag)}
-                >
-                  {tag.name}
-                </Badge>
-              ))}
-              
-              {filteredTags.length > maxTagsShown && (
-                <button
-                  onClick={() => setShowMore(!showMore)}
-                  className="text-xs text-muted-foreground hover:text-foreground underline"
-                >
-                  {showMore 
-                    ? t('tags.showLess', "Mostrar menos") 
-                    : t('tags.showMore', `Mostrar mais (${filteredTags.length - maxTagsShown})`)}
-                </button>
-              )}
-            </>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              {t('tags.allSelected', "Todas as tags já foram selecionadas")}
-            </p>
-          )}
-        </div>
+      <div className="flex flex-wrap gap-2">
+        {allTags.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            {t('ideas.noTagsAvailable', "Nenhuma tag disponível")}
+          </p>
+        ) : (
+          allTags.map(tag => {
+            const isSelected = selectedTags.some(t => t.id === tag.id);
+            return (
+              <Badge
+                key={tag.id}
+                variant={isSelected ? "default" : "outline"}
+                className="cursor-pointer"
+                onClick={() => toggleTag(tag)}
+                style={{
+                  backgroundColor: isSelected ? tag.color : 'transparent',
+                  borderColor: tag.color,
+                  color: isSelected ? 'white' : 'inherit'
+                }}
+              >
+                {isSelected && <Check className="h-3 w-3 mr-1" />}
+                {tag.name}
+              </Badge>
+            );
+          })
+        )}
       </div>
     </div>
   );
-}
+};
