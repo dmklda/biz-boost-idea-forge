@@ -1,25 +1,32 @@
+
 import { toast as sonnerToast } from "sonner";
 import { ToastProps } from "sonner";
 
 export type ToastActionElement = React.ReactElement<HTMLButtonElement>;
 
-// Re-export toast from sonner with enhanced functionality
-export const toast = {
-  ...sonnerToast,
-  // Keep sonner's original methods
-  success: sonnerToast.success,
-  error: sonnerToast.error,
-  info: sonnerToast.info,
-  warning: sonnerToast.warning,
-  // Support direct invocation for backward compatibility
-  (props: ToastProps | string): void {
+// Create a function that can be called directly and also has methods
+// This pattern allows both toast() and toast.success() to work
+const createToast = () => {
+  // Create the base function
+  const toast = (props: ToastProps | string) => {
     if (typeof props === "string") {
-      sonnerToast(props);
+      return sonnerToast(props);
     } else {
-      sonnerToast(props);
+      return sonnerToast(props);
     }
-  }
+  };
+  
+  // Add method properties
+  toast.success = sonnerToast.success;
+  toast.error = sonnerToast.error;
+  toast.info = sonnerToast.info;
+  toast.warning = sonnerToast.warning;
+  
+  return toast;
 };
+
+// Export the toast with all its methods
+export const toast = createToast();
 
 // Use-toast hook for compatibility with UI
 export function useToast() {

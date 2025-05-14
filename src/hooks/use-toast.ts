@@ -1,27 +1,32 @@
+
 import { toast as sonnerToast } from "sonner";
 import { ToastProps } from "sonner";
 
 export type { ToastProps };
 
-// Enhanced toast with fallback to direct invocation
-export const toast = Object.assign(
-  // Direct invocation
-  (props: ToastProps | string): void => {
+// Create a function that can be called directly and also has methods
+// This pattern allows both toast() and toast.success() to work
+const createToast = () => {
+  // Create the base function
+  const toast = (props: ToastProps | string) => {
     if (typeof props === "string") {
-      sonnerToast(props);
+      return sonnerToast(props);
     } else {
-      sonnerToast(props);
+      return sonnerToast(props);
     }
-  },
-  // Methods
-  {
-    success: sonnerToast.success,
-    error: sonnerToast.error,
-    info: sonnerToast.info,
-    warning: sonnerToast.warning,
-    // Add any other methods from sonner toast here
-  }
-);
+  };
+  
+  // Add method properties
+  toast.success = sonnerToast.success;
+  toast.error = sonnerToast.error;
+  toast.info = sonnerToast.info;
+  toast.warning = sonnerToast.warning;
+  
+  return toast;
+};
+
+// Export the toast with all its methods
+export const toast = createToast();
 
 // Compatibility hook to match shadcn's useToast interface
 export function useToast() {
