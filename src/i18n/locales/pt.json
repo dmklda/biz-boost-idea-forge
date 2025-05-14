@@ -869,7 +869,15 @@
     "share": "Compartilhar",
     "pdf": "PDF",
     "notSpecified": "Não especificado",
-    "errorOccurred": "Ocorreu um erro"
+    "errorOccurred": "Ocorreu um erro",
+    "close": "Fechar",
+    "saved": "Salvo",
+    "saving": "Salvando...",
+    "page": "Página {{page}}",
+    "generatedOn": "Gerado em",
+    "generatedBy": "Gerado por",
+    "generatedAt": "Gerado em",
+    "generatedBy": "Gerado por"
   },
   "countries": {
     "global": "Global",
@@ -891,7 +899,11 @@
     "title": "Estado do sistema",
     "active": "Todos os sistemas ativos",
     "partial": "Problemas parciais",
-    "down": "Sistema inoperante"
+    "down": "Sistema inoperante",
+    "lastUpdated": "Última atualização",
+    "lastUpdatedDesc": "Última atualização do sistema",
+    "lastUpdatedAt": "Última atualização em",
+    "lastUpdatedBy": "Última atualização por"
   },
   "formSteps": {
     "marketAnalysis": "Análise de Mercado",
@@ -979,14 +991,20 @@
     "success": {
       "created": "Tag criada com sucesso",
       "updated": "Tag atualizada com sucesso",
-      "deleted": "Tag excluída com sucesso"
+      "deleted": "Tag excluída com sucesso",
+      "deletedDesc": "A tag foi excluída com sucesso",
+      "createdDesc": "A tag foi criada com sucesso",
+      "updatedDesc": "A tag foi atualizada com sucesso"
     },
     "errors": {
       "emptyName": "O nome da tag não pode estar vazio",
       "duplicate": "Já existe uma tag com este nome",
       "createFailed": "Falha ao criar tag",
       "updateFailed": "Falha ao atualizar tag",
-      "deleteFailed": "Falha ao excluir tag"
+      "deleteFailed": "Falha ao excluir tag",
+      "createFailedDesc": "A tag não foi criada com sucesso",
+      "updateFailedDesc": "A tag não foi atualizada com sucesso",
+      "deleteFailedDesc": "A tag não foi excluída com sucesso"
     }
   },
   "drafts": {
@@ -998,7 +1016,8 @@
     "empty": "Você ainda não tem rascunhos salvos",
     "noResults": "Nenhum rascunho foi encontrado para sua pesquisa",
     "errors": {
-      "fetchFailed": "Erro ao carregar os rascunhos"
+      "fetchFailed": "Erro ao carregar os rascunhos",
+      "fetchFailedDesc": "Os rascunhos não foram carregados com sucesso"
     },
     "table": {
       "title": "Título",
@@ -1032,7 +1051,8 @@
       "e-mail": "E-mail",
       "telefone": "Telefone",
       "país": "País",
-      "língua": "Língua preferida"
+      "língua": "Língua preferida",
+      "línguaDesc": "A língua preferida é a língua que você usa para interagir com o sistema"
     },
     "configurações de Conta": {
       "title": "Definições da conta",
@@ -1042,14 +1062,17 @@
       "confirmPassword": "Confirmar nova palavra-passe",
       "twoFactor": "Autenticação de dois fatores",
       "enabled": "Habilitado",
-      "disabled": "Desativado"
+      "disabled": "Desativado",
+      "enabledDesc": "A autenticação de dois fatores está habilitada",
+      "disabledDesc": "A autenticação de dois fatores está desabilitada"
     },
     "notificações": {
       "title": "Preferências de Notificação",
       "análise": "Notificações de Análise",
       "marketing": "Notificações de Marketing",
       "newsletter": "Boletim informativo [TRADUZIR]",
-      "updates": "Atualizações do Produto"
+      "updates": "Atualizações do Produto",
+      "updatesDesc": "Receba notificações sobre atualizações do produto"
     },
     "zona de perigo": {
       "título": "Zona de Perigo",
@@ -1159,7 +1182,9 @@
       "next90Days": "Próximos 90 Dias",
       "recommendedTools": "Ferramentas Recomendadas",
       "category": "Categoria"
-    }
+    },
+    "chatWelcome": "Olá! Como posso te ajudar a entender melhor sua análise avançada?",
+    "chatPlaceholder": "Digite sua mensagem..."
   },
   "analysis": {
     "savedAnalyses": "Análises Avançadas Salvas",

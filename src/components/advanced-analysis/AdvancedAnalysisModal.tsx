@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -764,11 +765,23 @@ export function AdvancedAnalysisModal({
                   >
                     <Save className={cn("h-4 w-4", isSaving && "animate-pulse")} />
                     <span className="hidden sm:inline ml-1">
-                      {isSaved 
-                        ? t('common.saved', "Salvo") 
-                        : isSaving 
-                          ? t('common.saving', "Salvando...") 
-                          : t('common.save', "Salvar")}
+                      {((): string => {
+                        const logPrefix = "[SaveButtonDebug]";
+                        console.log(`${logPrefix} isSaved: ${isSaved}, isSaving: ${isSaving}`);
+                        if (isSaved) {
+                          const translatedSaved = t('common.saved', "Salvo");
+                          console.log(`${logPrefix} t('common.saved'):`, translatedSaved);
+                          return translatedSaved;
+                        } else if (isSaving) {
+                          const translatedSaving = t('common.saving', "Salvando...");
+                          console.log(`${logPrefix} t('common.saving'):`, translatedSaving);
+                          return translatedSaving;
+                        } else {
+                          const translatedSave = t('common.save', "Salvar");
+                          console.log(`${logPrefix} t('common.save'):`, translatedSave);
+                          return translatedSave;
+                        }
+                      })()}
                     </span>
                   </Button>
                   <Button 
@@ -811,6 +824,16 @@ export function AdvancedAnalysisModal({
                   </Button>
                 </>
               )}
+              <DialogClose asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className={isDarkMode ? "hover:bg-slate-800" : "hover:bg-slate-100"}
+                >
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">{t('common.close', "Fechar")}</span>
+                </Button>
+              </DialogClose>
             </div>
           </div>
         </DialogHeader>

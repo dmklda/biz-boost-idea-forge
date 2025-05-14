@@ -58,6 +58,7 @@ export function AdvancedAnalysisChat({
     };
 
     setMessages((prevMessages) => [...prevMessages, newMessage]);
+    const currentInput = input; // Store input before clearing
     setInput("");
 
     // Simulate AI response (replace with actual API call)
@@ -65,7 +66,7 @@ export function AdvancedAnalysisChat({
       const aiResponse: Message = {
         id: Date.now().toString() + "-ai",
         role: "assistant",
-        content: `Resposta da IA para: ${input}`,
+        content: currentInput, // Removed hardcoded prefix, AI should provide full response
       };
       setMessages((prevMessages) => [...prevMessages, aiResponse]);
     }, 1000);
