@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,6 +33,7 @@ import { ChartContainer, ChartTooltipContent, ChartLegendContent } from "@/compo
 import { IdeaForm } from "@/components/IdeaForm";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useRefreshAnalyses } from "@/hooks/use-refresh-analyses";
 
 const DashboardHome = () => {
   const { t } = useTranslation();
@@ -163,6 +163,9 @@ const DashboardHome = () => {
       setIsLoading(false);
     }
   }, [user]);
+  
+  // Use the refresh hook to update dashboard data when analysis is updated
+  useRefreshAnalyses(fetchUserData, [fetchUserData]);
   
   useEffect(() => {
     fetchUserData();
