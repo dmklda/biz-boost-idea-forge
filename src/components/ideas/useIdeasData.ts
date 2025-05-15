@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { TagType } from "./TagsFilter";
 import { Idea } from "./IdeasGrid";
@@ -11,7 +11,7 @@ export const useIdeasData = (userId: string | undefined) => {
   const [selectedTags, setSelectedTags] = useState<TagType[]>([]);
   const [allTags, setAllTags] = useState<TagType[]>([]);
   
-  const fetchIdeas = async () => {
+  const fetchIdeas = useCallback(async () => {
     if (!userId) return;
     
     try {
@@ -79,9 +79,9 @@ export const useIdeasData = (userId: string | undefined) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
   
-  const fetchTags = async () => {
+  const fetchTags = useCallback(async () => {
     if (!userId) return;
     
     try {
@@ -100,14 +100,14 @@ export const useIdeasData = (userId: string | undefined) => {
     } catch (error) {
       console.error("Error fetching tags:", error);
     }
-  };
+  }, [userId]);
   
   useEffect(() => {
     if (userId) {
       fetchIdeas();
       fetchTags();
     }
-  }, [userId]);
+  }, [userId, fetchIdeas, fetchTags]);
   
   const handleTagsChange = (tags: TagType[]) => {
     setSelectedTags(tags);
