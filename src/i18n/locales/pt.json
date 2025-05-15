@@ -1283,11 +1283,70 @@
     "tryAgain": "Os resultados solicitados não foram encontrados. Tente analisar sua ideia novamente.",
     "backToDashboard": "Voltar ao Dashboard",
     "viability": "Viabilidade",
+    "notSpecified": "Não especificado",
+    "noItems": "Nenhum item identificado",
+    "noStrengths": "Nenhum ponto forte identificado",
+    "noWeaknesses": "Nenhum ponto fraco identificado",
+    "noCompetitors": "Nenhum concorrente específico identificado",
+    "strengths": "Pontos Fortes",
+    "weaknesses": "Pontos Fracos",
+    "tabs": {
+      "summary": "Resumo",
+      "swot": "SWOT",
+      "market": "Mercado",
+      "competitors": "Concorrentes",
+      "financial": "Financeiro",
+      "recommendations": "Recomendações"
+    },
     "status": {
       "label": "Status",
       "viable": "Viável",
+      "viável": "Viável",
       "moderate": "Moderado",
+      "moderado": "Moderado",
       "low": "Baixo"
+    },
+    "summaryTitle": "Resumo da Análise",
+    "ideaDescription": "Descrição da Ideia",
+    "targetAudience": "Público-Alvo",
+    "problemSolved": "Problema Resolvido",
+    "overallScore": "Pontuação Geral",
+    "scoreExplanation": "Baseado na análise geral da ideia",
+    "keyStrengths": "Principais Pontos Fortes",
+    "keyWeaknesses": "Principais Pontos Fracos",
+    "swotAnalysis": "Análise SWOT",
+    "swot": {
+      "strengths": "Forças",
+      "weaknesses": "Fraquezas",
+      "opportunities": "Oportunidades",
+      "threats": "Ameaças"
+    },
+    "marketAnalysis": "Análise de Mercado",
+    "market": {
+      "size": "Tamanho do Mercado",
+      "audience": "Perfil do Público-Alvo",
+      "growth": "Potencial de Crescimento",
+      "barriers": "Barreiras de Entrada"
+    },
+    "competitorAnalysis": "Análise de Concorrentes",
+    "competitors": {
+      "keyCompetitors": "Principais Concorrentes",
+      "advantage": "Vantagem Competitiva",
+      "gaps": "Lacunas de Mercado"
+    },
+    "financialAnalysis": "Análise Financeira",
+    "financial": {
+      "revenue": "Potencial de Receita",
+      "investment": "Investimento Inicial",
+      "breakEven": "Estimativa de Break-Even",
+      "funding": "Sugestões de Financiamento"
+    },
+    "recommendationsTitle": "Recomendações",
+    "recommendations": {
+      "actionItems": "Ações Recomendadas",
+      "nextSteps": "Próximos Passos",
+      "challenges": "Desafios Potenciais",
+      "resources": "Recursos Sugeridos"
     }
   }
 }
