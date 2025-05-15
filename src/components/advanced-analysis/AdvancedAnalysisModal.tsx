@@ -180,84 +180,69 @@ export function AdvancedAnalysisModal({
     setAttempts(0); // Reset attempts counter
     
     try {
-      // First check if analysis already exists
-      console.log("Checking for existing analysis for idea:", ideaId);
-      const { data, error } = await supabase
-        .from("advanced_analyses")
-        .select("*")
-        .eq("idea_id", ideaId)
-        .eq("user_id", authState.user?.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      // Sempre inicia uma nova análise
+      console.log("Iniciando geração de nova análise avançada para a ideia:", ideaId);
+      
+      // Clear any existing interval
+      if (pollInterval !== null) {
+        clearInterval(pollInterval);
+      }
+      
+      // Iniciar análise
+      try {
+        console.log("Iniciando geração de análise avançada...");
+        const response = await supabase.functions.invoke("advanced-analysis", {
+          body: { ideaId }
+        });
 
-      if (error) {
-        console.log("Advanced analysis not found yet, will start polling...");
-        
-        // Clear any existing interval and start a new one
-        if (pollInterval !== null) {
-          clearInterval(pollInterval);
+        if (response.error) {
+          throw new Error(response.error.message || "Error starting analysis");
         }
-        
-        // First make one call to generate the analysis
-        try {
-          console.log("Initiating advanced analysis generation...");
-          const response = await supabase.functions.invoke("advanced-analysis", {
-            body: { ideaId }
-          });
 
-          if (response.error) {
-            throw new Error(response.error.message || "Error starting analysis");
-          }
-
-          console.log("Analysis generation initiated:", response);
-        } catch (error) {
-          console.error("Error initiating advanced analysis:", error);
-          // Continue polling anyway, as the analysis might still be generated
-        }
-        
-        // Start polling for results
-        const interval = window.setInterval(async () => {
-          const currentAttempts = attempts + 1;
-          setAttempts(currentAttempts);
-          
-          console.log(`Polling for analysis results (attempt ${currentAttempts}/10)...`);
-          
-          const { data: pollData, error: pollError } = await supabase
-            .from("advanced_analyses")
-            .select("*")
-            .eq("idea_id", ideaId)
-            .eq("user_id", authState.user?.id)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          
-          if (pollData) {
-            clearInterval(interval);
-            setPollInterval(null);
-            setAnalysis(pollData as AdvancedAnalysis);
-            setLoading(false);
-            setProgress(100);
-            console.log("Analysis found:", pollData);
-          } else if (currentAttempts >= 10) {
-            clearInterval(interval);
-            setPollInterval(null);
-            toast.error(t('errors.analysisNotFound') + ". " +
-                      t('errors.startNewAnalysis'));
-            setLoading(false);
-            console.log("Failed to find analysis after maximum attempts");
-          }
-          
-          setAttempts(currentAttempts);
-        }, 3000);
-        
-        setPollInterval(interval);
+        console.log("Analysis generation initiated:", response);
+      } catch (error) {
+        console.error("Error initiating advanced analysis:", error);
+        toast.error(t('errors.fetchError') + ". " + t('errors.tryAgainLater'));
+        setLoading(false);
         return;
       }
       
-      setAnalysis(data as AdvancedAnalysis);
-      setLoading(false);
-      setProgress(100);
+      // Start polling for results
+      const interval = window.setInterval(async () => {
+        const currentAttempts = attempts + 1;
+        setAttempts(currentAttempts);
+        
+        console.log(`Polling for analysis results (attempt ${currentAttempts}/10)...`);
+        
+        const { data: pollData, error: pollError } = await supabase
+          .from("advanced_analyses")
+          .select("*")
+          .eq("idea_id", ideaId)
+          .eq("user_id", authState.user?.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        
+        if (pollData) {
+          clearInterval(interval);
+          setPollInterval(null);
+          setAnalysis(pollData as AdvancedAnalysis);
+          setLoading(false);
+          setProgress(100);
+          console.log("Nova análise encontrada:", pollData);
+        } else if (currentAttempts >= 10) {
+          clearInterval(interval);
+          setPollInterval(null);
+          toast.error(t('errors.analysisNotFound') + ". " +
+                    t('errors.startNewAnalysis'));
+          setLoading(false);
+          console.log("Failed to find analysis after maximum attempts");
+        }
+        
+        setAttempts(currentAttempts);
+      }, 3000);
+      
+      setPollInterval(interval);
     } catch (error) {
       console.error("Error fetching advanced analysis:", error);
       toast.error(t('errors.fetchError') + ". " +

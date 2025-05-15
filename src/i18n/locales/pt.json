@@ -901,7 +901,9 @@
     "generatedOn": "Gerado em",
     "generatedBy": "Gerado por",
     "generatedAt": "Gerado em",
-    "send": "Enviar"
+    "send": "Enviar",
+    "preparing": "Preparando...",
+    "shared": "Compartilhado"
   },
   "countries": {
     "global": "Global",
@@ -1348,5 +1350,12 @@
       "challenges": "Desafios Potenciais",
       "resources": "Recursos Sugeridos"
     }
+  },
+  "pdf": {
+    "page": "Página {{page}}",
+    "of": "de",
+    "generating": "Gerando PDF...",
+    "downloadComplete": "Download concluído",
+    "pdfReady": "Seu PDF está pronto"
   }
 }
