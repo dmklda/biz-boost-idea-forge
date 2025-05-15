@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { TagType } from "./TagsFilter";
@@ -25,7 +24,7 @@ export const useIdeasData = (userId: string | undefined) => {
           title,
           description,
           created_at,
-          idea_analyses (score, status)
+          idea_analyses (score, status, created_at)
         `)
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
@@ -61,16 +60,23 @@ export const useIdeasData = (userId: string | undefined) => {
       });
       
       // Process ideas with their analysis data and favorite status
-      const processedIdeas = ideasData?.map((idea: any) => ({
-        id: idea.id,
-        title: idea.title,
-        description: idea.description,
-        created_at: idea.created_at,
-        is_favorite: favoriteIdeaIds.has(idea.id),
-        score: idea.idea_analyses?.[0]?.score || null,
-        status: idea.idea_analyses?.[0]?.status || null,
-        tags: ideaTagsMap[idea.id] || []
-      }));
+      const processedIdeas = ideasData?.map((idea: any) => {
+        // Sort analyses to ensure the latest is first
+        const sortedAnalyses = idea.idea_analyses?.length > 0 
+          ? [...idea.idea_analyses].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          : [];
+        
+        return {
+          id: idea.id,
+          title: idea.title,
+          description: idea.description,
+          created_at: idea.created_at,
+          is_favorite: favoriteIdeaIds.has(idea.id),
+          score: sortedAnalyses?.[0]?.score || null,
+          status: sortedAnalyses?.[0]?.status || null,
+          tags: ideaTagsMap[idea.id] || []
+        };
+      });
       
       setIdeas(processedIdeas || []);
       setFavoriteIdeas(processedIdeas?.filter(idea => idea.is_favorite) || []);
