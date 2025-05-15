@@ -1,9 +1,20 @@
 
 import { SavedAnalysesList } from "@/components/advanced-analysis";
 import { useTranslation } from "react-i18next";
+import { useRefreshAnalyses } from "@/hooks/use-refresh-analyses";
+import { useState } from "react";
 
 const AdvancedAnalysisPage = () => {
   const { t } = useTranslation();
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Function to force refresh the saved analyses list
+  const refreshSavedAnalyses = () => {
+    setRefreshKey(prevKey => prevKey + 1);
+  };
+
+  // Use the refresh hook to update analyses when analysis is updated
+  useRefreshAnalyses(refreshSavedAnalyses, []);
 
   return (
     <div className="space-y-6">
@@ -18,7 +29,7 @@ const AdvancedAnalysisPage = () => {
         </div>
       </div>
       
-      <SavedAnalysesList />
+      <SavedAnalysesList key={refreshKey} />
     </div>
   );
 };

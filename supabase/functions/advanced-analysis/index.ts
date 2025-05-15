@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.0";
@@ -33,26 +32,21 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") as string;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Check if we already have an analysis for this idea
-    const { data: existingAnalysis, error: checkError } = await supabase
+    // Remove any existing analysis for this idea to ensure we generate a fresh one
+    // This ensures we're not using cached/old data after a re-analysis
+    const { error: deleteError } = await supabase
       .from("advanced_analyses")
-      .select("id")
-      .eq("idea_id", ideaId)
-      .single();
-
-    if (!checkError && existingAnalysis) {
-      console.log("Analysis already exists for idea:", ideaId);
-      return new Response(
-        JSON.stringify({ 
-          message: "Analysis already exists", 
-          analysis: existingAnalysis 
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      .delete()
+      .eq("idea_id", ideaId);
+    
+    if (deleteError) {
+      console.log("No previous analysis to delete or error deleting:", deleteError);
+    } else {
+      console.log("Successfully deleted previous analysis for idea:", ideaId);
     }
 
-    // Fetch the idea details
-    console.log("Fetching idea details");
+    // Fetch the idea details - always get the latest data
+    console.log("Fetching latest idea details");
     const { data: ideaData, error: ideaError } = await supabase
       .from("ideas")
       .select("*")
@@ -67,18 +61,19 @@ serve(async (req) => {
       );
     }
 
-    // Fetch existing analysis for enrichment
-    console.log("Fetching existing basic analysis");
+    // Fetch existing analysis for enrichment - get the latest analysis
+    console.log("Fetching latest basic analysis");
     const { data: basicAnalysisData, error: analysisError } = await supabase
       .from("idea_analyses")
       .select("*")
       .eq("idea_id", ideaId)
       .single();
     
-    console.log("Basic analysis data:", basicAnalysisData);
-    console.log("Idea data:", ideaData);
+    console.log("Latest basic analysis data:", basicAnalysisData);
+    console.log("Latest idea data:", ideaData);
 
-    // Generate advanced analysis data based on idea and basic analysis
+    // Keep the existing code for generating the analysis
+    // ... keep existing code (generate advancedAnalysis object and related logic)
     const advancedAnalysis = {
       businessName: {
         name: ideaData.title || "TechFlow",
@@ -424,8 +419,8 @@ serve(async (req) => {
       }
     };
 
-    // Save the advanced analysis to the database
-    console.log("Saving advanced analysis to database");
+    // Save the advanced analysis to the database - fresh copy
+    console.log("Saving new advanced analysis to database");
     const { data: savedAnalysis, error: saveError } = await supabase
       .from("advanced_analyses")
       .upsert({ 
