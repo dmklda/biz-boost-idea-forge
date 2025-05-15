@@ -187,7 +187,9 @@ export function AdvancedAnalysisModal({
         .select("*")
         .eq("idea_id", ideaId)
         .eq("user_id", authState.user?.id)
-        .single();
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
       if (error) {
         console.log("Advanced analysis not found yet, will start polling...");
@@ -226,7 +228,9 @@ export function AdvancedAnalysisModal({
             .select("*")
             .eq("idea_id", ideaId)
             .eq("user_id", authState.user?.id)
-            .single();
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
           
           if (pollData) {
             clearInterval(interval);
