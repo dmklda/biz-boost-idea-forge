@@ -78,14 +78,14 @@ export function AdvancedAnalysisModal({
   const [isSaved, setIsSaved] = useState(false);
 
   const motivationalPhrases = [
-    t('advancedAnalysis.motivation1', "Analisando potenciais de mercado..."),
-    t('advancedAnalysis.motivation2', "Identificando oportunidades únicas..."),
-    t('advancedAnalysis.motivation3', "Criando estratégias de crescimento..."),
-    t('advancedAnalysis.motivation4', "Avaliando vantagens competitivas..."),
-    t('advancedAnalysis.motivation5', "Definindo perfis de clientes ideais..."),
-    t('advancedAnalysis.motivation6', "Gerando insights de monetização..."),
-    t('advancedAnalysis.motivation7', "Calculando projeções financeiras..."),
-    t('advancedAnalysis.motivation8', "Finalizando sua análise avançada...")
+    t('advancedAnalysis.motivation1'),
+    t('advancedAnalysis.motivation2'),
+    t('advancedAnalysis.motivation3'),
+    t('advancedAnalysis.motivation4'),
+    t('advancedAnalysis.motivation5'),
+    t('advancedAnalysis.motivation6'),
+    t('advancedAnalysis.motivation7'),
+    t('advancedAnalysis.motivation8')
   ];
 
   const [currentPhrase, setCurrentPhrase] = useState(0);
@@ -238,8 +238,8 @@ export function AdvancedAnalysisModal({
           } else if (currentAttempts >= 10) {
             clearInterval(interval);
             setPollInterval(null);
-            toast.error(t('errors.analysisNotFound', "Análise não encontrada") + ". " + 
-                      t('errors.startNewAnalysis', "Inicie uma nova análise"));
+            toast.error(t('errors.analysisNotFound') + ". " +
+                      t('errors.startNewAnalysis'));
             setLoading(false);
             console.log("Failed to find analysis after maximum attempts");
           }
@@ -256,8 +256,8 @@ export function AdvancedAnalysisModal({
       setProgress(100);
     } catch (error) {
       console.error("Error fetching advanced analysis:", error);
-      toast.error(t('errors.fetchError', "Erro ao buscar análise") + ". " + 
-                t('errors.tryAgainLater', "Tente novamente mais tarde"));
+      toast.error(t('errors.fetchError') + ". " +
+                t('errors.tryAgainLater'));
       setLoading(false);
     }
   };
@@ -270,44 +270,44 @@ export function AdvancedAnalysisModal({
       // Try to use the Web Share API if available
       if (navigator.share) {
         await navigator.share({
-          title: idea?.title || "Análise Avançada",
-          text: "Confira esta análise avançada de ideia de negócio!",
+          title: idea?.title || t('advancedAnalysis.title'),
+          text: t('share.advancedAnalysisText'),
           url: shareUrl
         });
         
-        toast.success(t('common.shared', "Compartilhado!") + ". " + 
-                    t('share.linkShared', "Conteúdo compartilhado com sucesso"));
+        toast.success(t('common.shared') + ". " +
+                    t('share.linkShared'));
       } else {
         // Fallback to clipboard
         await navigator.clipboard.writeText(shareUrl);
         
-        toast.success(t('common.copied', "Link copiado!") + ". " + 
-                    t('share.linkCopied', "Link copiado para a área de transferência"));
+        toast.success(t('common.copied') + ". " +
+                    t('share.linkCopied'));
       }
     } catch (error) {
       console.error("Error sharing:", error);
-      toast.error(t('errors.shareError', "Erro ao compartilhar") + ". " + 
-                t('errors.tryAgain', "Tente novamente mais tarde"));
+      toast.error(t('errors.shareError') + ". " +
+                t('errors.tryAgain'));
     }
   };
 
   const handleDownloadPDF = async () => {
     if (!analysis || !idea) {
-      toast.error(t('errors.pdfError', "Erro ao gerar PDF") + ". " + 
-                t('errors.contentNotReady', "O conteúdo não está pronto para download"));
+      toast.error(t('errors.pdfError') + ". " +
+                t('errors.contentNotReady'));
       return;
     }
 
     try {
       setIsGeneratingPdf(true);
-      toast.info(t('common.preparing', "Preparando PDF...") + ". " + 
-                t('pdf.generating', "Este processo pode levar alguns segundos"));
+      toast.info(t('common.preparing') + ". " +
+                t('pdf.generating'));
 
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-      });
+          const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4',
+          });
 
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
@@ -319,7 +319,7 @@ export function AdvancedAnalysisModal({
         if (pageCount > 1) {
             pdf.setFontSize(8);
             pdf.setTextColor(isDarkMode ? 200 : 120);
-            pdf.text(t('advancedAnalysis.title', 'Análise Avançada'), margin, margin / 2);
+            pdf.text(t('advancedAnalysis.title'), margin, margin / 2);
             // Page number string is removed from here, will be added by the final loop
         }
       };
@@ -370,7 +370,7 @@ export function AdvancedAnalysisModal({
 
       const addList = (items: string[] | undefined | null) => {
         if (!items || items.length === 0) {
-          addParagraph(t('common.notSpecified', "Não especificado"), true, 2);
+          addParagraph(t('common.notSpecified'), true, 2);
           return;
         }
         items.forEach(item => {
@@ -396,7 +396,7 @@ export function AdvancedAnalysisModal({
       };
 
       const addKeyValue = (key: string, value: string | number | undefined | null) => {
-        if (value === undefined || value === null) value = t('common.notSpecified', "Não especificado");
+        if (value === undefined || value === null) value = t('common.notSpecified');
         
         const keyText = `${key}:`;
         const valueText = String(value);
@@ -436,12 +436,12 @@ export function AdvancedAnalysisModal({
       pdf.setFontSize(26);
       pdf.setFont("helvetica", "bold");
       pdf.setTextColor(isDarkMode ? 255 : 20);
-      pdf.text(t('advancedAnalysis.title', "Análise Avançada com GPT-4o"), pageWidth / 2, pageHeight / 2 - 40, { align: "center" }); // Ajustar Y para dar espaço ao subtítulo
+      pdf.text(t('advancedAnalysis.title'), pageWidth / 2, pageHeight / 2 - 40, { align: "center" }); // Ajustar Y para dar espaço ao subtítulo
       
       pdf.setFontSize(14); // Tamanho um pouco menor para o subtítulo, mas ainda legível
       pdf.setFont("helvetica", "normal");
       pdf.setTextColor(isDarkMode ? 220 : 50);
-      const ideaTitleText = idea.title || 'Sua Ideia de Negócio';
+      const ideaTitleText = idea.title || t('advancedAnalysis.pdf.yourBusinessIdea');
       const ideaTitleLines = pdf.splitTextToSize(ideaTitleText, pageWidth - (margin * 2)); // Quebrar o título da ideia se for longo
       // Calcular a altura total do título da ideia para centralizar o bloco
       const ideaTitleHeight = ideaTitleLines.length * (14 * 0.352778); // 14pt para mm, aproximado
@@ -449,9 +449,9 @@ export function AdvancedAnalysisModal({
       pdf.text(ideaTitleLines, pageWidth / 2, titleYStart, { align: "center" });
 
       pdf.setFontSize(10);
-      pdf.setTextColor(isDarkMode ? 200 : 100);
-      const generatedOnText = `${t('advancedAnalysis.pdf.generatedOn', "Gerado em")} ${new Date().toLocaleDateString()}`;
-      const ideaIdText = `ID da Ideia: ${ideaId}`;
+            pdf.setTextColor(isDarkMode ? 200 : 100);
+      const generatedOnText = `${t('advancedAnalysis.pdf.generatedOn')} ${new Date().toLocaleDateString()}`;
+      const ideaIdText = `${t('advancedAnalysis.pdf.ideaIdLabel')} ${ideaId}`;
       pdf.text(generatedOnText, pageWidth / 2, titleYStart + ideaTitleHeight + 10, { align: "center" });
       pdf.text(ideaIdText, pageWidth / 2, titleYStart + ideaTitleHeight + 15, { align: "center" });
       
@@ -467,25 +467,25 @@ export function AdvancedAnalysisModal({
       };
 
       if (content.businessName?.name || content.summary?.description || content.pitch) {
-        addTitle(t('advancedAnalysis.pdf.executiveSummary', "Resumo Executivo"));
-        if(content.businessName?.name) addKeyValue(t('advancedAnalysis.pdf.businessName', "Nome do Negócio"), sanitizeText(content.businessName.name));
-        if(content.businessName?.slogan) addKeyValue(t('advancedAnalysis.pdf.slogan', "Slogan"), sanitizeText(content.businessName.slogan));
+        addTitle(t('advancedAnalysis.pdf.executiveSummary'));
+        if(content.businessName?.name) addKeyValue(t('advancedAnalysis.pdf.businessName'), sanitizeText(content.businessName.name));
+        if(content.businessName?.slogan) addKeyValue(t('advancedAnalysis.pdf.slogan'), sanitizeText(content.businessName.slogan));
         if(content.summary?.description) addParagraph(sanitizeText(content.summary.description));
         if(content.pitch) {
-            addSubTitle(t('advancedAnalysis.pdf.concept', "Conceito do Negócio"));
+            addSubTitle(t('advancedAnalysis.pdf.concept'));
             addParagraph(sanitizeText(content.pitch));
         }
         addSectionSpacing();
       }
 
       if (content.differentials && content.differentials.length > 0) {
-        addSubTitle(t('advancedAnalysis.pdf.differentials', "Diferenciais"));
+        addSubTitle(t('advancedAnalysis.pdf.differentials'));
         addList(content.differentials.map(sanitizeText)); // Sanitizar itens da lista
         addSectionSpacing();
       }
       
       if (content.firstSteps && content.firstSteps.length > 0) {
-        addSubTitle(t('advancedAnalysis.pdf.firstSteps', "Primeiros Passos"));
+        addSubTitle(t('advancedAnalysis.pdf.firstSteps'));
         content.firstSteps.forEach((step: {name: string, icon?: string, description?: string}) => {
             // Omitir step.icon para evitar caracteres corrompidos
             addParagraph(sanitizeText(step.name)); 
@@ -495,37 +495,37 @@ export function AdvancedAnalysisModal({
       }
       
       if (content.marketAnalysis) {
-        addTitle(t('advancedAnalysis.pdf.marketAnalysis', "Análise de Mercado"));
-        if(content.marketAnalysis.size) addKeyValue(t('advancedAnalysis.pdf.marketSize', "Tamanho do Mercado"), sanitizeText(content.marketAnalysis.size));
-        if(content.marketAnalysis.targetAudience) addKeyValue(t('advancedAnalysis.pdf.targetAudience', "Público-Alvo"), sanitizeText(content.marketAnalysis.targetAudience));
+        addTitle(t('advancedAnalysis.pdf.marketAnalysis'));
+        if(content.marketAnalysis.size) addKeyValue(t('advancedAnalysis.pdf.marketSize'), sanitizeText(content.marketAnalysis.size));
+        if(content.marketAnalysis.targetAudience) addKeyValue(t('advancedAnalysis.pdf.targetAudience'), sanitizeText(content.marketAnalysis.targetAudience));
         if(content.marketAnalysis.trends?.length > 0) {
-            addSubTitle(t('advancedAnalysis.pdf.marketTrends', "Tendências de Mercado"));
+            addSubTitle(t('advancedAnalysis.pdf.marketTrends'));
             addList(content.marketAnalysis.trends.map(sanitizeText)); // Sanitizar itens da lista
         }
         if(content.marketAnalysis.barriers?.length > 0) {
-            addSubTitle(t('advancedAnalysis.pdf.entryBarriers', "Barreiras de Entrada"));
+            addSubTitle(t('advancedAnalysis.pdf.entryBarriers'));
             addList(content.marketAnalysis.barriers.map(sanitizeText)); // Sanitizar itens da lista
         }
         addSectionSpacing();
       }
       
       if (content.personas?.length > 0) {
-        addTitle(t('advancedAnalysis.pdf.customerAnalysis', "Análise de Clientes"));
-        addSubTitle(t('advancedAnalysis.pdf.personas', "Personas"));
+        addTitle(t('advancedAnalysis.pdf.customerAnalysis'));
+        addSubTitle(t('advancedAnalysis.pdf.personas'));
         content.personas.forEach((persona: {name: string, description: string, occupation?: string, behavior?: string}, idx: number) => {
-            addParagraph(sanitizeText(`${t('advancedAnalysis.pdf.persona', "Persona")} ${idx + 1}: ${persona.name || ''}`));
+            addParagraph(sanitizeText(`${t('advancedAnalysis.pdf.persona')} ${idx + 1}: ${persona.name || ''}`));
             if(persona.description) addParagraph(sanitizeText(persona.description), true);
-            if(persona.occupation) addKeyValue(t('advancedAnalysis.pdf.occupation', "Ocupação"), sanitizeText(persona.occupation));
-            if(persona.behavior) addKeyValue(t('advancedAnalysis.pdf.behavior', "Comportamento"), sanitizeText(persona.behavior));
+            if(persona.occupation) addKeyValue(t('advancedAnalysis.pdf.occupation'), sanitizeText(persona.occupation));
+            if(persona.behavior) addKeyValue(t('advancedAnalysis.pdf.behavior'), sanitizeText(persona.behavior));
             yPos += 3;
         });
         addSectionSpacing();
       }
       if (content.channels?.length > 0) {
         if (!(content.personas?.length > 0)) {
-            addTitle(t('advancedAnalysis.pdf.customerAnalysis', "Análise de Clientes"));
+            addTitle(t('advancedAnalysis.pdf.customerAnalysis'));
         }
-        addSubTitle(t('advancedAnalysis.pdf.acquisitionChannels', "Canais de Aquisição"));
+        addSubTitle(t('advancedAnalysis.pdf.acquisitionChannels'));
         content.channels.forEach((channel: {name: string, description: string}) => {
             addParagraph(sanitizeText(channel.name));
             if(channel.description) addParagraph(sanitizeText(channel.description), true);
@@ -534,15 +534,15 @@ export function AdvancedAnalysisModal({
       }
 
       if (content.competitors?.length > 0) {
-        addTitle(t('advancedAnalysis.pdf.competitorAnalysis', "Análise de Concorrentes"));
+        addTitle(t('advancedAnalysis.pdf.competitorAnalysis'));
         content.competitors.forEach((competitor: {name: string, strengths?: string[], weaknesses?: string[]}) => {
-            addSubTitle(sanitizeText(competitor.name || t('advancedAnalysis.pdf.competitor', "Concorrente")));
+            addSubTitle(sanitizeText(competitor.name || t('advancedAnalysis.pdf.competitor')));
             if(competitor.strengths?.length > 0){
-                addParagraph(t('advancedAnalysis.pdf.strengths', "Pontos Fortes") + ":");
+                addParagraph(t('advancedAnalysis.pdf.strengthsLabel'));
                 addList(competitor.strengths.map(sanitizeText));
             }
             if(competitor.weaknesses?.length > 0){
-                addParagraph(t('advancedAnalysis.pdf.weaknesses', "Pontos Fracos") + ":");
+                addParagraph(t('advancedAnalysis.pdf.weaknessesLabel'));
                 addList(competitor.weaknesses.map(sanitizeText));
             }
             yPos += 3;
@@ -551,52 +551,52 @@ export function AdvancedAnalysisModal({
       }
       
       if (content.swot) {
-        addTitle(t('advancedAnalysis.pdf.swotAnalysis', "Análise SWOT"));
+        addTitle(t('advancedAnalysis.pdf.swotAnalysis'));
         if(content.swot.strengths?.length > 0){
-            addSubTitle(t('advancedAnalysis.pdf.swotStrengths', "Forças"));
+            addSubTitle(t('advancedAnalysis.pdf.swotStrengths'));
             addList(content.swot.strengths.map(sanitizeText));
         }
         if(content.swot.weaknesses?.length > 0){
-            addSubTitle(t('advancedAnalysis.pdf.swotWeaknesses', "Fraquezas"));
+            addSubTitle(t('advancedAnalysis.pdf.swotWeaknesses'));
             addList(content.swot.weaknesses.map(sanitizeText));
         }
         if(content.swot.opportunities?.length > 0){
-            addSubTitle(t('advancedAnalysis.pdf.swotOpportunities', "Oportunidades"));
+            addSubTitle(t('advancedAnalysis.pdf.swotOpportunities'));
             addList(content.swot.opportunities.map(sanitizeText));
         }
         if(content.swot.threats?.length > 0){
-            addSubTitle(t('advancedAnalysis.pdf.swotThreats', "Ameaças"));
+            addSubTitle(t('advancedAnalysis.pdf.swotThreats'));
             addList(content.swot.threats.map(sanitizeText));
         }
         addSectionSpacing();
       }
 
       if (content.monetization) {
-        addTitle(t('advancedAnalysis.pdf.monetizationModels', "Modelos de Monetização"));
+        addTitle(t('advancedAnalysis.pdf.monetizationModels'));
         if(content.monetization.models?.length > 0) {
             content.monetization.models.forEach((model: {name: string, description: string, revenue?: string}) => {
                 addSubTitle(sanitizeText(model.name));
                 if(model.description) addParagraph(sanitizeText(model.description));
-                if(model.revenue) addKeyValue(t('advancedAnalysis.pdf.revenue', "Receita Estimada"), sanitizeText(model.revenue));
+                if(model.revenue) addKeyValue(t('advancedAnalysis.pdf.revenue'), sanitizeText(model.revenue));
             });
         }
         if(content.monetization.projections) {
-            addSubTitle(t('advancedAnalysis.pdf.financialProjections', "Projeções Financeiras"));
-            if(content.monetization.projections.firstYear) addKeyValue(t('advancedAnalysis.pdf.firstYear', "Receita 1º Ano"), sanitizeText(content.monetization.projections.firstYear));
-            if(content.monetization.projections.thirdYear) addKeyValue(t('advancedAnalysis.pdf.thirdYear', "Receita 3º Ano"), sanitizeText(content.monetization.projections.thirdYear));
-            if(content.monetization.projections.breakEven) addKeyValue(t('advancedAnalysis.pdf.breakEven', "Ponto de Equilíbrio"), sanitizeText(content.monetization.projections.breakEven));
-            if(content.monetization.projections.roi) addKeyValue(t('advancedAnalysis.pdf.expectedROI', "ROI Estimado (3 anos)"), sanitizeText(content.monetization.projections.roi));
+            addSubTitle(t('advancedAnalysis.pdf.financialProjections'));
+            if(content.monetization.projections.firstYear) addKeyValue(t('advancedAnalysis.pdf.firstYear'), sanitizeText(content.monetization.projections.firstYear));
+            if(content.monetization.projections.thirdYear) addKeyValue(t('advancedAnalysis.pdf.thirdYear'), sanitizeText(content.monetization.projections.thirdYear));
+            if(content.monetization.projections.breakEven) addKeyValue(t('advancedAnalysis.pdf.breakEven'), sanitizeText(content.monetization.projections.breakEven));
+            if(content.monetization.projections.roi) addKeyValue(t('advancedAnalysis.pdf.expectedROI'), sanitizeText(content.monetization.projections.roi));
         }
         addSectionSpacing();
       }
 
       if (content.risks?.length > 0) {
-        addTitle(t('advancedAnalysis.pdf.riskAnalysis', "Análise de Riscos"));
+        addTitle(t('advancedAnalysis.pdf.riskAnalysis'));
         content.risks.forEach((risk: {name: string, level: string, description: string, mitigation?: string}) => {
-            addSubTitle(sanitizeText(`${risk.name || t('advancedAnalysis.pdf.risk', "Risco")} (${t('advancedAnalysis.pdf.level',"Nível")}: ${risk.level || 'N/A'})`));
+            addSubTitle(sanitizeText(`${risk.name || t('advancedAnalysis.pdf.risk')} (${t('advancedAnalysis.pdf.level')}: ${risk.level || 'N/A'})`));
             if(risk.description) addParagraph(sanitizeText(risk.description));
             if(risk.mitigation) {
-                addParagraph(t('advancedAnalysis.pdf.mitigationStrategy', "Estratégia de Mitigação") + ":");
+                addParagraph(t('advancedAnalysis.pdf.mitigationStrategyLabel'));
                 addParagraph(sanitizeText(risk.mitigation), true);
             }
         });
@@ -604,15 +604,15 @@ export function AdvancedAnalysisModal({
       }
       
       if (content.plan) {
-        addTitle(t('advancedAnalysis.pdf.implementationPlan', "Plano de Implementação"));
+        addTitle(t('advancedAnalysis.pdf.implementationPlan'));
         const planPhases = [
-            { titleKey: 'advancedAnalysis.pdf.first30Days', defaultTitle: "Primeiros 30 Dias", data: content.plan.thirtyDays },
-            { titleKey: 'advancedAnalysis.pdf.next60Days', defaultTitle: "Próximos 60 Dias", data: content.plan.sixtyDays }, 
-            { titleKey: 'advancedAnalysis.pdf.next90Days', defaultTitle: "Próximos 90 Dias", data: content.plan.ninetyDays }  
+            { titleKey: 'advancedAnalysis.pdf.first30Days', defaultTitle: t('advancedAnalysis.pdf.first30Days'), data: content.plan.thirtyDays },
+            { titleKey: 'advancedAnalysis.pdf.next60Days', defaultTitle: t('advancedAnalysis.pdf.next60Days'), data: content.plan.sixtyDays }, 
+            { titleKey: 'advancedAnalysis.pdf.next90Days', defaultTitle: t('advancedAnalysis.pdf.next90Days'), data: content.plan.ninetyDays }  
         ];
         planPhases.forEach(phase => {
             if (phase.data?.length > 0) {
-                addSubTitle(t(phase.titleKey, phase.defaultTitle));
+                addSubTitle(t(phase.titleKey));
                 phase.data.forEach((item: {name: string, description: string}) => {
                     addParagraph(sanitizeText(item.name));
                     if(item.description) addParagraph(sanitizeText(item.description), true);
@@ -623,9 +623,9 @@ export function AdvancedAnalysisModal({
       }
 
       if (content.tools?.length > 0) {
-        addTitle(t('advancedAnalysis.pdf.recommendedTools', "Ferramentas Recomendadas"));
+        addTitle(t('advancedAnalysis.pdf.recommendedTools'));
         content.tools.forEach((tool: {category: string, name: string, description: string}) => {
-            addSubTitle(sanitizeText(`${tool.category || t('advancedAnalysis.pdf.category', "Categoria")}: ${tool.name || ''}`));
+            addSubTitle(sanitizeText(`${tool.category || t('advancedAnalysis.pdf.category')}: ${tool.name || ''}`));
             if(tool.description) addParagraph(sanitizeText(tool.description));
         });
       }
@@ -637,13 +637,13 @@ export function AdvancedAnalysisModal({
         pdf.setFontSize(8);
         pdf.setTextColor(isDarkMode ? 200 : 120);
         const pageString = t('pdf.page', { page: i });
-        const totalPagesString = ` de ${totalPages}`;
+        const totalPagesString = ` ${t('pdf.of')} ${totalPages}`;
         const fullPageStringWidth = pdf.getStringUnitWidth(pageString + totalPagesString) * 8 * (pdf.internal.scaleFactor / 2.8346);
         const xPos = pageWidth - margin - fullPageStringWidth;
 
         // Re-draw the idea title/generic title in the header for all pages except title page if needed
         if (i > 1) { // Assuming page 1 is the title page
-            pdf.text(t('advancedAnalysis.title', 'Análise Avançada'), margin, margin / 2); 
+            pdf.text(t('advancedAnalysis.title'), margin, margin / 2); 
         }
         // Draw "Página X de Y"
         pdf.text(`${pageString}${totalPagesString}`, xPos, pageHeight - margin / 2);
@@ -652,13 +652,13 @@ export function AdvancedAnalysisModal({
       const finalFileName = `analise-avancada-${idea?.title?.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'ideia'}.pdf`;
       pdf.save(finalFileName);
 
-      toast.success(t('pdf.downloadComplete', "Download Concluído") + ". " +
-                  t('pdf.pdfReady', "Seu PDF está pronto"));
-
+      toast.success(t('pdf.downloadComplete') + ". " +
+                  t('pdf.pdfReady'));
+      
     } catch (error) {
       console.error("Error generating PDF programmatically:", error);
-      toast.error(t('errors.pdfGenerationError', "Erro ao gerar PDF") + ". " +
-                t('errors.tryAgainLater', "Tente novamente mais tarde"));
+      toast.error(t('errors.pdfGenerationError') + ". " +
+                t('errors.tryAgainLater'));
     } finally {
       setIsGeneratingPdf(false);
     }
@@ -674,8 +674,8 @@ export function AdvancedAnalysisModal({
 
   const handleSaveAnalysis = async () => {
     if (!analysis || !idea || !authState.isAuthenticated) {
-      toast.error(t('errors.saveError', "Erro ao salvar análise") + ". " +
-                t('errors.missingData', "Dados insuficientes para salvar"));
+      toast.error(t('errors.saveError') + ". " +
+                t('errors.missingData'));
       return;
     }
 
@@ -698,8 +698,8 @@ export function AdvancedAnalysisModal({
 
         if (updateError) throw updateError;
 
-        toast.success(t('common.updated', "Atualizado!") + ". " +
-                    t('analysis.alreadySaved', "Esta análise já estava salva e foi atualizada"));
+        toast.success(t('common.updated') + ". " +
+                    t('analysis.alreadySaved'));
       } else {
         // Save new
         const { error: saveError } = await supabase
@@ -714,15 +714,15 @@ export function AdvancedAnalysisModal({
 
         if (saveError) throw saveError;
 
-        toast.success(t('common.saved', "Salvo!") + ". " +
-                    t('analysis.saveSuccess', "Análise avançada salva com sucesso"));
+        toast.success(t('common.saved') + ". " +
+                    t('analysis.saveSuccess'));
       }
 
       setIsSaved(true);
     } catch (error) {
       console.error("Error saving analysis:", error);
-      toast.error(t('errors.saveError', "Erro ao salvar análise") + ". " +
-                t('errors.tryAgainLater', "Tente novamente mais tarde"));
+      toast.error(t('errors.saveError') + ". " +
+                t('errors.tryAgainLater'));
     } finally {
       setIsSaving(false);
     }
@@ -745,8 +745,8 @@ export function AdvancedAnalysisModal({
               isDarkMode ? "text-white" : "text-slate-900"
             )}>
               {loading
-                ? t('advancedAnalysis.generating', "Gerando Análise Avançada...")
-                : t('advancedAnalysis.title', "Análise Avançada")}
+                ? t('advancedAnalysis.generating')
+                : t('advancedAnalysis.title')}
             </DialogTitle>
             <div className="flex items-center gap-1 sm:gap-2">
               {!loading && analysis && (
@@ -769,15 +769,15 @@ export function AdvancedAnalysisModal({
                         const logPrefix = "[SaveButtonDebug]";
                         console.log(`${logPrefix} isSaved: ${isSaved}, isSaving: ${isSaving}`);
                         if (isSaved) {
-                          const translatedSaved = t('common.saved', "Salvo");
+                          const translatedSaved = t('common.saved');
                           console.log(`${logPrefix} t('common.saved'):`, translatedSaved);
                           return translatedSaved;
                         } else if (isSaving) {
-                          const translatedSaving = t('common.saving', "Salvando...");
+                          const translatedSaving = t('common.saving');
                           console.log(`${logPrefix} t('common.saving'):`, translatedSaving);
                           return translatedSaving;
                         } else {
-                          const translatedSave = t('common.save', "Salvar");
+                          const translatedSave = t('common.save');
                           console.log(`${logPrefix} t('common.save'):`, translatedSave);
                           return translatedSave;
                         }
@@ -794,7 +794,7 @@ export function AdvancedAnalysisModal({
                     )}
                   >
                     <Share2 className="h-4 w-4" />
-                    <span className="hidden sm:inline ml-1">{t('common.share', "Compartilhar")}</span>
+                    <span className="hidden sm:inline ml-1">{t('common.share')}</span>
                   </Button>
                   <Button 
                     variant={isDarkMode ? "outline" : "outline"}
@@ -807,7 +807,7 @@ export function AdvancedAnalysisModal({
                     )}
                   >
                     <Download className={cn("h-4 w-4", isGeneratingPdf && "animate-pulse")} />
-                    <span className="hidden sm:inline ml-1">PDF</span>
+                    <span className="hidden sm:inline ml-1">{t('common.pdf')}</span>
                   </Button>
                   <Button 
                     variant={isDarkMode ? "outline" : "outline"}
@@ -820,7 +820,7 @@ export function AdvancedAnalysisModal({
                     )}
                   >
                     <MessageSquare className="h-4 w-4" />
-                    <span className="hidden sm:inline ml-1">{t('advancedAnalysis.chat', "Chat")}</span>
+                    <span className="hidden sm:inline ml-1">{t('advancedAnalysis.chat')}</span>
                   </Button>
                 </>
               )}
@@ -845,7 +845,7 @@ export function AdvancedAnalysisModal({
                   "text-muted-foreground",
                   isDarkMode ? "text-slate-400" : ""
                 )}>
-                  {t('advancedAnalysis.patience', "Este processo pode levar alguns segundos, estamos criando uma análise completa")}
+                  {t('advancedAnalysis.patience')}
                 </p>
               </div>
               
@@ -893,7 +893,7 @@ export function AdvancedAnalysisModal({
                       )}
                     >
                       <ChevronLeft className="h-4 w-4 mr-1" />
-                      {t('common.back', "Voltar")}
+                      {t('common.back')}
                     </Button>
                   </div>
                   <AdvancedAnalysisChat 

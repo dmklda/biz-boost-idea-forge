@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -200,7 +199,7 @@ export const TagsSelector = ({ ideaId, onTagsChange }: TagsSelectorProps) => {
       }
     } catch (error) {
       console.error("Error toggling tag:", error);
-      toast.error(t('tags.errors.updateFailed') || "Failed to update tag");
+      toast.error(t('tags.errors.updateFailed'));
     }
   };
 
@@ -223,98 +222,98 @@ export const TagsSelector = ({ ideaId, onTagsChange }: TagsSelectorProps) => {
           />
         ))}
         
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
                 <PopoverTrigger asChild>
                   <Button variant="outline" size="icon" className="h-7 w-7">
                     <Plus className="h-3 w-3" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80" align="start">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium text-sm">{t('tags.title') || "Tags"}</h4>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 text-xs"
-                        onClick={() => {
-                          setIsOpen(false);
-                          setIsCreateDialogOpen(true);
-                        }}
-                      >
-                        <PlusCircle className="h-3.5 w-3.5 mr-1" />
-                        {t('tags.create') || "Create"}
-                      </Button>
-                    </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{t('tags.add')}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <PopoverContent className="w-80" align="start">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="font-medium text-sm">{t('tags.title')}</h4>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 text-xs"
+                  onClick={() => {
+                    setIsOpen(false);
+                    setIsCreateDialogOpen(true);
+                  }}
+                >
+                  <PlusCircle className="h-3.5 w-3.5 mr-1" />
+                  {t('tags.create')}
+                </Button>
+              </div>
 
-                    {isLoading ? (
-                      <div className="flex justify-center py-4">
-                        <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
-                      </div>
-                    ) : tags.length > 0 ? (
-                      <div className="grid gap-1.5">
-                        {tags.map(tag => {
-                          const isSelected = selectedTags.some(t => t.id === tag.id);
-                          return (
-                            <Button
-                              key={tag.id}
-                              variant="ghost"
-                              className={`justify-between h-8 px-2 ${
-                                isSelected ? "bg-muted" : ""
-                              }`}
-                              onClick={() => toggleTag(tag)}
-                            >
-                              <div className="flex items-center">
-                                <div
-                                  className="w-3 h-3 rounded-full mr-2"
-                                  style={{ backgroundColor: tag.color }}
-                                />
-                                <span className="text-sm">{tag.name}</span>
-                              </div>
-                              {isSelected && <span className="opacity-50">✓</span>}
-                            </Button>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <div className="text-center py-2 text-sm text-muted-foreground">
-                        {t('tags.empty') || "No tags created yet"}
-                      </div>
-                    )}
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{t('tags.add') || "Add tags"}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+              {isLoading ? (
+                <div className="flex justify-center py-4">
+                  <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
+                </div>
+              ) : tags.length > 0 ? (
+                <div className="grid gap-1.5">
+                  {tags.map(tag => {
+                    const isSelected = selectedTags.some(t => t.id === tag.id);
+                    return (
+                      <Button
+                        key={tag.id}
+                        variant="ghost"
+                        className={`justify-between h-8 px-2 ${
+                          isSelected ? "bg-muted" : ""
+                        }`}
+                        onClick={() => toggleTag(tag)}
+                      >
+                        <div className="flex items-center">
+                          <div
+                            className="w-3 h-3 rounded-full mr-2"
+                            style={{ backgroundColor: tag.color }}
+                          />
+                          <span className="text-sm">{tag.name}</span>
+                        </div>
+                        {isSelected && <span className="opacity-50">✓</span>}
+                      </Button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-2 text-sm text-muted-foreground">
+                  {t('tags.empty')}
+                </div>
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
 
       {/* Create Tag Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t('tags.create') || "Create new tag"}</DialogTitle>
+            <DialogTitle>{t('tags.create')}</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="name">{t('tags.nameLabel') || "Tag name"}</Label>
+              <Label htmlFor="name">{t('tags.nameLabel')}</Label>
               <Input
                 id="name"
-                placeholder={t('tags.namePlaceholder') || "Enter tag name"}
+                placeholder={t('tags.namePlaceholder')}
                 value={newTagName}
                 onChange={(e) => setNewTagName(e.target.value)}
               />
             </div>
             
             <div className="space-y-2">
-              <Label>{t('tags.colorLabel') || "Tag color"}</Label>
+              <Label>{t('tags.colorLabel')}</Label>
               <div className="flex flex-wrap gap-2">
                 {colorOptions.map((color) => (
                   <button
@@ -337,7 +336,7 @@ export const TagsSelector = ({ ideaId, onTagsChange }: TagsSelectorProps) => {
               onClick={() => setIsCreateDialogOpen(false)}
               disabled={isLoading}
             >
-              {t('common.cancel') || "Cancel"}
+              {t('common.cancel')}
             </Button>
             <Button 
               onClick={createTag} 
@@ -348,7 +347,7 @@ export const TagsSelector = ({ ideaId, onTagsChange }: TagsSelectorProps) => {
               ) : (
                 <TagIcon className="h-4 w-4 mr-2" />
               )}
-              {t('common.create') || "Create"}
+              {t('tags.create')}
             </Button>
           </DialogFooter>
         </DialogContent>

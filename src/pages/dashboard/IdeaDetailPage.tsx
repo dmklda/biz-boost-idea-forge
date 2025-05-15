@@ -122,7 +122,7 @@ const IdeaDetailPage = () => {
           
         if (ideaError) throw ideaError;
         if (!ideaData) {
-          toast.error(t('ideas.notFound') || "Ideia não encontrada");
+          toast.error(t('ideas.notFound'));
           navigate('/dashboard/ideias');
           return;
         }
@@ -134,6 +134,8 @@ const IdeaDetailPage = () => {
           .from('idea_analyses')
           .select('*')
           .eq('idea_id', id)
+          .order('created_at', { ascending: false })
+          .limit(1)
           .maybeSingle();
           
         if (analysisError) throw analysisError;
@@ -157,7 +159,7 @@ const IdeaDetailPage = () => {
         }
       } catch (error) {
         console.error("Error fetching idea details:", error);
-        toast.error(t('errors.fetchingDetails') || "Erro ao buscar detalhes da ideia");
+        toast.error(t('errors.fetchingDetails'));
       } finally {
         setLoading(false);
       }
@@ -176,7 +178,7 @@ const IdeaDetailPage = () => {
   // Function to download analysis as PDF
   const handleDownloadPDF = () => {
     // To be implemented - would connect to a PDF generation service
-    toast.info(t('features.comingSoon') || "Funcionalidade em breve");
+    toast.info(t('features.comingSoon'));
   };
   
   // Function to get score color class
@@ -189,11 +191,11 @@ const IdeaDetailPage = () => {
   // Function to get status badge
   const getStatusBadge = (score: number) => {
     if (score >= 70) {
-      return <Badge className="bg-green-500/10 text-green-600 border-green-500">{t('ideas.scoreStatus.great', "Ótimo")}</Badge>;
+      return <Badge className="bg-green-500/10 text-green-600 border-green-500">{t('ideas.scoreStatus.great')}</Badge>;
     } else if (score >= 40) {
-      return <Badge className="bg-amber-500/10 text-amber-600 border-amber-500">{t('ideas.scoreStatus.medium', "Médio")}</Badge>;
+      return <Badge className="bg-amber-500/10 text-amber-600 border-amber-500">{t('ideas.scoreStatus.medium')}</Badge>;
     } else {
-      return <Badge className="bg-red-500/10 text-red-600 border-red-500">{t('ideas.scoreStatus.low', "Baixo")}</Badge>;
+      return <Badge className="bg-red-500/10 text-red-600 border-red-500">{t('ideas.scoreStatus.low')}</Badge>;
     }
   };
   
@@ -233,9 +235,9 @@ const IdeaDetailPage = () => {
   if (!idea) {
     return (
       <div className="text-center py-10">
-        <h2 className="text-xl font-medium">{t('ideas.notFound') || "Ideia não encontrada"}</h2>
+        <h2 className="text-xl font-medium">{t('ideas.notFound')}</h2>
         <Button variant="ghost" className="mt-4" asChild>
-          <Link to="/dashboard/ideias">{t('ideas.backToIdeas') || "Voltar para Ideias"}</Link>
+          <Link to="/dashboard/ideias">{t('ideas.backToIdeas')}</Link>
         </Button>
       </div>
     );
@@ -247,7 +249,7 @@ const IdeaDetailPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard/ideias')} className="w-fit">
           <ArrowLeft className="h-4 w-4 mr-2" />
-          {t('common.back') || "Voltar"}
+          {t('common.back')}
         </Button>
         
         <div className="flex items-center gap-2">
@@ -260,12 +262,12 @@ const IdeaDetailPage = () => {
           
           <Button variant="outline" size="sm" onClick={handleShare} className="flex items-center gap-1">
             <Share2 className="h-4 w-4" />
-            <span className="hidden sm:inline">{copySuccess ? (t('common.copied') || "Copiado!") : (t('common.share') || "Compartilhar")}</span>
+            <span className="hidden sm:inline">{copySuccess ? t('common.copied') : t('common.share')}</span>
           </Button>
           
           <Button variant="outline" size="sm" onClick={handleDownloadPDF} className="flex items-center gap-1">
             <Download className="h-4 w-4" />
-            <span className="hidden sm:inline">{t('common.pdf', "PDF")}</span>
+            <span className="hidden sm:inline">{t('common.pdf')}</span>
           </Button>
         </div>
       </div>
@@ -296,10 +298,10 @@ const IdeaDetailPage = () => {
       {/* Analysis content */}
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList className="grid grid-cols-2 md:grid-cols-4">
-          <TabsTrigger value="overview">{t('ideas.detail.overview') || "Visão Geral"}</TabsTrigger>
-          <TabsTrigger value="analysis">{t('ideas.detail.analysis') || "Análise"}</TabsTrigger>
-          <TabsTrigger value="recommendations">{t('ideas.detail.recommendations') || "Recomendações"}</TabsTrigger>
-          <TabsTrigger value="financials">{t('ideas.detail.financials') || "Financeiro"}</TabsTrigger>
+          <TabsTrigger value="overview">{t('ideas.detail.overview')}</TabsTrigger>
+          <TabsTrigger value="analysis">{t('ideas.detail.analysis')}</TabsTrigger>
+          <TabsTrigger value="recommendations">{t('ideas.detail.recommendations')}</TabsTrigger>
+          <TabsTrigger value="financials">{t('ideas.detail.financials')}</TabsTrigger>
         </TabsList>
         
         {/* Overview tab */}
@@ -308,7 +310,7 @@ const IdeaDetailPage = () => {
           {analysis && (
             <Card className="shadow-sm">
               <CardHeader className="pb-3">
-                <CardTitle>{t('ideas.detail.viabilityScore') || "Pontuação de Viabilidade"}</CardTitle>
+                <CardTitle>{t('ideas.detail.viabilityScore')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col items-center sm:flex-row sm:justify-between gap-4">
@@ -318,10 +320,10 @@ const IdeaDetailPage = () => {
                     </span>
                     <p className="text-muted-foreground mt-2 max-w-md">
                       {analysis.score >= 70
-                        ? (t('ideas.detail.highScore') || "Excelente viabilidade! Esta ideia tem um grande potencial de sucesso.")
+                        ? t('ideas.detail.highScore')
                         : analysis.score >= 40
-                        ? (t('ideas.detail.mediumScore') || "Viabilidade moderada. A ideia tem potencial, mas requer ajustes.")
-                        : (t('ideas.detail.lowScore') || "Baixa viabilidade. Recomendamos revisar os principais aspectos da ideia.")}
+                        ? t('ideas.detail.mediumScore')
+                        : t('ideas.detail.lowScore')}
                     </p>
                   </div>
                   
@@ -351,13 +353,13 @@ const IdeaDetailPage = () => {
           {/* Idea details */}
           <Card className="shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle>{t('ideas.detail.ideaDetails') || "Detalhes da Ideia"}</CardTitle>
+              <CardTitle>{t('ideas.detail.ideaDetails')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <h3 className="font-medium text-sm flex items-center gap-1">
                   <FileText className="h-4 w-4 text-muted-foreground" />
-                  {t('ideas.detail.description') || "Descrição"}
+                  {t('ideas.detail.description')}
                 </h3>
                 <p className="mt-1">{idea.description}</p>
               </div>
@@ -365,17 +367,17 @@ const IdeaDetailPage = () => {
               <div>
                 <h3 className="font-medium text-sm flex items-center gap-1">
                   <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-                  {t('ideas.detail.problemSolved') || "Problema Resolvido"}
+                  {t('ideas.detail.problemSolved')}
                 </h3>
-                <p className="mt-1">{idea.problem || t('common.notSpecified', "Não especificado")}</p>
+                <p className="mt-1">{idea.problem || t('common.notSpecified')}</p>
               </div>
               
               <div>
                 <h3 className="font-medium text-sm flex items-center gap-1">
                   <Users className="h-4 w-4 text-muted-foreground" />
-                  {t('ideas.detail.targetAudience') || "Público-alvo"}
+                  {t('ideas.detail.targetAudience')}
                 </h3>
-                <p className="mt-1">{idea.audience || t('common.notSpecified', "Não especificado")}</p>
+                <p className="mt-1">{idea.audience || t('common.notSpecified')}</p>
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -383,7 +385,7 @@ const IdeaDetailPage = () => {
                   <div>
                     <h3 className="font-medium text-sm flex items-center gap-1">
                       <DollarSign className="h-4 w-4 text-muted-foreground" />
-                      {t('ideas.detail.budget') || "Orçamento"}
+                      {t('ideas.detail.budget')}
                     </h3>
                     <p className="mt-1">
                       {new Intl.NumberFormat('pt-BR', {
@@ -398,7 +400,7 @@ const IdeaDetailPage = () => {
                   <div>
                     <h3 className="font-medium text-sm flex items-center gap-1">
                       <MapPin className="h-4 w-4 text-muted-foreground" />
-                      {t('ideas.detail.location') || "Localização"}
+                      {t('ideas.detail.location')}
                     </h3>
                     <p className="mt-1">{idea.location}</p>
                   </div>
@@ -408,7 +410,7 @@ const IdeaDetailPage = () => {
                   <div>
                     <h3 className="font-medium text-sm flex items-center gap-1">
                       <Coins className="h-4 w-4 text-muted-foreground" />
-                      {t('ideas.detail.monetization') || "Monetização"}
+                      {t('ideas.detail.monetization')}
                     </h3>
                     <p className="mt-1">{idea.monetization}</p>
                   </div>
@@ -418,7 +420,7 @@ const IdeaDetailPage = () => {
                   <div>
                     <h3 className="font-medium text-sm flex items-center gap-1">
                       <Tag className="h-4 w-4 text-muted-foreground" />
-                      {t('ideas.detail.competitors') || "Concorrentes"}
+                      {t('ideas.detail.competitors')}
                     </h3>
                     <p className="mt-1">{idea.has_competitors}</p>
                   </div>
@@ -431,14 +433,14 @@ const IdeaDetailPage = () => {
           {analysis && analysis.swot_analysis && (
             <Card className="shadow-sm">
               <CardHeader className="pb-3">
-                <CardTitle>{t('ideas.detail.quickSummary') || "Resumo Rápido"}</CardTitle>
+                <CardTitle>{t('ideas.detail.quickSummary')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <h3 className="font-medium text-sm flex items-center gap-1 text-green-500">
                       <Check className="h-4 w-4" />
-                      {t('ideas.detail.strengths') || "Pontos Fortes"}
+                      {t('ideas.detail.strengths')}
                     </h3>
                     <ul className="ml-6 list-disc text-sm space-y-1">
                       {analysis.swot_analysis.strengths.map((strength, idx) => (
@@ -450,7 +452,7 @@ const IdeaDetailPage = () => {
                   <div className="space-y-2">
                     <h3 className="font-medium text-sm flex items-center gap-1 text-red-500">
                       <X className="h-4 w-4" />
-                      {t('ideas.detail.weaknesses') || "Pontos Fracos"}
+                      {t('ideas.detail.weaknesses')}
                     </h3>
                     <ul className="ml-6 list-disc text-sm space-y-1">
                       {analysis.swot_analysis.weaknesses.map((weakness, idx) => (
@@ -470,9 +472,9 @@ const IdeaDetailPage = () => {
             <>
               <Card className="shadow-sm">
                 <CardHeader className="pb-3">
-                  <CardTitle>{t('ideas.detail.swotAnalysis') || "Análise SWOT"}</CardTitle>
+                  <CardTitle>{t('ideas.detail.swotAnalysis')}</CardTitle>
                   <CardDescription>
-                    {t('ideas.detail.swotDescription') || "Forças, Fraquezas, Oportunidades e Ameaças"}
+                    {t('ideas.detail.swotDescription')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -480,7 +482,7 @@ const IdeaDetailPage = () => {
                     <div className="space-y-2">
                       <h3 className="font-medium text-sm flex items-center gap-1 text-green-500">
                         <Check className="h-4 w-4" />
-                        {t('ideas.detail.strengths') || "Pontos Fortes"}
+                        {t('ideas.detail.strengths')}
                       </h3>
                       <ul className="ml-6 list-disc space-y-1">
                         {analysis.swot_analysis.strengths.map((strength, idx) => (
@@ -492,7 +494,7 @@ const IdeaDetailPage = () => {
                     <div className="space-y-2">
                       <h3 className="font-medium text-sm flex items-center gap-1 text-red-500">
                         <X className="h-4 w-4" />
-                        {t('ideas.detail.weaknesses') || "Pontos Fracos"}
+                        {t('ideas.detail.weaknesses')}
                       </h3>
                       <ul className="ml-6 list-disc space-y-1">
                         {analysis.swot_analysis.weaknesses.map((weakness, idx) => (
@@ -504,7 +506,7 @@ const IdeaDetailPage = () => {
                     <div className="space-y-2">
                       <h3 className="font-medium text-sm flex items-center gap-1 text-blue-500">
                         <AlertTriangle className="h-4 w-4" />
-                        {t('ideas.detail.opportunities') || "Oportunidades"}
+                        {t('ideas.detail.opportunities')}
                       </h3>
                       <ul className="ml-6 list-disc space-y-1">
                         {analysis.swot_analysis.opportunities.map((opportunity, idx) => (
@@ -516,7 +518,7 @@ const IdeaDetailPage = () => {
                     <div className="space-y-2">
                       <h3 className="font-medium text-sm flex items-center gap-1 text-amber-500">
                         <AlertTriangle className="h-4 w-4" />
-                        {t('ideas.detail.threats') || "Ameaças"}
+                        {t('ideas.detail.threats')}
                       </h3>
                       <ul className="ml-6 list-disc space-y-1">
                         {analysis.swot_analysis.threats.map((threat, idx) => (
@@ -531,26 +533,26 @@ const IdeaDetailPage = () => {
               {analysis.market_analysis && (
                 <Card className="shadow-sm">
                   <CardHeader className="pb-3">
-                    <CardTitle>{t('ideas.detail.marketAnalysis') || "Análise de Mercado"}</CardTitle>
+                    <CardTitle>{t('ideas.detail.marketAnalysis')}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <h3 className="font-medium text-sm">{t('ideas.detail.marketSize') || "Tamanho do Mercado"}</h3>
+                      <h3 className="font-medium text-sm">{t('ideas.detail.marketSize')}</h3>
                       <p className="mt-1">{analysis.market_analysis.market_size}</p>
                     </div>
                     
                     <div>
-                      <h3 className="font-medium text-sm">{t('ideas.detail.targetAudience') || "Público-alvo"}</h3>
+                      <h3 className="font-medium text-sm">{t('ideas.detail.targetAudience')}</h3>
                       <p className="mt-1">{analysis.market_analysis.target_audience}</p>
                     </div>
                     
                     <div>
-                      <h3 className="font-medium text-sm">{t('ideas.detail.growthPotential') || "Potencial de Crescimento"}</h3>
+                      <h3 className="font-medium text-sm">{t('ideas.detail.growthPotential')}</h3>
                       <p className="mt-1">{analysis.market_analysis.growth_potential}</p>
                     </div>
                     
                     <div>
-                      <h3 className="font-medium text-sm">{t('ideas.detail.barriers') || "Barreiras de Entrada"}</h3>
+                      <h3 className="font-medium text-sm">{t('ideas.detail.barriers')}</h3>
                       <ul className="ml-6 list-disc mt-1">
                         {analysis.market_analysis.barriers_to_entry.map((barrier, idx) => (
                           <li key={idx}>{barrier}</li>
@@ -564,11 +566,11 @@ const IdeaDetailPage = () => {
               {analysis.competitor_analysis && (
                 <Card className="shadow-sm">
                   <CardHeader className="pb-3">
-                    <CardTitle>{t('ideas.detail.competitorAnalysis') || "Análise de Concorrentes"}</CardTitle>
+                    <CardTitle>{t('ideas.detail.competitorAnalysis')}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <h3 className="font-medium text-sm">{t('ideas.detail.keyCompetitors') || "Principais Concorrentes"}</h3>
+                      <h3 className="font-medium text-sm">{t('ideas.detail.keyCompetitors')}</h3>
                       <ul className="ml-6 list-disc mt-1">
                         {analysis.competitor_analysis.key_competitors.map((competitor, idx) => (
                           <li key={idx}>{competitor}</li>
@@ -577,12 +579,12 @@ const IdeaDetailPage = () => {
                     </div>
                     
                     <div>
-                      <h3 className="font-medium text-sm">{t('ideas.detail.competitiveAdvantage') || "Vantagem Competitiva"}</h3>
+                      <h3 className="font-medium text-sm">{t('ideas.detail.competitiveAdvantage')}</h3>
                       <p className="mt-1">{analysis.competitor_analysis.competitive_advantage}</p>
                     </div>
                     
                     <div>
-                      <h3 className="font-medium text-sm">{t('ideas.detail.marketGaps') || "Lacunas de Mercado"}</h3>
+                      <h3 className="font-medium text-sm">{t('ideas.detail.marketGaps')}</h3>
                       <ul className="ml-6 list-disc mt-1">
                         {analysis.competitor_analysis.market_gaps.map((gap, idx) => (
                           <li key={idx}>{gap}</li>
@@ -597,7 +599,7 @@ const IdeaDetailPage = () => {
             <Card className="shadow-sm">
               <CardContent className="p-6 text-center">
                 <div className="text-muted-foreground">
-                  {t('ideas.detail.noAnalysis') || "Análise detalhada não disponível"}
+                  {t('ideas.detail.noAnalysis')}
                 </div>
               </CardContent>
             </Card>
@@ -609,11 +611,11 @@ const IdeaDetailPage = () => {
           {analysis && analysis.recommendations ? (
             <Card className="shadow-sm">
               <CardHeader className="pb-3">
-                <CardTitle>{t('ideas.detail.recommendationsAndNextSteps') || "Recomendações e Próximos Passos"}</CardTitle>
+                <CardTitle>{t('ideas.detail.recommendationsAndNextSteps')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.actionItems') || "Itens de Ação"}</h3>
+                  <h3 className="font-medium text-sm">{t('ideas.detail.actionItems')}</h3>
                   <ul className="ml-6 list-disc mt-1">
                     {analysis.recommendations.action_items.map((item, idx) => (
                       <li key={idx}>{item}</li>
@@ -622,7 +624,7 @@ const IdeaDetailPage = () => {
                 </div>
                 
                 <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.nextSteps') || "Próximos Passos"}</h3>
+                  <h3 className="font-medium text-sm">{t('ideas.detail.nextSteps')}</h3>
                   <ul className="ml-6 list-disc mt-1">
                     {analysis.recommendations.next_steps.map((step, idx) => (
                       <li key={idx}>{step}</li>
@@ -631,7 +633,7 @@ const IdeaDetailPage = () => {
                 </div>
                 
                 <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.potentialChallenges') || "Desafios Potenciais"}</h3>
+                  <h3 className="font-medium text-sm">{t('ideas.detail.potentialChallenges')}</h3>
                   <ul className="ml-6 list-disc mt-1">
                     {analysis.recommendations.potential_challenges.map((challenge, idx) => (
                       <li key={idx}>{challenge}</li>
@@ -640,7 +642,7 @@ const IdeaDetailPage = () => {
                 </div>
                 
                 <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.suggestedResources') || "Recursos Sugeridos"}</h3>
+                  <h3 className="font-medium text-sm">{t('ideas.detail.suggestedResources')}</h3>
                   <ul className="ml-6 list-disc mt-1">
                     {analysis.recommendations.suggested_resources.map((resource, idx) => (
                       <li key={idx}>{resource}</li>
@@ -653,7 +655,7 @@ const IdeaDetailPage = () => {
             <Card className="shadow-sm">
               <CardContent className="p-6 text-center">
                 <div className="text-muted-foreground">
-                  {t('ideas.detail.noRecommendations') || "Recomendações não disponíveis"}
+                  {t('ideas.detail.noRecommendations')}
                 </div>
               </CardContent>
             </Card>
@@ -665,26 +667,26 @@ const IdeaDetailPage = () => {
           {analysis && analysis.financial_analysis ? (
             <Card className="shadow-sm">
               <CardHeader className="pb-3">
-                <CardTitle>{t('ideas.detail.financialAnalysis') || "Análise Financeira"}</CardTitle>
+                <CardTitle>{t('ideas.detail.financialAnalysis')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.revenuePotential') || "Potencial de Receita"}</h3>
+                  <h3 className="font-medium text-sm">{t('ideas.detail.revenuePotential')}</h3>
                   <p className="mt-1">{analysis.financial_analysis.revenue_potential}</p>
                 </div>
                 
                 <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.initialInvestment') || "Investimento Inicial"}</h3>
+                  <h3 className="font-medium text-sm">{t('ideas.detail.initialInvestment')}</h3>
                   <p className="mt-1">{analysis.financial_analysis.initial_investment}</p>
                 </div>
                 
                 <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.breakEvenEstimate') || "Estimativa de Ponto de Equilíbrio"}</h3>
+                  <h3 className="font-medium text-sm">{t('ideas.detail.breakEvenEstimate')}</h3>
                   <p className="mt-1">{analysis.financial_analysis.break_even_estimate}</p>
                 </div>
                 
                 <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.fundingSuggestions') || "Sugestões de Financiamento"}</h3>
+                  <h3 className="font-medium text-sm">{t('ideas.detail.fundingSuggestions')}</h3>
                   <ul className="ml-6 list-disc mt-1">
                     {analysis.financial_analysis.funding_suggestions.map((suggestion, idx) => (
                       <li key={idx}>{suggestion}</li>
@@ -697,7 +699,7 @@ const IdeaDetailPage = () => {
             <Card className="shadow-sm">
               <CardContent className="p-6 text-center">
                 <div className="text-muted-foreground">
-                  {t('ideas.detail.noFinancials') || "Análise financeira não disponível"}
+                  {t('ideas.detail.noFinancials')}
                 </div>
               </CardContent>
             </Card>

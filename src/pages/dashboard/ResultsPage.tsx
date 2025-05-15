@@ -55,6 +55,8 @@ const ResultsPage = () => {
           .select('*')
           .eq('idea_id', ideaId)
           .eq('user_id', authState.user?.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
           .single();
 
         if (analysisError) {
