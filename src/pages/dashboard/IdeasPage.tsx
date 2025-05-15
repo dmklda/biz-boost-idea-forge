@@ -25,7 +25,7 @@ const IdeasPage = () => {
   } = useIdeasData(authState.user?.id);
 
   // Use the refresh hook to update ideas when analysis is updated
-  useRefreshAnalyses(fetchIdeas, [fetchIdeas]);
+  useRefreshAnalyses(fetchIdeas, []);
 
   return (
     <div className="space-y-6">

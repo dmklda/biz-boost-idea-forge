@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -23,10 +22,9 @@ interface IdeasGridProps {
   ideas: Idea[];
   loading: boolean;
   emptyAction?: React.ReactNode;
-  onUpdate?: () => void;
 }
 
-export const IdeasGrid = ({ ideas, loading, emptyAction, onUpdate }: IdeasGridProps) => {
+export const IdeasGrid = ({ ideas, loading, emptyAction }: IdeasGridProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -64,7 +62,7 @@ export const IdeasGrid = ({ ideas, loading, emptyAction, onUpdate }: IdeasGridPr
         <IdeaCard 
           key={idea.id} 
           idea={idea} 
-          onUpdate={onUpdate || (() => {})} 
+          onUpdate={() => {}} // This will be passed from the parent component
         />
       ))}
     </div>

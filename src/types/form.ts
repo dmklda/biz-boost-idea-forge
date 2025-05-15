@@ -7,7 +7,6 @@ export interface FormData {
   monetization: string;
   budget: number;
   location: string;
-  language?: string; // Add language field for i18n support
 }
 
 export type FormStep = 1 | 2 | 3 | 4;

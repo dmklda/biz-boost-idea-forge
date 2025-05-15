@@ -100,7 +100,6 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
         // Always navigate to the results page in the dashboard
         if (analysisData && analysisData.ideaId) {
           // Dispatch custom event to notify dashboard of data change
-          console.log("Dispatching analysis-updated event with ideaId:", analysisData.ideaId);
           const analysisUpdateEvent = new CustomEvent('analysis-updated', { 
             detail: { ideaId: analysisData.ideaId }
           });
