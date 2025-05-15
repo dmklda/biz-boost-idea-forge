@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IdeaForm } from "@/components/IdeaForm";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
 import { useTranslation } from "react-i18next";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCurrentLanguage } from "@/i18n/config";
 
 const EditIdeaPage = () => {
   const { t } = useTranslation();
@@ -133,6 +134,9 @@ const EditIdeaPage = () => {
       </div>
     );
   }
+
+  // Log the current language when editing/reanalyzing
+  console.log("Current language for editing/reanalyzing:", getCurrentLanguage());
 
   return (
     <div className="space-y-6">

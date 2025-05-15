@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
     }
     
     // Extract data from the parsed request
-    const { ideaData, userId, ideaId, isReanalyzing = false } = requestData;
+    const { ideaData, userId, ideaId, isReanalyzing = false, language: topLevelLanguage } = requestData;
     
     // Validate required data
     if (!ideaData || !userId) {
@@ -56,6 +56,11 @@ Deno.serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Handle language preference - check from multiple possible locations
+    // This ensures backward compatibility with different client implementations
+    const userLanguage = ideaData.language || topLevelLanguage || 'pt';
+    console.log("User language for analysis:", userLanguage);
 
     // Create Supabase client with SERVICE ROLE key to bypass RLS
     // This is crucial for the function to insert data into tables with RLS enabled
@@ -100,8 +105,8 @@ Deno.serve(async (req) => {
       }
     }
     
-    // Generate analysis with OpenAI
-    const analysis = await generateAnalysis(ideaData);
+    // Generate analysis with OpenAI, passing in the language
+    const analysis = await generateAnalysis(ideaData, userLanguage);
     
     // Create or update the idea in the database using the admin client
     let finalIdeaId = ideaId;
@@ -227,11 +232,11 @@ Deno.serve(async (req) => {
 });
 
 // Function to generate analysis using OpenAI with better error handling and language support
-async function generateAnalysis(ideaData) {
+async function generateAnalysis(ideaData, preferredLanguage = 'pt') {
   try {
-    const { systemPrompt, userPrompt } = generateAnalysisPrompt(ideaData);
+    const { systemPrompt, userPrompt } = generateAnalysisPrompt(ideaData, preferredLanguage);
     
-    console.log("Sending request to OpenAI with language setting...");
+    console.log("Sending request to OpenAI with language setting:", preferredLanguage);
     
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini", // Using a more modern model
@@ -276,9 +281,12 @@ async function generateAnalysis(ideaData) {
 }
 
 // Function to generate the analysis prompt
-function generateAnalysisPrompt(ideaData) {
-  // Try to extract language from request headers or fall back to English
-  const preferredLanguage = ideaData.language || 'pt'; // Default to Portuguese if not specified
+function generateAnalysisPrompt(ideaData, preferredLanguage = 'pt') {
+  // Ensure we have a valid language by defaulting to Portuguese
+  if (!['pt', 'en', 'es', 'ja'].includes(preferredLanguage)) {
+    console.log(`Invalid language code provided: ${preferredLanguage}, defaulting to Portuguese`);
+    preferredLanguage = 'pt';
+  }
   
   // Determine the language for the prompt
   let systemPrompt = "You are a business analyst expert that evaluates business ideas and provides detailed analysis.";

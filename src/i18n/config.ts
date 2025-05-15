@@ -40,7 +40,14 @@ i18n
 
 // Export the current language for use in other files
 export const getCurrentLanguage = () => {
-  return i18n.language || 'pt';
+  // Always return only the base language code (pt, en, es, ja)
+  // This ensures consistent language codes are used for analysis
+  const fullLanguage = i18n.language || 'pt';
+  const baseLanguage = fullLanguage.split('-')[0]; // Handle codes like 'pt-BR'
+  
+  // Ensure we only return supported languages
+  const supportedLanguages = ['pt', 'en', 'es', 'ja'];
+  return supportedLanguages.includes(baseLanguage) ? baseLanguage : 'pt';
 };
 
 export default i18n;

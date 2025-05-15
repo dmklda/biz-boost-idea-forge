@@ -48,11 +48,12 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
             body: JSON.stringify({
               ideaData: {
                 ...formData,
-                language: currentLanguage
+                language: currentLanguage // Always include the language
               },
               userId: authState.user.id,
               ideaId: editingIdeaId,
-              isReanalyzing
+              isReanalyzing,
+              language: currentLanguage // Also include it at the top level for backward compatibility
             })
           });
           
