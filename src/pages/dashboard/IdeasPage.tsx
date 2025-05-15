@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,7 @@ import { Plus, Lightbulb, FileText } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "react-i18next";
 import { IdeasTabs, useIdeasData } from "@/components/ideas";
+import { useRefreshAnalyses } from "@/hooks/use-refresh-analyses";
 
 const IdeasPage = () => {
   const { t } = useTranslation();
@@ -21,6 +23,9 @@ const IdeasPage = () => {
     handleTagsChange,
     fetchIdeas
   } = useIdeasData(authState.user?.id);
+
+  // Use the refresh hook to update ideas when analysis is updated
+  useRefreshAnalyses(fetchIdeas, []);
 
   return (
     <div className="space-y-6">

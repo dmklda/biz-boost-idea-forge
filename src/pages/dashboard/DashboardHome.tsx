@@ -1,5 +1,5 @@
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -57,115 +57,128 @@ const DashboardHome = () => {
     return date.toLocaleString('default', { month: 'short' });
   };
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!user) return;
+  // Refactor fetchUserData into a function that can be called multiple times
+  const fetchUserData = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      setIsLoading(true);
       
-      try {
-        setIsLoading(true);
+      // Fetch total idea count
+      const { count, error: countError } = await supabase
+        .from('ideas')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      
+      if (countError) throw countError;
+      if (count !== null) setIdeaCount(count);
+      
+      // Fetch recent ideas
+      const { data: recentIdeasData, error: recentIdeasError } = await supabase
+        .from('ideas')
+        .select('id, title, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(3);
+      
+      if (recentIdeasError) throw recentIdeasError;
+      setRecentIdeas(recentIdeasData || []);
+      
+      // Fetch idea analyses for viability rate calculation
+      const { data: analysesData, error: analysesError } = await supabase
+        .from('idea_analyses')
+        .select('score, created_at')
+        .eq('user_id', user.id);
         
-        // Fetch total idea count
-        const { count, error: countError } = await supabase
-          .from('ideas')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', user.id);
+      if (analysesError) throw analysesError;
+      
+      // Calculate viability rate from analyses scores
+      if (analysesData && analysesData.length > 0) {
+        // Calculate average score (viability rate)
+        const totalScore = analysesData.reduce((sum, analysis) => sum + analysis.score, 0);
+        const avgScore = Math.round(totalScore / analysesData.length);
+        setViabilityRate(avgScore);
         
-        if (countError) throw countError;
-        if (count !== null) setIdeaCount(count);
+        // Calculate trend (mock for now, but could be compared to last month)
+        setViabilityTrend(5); // Example: 5% increase
         
-        // Fetch recent ideas
-        const { data: recentIdeasData, error: recentIdeasError } = await supabase
-          .from('ideas')
-          .select('id, title, created_at')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(3);
+        // Count total consultations
+        setTotalConsultations(analysesData.length);
         
-        if (recentIdeasError) throw recentIdeasError;
-        setRecentIdeas(recentIdeasData || []);
+        // Generate performance data by month
+        const monthlyData: {[key: string]: {analyses: number, consultations: number}} = {};
         
-        // Fetch idea analyses for viability rate calculation
-        const { data: analysesData, error: analysesError } = await supabase
-          .from('idea_analyses')
-          .select('score, created_at')
-          .eq('user_id', user.id);
-          
-        if (analysesError) throw analysesError;
-        
-        // Calculate viability rate from analyses scores
-        if (analysesData && analysesData.length > 0) {
-          // Calculate average score (viability rate)
-          const totalScore = analysesData.reduce((sum, analysis) => sum + analysis.score, 0);
-          const avgScore = Math.round(totalScore / analysesData.length);
-          setViabilityRate(avgScore);
-          
-          // Calculate trend (mock for now, but could be compared to last month)
-          setViabilityTrend(5); // Example: 5% increase
-          
-          // Count total consultations
-          setTotalConsultations(analysesData.length);
-          
-          // Generate performance data by month
-          const monthlyData: {[key: string]: {analyses: number, consultations: number}} = {};
-          
-          // Get current month and 5 months before
-          const today = new Date();
-          for (let i = 5; i >= 0; i--) {
-            const monthDate = new Date(today.getFullYear(), today.getMonth() - i, 1);
-            const monthKey = `${monthDate.getFullYear()}-${monthDate.getMonth() + 1}`;
-            monthlyData[monthKey] = { analyses: 0, consultations: 0 };
-          }
-          
-          // Populate with actual data
-          analysesData.forEach(analysis => {
-            const date = new Date(analysis.created_at);
-            const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
-            
-            if (monthlyData[monthKey]) {
-              monthlyData[monthKey].analyses += 1;
-              monthlyData[monthKey].consultations += 1;
-            }
-          });
-          
-          // Convert to array format for charts
-          const performanceArray = Object.entries(monthlyData).map(([key, value]) => {
-            const [year, month] = key.split('-');
-            return {
-              name: getMonthName(parseInt(month)),
-              análises: value.analyses,
-              consultas: value.consultations
-            };
-          });
-          
-          setPerformanceData(performanceArray);
-        } else {
-          // If no analyses data, set default viability and use empty performance data
-          setViabilityRate(0);
-          setViabilityTrend(0);
-          
-          // Create empty performance data for the last 6 months
-          const emptyPerformanceData = [];
-          const today = new Date();
-          for (let i = 5; i >= 0; i--) {
-            const monthDate = new Date(today.getFullYear(), today.getMonth() - i, 1);
-            emptyPerformanceData.push({
-              name: getMonthName(monthDate.getMonth() + 1),
-              análises: 0,
-              consultas: 0
-            });
-          }
-          
-          setPerformanceData(emptyPerformanceData);
+        // Get current month and 5 months before
+        const today = new Date();
+        for (let i = 5; i >= 0; i--) {
+          const monthDate = new Date(today.getFullYear(), today.getMonth() - i, 1);
+          const monthKey = `${monthDate.getFullYear()}-${monthDate.getMonth() + 1}`;
+          monthlyData[monthKey] = { analyses: 0, consultations: 0 };
         }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      } finally {
-        setIsLoading(false);
+        
+        // Populate with actual data
+        analysesData.forEach(analysis => {
+          const date = new Date(analysis.created_at);
+          const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
+          
+          if (monthlyData[monthKey]) {
+            monthlyData[monthKey].analyses += 1;
+            monthlyData[monthKey].consultations += 1;
+          }
+        });
+        
+        // Convert to array format for charts
+        const performanceArray = Object.entries(monthlyData).map(([key, value]) => {
+          const [year, month] = key.split('-');
+          return {
+            name: getMonthName(parseInt(month)),
+            análises: value.analyses,
+            consultas: value.consultations
+          };
+        });
+        
+        setPerformanceData(performanceArray);
+      } else {
+        // If no analyses data, set default viability and use empty performance data
+        setViabilityRate(0);
+        setViabilityTrend(0);
+        
+        // Create empty performance data for the last 6 months
+        const emptyPerformanceData = [];
+        const today = new Date();
+        for (let i = 5; i >= 0; i--) {
+          const monthDate = new Date(today.getFullYear(), today.getMonth() - i, 1);
+          emptyPerformanceData.push({
+            name: getMonthName(monthDate.getMonth() + 1),
+            análises: 0,
+            consultas: 0
+          });
+        }
+        
+        setPerformanceData(emptyPerformanceData);
       }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
+  
+  useEffect(() => {
+    fetchUserData();
+    
+    // Listen for analysis updates
+    const handleAnalysisUpdate = () => {
+      console.log("Analysis update detected, refreshing dashboard data");
+      fetchUserData();
     };
     
-    fetchUserData();
-  }, [user]);
+    window.addEventListener('analysis-updated', handleAnalysisUpdate);
+    
+    return () => {
+      window.removeEventListener('analysis-updated', handleAnalysisUpdate);
+    };
+  }, [fetchUserData]);
   
   const addCredits = () => {
     // In a real app, this would redirect to a payment gateway

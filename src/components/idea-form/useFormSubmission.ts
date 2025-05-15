@@ -99,6 +99,12 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
         
         // Always navigate to the results page in the dashboard
         if (analysisData && analysisData.ideaId) {
+          // Dispatch custom event to notify dashboard of data change
+          const analysisUpdateEvent = new CustomEvent('analysis-updated', { 
+            detail: { ideaId: analysisData.ideaId }
+          });
+          window.dispatchEvent(analysisUpdateEvent);
+          
           navigate(`/dashboard/resultados?id=${analysisData.ideaId}`);
         } else {
           console.error("Missing ideaId in response:", analysisData);
