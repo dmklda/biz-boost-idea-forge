@@ -72,354 +72,94 @@ serve(async (req) => {
     console.log("Latest basic analysis data:", basicAnalysisData);
     console.log("Latest idea data:", ideaData);
 
-    // Keep the existing code for generating the analysis
-    // ... keep existing code (generate advancedAnalysis object and related logic)
-    const advancedAnalysis = {
-      businessName: {
-        name: ideaData.title || "TechFlow",
-        slogan: "Inovação que transforma o mercado",
-        justification: "O nome representa a essência da sua ideia e comunica claramente o valor principal do seu produto/serviço."
+    // Prepare a prompt for OpenAI to generate a complete analysis
+    const openAiApiKey = Deno.env.get("OPENAI_API_KEY") as string;
+    if (!openAiApiKey) {
+      throw new Error("Missing OpenAI API key in environment variables");
+    }
+
+    // Create comprehensive input for the AI based on existing data
+    const inputData = {
+      idea: {
+        title: ideaData.title || "Undisclosed business idea",
+        description: ideaData.description || "No description provided",
+        problem: ideaData.problem || "Not specified",
+        audience: ideaData.audience || "Not specified",
+        monetization: ideaData.monetization || "Not specified", 
+        has_competitors: ideaData.has_competitors || "Not specified",
+        budget: ideaData.budget || null,
+        location: ideaData.location || "Not specified"
       },
-      logoUrl: "https://placehold.co/400x400/3b82f6/FFFFFF/png?text=Logo",
-      summary: {
-        description: ideaData.description || "Descrição não fornecida.",
-        score: basicAnalysisData?.score || 85,
-        status: basicAnalysisData?.status || "Viable"
-      },
-      differentials: [
-        "Solução inovadora para o mercado", 
-        "Alto potencial de escalabilidade", 
-        "Baixo custo de aquisição de clientes", 
-        "Tecnologia proprietária",
-        "Experiência personalizada para cada usuário"
-      ],
-      pitch: `${ideaData.title || "Sua ideia"} é uma solução inovadora que ${ideaData.problem ? "resolve o problema de " + ideaData.problem : "atende às necessidades do mercado atual"}, focando em ${ideaData.audience || "um público amplo"}. Nossa proposta única combina tecnologia avançada com atendimento personalizado para criar uma experiência superior para os usuários.`,
-      marketAnalysis: {
-        size: basicAnalysisData?.market_analysis?.market_size || "O mercado global está avaliado em aproximadamente $ 50 bilhões com taxa de crescimento anual de 8%. No Brasil, representa cerca de $ 5 bilhões com potencial de crescimento acelerado nos próximos 5 anos.",
-        targetAudience: ideaData.audience || basicAnalysisData?.market_analysis?.target_audience || "Adultos entre 25-45 anos com renda média-alta, tecnologicamente informados e que valorizam praticidade e qualidade.",
-        trends: [
-          "Crescente demanda por soluções digitais integradas",
-          "Maior conscientização sobre sustentabilidade",
-          "Preferência por experiências personalizadas",
-          "Aumento do trabalho remoto e flexível",
-          "Valorização de tecnologias que otimizam tempo"
-        ],
-        barriers: basicAnalysisData?.market_analysis?.barriers_to_entry || [
-          "Regulamentações setoriais em evolução",
-          "Necessidade de educação do mercado",
-          "Grandes players estabelecidos",
-          "Custos iniciais de desenvolvimento"
-        ]
-      },
-      personas: [
-        {
-          name: "Marcelo, 35",
-          description: "Profissional ocupado que busca soluções práticas para otimizar seu tempo. Valoriza qualidade e está disposto a pagar mais por produtos que realmente resolvam seus problemas.",
-          occupation: "Gerente de Marketing",
-          behavior: "Procura por soluções tecnológicas e eficientes"
-        },
-        {
-          name: "Carla, 28",
-          description: "Empreendedora iniciante que busca ferramentas para crescer seu negócio com orçamento limitado. Prioriza custo-benefício e soluções escaláveis.",
-          occupation: "Pequena Empreendedora",
-          behavior: "Busca soluções de baixo custo com alto retorno"
-        },
-        {
-          name: "Roberto, 42",
-          description: "Dono de empresa estabelecida que procura inovação para manter competitividade. Valoriza soluções robustas e escaláveis.",
-          occupation: "CEO de Empresa de Médio Porte",
-          behavior: "Prioriza qualidade, segurança e escalabilidade"
-        }
-      ],
-      monetization: {
-        models: [
-          {
-            name: "Assinatura Mensal",
-            description: "Modelo recorrente com diferentes níveis de acesso e funcionalidades",
-            revenue: "$29 - $99 por usuário/mês"
-          },
-          {
-            name: "Freemium",
-            description: "Versão básica gratuita com recursos premium pagos",
-            revenue: "Conversão média de 5-10% dos usuários gratuitos"
-          },
-          {
-            name: ideaData.monetization || "Licenciamento Empresarial",
-            description: "Pacotes customizados para empresas com múltiplos usuários",
-            revenue: "$500 - $5,000 por empresa/mês"
-          },
-          {
-            name: "Comissão por Transação",
-            description: "Percentual sobre valores transacionados na plataforma",
-            revenue: "3-5% por transação"
-          }
-        ],
-        projections: {
-          firstYear: "$ 250,000 - $ 500,000",
-          thirdYear: "$ 2 million - $ 5 million",
-          breakEven: "18-24 meses",
-          roi: "120% após 3 anos"
-        }
-      },
-      channels: [
-        {
-          name: "Marketing de Conteúdo",
-          description: "Blog, YouTube e newsletter para atrair tráfego orgânico"
-        },
-        {
-          name: "Parcerias Estratégicas",
-          description: "Colaborações com empresas complementares"
-        },
-        {
-          name: "Marketing Digital",
-          description: "Campanhas direcionadas em redes sociais e Google Ads"
-        },
-        {
-          name: "Programa de Indicação",
-          description: "Incentivos para usuários que indicam novos clientes"
-        },
-        {
-          name: "Vendas Diretas",
-          description: "Equipe comercial para grandes contas e empresas"
-        }
-      ],
-      competitors: [
-        {
-          name: "Competidor Principal",
-          strengths: ["Marca estabelecida", "Grande base de usuários", "Altos recursos para marketing"],
-          weaknesses: ["Produto genérico", "Atendimento ao cliente deficiente", "Tecnologia desatualizada"]
-        },
-        {
-          name: "Competidor Secundário",
-          strengths: ["Preços competitivos", "Boa presença online", "Interface amigável"],
-          weaknesses: ["Limitações técnicas", "Pouca personalização", "Foco em mercado de massa"]
-        },
-        {
-          name: "Concorrente Regional",
-          strengths: ["Conhecimento do mercado local", "Relacionamentos estabelecidos"],
-          weaknesses: ["Escala limitada", "Tecnologia defasada", "Poucos recursos para marketing"]
-        }
-      ],
-      swot: {
-        strengths: basicAnalysisData?.swot_analysis?.strengths || [
-          "Proposta de valor única e clara",
-          "Solução centrada no usuário",
-          "Potencial de alta retenção de clientes",
-          "Baixos custos operacionais",
-          "Tecnologia proprietária escalável"
-        ],
-        weaknesses: basicAnalysisData?.swot_analysis?.weaknesses || [
-          "Marca nova no mercado",
-          "Necessidade de investimento inicial substancial",
-          "Dependência de desenvolvimento tecnológico",
-          "Time pequeno inicialmente",
-          "Falta de histórico comprovado"
-        ],
-        opportunities: basicAnalysisData?.swot_analysis?.opportunities || [
-          "Mercado em expansão",
-          "Insatisfação com soluções existentes",
-          "Novas tecnologias disponíveis para integração",
-          "Mudanças comportamentais favoráveis",
-          "Possibilidade de expansão internacional"
-        ],
-        threats: basicAnalysisData?.swot_analysis?.threats || [
-          "Entrada de grandes players no segmento",
-          "Mudanças regulatórias potenciais",
-          "Rápida evolução tecnológica",
-          "Recessão econômica afetando investimentos",
-          "Resistência à adoção de novas tecnologias"
-        ]
-      },
-      risks: [
-        {
-          name: "Risco Tecnológico",
-          level: "Médio",
-          description: "Desafios no desenvolvimento da solução proposta",
-          mitigation: "Desenvolvimento iterativo com validação constante e contratação de especialistas técnicos"
-        },
-        {
-          name: "Risco de Mercado",
-          level: "Baixo",
-          description: "Aceitação da solução pelo público-alvo",
-          mitigation: "Testes beta com early adopters e coleta contínua de feedback para ajustes"
-        },
-        {
-          name: "Risco Financeiro",
-          level: "Médio",
-          description: "Capital insuficiente para escalar rapidamente",
-          mitigation: "Planejamento de captação de recursos e crescimento controlado com metas claras"
-        },
-        {
-          name: "Risco Competitivo",
-          level: "Alto",
-          description: "Entrada de concorrentes com recursos superiores",
-          mitigation: "Desenvolvimento de vantagens competitivas sustentáveis e proteção de propriedade intelectual"
-        },
-        {
-          name: "Risco Regulatório",
-          level: "Médio",
-          description: "Mudanças em regulamentações do setor",
-          mitigation: "Monitoramento constante do ambiente regulatório e conformidade proativa"
-        }
-      ],
-      tools: [
-        { 
-          name: "Figma", 
-          category: "Design",
-          description: "Para prototipagem e design de interfaces"
-        },
-        { 
-          name: "Google Analytics", 
-          category: "Análise",
-          description: "Para monitoramento de métricas e comportamento dos usuários"
-        },
-        { 
-          name: "HubSpot", 
-          category: "Marketing",
-          description: "Para automação de marketing e gestão de relacionamento"
-        },
-        { 
-          name: "Stripe", 
-          category: "Pagamentos",
-          description: "Para processamento de pagamentos e gerenciamento de assinaturas"
-        },
-        { 
-          name: "Trello", 
-          category: "Gestão",
-          description: "Para gerenciamento de tarefas e projetos"
-        },
-        { 
-          name: "Slack", 
-          category: "Comunicação",
-          description: "Para comunicação interna e colaborativa"
-        }
-      ],
-      firstSteps: [
-        { name: "Validação de Mercado", icon: "📊" },
-        { name: "Desenvolvimento de MVP", icon: "💻" },
-        { name: "Testes com Usuários", icon: "🧪" },
-        { name: "Criação de Marca", icon: "🎨" },
-        { name: "Campanha de Lançamento", icon: "🚀" }
-      ],
-      plan: {
-        thirtyDays: [
-          { name: "Pesquisa de Mercado Detalhada", description: "Entrevistas com 20+ potenciais usuários e análise da concorrência" },
-          { name: "Definição de MVP", description: "Especificação das funcionalidades essenciais e arquitetura" },
-          { name: "Montagem do Time Inicial", description: "Recrutamento de desenvolvedores, designers e especialistas de produto" },
-          { name: "Desenvolvimento de Identidade Visual", description: "Criação de logo, paleta de cores e elementos visuais da marca" }
-        ],
-        sixtyDays: [
-          { name: "Protótipo Funcional", description: "Desenvolvimento das principais interfaces e fluxos de usuário" },
-          { name: "Estrutura de Marca", description: "Definição de identidade visual, tom de voz e posicionamento" },
-          { name: "Planejamento de Go-to-Market", description: "Estratégia de lançamento e canais iniciais" },
-          { name: "Testes de Usabilidade", description: "Testes com grupo controlado de usuários para melhorar a experiência" }
-        ],
-        ninetyDays: [
-          { name: "Lançamento do MVP", description: "Versão beta para grupo controlado de usuários" },
-          { name: "Implementação de Métricas", description: "Sistema de analytics e acompanhamento de KPIs" },
-          { name: "Captação de Feedback", description: "Processo estruturado para coletar e implementar melhorias" },
-          { name: "Otimização de Funil de Aquisição", description: "Ajustes nos canais de aquisição com base em dados iniciais" }
-        ]
-      },
-      mindmap: {
-        id: "root",
-        label: ideaData.title || "Sua Ideia",
-        children: [
-          {
-            id: "market",
-            label: "Mercado",
-            children: [
-              { 
-                id: "audience", 
-                label: "Público-Alvo", 
-                children: ideaData.audience ? [{ id: "audSpec", label: ideaData.audience }] : [
-                  { id: "audDemo", label: "Demográfico" },
-                  { id: "audBeh", label: "Comportamental" }
-                ] 
-              },
-              { 
-                id: "trends", 
-                label: "Tendências",
-                children: [
-                  { id: "trend1", label: "Digitalização" },
-                  { id: "trend2", label: "Sustentabilidade" }
-                ]
-              },
-              { 
-                id: "competitors", 
-                label: "Concorrência",
-                children: [
-                  { id: "comp1", label: "Diretos" },
-                  { id: "comp2", label: "Indiretos" }
-                ]
-              }
-            ]
-          },
-          {
-            id: "product",
-            label: "Produto",
-            children: [
-              { 
-                id: "features", 
-                label: "Funcionalidades",
-                children: [
-                  { id: "feat1", label: "Principais" },
-                  { id: "feat2", label: "Diferenciais" }
-                ]
-              },
-              { 
-                id: "roadmap", 
-                label: "Planejamento",
-                children: [
-                  { id: "rm1", label: "Curto Prazo" },
-                  { id: "rm2", label: "Longo Prazo" }
-                ]
-              },
-              { 
-                id: "tech", 
-                label: "Tecnologia",
-                children: [
-                  { id: "tech1", label: "Plataforma" },
-                  { id: "tech2", label: "Infraestrutura" }
-                ]
-              }
-            ]
-          },
-          {
-            id: "business",
-            label: "Negócio",
-            children: [
-              { 
-                id: "model", 
-                label: "Modelo de Receita",
-                children: [
-                  { id: "model1", label: "Monetização" },
-                  { id: "model2", label: "Precificação" }
-                ]
-              },
-              { 
-                id: "growth", 
-                label: "Estratégia de Crescimento",
-                children: [
-                  { id: "growth1", label: "Aquisição" },
-                  { id: "growth2", label: "Retenção" }
-                ]
-              },
-              { 
-                id: "finance", 
-                label: "Finanças",
-                children: [
-                  { id: "finance1", label: "Investimento" },
-                  { id: "finance2", label: "Break-even" }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+      basicAnalysis: basicAnalysisData ? {
+        score: basicAnalysisData.score,
+        status: basicAnalysisData.status,
+        market_analysis: basicAnalysisData.market_analysis,
+        swot_analysis: basicAnalysisData.swot_analysis,
+        competitor_analysis: basicAnalysisData.competitor_analysis,
+        financial_analysis: basicAnalysisData.financial_analysis,
+        recommendations: basicAnalysisData.recommendations
+      } : null
     };
 
-    // Save the advanced analysis to the database - fresh copy
+    // Structure the AI prompt
+        const aiPrompt = `    Generate a comprehensive business analysis for the following idea:        ${JSON.stringify(inputData, null, 2)}        Your response must be a JSON object with the following exact structure - EVERY FIELD IS REQUIRED with no exceptions:        {      "businessName": {        "name": "Recommended business name based on the idea",        "slogan": "Compelling slogan for the business",        "justification": "Explanation for the name and slogan recommendations"      },      "logoUrl": "https://placehold.co/400x400/3b82f6/FFFFFF/png?text=Logo",      "summary": {        "description": "Concise description of the idea's value proposition",        "score": number between 0-100 indicating viability,        "status": "One of: 'Viable', 'Moderate', 'Challenging'"      },      "differentials": [Exactly 5 key differentiators for this business],      "pitch": "One-paragraph elevator pitch for the business",      "marketAnalysis": {        "size": "Detailed market size analysis with specific estimates in dollars",        "targetAudience": "Detailed profile of ideal customers",        "trends": [Exactly 5 relevant market trends],        "barriers": [Exactly 4 barriers to entry]      },      "personas": [        {          "name": "First persona name with age",          "description": "Detailed description of this persona",          "occupation": "Their job title",          "behavior": "Their key behavior patterns"        },        {          "name": "Second persona name with age",          "description": "Detailed description of this persona",          "occupation": "Their job title",          "behavior": "Their key behavior patterns"        },        {          "name": "Third persona name with age",          "description": "Detailed description of this persona",          "occupation": "Their job title",          "behavior": "Their key behavior patterns"        }      ],      "monetization": {        "models": [          {            "name": "First monetization model",            "description": "Description of this model",            "revenue": "Specific revenue projection for this model"          },          {            "name": "Second monetization model",            "description": "Description of this model",            "revenue": "Specific revenue projection for this model"          },          {            "name": "Third monetization model",            "description": "Description of this model",            "revenue": "Specific revenue projection for this model"          },          {            "name": "Fourth monetization model",            "description": "Description of this model",            "revenue": "Specific revenue projection for this model"          }        ],        "projections": {          "firstYear": "Specific first-year revenue projection (include dollar amounts)",          "thirdYear": "Specific third-year revenue projection (include dollar amounts)",          "breakEven": "Specific timeframe to break even (months/years)",          "roi": "Expected ROI percentage after 3 years (include %)"        }      },      "channels": [        {          "name": "First acquisition channel",          "description": "Description of how this channel works"        },        {          "name": "Second acquisition channel",          "description": "Description of how this channel works"        },        {          "name": "Third acquisition channel",          "description": "Description of how this channel works"        },        {          "name": "Fourth acquisition channel",          "description": "Description of how this channel works"        },        {          "name": "Fifth acquisition channel",          "description": "Description of how this channel works"        }      ],      "competitors": [        {          "name": "First competitor name",          "strengths": ["Strength 1", "Strength 2", "Strength 3"],          "weaknesses": ["Weakness 1", "Weakness 2", "Weakness 3"]        },        {          "name": "Second competitor name",          "strengths": ["Strength 1", "Strength 2", "Strength 3"],          "weaknesses": ["Weakness 1", "Weakness 2", "Weakness 3"]        },        {          "name": "Third competitor name",          "strengths": ["Strength 1", "Strength 2"],          "weaknesses": ["Weakness 1", "Weakness 2", "Weakness 3"]        }      ],      "swot": {        "strengths": [Exactly 5 specific strengths],        "weaknesses": [Exactly 5 specific weaknesses],        "opportunities": [Exactly 5 specific opportunities],        "threats": [Exactly 5 specific threats]      },      "risks": [        {          "name": "First risk name",          "level": "Low/Medium/High",          "description": "Description of this risk",          "mitigation": "Strategy to mitigate this risk"        },        {          "name": "Second risk name",          "level": "Low/Medium/High",          "description": "Description of this risk",          "mitigation": "Strategy to mitigate this risk"        },        {          "name": "Third risk name",          "level": "Low/Medium/High",          "description": "Description of this risk",          "mitigation": "Strategy to mitigate this risk"        },        {          "name": "Fourth risk name",          "level": "Low/Medium/High",          "description": "Description of this risk",          "mitigation": "Strategy to mitigate this risk"        },        {          "name": "Fifth risk name",          "level": "Low/Medium/High",          "description": "Description of this risk",          "mitigation": "Strategy to mitigate this risk"        }      ],      "tools": [        {           "name": "First tool name",           "category": "Tool category",          "description": "Description of this tool's purpose"        },        {           "name": "Second tool name",           "category": "Tool category",          "description": "Description of this tool's purpose"        },        {           "name": "Third tool name",           "category": "Tool category",          "description": "Description of this tool's purpose"        },        {           "name": "Fourth tool name",           "category": "Tool category",          "description": "Description of this tool's purpose"        },        {           "name": "Fifth tool name",           "category": "Tool category",          "description": "Description of this tool's purpose"        },        {           "name": "Sixth tool name",           "category": "Tool category",          "description": "Description of this tool's purpose"        }      ],      "firstSteps": [        { "name": "First step", "icon": "📊" },        { "name": "Second step", "icon": "💻" },        { "name": "Third step", "icon": "🧪" },        { "name": "Fourth step", "icon": "🎨" },        { "name": "Fifth step", "icon": "🚀" }      ],      "plan": {        "thirtyDays": [          { "name": "First 30-day action", "description": "Description of this action" },          { "name": "Second 30-day action", "description": "Description of this action" },          { "name": "Third 30-day action", "description": "Description of this action" },          { "name": "Fourth 30-day action", "description": "Description of this action" }        ],        "sixtyDays": [          { "name": "First 60-day action", "description": "Description of this action" },          { "name": "Second 60-day action", "description": "Description of this action" },          { "name": "Third 60-day action", "description": "Description of this action" },          { "name": "Fourth 60-day action", "description": "Description of this action" }        ],        "ninetyDays": [          { "name": "First 90-day action", "description": "Description of this action" },          { "name": "Second 90-day action", "description": "Description of this action" },          { "name": "Third 90-day action", "description": "Description of this action" },          { "name": "Fourth 90-day action", "description": "Description of this action" }        ]      },      "mindmap": {        "id": "root",        "label": "Business name here",        "children": [          {            "id": "market",            "label": "Mercado",            "children": [              {                 "id": "audience",                 "label": "Público-Alvo",                 "children": [                  { "id": "audDemo", "label": "Demographic segment" },                  { "id": "audBeh", "label": "Behavioral segment" }                ]               },              {                 "id": "trends",                 "label": "Tendências",                "children": [                  { "id": "trend1", "label": "First trend" },                  { "id": "trend2", "label": "Second trend" }                ]              },              {                 "id": "competitors",                 "label": "Concorrência",                "children": [                  { "id": "comp1", "label": "Direct competitors" },                  { "id": "comp2", "label": "Indirect competitors" }                ]              }            ]          },          {            "id": "product",            "label": "Produto",            "children": [              {                 "id": "features",                 "label": "Funcionalidades",                "children": [                  { "id": "feat1", "label": "Core features" },                  { "id": "feat2", "label": "Differentiators" }                ]              },              {                 "id": "roadmap",                 "label": "Planejamento",                "children": [                  { "id": "rm1", "label": "Short term" },                  { "id": "rm2", "label": "Long term" }                ]              },              {                 "id": "tech",                 "label": "Tecnologia",                "children": [                  { "id": "tech1", "label": "Tech stack" },                  { "id": "tech2", "label": "Infrastructure" }                ]              }            ]          },          {            "id": "business",            "label": "Negócio",            "children": [              {                 "id": "model",                 "label": "Modelo de Receita",                "children": [                  { "id": "model1", "label": "Primary revenue source" },                  { "id": "model2", "label": "Pricing strategy" }                ]              },              {                 "id": "growth",                 "label": "Estratégia de Crescimento",                "children": [                  { "id": "growth1", "label": "Acquisition strategy" },                  { "id": "growth2", "label": "Retention strategy" }                ]              },              {                 "id": "finance",                 "label": "Finanças",                "children": [                  { "id": "finance1", "label": "Investment needs" },                  { "id": "finance2", "label": "Break-even point" }                ]              }            ]          }        ]      }    }        IMPORTANT: Every single field and structure above is REQUIRED. You MUST fill in all fields with specific, detailed content based on the business idea. Do not leave any fields generic or use placeholders. Use SPECIFIC NUMERIC VALUES for all financial projections, market sizes, timeframes, etc. Be creative but realistic in your analysis - use industry benchmarks where appropriate.    `;
+
+    console.log("Making API request to OpenAI");
+    const apiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${openAiApiKey}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4",  // Or your preferred model
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert business consultant specializing in startup analysis and market intelligence."
+          },
+          {
+            role: "user",
+            content: aiPrompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 4000
+      })
+    });
+
+    if (!apiResponse.ok) {
+      const errorData = await apiResponse.text();
+      console.error("OpenAI API error:", errorData);
+      throw new Error(`OpenAI API error: ${errorData}`);
+    }
+
+    const aiData = await apiResponse.json();
+    console.log("Received response from OpenAI");
+    
+    // Parse the response content which should be JSON
+    let advancedAnalysis;
+    try {
+      // The content should be a JSON string in the response
+      const rawContent = aiData.choices[0].message.content.trim();
+      
+      // Find JSON content if wrapped in ```json or ``` blocks
+      let jsonContent = rawContent;
+      if (rawContent.includes("```")) {
+        const jsonMatch = rawContent.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+        if (jsonMatch && jsonMatch[1]) {
+          jsonContent = jsonMatch[1];
+        }
+      }
+      
+            advancedAnalysis = JSON.parse(jsonContent);            // Add logoUrl which is expected by the frontend            advancedAnalysis.logoUrl = "https://placehold.co/400x400/3b82f6/FFFFFF/png?text=Logo";            console.log("Successfully parsed AI response");
+    } catch (error) {
+      console.error("Error parsing OpenAI response:", error);
+      console.log("Raw response:", aiData.choices[0].message.content);
+      throw new Error("Failed to parse AI-generated analysis");
+    }
+
+    // Save the AI-generated advanced analysis to the database
     console.log("Saving new advanced analysis to database");
     const { data: savedAnalysis, error: saveError } = await supabase
       .from("advanced_analyses")

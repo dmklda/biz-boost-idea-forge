@@ -228,65 +228,65 @@ export function AdvancedAnalysisModal({
       console.log("Iniciando geração de nova análise avançada para a ideia:", ideaId);
       
       // Clear any existing interval
-      if (pollInterval !== null) {
-        clearInterval(pollInterval);
-      }
-      
-      // Iniciar análise
-      try {
-        console.log("Iniciando geração de análise avançada...");
-        const response = await supabase.functions.invoke("advanced-analysis", {
-          body: { ideaId }
-        });
-
-        if (response.error) {
-          throw new Error(response.error.message || "Error starting analysis");
+        if (pollInterval !== null) {
+          clearInterval(pollInterval);
         }
+        
+      // Iniciar análise
+        try {
+        console.log("Iniciando geração de análise avançada...");
+          const response = await supabase.functions.invoke("advanced-analysis", {
+            body: { ideaId }
+          });
 
-        console.log("Analysis generation initiated:", response);
-      } catch (error) {
-        console.error("Error initiating advanced analysis:", error);
+          if (response.error) {
+            throw new Error(response.error.message || "Error starting analysis");
+          }
+
+          console.log("Analysis generation initiated:", response);
+        } catch (error) {
+          console.error("Error initiating advanced analysis:", error);
         toast.error(t('errors.fetchError') + ". " + t('errors.tryAgainLater'));
         setLoading(false);
         return;
-      }
-      
-      // Start polling for results
-      const interval = window.setInterval(async () => {
-        const currentAttempts = attempts + 1;
-        setAttempts(currentAttempts);
+        }
         
-        console.log(`Polling for analysis results (attempt ${currentAttempts}/10)...`);
-        
-        const { data: pollData, error: pollError } = await supabase
-          .from("advanced_analyses")
-          .select("*")
-          .eq("idea_id", ideaId)
-          .eq("user_id", authState.user?.id)
+        // Start polling for results
+        const interval = window.setInterval(async () => {
+          const currentAttempts = attempts + 1;
+          setAttempts(currentAttempts);
+          
+          console.log(`Polling for analysis results (attempt ${currentAttempts}/10)...`);
+          
+          const { data: pollData, error: pollError } = await supabase
+            .from("advanced_analyses")
+            .select("*")
+            .eq("idea_id", ideaId)
+            .eq("user_id", authState.user?.id)
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle();
-        
-        if (pollData) {
-          clearInterval(interval);
-          setPollInterval(null);
-          setAnalysis(pollData as AdvancedAnalysis);
-          setLoading(false);
-          setProgress(100);
+          
+          if (pollData) {
+            clearInterval(interval);
+            setPollInterval(null);
+            setAnalysis(pollData as AdvancedAnalysis);
+            setLoading(false);
+            setProgress(100);
           console.log("Nova análise encontrada:", pollData);
-        } else if (currentAttempts >= 10) {
-          clearInterval(interval);
-          setPollInterval(null);
+          } else if (currentAttempts >= 10) {
+            clearInterval(interval);
+            setPollInterval(null);
           toast.error(t('errors.analysisNotFound') + ". " +
                     t('errors.startNewAnalysis'));
-          setLoading(false);
-          console.log("Failed to find analysis after maximum attempts");
-        }
+            setLoading(false);
+            console.log("Failed to find analysis after maximum attempts");
+          }
+          
+          setAttempts(currentAttempts);
+        }, 3000);
         
-        setAttempts(currentAttempts);
-      }, 3000);
-      
-      setPollInterval(interval);
+        setPollInterval(interval);
     } catch (error) {
       console.error("Error fetching advanced analysis:", error);
       toast.error(t('errors.fetchError') + ". " +
@@ -665,9 +665,9 @@ export function AdvancedAnalysisModal({
       
       // After all content is added, put total page numbers
       const totalPages = pdf.internal.pages.length;
-      for (let i = 1; i <= totalPages; i++) {
-        pdf.setPage(i);
-        pdf.setFontSize(8);
+          for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            pdf.setFontSize(8);
         pdf.setTextColor(isDarkMode ? 200 : 120);
         const pageString = t('pdf.page', { page: i });
         const totalPagesString = ` ${t('pdf.of')} ${totalPages}`;
@@ -688,12 +688,12 @@ export function AdvancedAnalysisModal({
       toast.success(t('pdf.downloadComplete') + ". " +
                   t('pdf.pdfReady'));
       
-    } catch (error) {
+        } catch (error) {
       console.error("Error generating PDF programmatically:", error);
       toast.error(t('errors.pdfGenerationError') + ". " +
                 t('errors.tryAgainLater'));
-    } finally {
-      setIsGeneratingPdf(false);
+        } finally {
+          setIsGeneratingPdf(false);
     }
   };
 

@@ -19,7 +19,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
   const isDarkMode = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   if (!analysis) {
-    return <div>Nenhuma análise disponível</div>;
+    return <div>Aguardando análise da IA...</div>;
   }
 
   // Extract data from analysis
@@ -100,7 +100,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
             {businessName?.slogan && (
               <p className="text-sm sm:text-base italic text-muted-foreground">{businessName.slogan}</p>
             )}
-            <p className="text-sm sm:text-base text-muted-foreground">{summary?.description || pitch || "Análise detalhada da viabilidade do seu negócio."}</p>
+            <p className="text-sm sm:text-base text-muted-foreground">{summary?.description || pitch || "Aguardando análise da IA..."}</p>
           </div>
           
           {summary?.score && (
@@ -112,7 +112,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                   (isDarkMode ? "border-yellow-500 text-yellow-400" : "border-yellow-500 text-yellow-600") :
                   (isDarkMode ? "border-red-500 text-red-400" : "border-red-500 text-red-600")
             )}>
-              <span className="text-3xl font-bold">{summary.score}</span>
+              <span className="text-3xl font-bold">{summary?.score || "..."}%</span>
             </div>
           )}
         </div>
@@ -152,9 +152,9 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
             <div className="text-xs uppercase text-muted-foreground mb-1">Viabilidade</div>
             <div className="flex items-center justify-between">
               <div className="text-lg sm:text-2xl font-bold">
-                {summary?.score || 85}%
+                {summary?.score || "..."}%
               </div>
-              <Progress value={summary?.score || 85} className="w-12 sm:w-20 h-2" />
+              <Progress value={summary?.score || 0} className="w-12 sm:w-20 h-2" />
             </div>
           </div>
           
@@ -190,7 +190,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
           )}>
             <div className="text-xs uppercase text-muted-foreground mb-1">ROI Estimado</div>
             <div className="text-lg sm:text-2xl font-bold">
-              {monetization?.projections?.roi || "120%"}
+              {monetization?.projections?.roi || "Aguardando análise"}
             </div>
           </div>
         </div>
@@ -205,42 +205,16 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
           <CardTitle>Visão Geral do Negócio</CardTitle>
         </CardHeader>
         <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 pt-0">
-          <MindMap 
-            data={mindmap || {
-              id: "root",
-              label: businessName?.name || "Sua Ideia",
-              children: [
-                {
-                  id: "market",
-                  label: "Mercado",
-                  children: [
-                    { id: "audience", label: "Público-Alvo" },
-                    { id: "trends", label: "Tendências" },
-                    { id: "competitors", label: "Concorrência" }
-                  ]
-                },
-                {
-                  id: "product",
-                  label: "Produto",
-                  children: [
-                    { id: "features", label: "Funcionalidades" },
-                    { id: "diff", label: "Diferenciais" },
-                    { id: "tech", label: "Tecnologia" }
-                  ]
-                },
-                {
-                  id: "business",
-                  label: "Negócio",
-                  children: [
-                    { id: "model", label: "Modelo de Receita" },
-                    { id: "growth", label: "Crescimento" },
-                    { id: "finance", label: "Finanças" }
-                  ]
-                }
-              ]
-            }}
-            className="min-h-[250px] sm:min-h-[300px] overflow-x-auto py-4"
-          />
+          {mindmap ? (
+            <MindMap 
+              data={mindmap}
+              className="min-h-[250px] sm:min-h-[300px] overflow-x-auto py-4"
+            />
+          ) : (
+            <div className="min-h-[250px] sm:min-h-[300px] flex items-center justify-center">
+              <p className="text-muted-foreground">Aguardando geração do mapa mental pela IA...</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -280,7 +254,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
             <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 pt-0 space-y-4">
               <div>
                 <h3 className="text-base sm:text-lg font-semibold mb-2">Conceito do Negócio</h3>
-                <p className="text-sm sm:text-base text-muted-foreground">{pitch || "Não especificado"}</p>
+                <p className="text-sm sm:text-base text-muted-foreground">{pitch || "Aguardando análise da IA"}</p>
               </div>
               
               <div>
@@ -288,7 +262,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                 <ul className="list-disc list-inside text-sm sm:text-base text-muted-foreground space-y-1">
                   {differentials?.map((item: string, index: number) => (
                     <li key={index}>{item}</li>
-                  )) || <li>Não especificado</li>}
+                  )) || <li className="text-muted-foreground">Aguardando análise da IA</li>}
                 </ul>
               </div>
               
@@ -306,7 +280,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                       <div className="text-2xl mb-2">{step.icon}</div>
                       <div className="text-xs sm:text-sm font-medium">{step.name}</div>
                     </div>
-                  )) || <div className="col-span-5 text-muted-foreground">Não especificado</div>}
+                  )) || <div className="col-span-5 text-muted-foreground">Aguardando análise da IA</div>}
                 </div>
               </div>
             </CardContent>
@@ -324,10 +298,10 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="text-base sm:text-lg font-semibold mb-2">Tamanho do Mercado</h3>
-                  <p className="text-sm sm:text-base text-muted-foreground">{marketAnalysis?.size || "Não especificado"}</p>
+                  <p className="text-sm sm:text-base text-muted-foreground">{marketAnalysis?.size || "Aguardando análise da IA"}</p>
                   
                   <h3 className="text-base sm:text-lg font-semibold mt-4 mb-2">Público-Alvo</h3>
-                  <p className="text-sm sm:text-base text-muted-foreground">{marketAnalysis?.targetAudience || "Não especificado"}</p>
+                  <p className="text-sm sm:text-base text-muted-foreground">{marketAnalysis?.targetAudience || "Aguardando análise da IA"}</p>
                 </div>
                 
                 <div>
@@ -335,14 +309,14 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                   <ul className="list-disc list-inside text-sm sm:text-base text-muted-foreground space-y-1">
                     {marketAnalysis?.trends?.map((trend: string, index: number) => (
                       <li key={index}>{trend}</li>
-                    )) || <li>Não especificado</li>}
+                    )) || <li className="text-muted-foreground">Aguardando análise da IA</li>}
                   </ul>
                   
                   <h3 className="text-base sm:text-lg font-semibold mt-4 mb-2">Barreiras de Entrada</h3>
                   <ul className="list-disc list-inside text-sm sm:text-base text-muted-foreground space-y-1">
                     {marketAnalysis?.barriers?.map((barrier: string, index: number) => (
                       <li key={index}>{barrier}</li>
-                    )) || <li>Não especificado</li>}
+                    )) || <li className="text-muted-foreground">Aguardando análise da IA</li>}
                   </ul>
                 </div>
               </div>
@@ -369,7 +343,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                         isDarkMode ? "bg-slate-700 border-slate-600" : "bg-slate-50"
                       )}
                     >
-                      <h4 className="font-medium mb-2">{persona.name || `Persona ${index + 1}`}</h4>
+                      <h4 className="font-medium mb-2">{persona.name || "Aguardando análise da IA"}</h4>
                       <p className="text-sm text-muted-foreground mb-2">{persona.description}</p>
                       <div className="space-y-1 text-xs text-muted-foreground">
                         {persona.occupation && <div><strong>Ocupação:</strong> {persona.occupation}</div>}
@@ -377,7 +351,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                       </div>
                     </div>
                   )) || (
-                    <p className="text-muted-foreground">Nenhuma persona definida</p>
+                    <p className="text-muted-foreground">Aguardando análise de personas pela IA</p>
                   )}
                 </div>
               </div>
@@ -397,7 +371,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                       <p className="text-xs text-muted-foreground mt-1">{channel.description}</p>
                     </div>
                   )) || (
-                    <p className="text-muted-foreground">Nenhum canal específico identificado</p>
+                    <p className="text-muted-foreground">Aguardando análise dos canais pela IA</p>
                   )}
                 </div>
               </div>
@@ -433,7 +407,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                         <ul className="list-disc list-inside text-xs sm:text-sm text-muted-foreground space-y-1">
                           {competitor.strengths?.map((item: string, idx: number) => (
                             <li key={idx}>{item}</li>
-                          )) || <li>Não especificado</li>}
+                          )) || <li className="text-muted-foreground">Aguardando análise da IA</li>}
                         </ul>
                       </div>
                       
@@ -445,13 +419,13 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                         <ul className="list-disc list-inside text-xs sm:text-sm text-muted-foreground space-y-1">
                           {competitor.weaknesses?.map((item: string, idx: number) => (
                             <li key={idx}>{item}</li>
-                          )) || <li>Não especificado</li>}
+                          )) || <li className="text-muted-foreground">Aguardando análise da IA</li>}
                         </ul>
                       </div>
                     </div>
                   </div>
                 )) || (
-                  <p className="text-muted-foreground">Nenhum concorrente específico identificado</p>
+                  <p className="text-muted-foreground">Aguardando análise dos concorrentes pela IA</p>
                 )}
               </div>
             </CardContent>
@@ -480,7 +454,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                   <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                     {swot?.strengths?.map((strength: string, index: number) => (
                       <li key={index}>{strength}</li>
-                    )) || <li>Não especificado</li>}
+                    )) || <li className="text-muted-foreground">Aguardando análise da IA</li>}
                   </ul>
                 </div>
                 
@@ -497,7 +471,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                   <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                     {swot?.weaknesses?.map((weakness: string, index: number) => (
                       <li key={index}>{weakness}</li>
-                    )) || <li>Não especificado</li>}
+                    )) || <li className="text-muted-foreground">Aguardando análise da IA</li>}
                   </ul>
                 </div>
                 
@@ -514,7 +488,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                   <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                     {swot?.opportunities?.map((opportunity: string, index: number) => (
                       <li key={index}>{opportunity}</li>
-                    )) || <li>Não especificado</li>}
+                    )) || <li className="text-muted-foreground">Aguardando análise da IA</li>}
                   </ul>
                 </div>
                 
@@ -531,7 +505,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                   <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                     {swot?.threats?.map((threat: string, index: number) => (
                       <li key={index}>{threat}</li>
-                    )) || <li>Não especificado</li>}
+                    )) || <li className="text-muted-foreground">Aguardando análise da IA</li>}
                   </ul>
                 </div>
               </div>
@@ -567,7 +541,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                     </div>
                   </div>
                 )) || (
-                  <p className="text-muted-foreground">Nenhum modelo específico identificado</p>
+                  <p className="text-muted-foreground">Aguardando análise dos modelos de monetização pela IA</p>
                 )}
               </div>
               
@@ -582,7 +556,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                   )}>
                     <div className="text-xs uppercase text-muted-foreground mb-1">Primeiro Ano</div>
                     <div className="text-base font-medium">
-                      {monetization?.projections?.firstYear || "$ 250,000 - $ 500,000"}
+                      {monetization?.projections?.firstYear || "Aguardando análise da IA"}
                     </div>
                   </div>
                   
@@ -592,7 +566,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                   )}>
                     <div className="text-xs uppercase text-muted-foreground mb-1">Terceiro Ano</div>
                     <div className="text-base font-medium">
-                      {monetization?.projections?.thirdYear || "$ 2 million - $ 5 million"}
+                      {monetization?.projections?.thirdYear || "Aguardando análise da IA"}
                     </div>
                   </div>
                   
@@ -602,7 +576,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                   )}>
                     <div className="text-xs uppercase text-muted-foreground mb-1">Break Even</div>
                     <div className="text-base font-medium">
-                      {monetization?.projections?.breakEven || "18-24 meses"}
+                      {monetization?.projections?.breakEven || "Aguardando análise da IA"}
                     </div>
                   </div>
                   
@@ -612,7 +586,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                   )}>
                     <div className="text-xs uppercase text-muted-foreground mb-1">ROI Esperado</div>
                     <div className="text-base font-medium">
-                      {monetization?.projections?.roi || "120% após 3 anos"}
+                      {monetization?.projections?.roi || "Aguardando análise da IA"}
                     </div>
                   </div>
                 </div>
@@ -658,7 +632,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                       )}
                     </div>
                   )) || (
-                    <p className="text-muted-foreground">Nenhum risco específico identificado</p>
+                    <p className="text-muted-foreground">Aguardando análise dos riscos pela IA</p>
                   )}
                 </div>
               </div>
@@ -690,7 +664,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                         <p className="text-xs text-muted-foreground mt-1">{item.description}</p>
                       </div>
                     )) || (
-                      <p className="text-muted-foreground">Nenhuma fase específica identificada</p>
+                      <p className="text-muted-foreground">Aguardando análise do plano de 30 dias pela IA</p>
                     )}
                   </div>
                 </div>
@@ -710,7 +684,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                         <p className="text-xs text-muted-foreground mt-1">{item.description}</p>
                       </div>
                     )) || (
-                      <p className="text-muted-foreground">Nenhuma fase específica identificada</p>
+                      <p className="text-muted-foreground">Aguardando análise do plano de 60 dias pela IA</p>
                     )}
                   </div>
                 </div>
@@ -730,7 +704,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                         <p className="text-xs text-muted-foreground mt-1">{item.description}</p>
                       </div>
                     )) || (
-                      <p className="text-muted-foreground">Nenhuma fase específica identificada</p>
+                      <p className="text-muted-foreground">Aguardando análise do plano de 90 dias pela IA</p>
                     )}
                   </div>
                 </div>
@@ -762,7 +736,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                 <div className="text-xs text-muted-foreground">{tool.description}</div>
               </div>
             )) || (
-              <p className="text-muted-foreground col-span-6">Nenhuma ferramenta específica identificada</p>
+              <p className="text-muted-foreground col-span-6">Aguardando recomendações de ferramentas pela IA</p>
             )}
           </div>
         </CardContent>

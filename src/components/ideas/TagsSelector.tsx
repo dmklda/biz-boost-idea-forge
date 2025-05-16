@@ -223,9 +223,9 @@ export const TagsSelector = ({ ideaId, onTagsChange }: TagsSelectorProps) => {
         ))}
         
         <Popover open={isOpen} onOpenChange={setIsOpen}>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
                 <PopoverTrigger asChild>
                   <Button variant="outline" size="icon" className="h-7 w-7">
                     <Plus className="h-3 w-3" />
@@ -237,61 +237,61 @@ export const TagsSelector = ({ ideaId, onTagsChange }: TagsSelectorProps) => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <PopoverContent className="w-80" align="start">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
+                <PopoverContent className="w-80" align="start">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
                 <h4 className="font-medium text-sm">{t('tags.title')}</h4>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 text-xs"
-                  onClick={() => {
-                    setIsOpen(false);
-                    setIsCreateDialogOpen(true);
-                  }}
-                >
-                  <PlusCircle className="h-3.5 w-3.5 mr-1" />
-                  {t('tags.create')}
-                </Button>
-              </div>
-
-              {isLoading ? (
-                <div className="flex justify-center py-4">
-                  <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
-                </div>
-              ) : tags.length > 0 ? (
-                <div className="grid gap-1.5">
-                  {tags.map(tag => {
-                    const isSelected = selectedTags.some(t => t.id === tag.id);
-                    return (
                       <Button
-                        key={tag.id}
                         variant="ghost"
-                        className={`justify-between h-8 px-2 ${
-                          isSelected ? "bg-muted" : ""
-                        }`}
-                        onClick={() => toggleTag(tag)}
+                        size="sm"
+                        className="h-8 text-xs"
+                        onClick={() => {
+                          setIsOpen(false);
+                          setIsCreateDialogOpen(true);
+                        }}
                       >
-                        <div className="flex items-center">
-                          <div
-                            className="w-3 h-3 rounded-full mr-2"
-                            style={{ backgroundColor: tag.color }}
-                          />
-                          <span className="text-sm">{tag.name}</span>
-                        </div>
-                        {isSelected && <span className="opacity-50">✓</span>}
+                        <PlusCircle className="h-3.5 w-3.5 mr-1" />
+                  {t('tags.create')}
                       </Button>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-2 text-sm text-muted-foreground">
+                    </div>
+
+                    {isLoading ? (
+                      <div className="flex justify-center py-4">
+                        <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
+                      </div>
+                    ) : tags.length > 0 ? (
+                      <div className="grid gap-1.5">
+                        {tags.map(tag => {
+                          const isSelected = selectedTags.some(t => t.id === tag.id);
+                          return (
+                            <Button
+                              key={tag.id}
+                              variant="ghost"
+                              className={`justify-between h-8 px-2 ${
+                                isSelected ? "bg-muted" : ""
+                              }`}
+                              onClick={() => toggleTag(tag)}
+                            >
+                              <div className="flex items-center">
+                                <div
+                                  className="w-3 h-3 rounded-full mr-2"
+                                  style={{ backgroundColor: tag.color }}
+                                />
+                                <span className="text-sm">{tag.name}</span>
+                              </div>
+                              {isSelected && <span className="opacity-50">✓</span>}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="text-center py-2 text-sm text-muted-foreground">
                   {t('tags.empty')}
-                </div>
-              )}
-            </div>
-          </PopoverContent>
-        </Popover>
+                      </div>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
       </div>
 
       {/* Create Tag Dialog */}
