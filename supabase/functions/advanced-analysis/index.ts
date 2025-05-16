@@ -16,7 +16,7 @@ serve(async (req) => {
 
   try {
     // Get request body
-    const { ideaId, userLanguage } = await req.json();
+    const { ideaId } = await req.json();
 
     // Validate input
     if (!ideaId) {
@@ -27,7 +27,6 @@ serve(async (req) => {
     }
 
     console.log(`Processing advanced analysis for idea: ${ideaId}`);
-    console.log(`User selected language: ${userLanguage || 'Not specified, defaulting to pt'}`);
 
     // Create Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL") as string;
@@ -134,22 +133,6 @@ serve(async (req) => {
       domainSpecificInstructions = "This appears to be an education business. Focus on curriculum development costs, accreditation requirements, instructor recruitment, and education technology integration.";
     }
 
-    // Determine the language to use for the analysis - default to Portuguese (pt)
-    const analysisLanguage = userLanguage || 'pt';
-    console.log(`Using language for analysis: ${analysisLanguage}`);
-
-    // Language-specific instructions
-    let languageInstructions = "";
-    if (analysisLanguage === 'pt') {
-      languageInstructions = "Responda COMPLETAMENTE em português brasileiro. Toda a análise deve ser em português, incluindo todos os termos técnicos, nomes de campos e valores.";
-    } else if (analysisLanguage === 'en') {
-      languageInstructions = "Respond COMPLETELY in English. All analysis should be in English, including all technical terms, field names and values.";
-    } else if (analysisLanguage === 'es') {
-      languageInstructions = "Responda COMPLETAMENTE en español. Todo el análisis debe estar en español, incluidos todos los términos técnicos, nombres de campos y valores.";
-    } else if (analysisLanguage === 'ja') {
-      languageInstructions = "完全に日本語で回答してください。すべての分析は、すべての技術用語、フィールド名、値を含め、日本語で行ってください。";
-    }
-
     // Structure the AI prompt with enhanced customization for the specific idea
     const aiPrompt = `
     Generate a comprehensive, UNIQUE business analysis for the following specific idea. This analysis MUST be completely tailored to this particular idea and should NOT contain generic content that could apply to any business:
@@ -157,8 +140,6 @@ serve(async (req) => {
     ${JSON.stringify(inputData, null, 2)}
     
     ${domainSpecificInstructions}
-    
-    ${languageInstructions}
     
     Make your analysis HIGHLY SPECIFIC to this exact business idea. Reference the exact business concept, problem being solved, target audience, and other specifics from the data provided.
     

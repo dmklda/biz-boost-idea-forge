@@ -45,12 +45,6 @@ export function LanguageSwitcher() {
     
     // Mostrar confirmação ao invés de recarregar a página
     toast.success(`Idioma alterado para ${languages[code as keyof typeof languages]}`);
-    
-    // Dispatch an event to notify components that might need to refresh data based on language
-    const languageChangeEvent = new CustomEvent('language-changed', { 
-      detail: { language: code } 
-    });
-    window.dispatchEvent(languageChangeEvent);
   };
 
   // Função auxiliar para verificar se o código de idioma corresponde ao idioma atual
