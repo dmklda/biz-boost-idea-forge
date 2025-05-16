@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "@/components/ui/sonner";
@@ -20,7 +21,7 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
     resetForm 
   } = useIdeaFormContext();
 
-  // Novo estado para controlar quando a análise está completa
+  // State to track when the analysis is complete
   const [isAnalysisComplete, setIsAnalysisComplete] = useState(false);
 
   // Check if we're in the dashboard
@@ -30,7 +31,7 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
     e.preventDefault();
     setIsSubmitting(true);
     setIsAnalyzing(true);
-    setIsAnalysisComplete(false); // Resetar o estado no início da submissão
+    setIsAnalysisComplete(false); // Reset the state at the beginning of submission
     
     try {
       // If user is authenticated, process with Supabase
@@ -90,28 +91,45 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
         // Success! Navigate to results page
         toast.success(t('ideaForm.analysisSuccess', "Análise concluída com sucesso!"));
         
-        // Marcar a análise como completa antes de resetar o form e navegar
+        // Mark the analysis as complete before resetting the form and navigating
         setIsAnalysisComplete(true);
+        
+        // Clear any saved advanced analysis data
+        if (analysisData && analysisData.ideaId) {
+          // Delete any existing advanced analysis for this idea to ensure fresh data on next analysis
+          try {
+            const { error: deleteError } = await supabase
+              .from('advanced_analyses')
+              .delete()
+              .eq('idea_id', analysisData.ideaId);
+              
+            if (!deleteError) {
+              console.log("Successfully cleared previous advanced analysis data");
+            }
+          } catch (err) {
+            console.log("No previous advanced analysis to clear or error:", err);
+          }
+        }
         
         // Reset the form to close it
         resetForm();
         
-        // Pequeno delay para garantir que o modal seja fechado antes da navegação
+        // Small delay to ensure the modal is closed before navigation
         setTimeout(() => {
-        // Always navigate to the results page in the dashboard
-        if (analysisData && analysisData.ideaId) {
-          // Dispatch custom event to notify dashboard of data change
-          const analysisUpdateEvent = new CustomEvent('analysis-updated', { 
-            detail: { ideaId: analysisData.ideaId }
-          });
-          window.dispatchEvent(analysisUpdateEvent);
-          
-          navigate(`/dashboard/resultados?id=${analysisData.ideaId}`);
-        } else {
-          console.error("Missing ideaId in response:", analysisData);
-          toast.error(t('ideaForm.missingData', "Dados da análise incompletos. Entre em contato com o suporte."));
-        }
-        }, 100); // 100ms delay deve ser suficiente
+          // Always navigate to the results page in the dashboard
+          if (analysisData && analysisData.ideaId) {
+            // Dispatch custom event to notify dashboard of data change
+            const analysisUpdateEvent = new CustomEvent('analysis-updated', { 
+              detail: { ideaId: analysisData.ideaId }
+            });
+            window.dispatchEvent(analysisUpdateEvent);
+            
+            navigate(`/dashboard/resultados?id=${analysisData.ideaId}`);
+          } else {
+            console.error("Missing ideaId in response:", analysisData);
+            toast.error(t('ideaForm.missingData', "Dados da análise incompletos. Entre em contato com o suporte."));
+          }
+        }, 100); // 100ms delay should be sufficient
       } else {
         // Not authenticated, redirect to login
         toast.info(t('ideaForm.loginRequired', "É necessário fazer login para analisar ideias"));

@@ -2,7 +2,7 @@
 import { SavedAnalysesList } from "@/components/advanced-analysis";
 import { useTranslation } from "react-i18next";
 import { useRefreshAnalyses } from "@/hooks/use-refresh-analyses";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const AdvancedAnalysisPage = () => {
   const { t } = useTranslation();
@@ -12,6 +12,20 @@ const AdvancedAnalysisPage = () => {
   const refreshSavedAnalyses = () => {
     setRefreshKey(prevKey => prevKey + 1);
   };
+
+  // Listen for analysis-updated events
+  useEffect(() => {
+    const handleAnalysisUpdate = () => {
+      console.log("Advanced analysis page detected analysis update");
+      refreshSavedAnalyses();
+    };
+
+    window.addEventListener("analysis-updated", handleAnalysisUpdate);
+    
+    return () => {
+      window.removeEventListener("analysis-updated", handleAnalysisUpdate);
+    };
+  }, []);
 
   // Use the refresh hook to update analyses when analysis is updated
   useRefreshAnalyses(refreshSavedAnalyses, []);
