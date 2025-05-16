@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BarChart3, Sparkles } from "lucide-react";
@@ -5,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { AdvancedAnalysisModal } from "./AdvancedAnalysisModal";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/use-theme";
+import { getCurrentLanguage } from "@/i18n/config";
 
 interface AdvancedAnalysisButtonProps {
   ideaId: string;
@@ -57,6 +59,7 @@ export function AdvancedAnalysisButton({
         ideaId={ideaId}
         open={isOpen}
         onOpenChange={setIsOpen}
+        userLanguage={getCurrentLanguage()}
       />
     </>
   );

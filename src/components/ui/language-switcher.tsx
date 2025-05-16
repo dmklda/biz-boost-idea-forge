@@ -43,6 +43,9 @@ export function LanguageSwitcher() {
     // Atualizando o estado local
     setCurrentLang(code);
     
+    // Dispatch an event that can be caught by other components
+    window.dispatchEvent(new CustomEvent('language-changed', { detail: code }));
+    
     // Mostrar confirmação ao invés de recarregar a página
     toast.success(`Idioma alterado para ${languages[code as keyof typeof languages]}`);
   };

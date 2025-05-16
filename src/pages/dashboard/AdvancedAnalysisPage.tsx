@@ -13,17 +13,24 @@ const AdvancedAnalysisPage = () => {
     setRefreshKey(prevKey => prevKey + 1);
   };
 
-  // Listen for analysis-updated events
+  // Listen for analysis-updated and language-changed events
   useEffect(() => {
     const handleAnalysisUpdate = () => {
       console.log("Advanced analysis page detected analysis update");
       refreshSavedAnalyses();
     };
+    
+    const handleLanguageChange = () => {
+      console.log("Advanced analysis page detected language change");
+      refreshSavedAnalyses();
+    };
 
     window.addEventListener("analysis-updated", handleAnalysisUpdate);
+    window.addEventListener("language-changed", handleLanguageChange);
     
     return () => {
       window.removeEventListener("analysis-updated", handleAnalysisUpdate);
+      window.removeEventListener("language-changed", handleLanguageChange);
     };
   }, []);
 

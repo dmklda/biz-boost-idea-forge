@@ -16,7 +16,7 @@ serve(async (req) => {
 
   try {
     // Get request body
-    const { ideaId } = await req.json();
+    const { ideaId, userLanguage = 'pt' } = await req.json();
 
     // Validate input
     if (!ideaId) {
@@ -26,7 +26,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Processing advanced analysis for idea: ${ideaId}`);
+    console.log(`Processing advanced analysis for idea: ${ideaId} in language: ${userLanguage}`);
 
     // Create Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL") as string;
@@ -133,9 +133,29 @@ serve(async (req) => {
       domainSpecificInstructions = "This appears to be an education business. Focus on curriculum development costs, accreditation requirements, instructor recruitment, and education technology integration.";
     }
 
+    // Get the language-specific system prompt
+    let systemPrompt;
+    let languageInstructions;
+    
+    // Set language-specific instructions
+    if (userLanguage === 'en') {
+      systemPrompt = "You are an expert business consultant specializing in startup analysis and market intelligence. You create thorough, specific analyses based on the exact details provided for each unique business idea.";
+      languageInstructions = "Generate the analysis in English";
+    } else if (userLanguage === 'es') {
+      systemPrompt = "Eres un consultor de negocios experto especializado en análisis de startups e inteligencia de mercado. Creas análisis detallados y específicos basados en los detalles exactos proporcionados para cada idea de negocio única.";
+      languageInstructions = "Genera el análisis en español";
+    } else if (userLanguage === 'ja') {
+      systemPrompt = "あなたはスタートアップ分析と市場インテリジェンスを専門とするビジネスコンサルタントのエキスパートです。各ビジネスアイデアに対して提供された正確な詳細に基づいて、詳細かつ具体的な分析を作成します。";
+      languageInstructions = "分析を日本語で生成してください";
+    } else {
+      // Default to Portuguese
+      systemPrompt = "Você é um consultor de negócios especializado em análise de startups e inteligência de mercado. Você cria análises completas e específicas com base nos detalhes exatos fornecidos para cada ideia de negócio única.";
+      languageInstructions = "Gere a análise em português";
+    }
+
     // Structure the AI prompt with enhanced customization for the specific idea
     const aiPrompt = `
-    Generate a comprehensive, UNIQUE business analysis for the following specific idea. This analysis MUST be completely tailored to this particular idea and should NOT contain generic content that could apply to any business:
+    ${languageInstructions}. Generate a comprehensive, UNIQUE business analysis for the following specific idea. This analysis MUST be completely tailored to this particular idea and should NOT contain generic content that could apply to any business:
     
     ${JSON.stringify(inputData, null, 2)}
     
@@ -466,7 +486,7 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are an expert business consultant specializing in startup analysis and market intelligence. You create thorough, specific analyses based on the exact details provided for each unique business idea."
+            content: systemPrompt
           },
           {
             role: "user",
