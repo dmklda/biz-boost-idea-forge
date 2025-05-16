@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,9 +16,9 @@ interface CreditPackage {
 
 // Pacotes de crédito disponíveis
 const creditPackages: CreditPackage[] = [
-  { id: 1, amount: 5, price: "R$24,90", savings: "" },
-  { id: 2, amount: 10, price: "R$44,90", savings: "10% de desconto" },
-  { id: 3, amount: 25, price: "R$99,90", savings: "20% de desconto" },
+  { id: 1, amount: 5, price: "$24.90", savings: "" },
+  { id: 2, amount: 10, price: "$44.90", savings: "10% de desconto" },
+  { id: 3, amount: 25, price: "$99.90", savings: "20% de desconto" },
 ];
 
 export const BuyCreditsCard = () => {

@@ -211,7 +211,7 @@ const DashboardHome = () => {
                 </DialogDescription>
               </DialogHeader>
               <div className="py-4">
-                <IdeaForm />
+                <IdeaForm onAnalysisComplete={() => setIsAnalysisDialogOpen(false)} />
               </div>
             </DialogContent>
           </Dialog>

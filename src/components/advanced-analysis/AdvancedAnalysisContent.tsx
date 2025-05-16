@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -583,7 +582,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                   )}>
                     <div className="text-xs uppercase text-muted-foreground mb-1">Primeiro Ano</div>
                     <div className="text-base font-medium">
-                      {monetization?.projections?.firstYear || "R$ 250.000 - R$ 500.000"}
+                      {monetization?.projections?.firstYear || "$ 250,000 - $ 500,000"}
                     </div>
                   </div>
                   
@@ -593,7 +592,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                   )}>
                     <div className="text-xs uppercase text-muted-foreground mb-1">Terceiro Ano</div>
                     <div className="text-base font-medium">
-                      {monetization?.projections?.thirdYear || "R$ 2 milhões - R$ 5 milhões"}
+                      {monetization?.projections?.thirdYear || "$ 2 million - $ 5 million"}
                     </div>
                   </div>
                   

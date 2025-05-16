@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Home, BarChart, CreditCard, Settings, LogOut, Calendar, PlusCircle, Save } from "lucide-react";
@@ -139,7 +138,7 @@ export const DashboardSidebar = ({
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <IdeaForm />
+            <IdeaForm onAnalysisComplete={() => setIsAnalysisDialogOpen(false)} />
           </div>
         </DialogContent>
       </Dialog>

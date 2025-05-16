@@ -99,7 +99,7 @@ const ResultsPage = () => {
         "Taxa de assinatura opcional para chefs com recursos premium",
         "Assinatura para consumidores com benefícios como frete grátis e descontos"
       ],
-      revenue: "Potencial de receita estimado em R$ 50-100 mil/mês após 12 meses, com 100 chefs ativos e 2000 usuários regulares."
+      revenue: "Potencial de receita estimado em $ 50-100 mil/mês após 12 meses, com 100 chefs ativos e 2000 usuários regulares."
     },
     actionPlan: [
       "Validar conceito com 10-15 chefs amadores dispostos a participar do piloto",
@@ -239,7 +239,7 @@ const ResultsPage = () => {
                         <p className="text-gray-700">{analysisData.marketAnalysis.targetAudience}</p>
                         
                         <h3 className="text-xl font-semibold mt-8 mb-4">Tamanho do Mercado</h3>
-                        <p className="text-gray-700">O mercado de delivery de comida no Brasil movimenta mais de R$ 15 bilhões anualmente, com crescimento de 20% ao ano. O nicho de comida caseira e personalizada representa aproximadamente 8% desse mercado, com potencial de crescimento significativo.</p>
+                        <p className="text-gray-700">O mercado de delivery de comida no Brasil movimenta mais de $ 15 bilhões anualmente, com crescimento de 20% ao ano. O nicho de comida caseira e personalizada representa aproximadamente 8% desse mercado, com potencial de crescimento significativo.</p>
                       </div>
                       <div>
                         <h3 className="text-xl font-semibold mb-4">Persona Ideal</h3>
@@ -441,7 +441,7 @@ const ResultsPage = () => {
                             </p>
                             <div className="bg-gray-50 p-2 rounded">
                               <span className="text-xs text-gray-500">Exemplo:</span>
-                              <p className="text-sm">Pedido de R$ 100 = R$ 15-20 de receita para a plataforma</p>
+                              <p className="text-sm">Pedido de $ 100 = $ 15-20 de receita para a plataforma</p>
                             </div>
                           </div>
                           
@@ -452,11 +452,11 @@ const ResultsPage = () => {
                             </p>
                             <div className="flex gap-2 mb-2">
                               <div className="bg-gray-50 p-2 rounded flex-1">
-                                <p className="text-sm font-medium">Básico: R$ 0</p>
+                                <p className="text-sm font-medium">Básico: $ 0</p>
                                 <p className="text-xs text-gray-500">Apenas comissão por pedido</p>
                               </div>
                               <div className="bg-gray-50 p-2 rounded flex-1">
-                                <p className="text-sm font-medium">Pro: R$ 49/mês</p>
+                                <p className="text-sm font-medium">Pro: $ 49/mês</p>
                                 <p className="text-xs text-gray-500">+ recursos avançados</p>
                               </div>
                             </div>
@@ -468,7 +468,7 @@ const ResultsPage = () => {
                               Plano mensal com benefícios para usuários frequentes.
                             </p>
                             <div className="bg-gray-50 p-2 rounded">
-                              <p className="text-sm font-medium">HomePlate Club: R$ 29,90/mês</p>
+                              <p className="text-sm font-medium">HomePlate Club: $ 29.90/mês</p>
                               <p className="text-xs text-gray-500">Frete grátis, descontos exclusivos e acesso antecipado a novos chefs</p>
                             </div>
                           </div>

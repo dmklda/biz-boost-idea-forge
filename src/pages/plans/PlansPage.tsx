@@ -19,7 +19,7 @@ const PlansPage = () => {
     {
       id: "free",
       name: "Free",
-      price: "R$0",
+      price: "$0",
       period: "/mês",
       features: [
         "3 análises de ideias por mês",
@@ -33,7 +33,7 @@ const PlansPage = () => {
     {
       id: "pro",
       name: "Pro",
-      price: "R$49,90",
+      price: "$49.90",
       period: "/mês",
       features: [
         "Análises ilimitadas",

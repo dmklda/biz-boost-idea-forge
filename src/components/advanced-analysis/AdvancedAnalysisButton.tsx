@@ -43,13 +43,13 @@ export function AdvancedAnalysisButton({
         variant={variant}
         size={size}
         className={cn(
-          "transition-all",
+          "transition-all whitespace-nowrap",
           variant === "default" && "bg-gradient-to-r from-brand-blue to-brand-purple hover:from-brand-blue/90 hover:to-brand-purple/90",
           isDarkMode && variant === "outline" && "border-slate-700 hover:bg-slate-800",
           className
         )}
       >
-        {showIcon && <IconComponent className={cn("h-4 w-4", showLabel && "mr-2")} />}
+        {showIcon && <IconComponent className={cn("h-4 w-4", showLabel && "mr-1.5")} />}
         {showLabel && t('advancedAnalysis.button', "Análise Avançada")}
       </Button>
       

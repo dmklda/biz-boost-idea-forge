@@ -388,9 +388,9 @@ const IdeaDetailPage = () => {
                       {t('ideas.detail.budget')}
                     </h3>
                     <p className="mt-1">
-                      {new Intl.NumberFormat('pt-BR', {
+                      {new Intl.NumberFormat('en-US', {
                         style: 'currency',
-                        currency: 'BRL'
+                        currency: 'USD'
                       }).format(idea.budget)}
                     </p>
                   </div>
@@ -443,9 +443,9 @@ const IdeaDetailPage = () => {
                       {t('ideas.detail.strengths')}
                     </h3>
                     <ul className="ml-6 list-disc text-sm space-y-1">
-                      {analysis.swot_analysis.strengths.map((strength, idx) => (
+                      {analysis.swot_analysis.strengths?.map?.((strength, idx) => (
                         <li key={idx}>{strength}</li>
-                      ))}
+                      )) || <li>{t('common.notSpecified')}</li>}
                     </ul>
                   </div>
                   
@@ -455,9 +455,9 @@ const IdeaDetailPage = () => {
                       {t('ideas.detail.weaknesses')}
                     </h3>
                     <ul className="ml-6 list-disc text-sm space-y-1">
-                      {analysis.swot_analysis.weaknesses.map((weakness, idx) => (
+                      {analysis.swot_analysis.weaknesses?.map?.((weakness, idx) => (
                         <li key={idx}>{weakness}</li>
-                      ))}
+                      )) || <li>{t('common.notSpecified')}</li>}
                     </ul>
                   </div>
                 </div>
@@ -485,9 +485,9 @@ const IdeaDetailPage = () => {
                         {t('ideas.detail.strengths')}
                       </h3>
                       <ul className="ml-6 list-disc space-y-1">
-                        {analysis.swot_analysis.strengths.map((strength, idx) => (
+                        {analysis.swot_analysis.strengths?.map?.((strength, idx) => (
                           <li key={idx}>{strength}</li>
-                        ))}
+                        )) || <li>{t('common.notSpecified')}</li>}
                       </ul>
                     </div>
                     
@@ -497,9 +497,9 @@ const IdeaDetailPage = () => {
                         {t('ideas.detail.weaknesses')}
                       </h3>
                       <ul className="ml-6 list-disc space-y-1">
-                        {analysis.swot_analysis.weaknesses.map((weakness, idx) => (
+                        {analysis.swot_analysis.weaknesses?.map?.((weakness, idx) => (
                           <li key={idx}>{weakness}</li>
-                        ))}
+                        )) || <li>{t('common.notSpecified')}</li>}
                       </ul>
                     </div>
                     
@@ -509,9 +509,9 @@ const IdeaDetailPage = () => {
                         {t('ideas.detail.opportunities')}
                       </h3>
                       <ul className="ml-6 list-disc space-y-1">
-                        {analysis.swot_analysis.opportunities.map((opportunity, idx) => (
+                        {analysis.swot_analysis.opportunities?.map?.((opportunity, idx) => (
                           <li key={idx}>{opportunity}</li>
-                        ))}
+                        )) || <li>{t('common.notSpecified')}</li>}
                       </ul>
                     </div>
                     
@@ -521,9 +521,9 @@ const IdeaDetailPage = () => {
                         {t('ideas.detail.threats')}
                       </h3>
                       <ul className="ml-6 list-disc space-y-1">
-                        {analysis.swot_analysis.threats.map((threat, idx) => (
+                        {analysis.swot_analysis.threats?.map?.((threat, idx) => (
                           <li key={idx}>{threat}</li>
-                        ))}
+                        )) || <li>{t('common.notSpecified')}</li>}
                       </ul>
                     </div>
                   </div>
@@ -554,9 +554,9 @@ const IdeaDetailPage = () => {
                     <div>
                       <h3 className="font-medium text-sm">{t('ideas.detail.barriers')}</h3>
                       <ul className="ml-6 list-disc mt-1">
-                        {analysis.market_analysis.barriers_to_entry.map((barrier, idx) => (
+                        {analysis.market_analysis.barriers_to_entry?.map?.((barrier, idx) => (
                           <li key={idx}>{barrier}</li>
-                        ))}
+                        )) || <li>{t('common.notSpecified')}</li>}
                       </ul>
                     </div>
                   </CardContent>
@@ -572,9 +572,9 @@ const IdeaDetailPage = () => {
                     <div>
                       <h3 className="font-medium text-sm">{t('ideas.detail.keyCompetitors')}</h3>
                       <ul className="ml-6 list-disc mt-1">
-                        {analysis.competitor_analysis.key_competitors.map((competitor, idx) => (
+                        {analysis.competitor_analysis.key_competitors?.map?.((competitor, idx) => (
                           <li key={idx}>{competitor}</li>
-                        ))}
+                        )) || <li>{t('common.notSpecified')}</li>}
                       </ul>
                     </div>
                     
@@ -586,9 +586,9 @@ const IdeaDetailPage = () => {
                     <div>
                       <h3 className="font-medium text-sm">{t('ideas.detail.marketGaps')}</h3>
                       <ul className="ml-6 list-disc mt-1">
-                        {analysis.competitor_analysis.market_gaps.map((gap, idx) => (
+                        {analysis.competitor_analysis.market_gaps?.map?.((gap, idx) => (
                           <li key={idx}>{gap}</li>
-                        ))}
+                        )) || <li>{t('common.notSpecified')}</li>}
                       </ul>
                     </div>
                   </CardContent>
@@ -617,36 +617,36 @@ const IdeaDetailPage = () => {
                 <div>
                   <h3 className="font-medium text-sm">{t('ideas.detail.actionItems')}</h3>
                   <ul className="ml-6 list-disc mt-1">
-                    {analysis.recommendations.action_items.map((item, idx) => (
+                    {analysis.recommendations.action_items?.map?.((item, idx) => (
                       <li key={idx}>{item}</li>
-                    ))}
+                    )) || <li>{t('common.notSpecified')}</li>}
                   </ul>
                 </div>
                 
                 <div>
                   <h3 className="font-medium text-sm">{t('ideas.detail.nextSteps')}</h3>
                   <ul className="ml-6 list-disc mt-1">
-                    {analysis.recommendations.next_steps.map((step, idx) => (
+                    {analysis.recommendations.next_steps?.map?.((step, idx) => (
                       <li key={idx}>{step}</li>
-                    ))}
+                    )) || <li>{t('common.notSpecified')}</li>}
                   </ul>
                 </div>
                 
                 <div>
                   <h3 className="font-medium text-sm">{t('ideas.detail.potentialChallenges')}</h3>
                   <ul className="ml-6 list-disc mt-1">
-                    {analysis.recommendations.potential_challenges.map((challenge, idx) => (
+                    {analysis.recommendations.potential_challenges?.map?.((challenge, idx) => (
                       <li key={idx}>{challenge}</li>
-                    ))}
+                    )) || <li>{t('common.notSpecified')}</li>}
                   </ul>
                 </div>
                 
                 <div>
                   <h3 className="font-medium text-sm">{t('ideas.detail.suggestedResources')}</h3>
                   <ul className="ml-6 list-disc mt-1">
-                    {analysis.recommendations.suggested_resources.map((resource, idx) => (
+                    {analysis.recommendations.suggested_resources?.map?.((resource, idx) => (
                       <li key={idx}>{resource}</li>
-                    ))}
+                    )) || <li>{t('common.notSpecified')}</li>}
                   </ul>
                 </div>
               </CardContent>
@@ -688,9 +688,9 @@ const IdeaDetailPage = () => {
                 <div>
                   <h3 className="font-medium text-sm">{t('ideas.detail.fundingSuggestions')}</h3>
                   <ul className="ml-6 list-disc mt-1">
-                    {analysis.financial_analysis.funding_suggestions.map((suggestion, idx) => (
+                    {analysis.financial_analysis.funding_suggestions?.map?.((suggestion, idx) => (
                       <li key={idx}>{suggestion}</li>
-                    ))}
+                    )) || <li>{t('common.notSpecified')}</li>}
                   </ul>
                 </div>
               </CardContent>

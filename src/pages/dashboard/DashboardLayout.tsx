@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Navigate, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -202,7 +201,7 @@ const DashboardLayout = () => {
                 </DialogDescription>
               </DialogHeader>
               <div className="py-4">
-                <IdeaForm />
+                <IdeaForm onAnalysisComplete={() => setIsAnalysisDialogOpen(false)} />
               </div>
             </DialogContent>
           </Dialog>

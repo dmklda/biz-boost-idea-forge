@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -71,7 +70,7 @@ export const BudgetLocationStep = ({
         <div className="mt-2">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <span className="text-gray-500">R$</span>
+              <span className="text-gray-500">$</span>
             </div>
             <Input 
               id="budget"

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "@/components/ui/sonner";
@@ -97,19 +96,22 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
         // Reset the form to close it
         resetForm();
         
-        // Always navigate to the results page in the dashboard
-        if (analysisData && analysisData.ideaId) {
-          // Dispatch custom event to notify dashboard of data change
-          const analysisUpdateEvent = new CustomEvent('analysis-updated', { 
-            detail: { ideaId: analysisData.ideaId }
-          });
-          window.dispatchEvent(analysisUpdateEvent);
-          
-          navigate(`/dashboard/resultados?id=${analysisData.ideaId}`);
-        } else {
-          console.error("Missing ideaId in response:", analysisData);
-          toast.error(t('ideaForm.missingData', "Dados da análise incompletos. Entre em contato com o suporte."));
-        }
+        // Pequeno delay para garantir que o modal seja fechado antes da navegação
+        setTimeout(() => {
+          // Always navigate to the results page in the dashboard
+          if (analysisData && analysisData.ideaId) {
+            // Dispatch custom event to notify dashboard of data change
+            const analysisUpdateEvent = new CustomEvent('analysis-updated', { 
+              detail: { ideaId: analysisData.ideaId }
+            });
+            window.dispatchEvent(analysisUpdateEvent);
+            
+            navigate(`/dashboard/resultados?id=${analysisData.ideaId}`);
+          } else {
+            console.error("Missing ideaId in response:", analysisData);
+            toast.error(t('ideaForm.missingData', "Dados da análise incompletos. Entre em contato com o suporte."));
+          }
+        }, 100); // 100ms delay deve ser suficiente
       } else {
         // Not authenticated, redirect to login
         toast.info(t('ideaForm.loginRequired', "É necessário fazer login para analisar ideias"));

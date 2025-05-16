@@ -95,7 +95,7 @@ serve(async (req) => {
       ],
       pitch: `${ideaData.title || "Sua ideia"} é uma solução inovadora que ${ideaData.problem ? "resolve o problema de " + ideaData.problem : "atende às necessidades do mercado atual"}, focando em ${ideaData.audience || "um público amplo"}. Nossa proposta única combina tecnologia avançada com atendimento personalizado para criar uma experiência superior para os usuários.`,
       marketAnalysis: {
-        size: basicAnalysisData?.market_analysis?.market_size || "O mercado global está avaliado em aproximadamente R$ 50 bilhões com taxa de crescimento anual de 8%. No Brasil, representa cerca de R$ 5 bilhões com potencial de crescimento acelerado nos próximos 5 anos.",
+        size: basicAnalysisData?.market_analysis?.market_size || "O mercado global está avaliado em aproximadamente $ 50 bilhões com taxa de crescimento anual de 8%. No Brasil, representa cerca de $ 5 bilhões com potencial de crescimento acelerado nos próximos 5 anos.",
         targetAudience: ideaData.audience || basicAnalysisData?.market_analysis?.target_audience || "Adultos entre 25-45 anos com renda média-alta, tecnologicamente informados e que valorizam praticidade e qualidade.",
         trends: [
           "Crescente demanda por soluções digitais integradas",
@@ -136,7 +136,7 @@ serve(async (req) => {
           {
             name: "Assinatura Mensal",
             description: "Modelo recorrente com diferentes níveis de acesso e funcionalidades",
-            revenue: "R$29 - R$99 por usuário/mês"
+            revenue: "$29 - $99 por usuário/mês"
           },
           {
             name: "Freemium",
@@ -146,7 +146,7 @@ serve(async (req) => {
           {
             name: ideaData.monetization || "Licenciamento Empresarial",
             description: "Pacotes customizados para empresas com múltiplos usuários",
-            revenue: "R$500 - R$5.000 por empresa/mês"
+            revenue: "$500 - $5,000 por empresa/mês"
           },
           {
             name: "Comissão por Transação",
@@ -155,8 +155,8 @@ serve(async (req) => {
           }
         ],
         projections: {
-          firstYear: "R$ 250.000 - R$ 500.000",
-          thirdYear: "R$ 2 milhões - R$ 5 milhões",
+          firstYear: "$ 250,000 - $ 500,000",
+          thirdYear: "$ 2 million - $ 5 million",
           breakEven: "18-24 meses",
           roi: "120% após 3 anos"
         }

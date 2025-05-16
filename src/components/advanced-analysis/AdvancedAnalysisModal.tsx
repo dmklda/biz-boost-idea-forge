@@ -76,6 +76,8 @@ export function AdvancedAnalysisModal({
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [isLoadingExisting, setIsLoadingExisting] = useState(false);
+  const [analysisCheckCompleted, setAnalysisCheckCompleted] = useState(false);
 
   const motivationalPhrases = [
     t('advancedAnalysis.motivation1'),
@@ -102,16 +104,26 @@ export function AdvancedAnalysisModal({
   useEffect(() => {
     if (open && authState.isAuthenticated && ideaId) {
       fetchIdeaDetails();
-      fetchAdvancedAnalysis();
+      fetchExistingAnalysis(); // Apenas busca análises existentes, não gera novas
     } else {
       // Reset states when modal is closed
       if (!open) {
         setAnalysis(null);
         setProgress(0);
         setCurrentPhrase(0);
+        setAnalysisCheckCompleted(false);
       }
     }
   }, [open, ideaId, authState.isAuthenticated]);
+
+  // Gerar análise automaticamente APENAS quando verificação completa confirmar que não existe análise
+  useEffect(() => {
+    // Só gerar nova análise se: verificação completa + sem análise + não está carregando + modal aberto
+    if (analysisCheckCompleted && !analysis && !loading && open && authState.isAuthenticated && ideaId) {
+      console.log("Verificação completa - nenhuma análise existente. Gerando uma nova análise automaticamente.");
+      generateNewAnalysis();
+    }
+  }, [analysisCheckCompleted, analysis, loading, open]);
 
   useEffect(() => {
     if (loading) {
@@ -174,7 +186,39 @@ export function AdvancedAnalysisModal({
     }
   };
 
-  const fetchAdvancedAnalysis = async () => {
+  // Função para apenas buscar análises existentes sem gerar novas
+  const fetchExistingAnalysis = async () => {
+    setIsLoadingExisting(true);
+    setAnalysisCheckCompleted(false);
+    
+    try {
+      // Verificar se já existe análise
+      console.log("Verificando análises existentes para a ideia:", ideaId);
+      const { data, error } = await supabase
+        .from("advanced_analyses")
+        .select("*")
+        .eq("idea_id", ideaId)
+        .eq("user_id", authState.user?.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) throw error;
+      
+      if (data) {
+        console.log("Análise existente encontrada:", data);
+        setAnalysis(data as AdvancedAnalysis);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar análise avançada existente:", error);
+    } finally {
+      setIsLoadingExisting(false);
+      setAnalysisCheckCompleted(true);
+    }
+  };
+
+  // Função para gerar uma nova análise quando o botão for clicado
+  const generateNewAnalysis = async () => {
     setLoading(true);
     setProgress(0);
     setAttempts(0); // Reset attempts counter
@@ -728,7 +772,7 @@ export function AdvancedAnalysisModal({
           "pl-4 sm:pl-6 pr-10 sm:pr-10 py-3 sm:py-4",
           isDarkMode ? "border-slate-800" : "border-slate-200"
         )}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <DialogTitle className={cn(
               "text-lg sm:text-xl",
               isDarkMode ? "text-white" : "text-slate-900"
@@ -737,9 +781,17 @@ export function AdvancedAnalysisModal({
                 ? t('advancedAnalysis.generating')
                 : t('advancedAnalysis.title')}
             </DialogTitle>
-            <div className="flex items-center gap-1 sm:gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
               {!loading && analysis && (
                 <>
+                  <Button 
+                    variant="default" 
+                    onClick={generateNewAnalysis}
+                    size="sm"
+                    className="bg-brand-purple hover:bg-brand-purple/90 mr-1"
+                  >
+                    {t('advancedAnalysis.reanalyze', "Re-análise Avançada")}
+                  </Button>
                   <Button 
                     variant={isDarkMode ? "outline" : "outline"} 
                     size="sm" 
@@ -862,6 +914,54 @@ export function AdvancedAnalysisModal({
                 )} />
               </div>
             </div>
+          </div>
+        ) : isLoadingExisting ? (
+          <div className={cn(
+            "flex-1 p-4 md:p-6 flex flex-col items-center justify-center",
+            isDarkMode ? "bg-slate-900" : "bg-white"
+          )}>
+            <div className="text-center mb-4">
+              <h2 className={cn(
+                "text-xl font-semibold",
+                isDarkMode ? "text-white" : "text-slate-900"
+              )}>
+                {t('common.loading')}
+              </h2>
+              <p className={cn(
+                "text-muted-foreground",
+                isDarkMode ? "text-slate-400" : ""
+              )}>
+                {t('advancedAnalysis.title')}
+              </p>
+            </div>
+            <Skeleton className={cn(
+              "h-8 w-32 rounded-md",
+              isDarkMode ? "bg-slate-800" : ""
+            )} />
+          </div>
+        ) : !analysis ? (
+          <div className={cn(
+            "flex-1 p-4 md:p-6 flex flex-col items-center justify-center",
+            isDarkMode ? "bg-slate-900" : "bg-white"
+          )}>
+            <div className="text-center mb-4">
+              <h2 className={cn(
+                "text-xl font-semibold mb-2",
+                isDarkMode ? "text-white" : "text-slate-900"
+              )}>
+                {t('advancedAnalysis.generating')}
+              </h2>
+              <p className={cn(
+                "text-muted-foreground mb-6",
+                isDarkMode ? "text-slate-400" : ""
+              )}>
+                {t('advancedAnalysis.patience')}
+              </p>
+            </div>
+            <Progress value={30} className={cn(
+              "h-2 w-48",
+              isDarkMode ? "bg-slate-800" : ""
+            )} />
           </div>
         ) : (
           <div className="flex-1 flex overflow-hidden">

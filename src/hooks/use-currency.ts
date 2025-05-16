@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 type CurrencyConfig = {
@@ -10,7 +9,7 @@ type CurrencyConfig = {
 const currencyConfigs: Record<string, CurrencyConfig> = {
   USD: { symbol: '$', code: 'USD', position: 'before' },
   EUR: { symbol: '€', code: 'EUR', position: 'after' },
-  BRL: { symbol: 'R$', code: 'BRL', position: 'before' },
+  BRL: { symbol: '$', code: 'USD', position: 'before' },
   AOA: { symbol: 'Kz', code: 'AOA', position: 'before' },
   JPY: { symbol: '¥', code: 'JPY', position: 'before' }
 };
@@ -23,8 +22,9 @@ export function useCurrency() {
       const userLocale = navigator.language;
       const currencyMap: Record<string, keyof typeof currencyConfigs> = {
         'en': 'USD',
-        'pt-BR': 'BRL',
-        'pt-AO': 'AOA',
+        'pt-BR': 'USD',
+        'pt-AO': 'USD',
+        'pt-PT': 'USD',
         'ja': 'JPY',
         'en-US': 'USD',
         'en-GB': 'EUR',
@@ -41,7 +41,7 @@ export function useCurrency() {
   const formatPrice = (amount: number): string => {
     const formatted = new Intl.NumberFormat(navigator.language, {
       style: 'currency',
-      currency: currency.code,
+      currency: 'USD',
     }).format(amount);
 
     return formatted;

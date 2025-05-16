@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -102,7 +101,7 @@ export const MobileBottomNav = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <IdeaForm />
+            <IdeaForm onAnalysisComplete={() => setIsAnalysisDialogOpen(false)} />
           </div>
         </DialogContent>
       </Dialog>

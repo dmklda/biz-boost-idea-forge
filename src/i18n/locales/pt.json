@@ -6,7 +6,7 @@
     "quote1": "A análise que recebi foi surpreendentemente precisa. Consegui identificar problemas no meu modelo de negócio que eu nem tinha percebido.",
     "author1": "Marina Silva",
     "role1": "Fundadora da TechStart",
-    "quote2": "Economizei meses de pesquisa e milhares de reais com a validação da minha ideia. O relatório me ajudou a pivotar minha estratégia.",
+    "quote2": "Economizei meses de pesquisa e milhares de dólares com a validação da minha ideia. O relatório me ajudou a pivotar minha estratégia.",
     "author2": "Pedro Santos",
     "role2": "CEO da DeliveryPro",
     "quote3": "Como investidor-anjo, uso o Startupideia para fazer uma pré-análise das startups que chegam até mim. É uma ferramenta indispensável.",
@@ -154,8 +154,8 @@
     "comingSoon": "Funcionalidade em breve"
   },
   "ideaForm": {
-    "title": "Compartilhe sua ideia",
-    "subtitle": "Preencha o formulário e receba uma análise detalhada do potencial de negócio",
+    "title": "Análise de Negócio",
+    "subtitle": "Vamos analisar sua ideia de negócio",
     "success": "Ideia registrada com sucesso!",
     "error": "Erro ao processar sua solicitação",
     "idea": {
@@ -674,6 +674,7 @@
     "noIdeasFound": "Nenhuma ideia encontrada.",
     "notFound": "Ideia não encontrada",
     "backToIdeas": "Voltar para Ideias",
+    "viewIdea": "Ver ideia",
     "scoreStatus": {
       "great": "Ótimo",
       "medium": "Médio",
@@ -903,7 +904,9 @@
     "generatedAt": "Gerado em",
     "send": "Enviar",
     "preparing": "Preparando...",
-    "shared": "Compartilhado"
+    "shared": "Compartilhado",
+    "notFound": "Não encontrado",
+    "updated": "Atualizado"
   },
   "countries": {
     "global": "Global",
@@ -1152,6 +1155,7 @@
     "button": "Análise Avançada",
     "generating": "Gerando Análise Avançada...",
     "title": "Análise Avançada",
+    "reanalyze": "Re-análise Avançada",
     "motivation1": "Analisando potenciais de mercado...",
     "motivation2": "Identificando oportunidades únicas...",
     "motivation3": "Criando estratégias de crescimento...",
@@ -1221,7 +1225,8 @@
     "savedAnalyses": "Análises Avançadas Salvas",
     "savedAnalysesDescription": "Veja e gerencie suas análises avançadas salvas",
     "alreadySaved": "Esta análise já estava salva e foi atualizada",
-    "saveSuccess": "Análise avançada salva com sucesso"
+    "saveSuccess": "Análise avançada salva com sucesso",
+    "viewAnalysis": "Ver análise"
   },
   "mindmap": {
     "title": "Mapa Mental"

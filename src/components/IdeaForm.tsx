@@ -1,5 +1,4 @@
-
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent } from "./ui/card";
 import { IdeaFormProvider } from "@/contexts/IdeaFormContext";
 import { IdeaFormHeader } from "./idea-form/IdeaFormHeader";
@@ -11,9 +10,10 @@ import { useLocation } from "react-router-dom";
 interface IdeaFormProps {
   ideaId?: string;
   isReanalyzing?: boolean;
+  onAnalysisComplete?: () => void;
 }
 
-export const IdeaForm = ({ ideaId, isReanalyzing }: IdeaFormProps) => {
+export const IdeaForm = ({ ideaId, isReanalyzing, onAnalysisComplete }: IdeaFormProps) => {
   const location = useLocation();
   
   // Check if we're in the dashboard
@@ -22,7 +22,11 @@ export const IdeaForm = ({ ideaId, isReanalyzing }: IdeaFormProps) => {
 
   return (
     <IdeaFormProvider ideaId={ideaId}>
-      <FormContainer wrapInCard={wrapInCard} isReanalyzing={isReanalyzing} />
+      <FormContainer 
+        wrapInCard={wrapInCard} 
+        isReanalyzing={isReanalyzing} 
+        onAnalysisComplete={onAnalysisComplete} 
+      />
     </IdeaFormProvider>
   );
 };
@@ -31,8 +35,16 @@ export const IdeaForm = ({ ideaId, isReanalyzing }: IdeaFormProps) => {
 const FormContainer: React.FC<{
   wrapInCard: boolean;
   isReanalyzing?: boolean;
-}> = ({ wrapInCard, isReanalyzing }) => {
+  onAnalysisComplete?: () => void;
+}> = ({ wrapInCard, isReanalyzing, onAnalysisComplete }) => {
   const { handleSubmit, isAnalysisComplete } = useFormSubmission(isReanalyzing);
+  
+  // Use useEffect para chamar onAnalysisComplete quando a análise for concluída
+  useEffect(() => {
+    if (isAnalysisComplete && onAnalysisComplete) {
+      onAnalysisComplete();
+    }
+  }, [isAnalysisComplete, onAnalysisComplete]);
   
   // Se a análise foi completada, não renderizar o formulário
   if (isAnalysisComplete) {
