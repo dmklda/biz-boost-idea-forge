@@ -27,10 +27,12 @@ serve(async (req) => {
 
   try {
     // Get request body
-    const { ideaId, message, history } = await req.json();
+    const requestBody = await req.json();
+    const { ideaId, message, history } = requestBody;
 
     // Validate input
     if (!ideaId || !message) {
+      console.error("Missing required parameters:", { ideaId, message });
       return new Response(
         JSON.stringify({ error: "Missing required parameters" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }

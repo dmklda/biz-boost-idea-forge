@@ -68,6 +68,12 @@ export function AdvancedAnalysisChat({
     setIsSending(true);
 
     try {
+      console.log("Sending chat message:", {
+        ideaId,
+        message: userInput,
+        historyLength: messages.filter(msg => msg.id !== "initial").length
+      });
+
       const { data: aiResult, error: aiError } = await supabase.functions.invoke(
         "gpt-chat",
         {
@@ -83,13 +89,19 @@ export function AdvancedAnalysisChat({
       );
 
       if (aiError) {
-        throw aiError;
+        throw new Error(`Supabase function error: ${aiError.message}`);
+      }
+
+      console.log("Received AI response:", aiResult);
+
+      if (!aiResult || !aiResult.response) {
+        throw new Error("Received empty response from AI");
       }
 
       const aiResponse: Message = {
         id: Date.now().toString() + "-ai",
         role: "assistant",
-        content: aiResult?.response || t("errors.chatError", "Desculpe, não consegui processar sua mensagem."),
+        content: aiResult.response,
       };
       setMessages((prevMessages) => [...prevMessages, aiResponse]);
 
