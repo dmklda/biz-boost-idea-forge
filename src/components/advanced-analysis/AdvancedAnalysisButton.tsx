@@ -59,7 +59,6 @@ export function AdvancedAnalysisButton({
         ideaId={ideaId}
         open={isOpen}
         onOpenChange={setIsOpen}
-        userLanguage={getCurrentLanguage()}
       />
     </>
   );

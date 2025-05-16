@@ -37,6 +37,10 @@ serve(async (req) => {
       );
     }
 
+    console.log("Processing chat for idea:", ideaId);
+    console.log("User message:", message);
+    console.log("Chat history length:", history ? history.length : 0);
+
     // In a real implementation, this would:
     // 1. Fetch the idea details and analysis from Supabase
     // 2. Format them as context for the OpenAI API
@@ -45,6 +49,8 @@ serve(async (req) => {
     // For now, provide a mock response
     const randomIndex = Math.floor(Math.random() * mockResponses.length);
     const response = mockResponses[randomIndex];
+
+    console.log("Sending response:", response);
 
     return new Response(
       JSON.stringify({ response }),

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,11 +72,12 @@ export function AdvancedAnalysisChat({
         "gpt-chat",
         {
           body: {
-            userInput: userInput,
             ideaId: ideaId,
-            ideaDetails: idea,
-            analysisData: analysis,
-            chatHistory: messages.slice(-5),
+            message: userInput,
+            history: messages.filter(msg => msg.id !== "initial").map(msg => ({
+              role: msg.role,
+              content: msg.content
+            })),
           },
         }
       );
@@ -87,7 +89,7 @@ export function AdvancedAnalysisChat({
       const aiResponse: Message = {
         id: Date.now().toString() + "-ai",
         role: "assistant",
-        content: aiResult?.reply || t("errors.chatError", "Desculpe, não consegui processar sua mensagem."),
+        content: aiResult?.response || t("errors.chatError", "Desculpe, não consegui processar sua mensagem."),
       };
       setMessages((prevMessages) => [...prevMessages, aiResponse]);
 
