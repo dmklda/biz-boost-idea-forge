@@ -20,10 +20,18 @@ const AdvancedAnalysisPage = () => {
       refreshSavedAnalyses();
     };
 
+    // Listen for language change events
+    const handleLanguageChange = () => {
+      console.log("Language changed, refreshing analyses");
+      refreshSavedAnalyses();
+    };
+
     window.addEventListener("analysis-updated", handleAnalysisUpdate);
+    window.addEventListener("language-changed", handleLanguageChange);
     
     return () => {
       window.removeEventListener("analysis-updated", handleAnalysisUpdate);
+      window.removeEventListener("language-changed", handleLanguageChange);
     };
   }, []);
 
