@@ -17,7 +17,7 @@ serve(async (req) => {
   try {
     // Get request body
     const requestBody = await req.json();
-    const { ideaId, message, history } = requestBody;
+    const { ideaId, message, history, userId } = requestBody;
 
     // Validate input
     if (!ideaId || !message) {
@@ -36,6 +36,24 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") as string;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") as string;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Save the user message to the database
+    if (userId) {
+      console.log(`Saving user message to database for user: ${userId}`);
+      const { error: saveUserMessageError } = await supabase
+        .from("chat_messages")
+        .insert({
+          user_id: userId,
+          idea_id: ideaId,
+          role: "user",
+          content: message
+        });
+
+      if (saveUserMessageError) {
+        console.error("Error saving user message:", saveUserMessageError);
+        // Continue with the process even if saving failed
+      }
+    }
 
     // Fetch the idea details
     const { data: ideaData, error: ideaError } = await supabase
@@ -191,6 +209,24 @@ serve(async (req) => {
 
     const response = aiData.choices[0].message.content;
     console.log("AI response generated successfully");
+
+    // Save the assistant response to the database
+    if (userId) {
+      console.log("Saving assistant response to database");
+      const { error: saveAssistantMessageError } = await supabase
+        .from("chat_messages")
+        .insert({
+          user_id: userId,
+          idea_id: ideaId,
+          role: "assistant",
+          content: response
+        });
+
+      if (saveAssistantMessageError) {
+        console.error("Error saving assistant message:", saveAssistantMessageError);
+        // Continue with the process even if saving failed
+      }
+    }
 
     return new Response(
       JSON.stringify({ response }),

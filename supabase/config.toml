@@ -30,3 +30,7 @@ enabled = true
 
 [functions.gpt-chat]
 verify_jwt = true
+
+[functions.advanced-analysis]
+verify_jwt = true
+

@@ -3,14 +3,23 @@ import { SavedAnalysesList } from "@/components/advanced-analysis";
 import { useTranslation } from "react-i18next";
 import { useRefreshAnalyses } from "@/hooks/use-refresh-analyses";
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const AdvancedAnalysisPage = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [refreshKey, setRefreshKey] = useState(0);
 
   // Function to force refresh the saved analyses list
   const refreshSavedAnalyses = () => {
     setRefreshKey(prevKey => prevKey + 1);
+  };
+
+  // Navigate to create new idea page
+  const handleCreateNewIdea = () => {
+    navigate('/dashboard/ideas/new');
   };
 
   // Listen for analysis-updated and language-changed events
@@ -48,6 +57,10 @@ const AdvancedAnalysisPage = () => {
             {t('analysis.savedAnalysesDescription', "Veja e gerencie suas análises avançadas salvas")}
           </p>
         </div>
+        <Button onClick={handleCreateNewIdea} className="shrink-0">
+          <PlusCircle className="h-4 w-4 mr-2" />
+          {t('common.newIdea', "Nova Ideia")}
+        </Button>
       </div>
       
       <SavedAnalysesList key={refreshKey} />
