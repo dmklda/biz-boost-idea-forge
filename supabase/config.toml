@@ -4,27 +4,29 @@ project_id = "aebuzslludwlpcbdpljx"
 [api]
 enabled = true
 port = 54321
-schemas = ["public", "storage"]
+schemas = []
 
 [db]
 port = 54322
 
-[realtime]
+[studio]
+port = 54323
+
+[inbucket]
+port = 54324
+
+[auth]
 enabled = true
+site_url = "http://localhost:3000"
 
 [storage]
 enabled = true
 
-[studio]
+[realtime]
 enabled = true
-port = 54323
 
-[inbucket]
+[analytics]
 enabled = true
-port = 54324
 
-[functions]
-[functions.advanced-analysis]
-verify_jwt = true
 [functions.gpt-chat]
 verify_jwt = true

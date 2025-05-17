@@ -8,17 +8,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Mock responses for the chat function
-// In a real implementation, this would use OpenAI's API
-const mockResponses = [
-  "Excelente pergunta! Baseado na sua ideia, recomendo começar focando no problema principal que você está resolvendo. O diferencial competitivo está na solução única que você oferece para este problema.",
-  "Analisando sua ideia, vejo grande potencial no modelo de monetização por assinatura. Considerando seu público-alvo, um modelo freemium poderia atrair usuários iniciais enquanto mantém uma fonte de receita sustentável.",
-  "Sua ideia tem bom potencial de mercado! Para validá-la, sugiro começar com entrevistas com potenciais clientes para confirmar que o problema realmente existe e que sua solução é desejável. Um MVP simples também seria importante para testar suas hipóteses.",
-  "Considerando as tendências atuais do mercado, sua ideia está bem posicionada. Entretanto, recomendo ficar atento à concorrência indireta que poderia entrar nesse espaço. Sua vantagem competitiva precisa ser clara e defensável.",
-  "Para o desenvolvimento inicial, recomendo focar nas funcionalidades essenciais que resolvem o problema central. A arquitetura técnica deve ser escalável, mas não precisa ser perfeita no início. Use tecnologias que permitam desenvolvimento rápido.",
-  "Baseado na análise de mercado, suas projeções de receita parecem otimistas mas alcançáveis. Sugiro revisar seus custos de aquisição de cliente e modelar diferentes cenários de crescimento para ter uma visão mais completa.",
-];
-
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -43,16 +32,165 @@ serve(async (req) => {
     console.log("User message:", message);
     console.log("Chat history length:", history ? history.length : 0);
 
-    // In a real implementation, this would:
-    // 1. Fetch the idea details and analysis from Supabase
-    // 2. Format them as context for the OpenAI API
-    // 3. Call GPT-4o with the full context and chat history
-    
-    // For now, provide a mock response
-    const randomIndex = Math.floor(Math.random() * mockResponses.length);
-    const response = mockResponses[randomIndex];
+    // Initialize Supabase client to fetch idea and analysis data
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") as string;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") as string;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    console.log("Sending response:", response);
+    // Fetch the idea details
+    const { data: ideaData, error: ideaError } = await supabase
+      .from("ideas")
+      .select("*")
+      .eq("id", ideaId)
+      .single();
+
+    if (ideaError || !ideaData) {
+      console.error("Error fetching idea data:", ideaError);
+      return new Response(
+        JSON.stringify({ error: "Failed to fetch idea data", details: ideaError }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
+      );
+    }
+
+    // Fetch the advanced analysis data
+    const { data: analysisData, error: analysisError } = await supabase
+      .from("advanced_analyses")
+      .select("*")
+      .eq("idea_id", ideaId)
+      .maybeSingle();
+
+    // Fetch basic analysis as fallback or additional context
+    const { data: basicAnalysisData } = await supabase
+      .from("idea_analyses")
+      .select("*")
+      .eq("idea_id", ideaId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    // Prepare context for the AI with available data
+    const ideaContext = {
+      title: ideaData.title,
+      description: ideaData.description,
+      problem: ideaData.problem || "Not specified",
+      audience: ideaData.audience || "Not specified",
+      monetization: ideaData.monetization || "Not specified",
+      has_competitors: ideaData.has_competitors || "Not specified",
+      budget: ideaData.budget || "Not specified",
+      location: ideaData.location || "Not specified"
+    };
+
+    // Add analysis data to context if available
+    let analysisContext = {};
+    if (analysisData && analysisData.analysis_data) {
+      const analysis = analysisData.analysis_data;
+      analysisContext = {
+        businessName: analysis.businessName?.name,
+        summary: analysis.summary?.description,
+        score: analysis.summary?.score,
+        status: analysis.summary?.status,
+        differentials: analysis.differentials,
+        marketAnalysis: analysis.marketAnalysis,
+        monetization: analysis.monetization,
+        personas: analysis.personas?.map(p => `${p.name}: ${p.description}`).join("; "),
+        swot: analysis.swot,
+        risks: analysis.risks?.map(r => `${r.name} (${r.level}): ${r.description}`).join("; ")
+      };
+    } else if (basicAnalysisData) {
+      // Use basic analysis as fallback
+      analysisContext = {
+        score: basicAnalysisData.score,
+        status: basicAnalysisData.status,
+        marketAnalysis: basicAnalysisData.market_analysis,
+        swotAnalysis: basicAnalysisData.swot_analysis,
+        competitorAnalysis: basicAnalysisData.competitor_analysis,
+        financialAnalysis: basicAnalysisData.financial_analysis,
+        recommendations: basicAnalysisData.recommendations
+      };
+    }
+
+    // Get OpenAI API key
+    const openAiApiKey = Deno.env.get("OPENAI_API_KEY");
+    if (!openAiApiKey) {
+      console.error("Missing OpenAI API key");
+      return new Response(
+        JSON.stringify({ error: "OpenAI API key not configured" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
+      );
+    }
+
+    // Format chat history for OpenAI context
+    const formattedHistory = (history || []).map(msg => ({
+      role: msg.role,
+      content: msg.content
+    }));
+
+    // Create a system message with context about the idea and analysis
+    const systemPrompt = `
+    You are a business consultant AI assistant specialized in analyzing business ideas and providing strategic advice.
+    
+    You are currently consulting on the following business idea:
+    Title: ${ideaContext.title}
+    Description: ${ideaContext.description}
+    Problem Solved: ${ideaContext.problem}
+    Target Audience: ${ideaContext.audience}
+    Monetization Strategy: ${ideaContext.monetization}
+    Has Competitors: ${ideaContext.has_competitors}
+    Budget: ${ideaContext.budget}
+    Location: ${ideaContext.location}
+    
+    Analysis insights:
+    ${JSON.stringify(analysisContext, null, 2)}
+    
+    Your job is to provide helpful, specific insights about this business idea based on the user's questions.
+    Keep your answers focused on this specific business idea and the analysis provided. Do not make up details that aren't provided.
+    Always provide actionable advice and reference specific elements of the idea or analysis when relevant.
+    Be concise but thorough in your responses. Use a conversational, professional tone.
+    Respond in the same language the user uses (Portuguese, English, Spanish, or Japanese).
+    `;
+
+    // Call OpenAI API with context and user message
+    const openAiMessages = [
+      { role: "system", content: systemPrompt },
+      ...formattedHistory,
+      { role: "user", content: message }
+    ];
+
+    console.log("Calling OpenAI API with context");
+    const openAiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${openAiApiKey}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini", // Using a cost-effective but capable model
+        messages: openAiMessages,
+        temperature: 0.7,
+      })
+    });
+
+    // Handle OpenAI API response
+    if (!openAiResponse.ok) {
+      const errorText = await openAiResponse.text();
+      console.error("OpenAI API error:", errorText);
+      return new Response(
+        JSON.stringify({ error: "Error calling AI service", details: errorText }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
+      );
+    }
+
+    const aiData = await openAiResponse.json();
+    if (!aiData.choices || aiData.choices.length === 0) {
+      console.error("Invalid response from OpenAI:", aiData);
+      return new Response(
+        JSON.stringify({ error: "Invalid response from AI" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
+      );
+    }
+
+    const response = aiData.choices[0].message.content;
+    console.log("AI response generated successfully");
 
     return new Response(
       JSON.stringify({ response }),
