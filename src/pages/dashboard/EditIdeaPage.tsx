@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +8,8 @@ import { toast } from "@/components/ui/sonner";
 import { useTranslation } from "react-i18next";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentLanguage } from "@/i18n/config";
+import { canAffordFeature, FEATURE_COSTS, FEATURE_NAMES } from "@/utils/creditSystem";
+import { CreditCard } from "lucide-react";
 
 const EditIdeaPage = () => {
   const { t } = useTranslation();
@@ -18,7 +19,6 @@ const EditIdeaPage = () => {
   const navigate = useNavigate();
   const { authState } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [hasCredits, setHasCredits] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
@@ -52,28 +52,16 @@ const EditIdeaPage = () => {
         setIsAuthorized(true);
         
         // Para reanálise, verificar se o usuário tem créditos suficientes
-        if (isReanalyzing) {
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('credits')
-            .eq('id', authState.user?.id)
-            .single();
-            
-          if (profileError || !profile) {
-            console.error("Error checking credits:", profileError);
-            // Continue anyway
-          } else if (profile.credits < 1) {
-            setHasCredits(false);
-            toast.error(
-              t('ideaForm.noCredits', "Você não tem créditos suficientes para reanalisar"), 
-              {
-                action: {
-                  label: t('ideaForm.buyCredits', "Comprar créditos"),
-                  onClick: () => navigate('/dashboard/creditos')
-                }
+        if (isReanalyzing && !canAffordFeature(authState.user, "reanalysis")) {
+          toast.error(
+            t('ideaForm.noCredits', `Você precisa de ${FEATURE_COSTS.reanalysis} crédito para ${FEATURE_NAMES.reanalysis.toLowerCase()}.`), 
+            {
+              action: {
+                label: t('ideaForm.buyCredits', "Comprar créditos"),
+                onClick: () => navigate('/dashboard/creditos')
               }
-            );
-          }
+            }
+          );
         }
       } catch (error) {
         console.error("Error checking permissions:", error);
@@ -83,7 +71,7 @@ const EditIdeaPage = () => {
     };
 
     checkPermissions();
-  }, [authState.isAuthenticated, authState.user?.id, ideaId, isReanalyzing, navigate, t]);
+  }, [authState.isAuthenticated, authState.user, ideaId, isReanalyzing, navigate, t]);
 
   if (!authState.isAuthenticated) {
     return (
@@ -113,7 +101,7 @@ const EditIdeaPage = () => {
     return null; // Navegação já foi redirecionada
   }
 
-  if (isReanalyzing && !hasCredits) {
+  if (isReanalyzing && !canAffordFeature(authState.user, "reanalysis")) {
     return (
       <div className="space-y-6">
         <h1 className="text-3xl font-bold tracking-tight">{t('ideaForm.reanalyzeTitle', "Reanalisar Ideia")}</h1>
@@ -122,7 +110,7 @@ const EditIdeaPage = () => {
             <CardTitle className="text-center text-red-500">{t('ideaForm.noCreditsTitle', "Créditos insuficientes")}</CardTitle>
           </CardHeader>
           <CardContent className="text-center">
-            <p>{t('ideaForm.noCreditsDescription', "Você precisa de pelo menos 1 crédito para reanalisar uma ideia.")}</p>
+            <p>{t('ideaForm.noCreditsDescription', `Você precisa de pelo menos ${FEATURE_COSTS.reanalysis} crédito para reanalisar uma ideia.`)}</p>
             <button 
               className="mt-4 px-4 py-2 bg-brand-purple text-white rounded hover:bg-brand-purple/80"
               onClick={() => navigate('/dashboard/creditos')}
@@ -150,6 +138,15 @@ const EditIdeaPage = () => {
           ? t('ideaForm.reanalyzeDescription', "Refine sua ideia para obter uma nova análise") 
           : t('ideaForm.editDescription', "Continue o preenchimento do seu rascunho")}
       </p>
+      
+      {isReanalyzing && authState.user && (
+        <div className="p-4 bg-amber-50 border border-amber-200 rounded-md mb-4 flex items-center">
+          <CreditCard className="h-5 w-5 text-amber-500 mr-2 shrink-0" />
+          <p className="text-sm text-amber-700">
+            Esta ação custará {FEATURE_COSTS.reanalysis} crédito. Você possui atualmente {authState.user.credits} créditos.
+          </p>
+        </div>
+      )}
       
       <IdeaForm ideaId={ideaId || undefined} isReanalyzing={isReanalyzing} />
     </div>

@@ -1,3 +1,5 @@
+
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useIdeaForm } from "@/hooks/useIdeaForm";
@@ -6,7 +8,8 @@ import { toast } from "@/components/ui/sonner";
 import { Check, Sparkles } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PLANS } from "@/utils/creditSystem";
 import { User } from "@/types/auth";
 
 const PlansPage = () => {
@@ -14,50 +17,30 @@ const PlansPage = () => {
   const navigate = useNavigate();
   const { authState, updateUserPlan } = useAuth();
   const { getSavedIdeaData } = useIdeaForm();
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'quarterly' | 'annual'>('monthly');
   
-  const plans = [
-    {
-      id: "free",
-      name: "Free",
-      price: "$0",
-      period: "/mês",
-      features: [
-        "3 análises de ideias por mês",
-        "Relatório básico",
-        "Acesso à comunidade",
-      ],
-      buttonText: "Começar Grátis",
-      recommended: false,
-      color: "from-gray-400/20 to-gray-500/30"
-    },
-    {
-      id: "pro",
-      name: "Pro",
-      price: "$49.90",
-      period: "/mês",
-      features: [
-        "Análises ilimitadas",
-        "Relatórios detalhados",
-        "Suporte prioritário",
-        "Ferramentas avançadas",
-        "Acesso a webinars exclusivos",
-      ],
-      buttonText: "Assinar Agora",
-      recommended: true,
-      color: "from-brand-purple/20 via-indigo-500/20 to-brand-purple/30"
+  const getPriceByPeriod = (plan: (typeof PLANS)[number]) => {
+    switch(billingPeriod) {
+      case 'quarterly': return plan.quarterlyPrice || plan.monthlyPrice;
+      case 'annual': return plan.annualPrice || plan.monthlyPrice;
+      default: return plan.monthlyPrice;
     }
-  ];
+  };
+  
+  const getDiscount = (period: 'quarterly' | 'annual') => {
+    return period === 'quarterly' ? '10%' : '25%';
+  };
   
   const handleSelectPlan = (planId: string) => {
     // In a real app, this would redirect to a payment gateway
     // For demo purposes, we'll just update the user's plan
     
-    if (planId === "free") {
-      updateUserPlan("free");
-      toast.success("Plano gratuito ativado!");
+    if (planId === "free" || planId === "basic" || planId === "pro") {
+      updateUserPlan(planId as User['plan']);
+      toast.success(`Plano ${planId} ativado!`);
     } else {
-      updateUserPlan("pro");
-      toast.success("Plano Pro ativado!");
+      toast.error("Plano inválido");
+      return;
     }
     
     // Check if there's a saved idea to analyze
@@ -85,10 +68,30 @@ const PlansPage = () => {
               {authState.user ? `Olá ${authState.user.name}, ` : ""}
               Escolha o plano ideal para analisar suas ideias de negócio
             </p>
+            
+            <div className="flex justify-center mt-8">
+              <Tabs 
+                defaultValue="monthly" 
+                className="w-full max-w-md"
+                onValueChange={(value) => setBillingPeriod(value as 'monthly' | 'quarterly' | 'annual')}
+              >
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="monthly">Mensal</TabsTrigger>
+                  <TabsTrigger value="quarterly">
+                    Trimestral
+                    <span className="ml-1.5 text-xs bg-green-500/20 text-green-700 px-1.5 py-0.5 rounded-full">-10%</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="annual">
+                    Anual
+                    <span className="ml-1.5 text-xs bg-green-500/20 text-green-700 px-1.5 py-0.5 rounded-full">-25%</span>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-8">
-            {plans.map((plan) => (
+          <div className="grid md:grid-cols-3 gap-8">
+            {PLANS.map((plan) => (
               <Card 
                 key={plan.id}
                 className={`relative overflow-hidden border-0 shadow-lg transition-all duration-300 hover:scale-[1.02] ${
@@ -109,8 +112,17 @@ const PlansPage = () => {
                 <CardHeader className="relative z-10">
                   <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
                   <div className="mt-2">
-                    <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground ml-1">{plan.period}</span>
+                    <span className="text-4xl font-bold">{getPriceByPeriod(plan)}</span>
+                    <span className="text-muted-foreground ml-1">
+                      {billingPeriod === 'monthly' ? '/mês' : 
+                       billingPeriod === 'quarterly' ? '/trimestre' : '/ano'}
+                    </span>
+                    
+                    {billingPeriod !== 'monthly' && plan.id !== 'free' && (
+                      <div className="text-xs text-green-500 mt-1">
+                        Economize {getDiscount(billingPeriod)}
+                      </div>
+                    )}
                   </div>
                 </CardHeader>
                 
@@ -137,10 +149,12 @@ const PlansPage = () => {
                     className={`w-full ${
                       plan.recommended 
                         ? "bg-brand-purple hover:bg-brand-purple/90" 
-                        : "bg-foreground/10 hover:bg-foreground/20 text-foreground"
+                        : plan.id === "basic"
+                          ? "bg-blue-600 hover:bg-blue-700"
+                          : "bg-foreground/10 hover:bg-foreground/20 text-foreground"
                     }`}
                   >
-                    {plan.buttonText}
+                    {plan.id === "free" ? "Começar Grátis" : "Assinar Agora"}
                   </Button>
                 </CardFooter>
               </Card>

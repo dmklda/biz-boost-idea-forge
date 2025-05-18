@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,21 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { useTranslation } from "react-i18next";
-
-// Tipagem para pacotes de créditos
-interface CreditPackage {
-  id: number;
-  amount: number;
-  price: string;
-  savings: string;
-}
-
-// Pacotes de crédito disponíveis
-const creditPackages: CreditPackage[] = [
-  { id: 1, amount: 5, price: "$24.90", savings: "" },
-  { id: 2, amount: 10, price: "$44.90", savings: "10% de desconto" },
-  { id: 3, amount: 25, price: "$99.90", savings: "20% de desconto" },
-];
+import { CREDIT_PACKAGES } from "@/utils/creditSystem";
+import { supabase } from "@/integrations/supabase/client";
 
 export const BuyCreditsCard = () => {
   const { t } = useTranslation();
@@ -30,15 +18,29 @@ export const BuyCreditsCard = () => {
   const handleBuyCredits = async (packageId: number, amount: number) => {
     if (!user) return;
     
-    // Em um app real, isso redirecionaria para um gateway de pagamento
+    // In a real app, this would redirect to a payment gateway
     setIsLoading(packageId);
     
     try {
-      // Calcular novo valor de créditos
+      // Calculate new credit value
       const newCredits = user.credits + amount;
       
-      // Chamada para atualizar créditos
+      // Update user credits
       updateUserCredits(newCredits);
+      
+      // Log the purchase transaction
+      const { error: logError } = await supabase
+        .from('credit_transactions')
+        .insert({
+          user_id: user.id,
+          amount: amount,
+          description: `Compra de ${amount} créditos`,
+          feature: "purchase"
+        });
+        
+      if (logError) {
+        console.error("Error logging purchase:", logError);
+      }
       
       toast.success(t("credits.transactions.addedSuccess"));
     } catch (error) {
@@ -58,7 +60,7 @@ export const BuyCreditsCard = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {creditPackages.map((pkg) => (
+        {CREDIT_PACKAGES.map((pkg) => (
           <div 
             key={pkg.id}
             className="flex items-center justify-between p-4 border rounded-md hover:border-brand-purple/50 hover:bg-muted/50 transition-colors"

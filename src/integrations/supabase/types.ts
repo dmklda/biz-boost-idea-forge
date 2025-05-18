@@ -73,21 +73,27 @@ export type Database = {
           amount: number
           created_at: string
           description: string
+          feature: string | null
           id: string
+          item_id: string | null
           user_id: string
         }
         Insert: {
           amount: number
           created_at?: string
           description: string
+          feature?: string | null
           id?: string
+          item_id?: string | null
           user_id: string
         }
         Update: {
           amount?: number
           created_at?: string
           description?: string
+          feature?: string | null
           id?: string
+          item_id?: string | null
           user_id?: string
         }
         Relationships: [
@@ -418,9 +424,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      is_first_analysis: {
+        Args: { user_id_param: string }
+        Returns: boolean
+      }
       update_user_credits: {
         Args: { user_id: string; amount: number }
         Returns: undefined
+      }
+      use_credits_for_feature: {
+        Args: {
+          user_id_param: string
+          amount_param: number
+          description_param: string
+          feature_param: string
+          item_id_param?: string
+        }
+        Returns: boolean
       }
     }
     Enums: {
