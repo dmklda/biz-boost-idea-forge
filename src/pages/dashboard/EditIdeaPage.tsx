@@ -9,6 +9,8 @@ import { toast } from "@/components/ui/sonner";
 import { useTranslation } from "react-i18next";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentLanguage } from "@/i18n/config";
+import { useCreditSystem } from "@/utils/creditSystem";
+import { Button } from "@/components/ui/button";
 
 const EditIdeaPage = () => {
   const { t } = useTranslation();
@@ -17,6 +19,7 @@ const EditIdeaPage = () => {
   const isReanalyzing = searchParams.get('reanalyze') === 'true';
   const navigate = useNavigate();
   const { authState } = useAuth();
+  const { checkCredits, deductCredits, userPlan } = useCreditSystem();
   const [isLoading, setIsLoading] = useState(true);
   const [hasCredits, setHasCredits] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -29,7 +32,7 @@ const EditIdeaPage = () => {
       }
 
       try {
-        // Verificar se o usuário tem acesso a essa ideia
+        // Check if user has access to this idea
         const { data: idea, error: ideaError } = await supabase
           .from('ideas')
           .select('user_id')
@@ -42,7 +45,7 @@ const EditIdeaPage = () => {
           return;
         }
         
-        // Verificar se o usuário é o dono da ideia
+        // Check if user owns the idea
         if (idea.user_id !== authState.user?.id) {
           navigate('/dashboard/ideias');
           toast.error(t('ideaForm.unauthorized', "Você não tem permissão para editar esta ideia"));
@@ -51,19 +54,12 @@ const EditIdeaPage = () => {
         
         setIsAuthorized(true);
         
-        // Para reanálise, verificar se o usuário tem créditos suficientes
-        if (isReanalyzing) {
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('credits')
-            .eq('id', authState.user?.id)
-            .single();
-            
-          if (profileError || !profile) {
-            console.error("Error checking credits:", profileError);
-            // Continue anyway
-          } else if (profile.credits < 1) {
-            setHasCredits(false);
+        // For reanalysis, check if user has enough credits (unless they're on Pro plan)
+        if (isReanalyzing && userPlan !== 'pro') {
+          const hasEnoughCredits = await checkCredits('REANALYSIS');
+          setHasCredits(hasEnoughCredits);
+          
+          if (!hasEnoughCredits) {
             toast.error(
               t('ideaForm.noCredits', "Você não tem créditos suficientes para reanalisar"), 
               {
@@ -83,7 +79,7 @@ const EditIdeaPage = () => {
     };
 
     checkPermissions();
-  }, [authState.isAuthenticated, authState.user?.id, ideaId, isReanalyzing, navigate, t]);
+  }, [authState.isAuthenticated, authState.user?.id, ideaId, isReanalyzing, navigate, t, checkCredits, userPlan]);
 
   if (!authState.isAuthenticated) {
     return (
@@ -110,10 +106,10 @@ const EditIdeaPage = () => {
   }
 
   if (!isAuthorized) {
-    return null; // Navegação já foi redirecionada
+    return null; // Redirect already handled
   }
 
-  if (isReanalyzing && !hasCredits) {
+  if (isReanalyzing && !hasCredits && userPlan !== 'pro') {
     return (
       <div className="space-y-6">
         <h1 className="text-3xl font-bold tracking-tight">{t('ideaForm.reanalyzeTitle', "Reanalisar Ideia")}</h1>
@@ -123,12 +119,20 @@ const EditIdeaPage = () => {
           </CardHeader>
           <CardContent className="text-center">
             <p>{t('ideaForm.noCreditsDescription', "Você precisa de pelo menos 1 crédito para reanalisar uma ideia.")}</p>
-            <button 
-              className="mt-4 px-4 py-2 bg-brand-purple text-white rounded hover:bg-brand-purple/80"
-              onClick={() => navigate('/dashboard/creditos')}
-            >
-              {t('ideaForm.buyCredits', "Comprar créditos")}
-            </button>
+            <div className="mt-4 flex justify-center gap-4">
+              <Button 
+                onClick={() => navigate('/dashboard/creditos')}
+                className="bg-brand-purple hover:bg-brand-purple/90"
+              >
+                {t('ideaForm.buyCredits', "Comprar créditos")}
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/planos')}
+              >
+                {t('ideaForm.upgradePlan', "Atualizar plano")}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -137,6 +141,13 @@ const EditIdeaPage = () => {
 
   // Log the current language when editing/reanalyzing
   console.log("Current language for editing/reanalyzing:", getCurrentLanguage());
+
+  const handleFormSubmit = async () => {
+    // If reanalyzing and user is not on Pro plan, deduct a credit
+    if (isReanalyzing && userPlan !== 'pro') {
+      await deductCredits('REANALYSIS', ideaId || undefined);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -151,7 +162,11 @@ const EditIdeaPage = () => {
           : t('ideaForm.editDescription', "Continue o preenchimento do seu rascunho")}
       </p>
       
-      <IdeaForm ideaId={ideaId || undefined} isReanalyzing={isReanalyzing} />
+      <IdeaForm 
+        ideaId={ideaId || undefined} 
+        isReanalyzing={isReanalyzing} 
+        onSubmitSuccess={handleFormSubmit}
+      />
     </div>
   );
 };
