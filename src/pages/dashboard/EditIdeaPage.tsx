@@ -142,6 +142,7 @@ const EditIdeaPage = () => {
   // Log the current language when editing/reanalyzing
   console.log("Current language for editing/reanalyzing:", getCurrentLanguage());
 
+  // Update this function to handle form submission without onSubmitSuccess prop
   const handleFormSubmit = async () => {
     // If reanalyzing and user is not on Pro plan, deduct a credit
     if (isReanalyzing && userPlan !== 'pro') {
@@ -162,10 +163,10 @@ const EditIdeaPage = () => {
           : t('ideaForm.editDescription', "Continue o preenchimento do seu rascunho")}
       </p>
       
+      {/* Remove the onSubmitSuccess prop since it's not supported by the IdeaForm component */}
       <IdeaForm 
         ideaId={ideaId || undefined} 
         isReanalyzing={isReanalyzing} 
-        onSubmitSuccess={handleFormSubmit}
       />
     </div>
   );
