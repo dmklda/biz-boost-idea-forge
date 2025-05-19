@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   email: string;
@@ -6,6 +5,7 @@ export interface User {
   plan: 'free' | 'basic' | 'pro' | 'enterprise';
   credits: number;
   createdAt: string;
+  first_analysis_done?: boolean;
 }
 
 export interface AuthState {

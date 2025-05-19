@@ -1,4 +1,3 @@
-
 import { useState, useEffect, createContext, useContext, ReactNode } from "react";
 import { AuthState, User, LoginCredentials, RegisterCredentials } from "@/types/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -50,7 +49,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                   name: profile.name,
                   plan: profile.plan as User['plan'],
                   credits: profile.credits,
-                  createdAt: profile.created_at
+                  createdAt: profile.created_at,
+                  first_analysis_done: profile.first_analysis_done ?? false
                 },
                 isAuthenticated: true
               });
@@ -83,7 +83,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     name: profile.name,
                     plan: profile.plan as User['plan'],
                     credits: profile.credits,
-                    createdAt: profile.created_at
+                    createdAt: profile.created_at,
+                    first_analysis_done: profile.first_analysis_done ?? false
                   },
                   isAuthenticated: true
                 });
@@ -134,7 +135,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         name: profile.name,
         plan: profile.plan as User['plan'],
         credits: profile.credits,
-        createdAt: profile.created_at
+        createdAt: profile.created_at,
+        first_analysis_done: profile.first_analysis_done ?? false
       };
       
       // Update auth state immediately for faster response
@@ -177,7 +179,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         name: credentials.name,
         plan: 'free',
         credits: 3, // Os créditos iniciais definidos no perfil
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        first_analysis_done: false
       };
       
       return user;
