@@ -24,7 +24,7 @@ export const FEATURE_NAMES = {
 };
 
 // Plan definitions
-export type PlanType = "free" | "basic" | "pro";
+export type PlanType = "free" | "basic" | "pro" | "enterprise";
 
 export interface Plan {
   id: PlanType;
@@ -95,6 +95,24 @@ export const PLANS: Plan[] = [
     monthlyCost: 49.9,
     quarterlyCost: 134.73,
     annualCost: 449.1,
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    monthlyPrice: "Custom",
+    features: [
+      "Análises ilimitadas",
+      "API dedicada",
+      "Suporte prioritário",
+      "Ferramentas avançadas personalizadas",
+      "Treinamentos exclusivos",
+      "Downloads ilimitados",
+      "Acesso antecipado a novos recursos"
+    ],
+    recommended: false,
+    color: "from-purple-600/20 to-purple-800/30",
+    freeCredits: 100,
+    monthlyCost: 0, // Custom pricing
   }
 ];
 
@@ -118,7 +136,7 @@ export const canAffordFeature = (user: User | null, feature: keyof typeof FEATUR
   if (!user) return false;
   
   // Pro users get most features for free
-  if (user.plan === "pro" && feature === "download") {
+  if ((user.plan === "pro" || user.plan === "enterprise") && feature === "download") {
     return true;
   }
   
@@ -135,8 +153,8 @@ export const useCreditsForFeature = async (
   // If feature is free, succeed immediately
   if (FEATURE_COSTS[feature] === 0) return true;
   
-  // Pro users get download for free
-  if (user.plan === "pro" && feature === "download") return true;
+  // Pro and Enterprise users get download for free
+  if ((user.plan === "pro" || user.plan === "enterprise") && feature === "download") return true;
   
   // First analysis is free
   if (feature === "analysis") {
