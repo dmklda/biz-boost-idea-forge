@@ -225,7 +225,7 @@ export function AdvancedAnalysisModal({
     
     try {
       // Deduz créditos antes de iniciar a análise
-      const { error: creditError } = await supabase.rpc('deduct_credits_and_log', {
+      const { error: creditError } = await (supabase.rpc as any)('deduct_credits_and_log', {
         p_user_id: authState.user.id,
         p_amount: 2,
         p_feature: 'advanced_analysis',

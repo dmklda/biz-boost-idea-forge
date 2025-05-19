@@ -74,6 +74,19 @@ export const CompareIdeasModalProvider = ({ children }: { children: React.ReactN
 
     setComparing(true);
     try {
+      // Deduz crédito antes de comparar
+      const { error: creditError } = await (supabase.rpc as any)('deduct_credits_and_log', {
+        p_user_id: authState.user.id,
+        p_amount: 1,
+        p_feature: 'compare_ideas',
+        p_item_id: ideaIds[0],
+        p_description: 'Comparação de ideias com IA'
+      });
+      if (creditError) {
+        toast.error('Créditos insuficientes ou erro ao deduzir créditos.');
+        setComparing(false);
+        return;
+      }
       // Esta é uma simulação de chamada de API para comparação
       // Na implementação real, você usaria algo como:
       // const { data, error } = await supabase.rpc('compare_ideas', { idea_ids: ideaIds });
@@ -252,6 +265,19 @@ export const CompareIdeasModal = ({
 
     setComparing(true);
     try {
+      // Deduz crédito antes de comparar
+      const { error: creditError } = await (supabase.rpc as any)('deduct_credits_and_log', {
+        p_user_id: authState.user.id,
+        p_amount: 1,
+        p_feature: 'compare_ideas',
+        p_item_id: selectedIdeaIds[0],
+        p_description: 'Comparação de ideias com IA'
+      });
+      if (creditError) {
+        toast.error('Créditos insuficientes ou erro ao deduzir créditos.');
+        setComparing(false);
+        return;
+      }
       // Esta é uma simulação de chamada de API para comparação
       // Na implementação real, você usaria algo como:
       // const { data, error } = await supabase.rpc('compare_ideas', { idea_ids: selectedIdeaIds });
