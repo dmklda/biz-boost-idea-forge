@@ -111,6 +111,7 @@ Deno.serve(async (req) => {
       });
       
     if (creditError || !creditSuccess) {
+      console.error("Credit error:", creditError);
       return new Response(
         JSON.stringify({ error: "INSUFFICIENT_CREDITS", message: "Not enough credits for advanced analysis" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -144,29 +145,37 @@ Deno.serve(async (req) => {
     // Generate the analysis with OpenAI
     const analysisResult = await generateAdvancedAnalysis(prompt, language, ideaDetails, analysis);
     
+    // Create a new record in the advanced_analyses table
+    const { data: savedAnalysis, error: saveError } = await supabaseAdmin
+      .from('advanced_analyses')
+      .insert({
+        user_id: userId,
+        idea_id: ideaId,
+        analysis_data: {
+          prompt: prompt,
+          result: analysisResult,
+          timestamp: new Date().toISOString()
+        }
+      })
+      .select('id')
+      .single();
+      
+    if (saveError) {
+      console.error("Error saving analysis:", saveError);
+      throw saveError;
+    }
+    
     // Check if we already have a saved analysis for this idea
     const { data: existingAnalysis } = await supabase
       .from('saved_analyses')
-      .select('id')
+      .select('id, analysis_data')
       .eq('idea_id', ideaId)
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
     
-    // Save the analysis to the database
-    const analysisData = {
-      user_id: userId,
-      idea_id: ideaId,
-      idea_title: idea.title,
-      original_analysis_id: analysis?.id || null,
-      analysis_data: {
-        prompt: prompt,
-        result: analysisResult,
-        timestamp: new Date().toISOString()
-      }
-    };
-    
+    // Save the analysis to the saved_analyses table
     let savedAnalysisId;
     
     if (existingAnalysis) {
@@ -202,7 +211,24 @@ Deno.serve(async (req) => {
       // Create new saved analysis
       const { data: newAnalysis, error: insertError } = await supabaseAdmin
         .from('saved_analyses')
-        .insert(analysisData)
+        .insert({
+          user_id: userId,
+          idea_id: ideaId,
+          idea_title: idea.title,
+          original_analysis_id: savedAnalysis.id,
+          analysis_data: {
+            prompt: prompt,
+            result: analysisResult,
+            timestamp: new Date().toISOString(),
+            conversations: [
+              {
+                prompt: prompt,
+                result: analysisResult,
+                timestamp: new Date().toISOString()
+              }
+            ]
+          }
+        })
         .select('id')
         .single();
         
