@@ -26,7 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 import jsPDF from "jspdf";
-import { canAffordFeature, FEATURE_COSTS, useCreditsForFeature } from "@/utils/creditSystem";
+import { canAffordFeature, FEATURE_COSTS } from "@/utils/creditSystem";
 // import html2canvas from "html2canvas"; // Comentado, pois não será usado para o corpo principal
 
 interface AdvancedAnalysisModalProps {
