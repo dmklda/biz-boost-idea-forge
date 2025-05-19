@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
 import { FileText, AlertCircle } from "lucide-react";
+import { Dialog as ConfirmDialog, DialogContent as ConfirmDialogContent, DialogHeader as ConfirmDialogHeader, DialogTitle as ConfirmDialogTitle, DialogFooter as ConfirmDialogFooter } from "@/components/ui/dialog";
 
 interface CompareIdeasModalContextType {
   openCompareModal: (initialIdeaIds: string[]) => void;
@@ -20,6 +21,8 @@ export const CompareIdeasModalProvider = ({ children }: { children: React.ReactN
   const [comparing, setComparing] = useState(false);
   const [ideas, setIdeas] = useState<any[]>([]);
   const [selectedIdea, setSelectedIdea] = useState<string | null>(null);
+  const [showCreditConfirm, setShowCreditConfirm] = useState(false);
+  const [pendingAction, setPendingAction] = useState<null | (() => void)>(null);
   const { t } = useTranslation();
   const { authState } = useAuth();
 
@@ -64,6 +67,11 @@ export const CompareIdeasModalProvider = ({ children }: { children: React.ReactN
 
   const handleRemoveIdea = (id: string) => {
     setIdeaIds(ideaIds.filter(ideaId => ideaId !== id));
+  };
+
+  const handleRequestCompareIdeas = () => {
+    setPendingAction(() => handleCompareIdeas);
+    setShowCreditConfirm(true);
   };
 
   const handleCompareIdeas = async () => {
@@ -178,7 +186,7 @@ export const CompareIdeasModalProvider = ({ children }: { children: React.ReactN
               {t('common.cancel', "Cancelar")}
             </Button>
             <Button 
-              onClick={handleCompareIdeas} 
+              onClick={handleRequestCompareIdeas} 
               disabled={ideaIds.length < 2 || comparing}
               className="bg-brand-purple hover:bg-brand-purple/90"
             >
@@ -190,6 +198,21 @@ export const CompareIdeasModalProvider = ({ children }: { children: React.ReactN
           </div>
         </DialogContent>
       </Dialog>
+      {/* Modal de confirmação de crédito */}
+      <ConfirmDialog open={showCreditConfirm} onOpenChange={setShowCreditConfirm}>
+        <ConfirmDialogContent>
+          <ConfirmDialogHeader>
+            <ConfirmDialogTitle>{t('credits.confirmTitle', 'Confirmar uso de créditos')}</ConfirmDialogTitle>
+          </ConfirmDialogHeader>
+          <div className="py-4">
+            {t('credits.confirmCompareIdeas', 'Esta ação irá deduzir 1 crédito da sua conta. Deseja continuar?')}
+          </div>
+          <ConfirmDialogFooter>
+            <Button variant="outline" onClick={() => setShowCreditConfirm(false)}>{t('common.cancel')}</Button>
+            <Button onClick={() => { setShowCreditConfirm(false); pendingAction && pendingAction(); }}>{t('common.confirm', 'Confirmar')}</Button>
+          </ConfirmDialogFooter>
+        </ConfirmDialogContent>
+      </ConfirmDialog>
     </CompareIdeasModalContext.Provider>
   );
 };

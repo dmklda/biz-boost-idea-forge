@@ -26,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 import jsPDF from "jspdf";
+import { Dialog as ConfirmDialog, DialogContent as ConfirmDialogContent, DialogHeader as ConfirmDialogHeader, DialogTitle as ConfirmDialogTitle, DialogFooter as ConfirmDialogFooter } from "@/components/ui/dialog";
 // import html2canvas from "html2canvas"; // Comentado, pois não será usado para o corpo principal
 
 interface AdvancedAnalysisModalProps {
@@ -78,6 +79,8 @@ export function AdvancedAnalysisModal({
   const [isSaved, setIsSaved] = useState(false);
   const [isLoadingExisting, setIsLoadingExisting] = useState(false);
   const [analysisCheckCompleted, setAnalysisCheckCompleted] = useState(false);
+  const [showCreditConfirm, setShowCreditConfirm] = useState(false);
+  const [pendingAction, setPendingAction] = useState<null | (() => void)>(null);
 
   const motivationalPhrases = [
     t('advancedAnalysis.motivation1'),
@@ -790,6 +793,11 @@ export function AdvancedAnalysisModal({
     }
   };
 
+  const handleRequestAdvancedAnalysis = () => {
+    setPendingAction(() => generateNewAnalysis);
+    setShowCreditConfirm(true);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn(
@@ -815,7 +823,7 @@ export function AdvancedAnalysisModal({
                 <>
                   <Button 
                     variant="default" 
-                    onClick={generateNewAnalysis}
+                    onClick={handleRequestAdvancedAnalysis}
                     size="sm"
                     className="bg-brand-purple hover:bg-brand-purple/90 mr-1"
                   >
@@ -1040,6 +1048,20 @@ export function AdvancedAnalysisModal({
             )}
           </div>
         )}
+        <ConfirmDialog open={showCreditConfirm} onOpenChange={setShowCreditConfirm}>
+          <ConfirmDialogContent>
+            <ConfirmDialogHeader>
+              <ConfirmDialogTitle>{t('credits.confirmTitle', 'Confirmar uso de créditos')}</ConfirmDialogTitle>
+            </ConfirmDialogHeader>
+            <div className="py-4">
+              {t('credits.confirmAdvancedAnalysis', 'Esta ação irá deduzir 2 créditos da sua conta. Deseja continuar?')}
+            </div>
+            <ConfirmDialogFooter>
+              <Button variant="outline" onClick={() => setShowCreditConfirm(false)}>{t('common.cancel')}</Button>
+              <Button onClick={() => { setShowCreditConfirm(false); pendingAction && pendingAction(); }}>{t('common.confirm', 'Confirmar')}</Button>
+            </ConfirmDialogFooter>
+          </ConfirmDialogContent>
+        </ConfirmDialog>
       </DialogContent>
     </Dialog>
   );

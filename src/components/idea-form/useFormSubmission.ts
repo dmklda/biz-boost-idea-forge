@@ -6,6 +6,8 @@ import { useIdeaFormContext } from "@/contexts/IdeaFormContext";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { getCurrentLanguage } from "@/i18n/config";
+import { Dialog as ConfirmDialog, DialogContent as ConfirmDialogContent, DialogHeader as ConfirmDialogHeader, DialogTitle as ConfirmDialogTitle, DialogFooter as ConfirmDialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export const useFormSubmission = (isReanalyzing?: boolean) => {
   const { t } = useTranslation();
@@ -22,11 +24,24 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
 
   // State to track when the analysis is complete
   const [isAnalysisComplete, setIsAnalysisComplete] = useState(false);
+  const [showCreditConfirm, setShowCreditConfirm] = useState(false);
+  const [pendingAction, setPendingAction] = useState<null | (() => void)>(null);
 
   // Check if we're in the dashboard
   const isDashboard = location.pathname.includes('/dashboard');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleRequestSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPendingAction(() => () => handleSubmit(e, true));
+    setShowCreditConfirm(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent, confirmed = false) => {
+    if (!confirmed) {
+      setPendingAction(() => () => handleSubmit(e, true));
+      setShowCreditConfirm(true);
+      return;
+    }
     e.preventDefault();
     setIsSubmitting(true);
     setIsAnalyzing(true);
@@ -192,8 +207,26 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
   };
 
   return { 
-    handleSubmit, 
+    handleSubmit: handleRequestSubmit, 
     isAnalysisComplete, 
-    setIsAnalysisComplete 
+    setIsAnalysisComplete,
+    CreditConfirmModal: (
+      <ConfirmDialog open={showCreditConfirm} onOpenChange={setShowCreditConfirm}>
+        <ConfirmDialogContent>
+          <ConfirmDialogHeader>
+            <ConfirmDialogTitle>{t('credits.confirmTitle', 'Confirmar uso de créditos')}</ConfirmDialogTitle>
+          </ConfirmDialogHeader>
+          <div className="py-4">
+            {isReanalyzing
+              ? t('credits.confirmReanalyze', 'Esta ação irá deduzir 1 crédito da sua conta. Deseja continuar?')
+              : t('credits.confirmBasicAnalysis', 'Esta ação irá deduzir 1 crédito da sua conta (exceto se for sua primeira análise gratuita). Deseja continuar?')}
+          </div>
+          <ConfirmDialogFooter>
+            <Button variant="outline" onClick={() => setShowCreditConfirm(false)}>{t('common.cancel')}</Button>
+            <Button onClick={() => { setShowCreditConfirm(false); pendingAction && pendingAction(); }}>{t('common.confirm', 'Confirmar')}</Button>
+          </ConfirmDialogFooter>
+        </ConfirmDialogContent>
+      </ConfirmDialog>
+    )
   };
 };
