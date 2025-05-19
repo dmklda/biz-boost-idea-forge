@@ -225,7 +225,7 @@ export function AdvancedAnalysisModal({
       return;
     }
       
-    // Check if user has enough credits
+    // Check if user has enough credits - fixed to only use one argument
     if (!canAffordFeature(authState.user, "advanced")) {
       toast.error(
         `Você precisa de ${FEATURE_COSTS.advanced} créditos para análise avançada.`,
