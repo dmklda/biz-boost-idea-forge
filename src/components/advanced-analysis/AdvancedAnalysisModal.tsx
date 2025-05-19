@@ -26,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 import jsPDF from "jspdf";
+import { canAffordFeature, FEATURE_COSTS } from "@/utils/creditSystem";
 // import html2canvas from "html2canvas"; // Comentado, pois não será usado para o corpo principal
 
 interface AdvancedAnalysisModalProps {
@@ -224,7 +225,7 @@ export function AdvancedAnalysisModal({
       return;
     }
       
-    // Verificar se o usuário tem créditos suficientes
+    // Check if user has enough credits
     if (!canAffordFeature(authState.user, "advanced")) {
       toast.error(
         `Você precisa de ${FEATURE_COSTS.advanced} créditos para análise avançada.`,
