@@ -224,6 +224,20 @@ export function AdvancedAnalysisModal({
     setAttempts(0); // Reset attempts counter
     
     try {
+      // Deduz créditos antes de iniciar a análise
+      const { error: creditError } = await supabase.rpc('deduct_credits_and_log', {
+        p_user_id: authState.user.id,
+        p_amount: 2,
+        p_feature: 'advanced_analysis',
+        p_item_id: ideaId,
+        p_description: 'Análise avançada da ideia'
+      });
+      if (creditError) {
+        toast.error('Créditos insuficientes ou erro ao deduzir créditos.');
+        setLoading(false);
+        return;
+      }
+      
       // Sempre inicia uma nova análise
       console.log("Iniciando geração de nova análise avançada para a ideia:", ideaId);
       
