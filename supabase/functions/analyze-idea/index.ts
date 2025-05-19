@@ -84,50 +84,8 @@ Deno.serve(async (req) => {
       }
     );
 
-    // Check if this is user's first analysis to see if it should be free
-    let shouldDeductCredits = true;
-    
+    // Check if the user has enough credits if not reanalyzing
     if (!isReanalyzing) {
-      // Check if this is the first analysis (which is free)
-      const { data: isFirstAnalysis, error: firstAnalysisError } = await supabaseAdmin
-        .rpc('is_first_analysis', { user_id_param: userId });
-        
-      if (!firstAnalysisError && isFirstAnalysis === true) {
-        console.log("This is the user's first analysis, which is free");
-        shouldDeductCredits = false;
-        
-        // Log the free first analysis
-        await supabaseAdmin
-          .from('credit_transactions')
-          .insert({
-            user_id: userId,
-            amount: 0, // Free
-            description: "Primeira análise (grátis)",
-            feature: "analysis",
-            item_id: ideaId || null
-          });
-      } else {
-        // Check if the user has enough credits
-        const { data: userData, error: userError } = await supabase
-          .from('profiles')
-          .select('credits')
-          .eq('id', userId)
-          .single();
-          
-        if (userError) {
-          console.error("Error fetching user credits:", userError);
-          throw userError;
-        }
-        
-        if (!userData || userData.credits <= 0) {
-          return new Response(
-            JSON.stringify({ error: "INSUFFICIENT_CREDITS" }),
-            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-      }
-    } else {
-      // For reanalysis, check credits
       const { data: userData, error: userError } = await supabase
         .from('profiles')
         .select('credits')
@@ -238,28 +196,21 @@ Deno.serve(async (req) => {
       throw error;
     }
     
-    // Deduct credits using our new function and track usage
-    if (shouldDeductCredits) {
-      const feature = isReanalyzing ? "reanalysis" : "analysis";
-      const description = isReanalyzing ? 
-        `Reanálise da ideia: ${ideaData.idea.substring(0, 50)}${ideaData.idea.length > 50 ? '...' : ''}` :
-        `Análise da ideia: ${ideaData.idea.substring(0, 50)}${ideaData.idea.length > 50 ? '...' : ''}`;
-        
-      const { data: creditSuccess, error: creditError } = await supabaseAdmin
-        .rpc("use_credits_for_feature", { 
-          user_id_param: userId, 
-          amount_param: 1,  // Basic analysis costs 1 credit
-          description_param: description,
-          feature_param: feature,
-          item_id_param: finalIdeaId
+    // Update user credits only if not reanalyzing, using the admin client
+    if (!isReanalyzing) {
+      // Update user's credit balance with parameters in correct order (user_id, amount)
+      const { error: updateError } = await supabaseAdmin
+        .rpc("update_user_credits", { 
+          user_id: userId, 
+          amount: -1 
         });
         
-      if (creditError || !creditSuccess) {
-        console.error("Error deducting credits:", creditError);
-        // Continue anyway because the analysis was already done
-      } else {
-        console.log("Credits deducted successfully");
+      if (updateError) {
+        console.error("Error updating user credits:", updateError);
+        throw updateError;
       }
+      
+      console.log("User credits updated successfully");
     }
     
     // Return success response

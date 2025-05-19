@@ -1,209 +1,212 @@
 
+import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
-import { User } from "@/types/auth";
+import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
-// Define feature costs
-export const FEATURE_COSTS = {
-  analysis: 1,      // Basic idea analysis
-  reanalysis: 1,    // Re-analyzing an idea
-  advanced: 2,      // Advanced analysis 
-  compare: 1,       // Comparing ideas
-  download: 1,      // PDF download
-  share: 0,         // Sharing is free
+// Credit cost for each feature
+export const CREDIT_COSTS = {
+  BASIC_ANALYSIS: 1,
+  REANALYSIS: 1,
+  COMPARE_IDEAS: 1,
+  ADVANCED_ANALYSIS: 2,
+  PDF_DOWNLOAD: 1,
+  AI_CHAT: 1
 };
 
-// Feature names for display
-export const FEATURE_NAMES = {
-  analysis: "Análise de Ideia",
-  reanalysis: "Reanálise de Ideia",
-  advanced: "Análise Avançada",
-  compare: "Comparação de Ideias",
-  download: "Download de PDF",
-  share: "Compartilhamento",
-};
-
-// Plan definitions
-export type PlanType = "free" | "basic" | "pro" | "enterprise";
-
-export interface Plan {
-  id: PlanType;
-  name: string;
-  monthlyPrice: string;
-  quarterlyPrice?: string;
-  annualPrice?: string;
-  features: string[];
-  recommended: boolean;
-  color: string;
-  freeCredits: number;
-  monthlyCost: number;
-  quarterlyCost?: number;
-  annualCost?: number;
-}
-
-export const PLANS: Plan[] = [
-  {
-    id: "free",
-    name: "Free",
-    monthlyPrice: "$0",
-    features: [
-      "3 análises de ideias por mês",
-      "Relatório básico",
-      "Acesso à comunidade",
-    ],
-    recommended: false,
-    color: "from-gray-400/20 to-gray-500/30",
-    freeCredits: 3,
-    monthlyCost: 0,
+// Features available for each plan
+export const PLAN_FEATURES = {
+  free: {
+    analysesPerMonth: 1, // First one free
+    compareIdeas: false, // Not available
+    advancedAnalysis: false, // Not available
+    pdfDownload: false, // Not available
+    aiChat: false // Not available
   },
-  {
-    id: "basic",
-    name: "Basic",
-    monthlyPrice: "$19.90",
-    quarterlyPrice: "$53.73",
-    annualPrice: "$179.10",
-    features: [
-      "10 análises de ideias por mês",
-      "Relatórios detalhados",
-      "Suporte por email",
-      "Acesso à comunidade",
-    ],
-    recommended: false,
-    color: "from-blue-400/20 to-blue-500/30",
-    freeCredits: 10,
-    monthlyCost: 19.9,
-    quarterlyCost: 53.73,
-    annualCost: 179.1,
+  basic: {
+    analysesPerMonth: 5,
+    compareIdeas: true,
+    advancedAnalysis: false,
+    pdfDownload: false,
+    aiChat: true
   },
-  {
-    id: "pro",
-    name: "Pro",
-    monthlyPrice: "$49.90",
-    quarterlyPrice: "$134.73",
-    annualPrice: "$449.10",
-    features: [
-      "Análises ilimitadas",
-      "Relatórios detalhados",
-      "Suporte prioritário",
-      "Ferramentas avançadas",
-      "Acesso a webinars exclusivos",
-      "Downloads ilimitados",
-    ],
-    recommended: true,
-    color: "from-brand-purple/20 via-indigo-500/20 to-brand-purple/30",
-    freeCredits: 50,
-    monthlyCost: 49.9,
-    quarterlyCost: 134.73,
-    annualCost: 449.1,
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    monthlyPrice: "Custom",
-    features: [
-      "Análises ilimitadas",
-      "API dedicada",
-      "Suporte prioritário",
-      "Ferramentas avançadas personalizadas",
-      "Treinamentos exclusivos",
-      "Downloads ilimitados",
-      "Acesso antecipado a novos recursos"
-    ],
-    recommended: false,
-    color: "from-purple-600/20 to-purple-800/30",
-    freeCredits: 100,
-    monthlyCost: 0, // Custom pricing
+  pro: {
+    analysesPerMonth: "unlimited",
+    compareIdeas: true,
+    advancedAnalysis: true,
+    pdfDownload: true,
+    aiChat: true
   }
-];
-
-// Credit packages
-export interface CreditPackage {
-  id: number;
-  amount: number;
-  price: string;
-  rawPrice: number;
-  savings: string;
-}
-
-export const CREDIT_PACKAGES: CreditPackage[] = [
-  { id: 1, amount: 5, price: "$24.90", rawPrice: 24.9, savings: "" },
-  { id: 2, amount: 10, price: "$44.90", rawPrice: 44.9, savings: "10% de desconto" },
-  { id: 3, amount: 25, price: "$99.90", rawPrice: 99.9, savings: "20% de desconto" },
-];
-
-// Check if user can afford a feature
-export const canAffordFeature = (user: User | null, feature: keyof typeof FEATURE_COSTS): boolean => {
-  if (!user) return false;
-  
-  // Pro users get most features for free
-  if ((user.plan === "pro" || user.plan === "enterprise") && feature === "download") {
-    return true;
-  }
-  
-  return (user.credits >= FEATURE_COSTS[feature]);
 };
 
-// Use credits for a feature with proper tracking
-export const useCreditsForFeature = async (
-  user: User, 
-  feature: keyof typeof FEATURE_COSTS, 
-  itemId?: string,
-  customDescription?: string
-): Promise<boolean> => {
-  // If feature is free, succeed immediately
-  if (FEATURE_COSTS[feature] === 0) return true;
-  
-  // Pro and Enterprise users get download for free
-  if ((user.plan === "pro" || user.plan === "enterprise") && feature === "download") return true;
-  
-  // First analysis is free
-  if (feature === "analysis") {
-    const { data: firstAnalysis, error: checkError } = await supabase
-      .rpc('is_first_analysis', { user_id_param: user.id });
-      
-    if (!checkError && firstAnalysis === true) {
-      // Log the free first analysis
-      const { error: logError } = await supabase
-        .from('credit_transactions')
-        .insert({
-          user_id: user.id,
-          amount: 0, // Free
-          description: "Primeira análise (grátis)",
-          feature: feature,
-          item_id: itemId ? itemId : null
-        });
-        
-      if (logError) {
-        console.error("Error logging free analysis:", logError);
-      }
-      
+// Define feature types
+export type FeatureType = 'BASIC_ANALYSIS' | 'REANALYSIS' | 'COMPARE_IDEAS' | 'ADVANCED_ANALYSIS' | 'PDF_DOWNLOAD' | 'AI_CHAT';
+
+export const useCreditSystem = () => {
+  const { t } = useTranslation();
+  const { authState, updateUserCredits } = useAuth();
+  const { user } = authState;
+  const [userCredits, setUserCredits] = useState<number>(0);
+  const [userPlan, setUserPlan] = useState<string>('free');
+
+  useEffect(() => {
+    if (user) {
+      setUserCredits(user.credits || 0);
+      setUserPlan(user.plan || 'free');
+    } else {
+      setUserCredits(0);
+      setUserPlan('free');
+    }
+  }, [user]);
+
+  // Check if the user has enough credits for a feature
+  const checkCredits = async (featureType: FeatureType): Promise<boolean> => {
+    if (!user) {
+      return false;
+    }
+
+    // Pro plan users don't need to check credits for most features
+    if (user.plan === 'pro') {
       return true;
     }
-  }
-  
-  // Create description
-  const description = customDescription || `${FEATURE_NAMES[feature]}`;
-  
-  // Use RPC to deduct credits and log transaction
-  const { data: success, error } = await supabase
-    .rpc('use_credits_for_feature', {
-      user_id_param: user.id,
-      amount_param: FEATURE_COSTS[feature],
-      description_param: description,
-      feature_param: feature,
-      item_id_param: itemId || null
-    });
-  
-  if (error || !success) {
-    console.error("Error using credits:", error);
-    toast.error(`Créditos insuficientes para ${FEATURE_NAMES[feature]}.`);
-    return false;
-  }
-  
-  return true;
-};
+    
+    const requiredCredits = CREDIT_COSTS[featureType];
+    const hasEnoughCredits = user.credits >= requiredCredits;
+    
+    if (!hasEnoughCredits) {
+      toast.error(
+        t('credits.insufficientCredits', "Créditos insuficientes para esta ação"), 
+        {
+          action: {
+            label: t('credits.buyMore', "Comprar créditos"),
+            onClick: () => window.location.href = '/dashboard/creditos'
+          }
+        }
+      );
+    }
+    
+    return hasEnoughCredits;
+  };
 
-// Get plan details
-export const getPlan = (planId: PlanType): Plan => {
-  return PLANS.find(plan => plan.id === planId) || PLANS[0];
+  // Deduct credits from the user's account
+  const deductCredits = async (featureType: FeatureType, itemId?: string): Promise<boolean> => {
+    if (!user) {
+      return false;
+    }
+
+    // Pro plan users don't need to spend credits
+    if (user.plan === 'pro') {
+      // But we still log the transaction with 0 credit cost
+      await logCreditTransaction(0, featureType, itemId);
+      return true;
+    }
+
+    const creditCost = CREDIT_COSTS[featureType];
+    const newCreditBalance = user.credits - creditCost;
+
+    if (newCreditBalance < 0) {
+      toast.error(t('credits.insufficientCredits', "Créditos insuficientes para esta ação"));
+      return false;
+    }
+
+    try {
+      // Update user's credits locally first for immediate feedback
+      updateUserCredits(newCreditBalance);
+      
+      // Call Supabase RPC function to update credits
+      const { error } = await supabase.rpc('update_user_credits', { 
+        user_id: user.id, 
+        amount: -creditCost 
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Log the transaction
+      await logCreditTransaction(-creditCost, featureType, itemId);
+      
+      return true;
+    } catch (error) {
+      console.error("Error deducting credits:", error);
+      
+      // Revert local credits update on error
+      updateUserCredits(user.credits);
+      
+      toast.error(t('credits.errorDeducting', "Erro ao deduzir créditos. Tente novamente."));
+      return false;
+    }
+  };
+
+  // Log a credit transaction
+  const logCreditTransaction = async (amount: number, featureType: FeatureType, itemId?: string): Promise<void> => {
+    if (!user) return;
+    
+    let description = '';
+    
+    switch (featureType) {
+      case 'BASIC_ANALYSIS':
+        description = t('credits.transactions.basicAnalysis', "Análise básica");
+        break;
+      case 'REANALYSIS':
+        description = t('credits.transactions.reanalysis', "Reanálise de ideia");
+        break;
+      case 'COMPARE_IDEAS':
+        description = t('credits.transactions.compareIdeas', "Comparação de ideias");
+        break;
+      case 'ADVANCED_ANALYSIS':
+        description = user.plan === 'pro' 
+          ? t('credits.transactions.advancedAnalysisPro', "Análise avançada (Plano Pro)") 
+          : t('credits.transactions.advancedAnalysis', "Análise avançada");
+        break;
+      case 'PDF_DOWNLOAD':
+        description = t('credits.transactions.pdfDownload', "Download de PDF");
+        break;
+      case 'AI_CHAT':
+        description = t('credits.transactions.aiChat', "Chat com IA");
+        break;
+    }
+    
+    try {
+      await supabase.from('credit_transactions').insert({
+        user_id: user.id,
+        amount: amount,
+        description: description,
+        feature: featureType.toLowerCase(),
+        item_id: itemId
+      });
+    } catch (error) {
+      console.error("Error logging credit transaction:", error);
+    }
+  };
+
+  // Check if the user has access to a specific feature based on their plan
+  const hasFeatureAccess = (feature: string): boolean => {
+    if (!user) return false;
+    
+    const plan = user.plan || 'free';
+    
+    switch (feature) {
+      case 'compareIdeas':
+        return PLAN_FEATURES[plan as keyof typeof PLAN_FEATURES].compareIdeas;
+      case 'advancedAnalysis':
+        return PLAN_FEATURES[plan as keyof typeof PLAN_FEATURES].advancedAnalysis;
+      case 'pdfDownload':
+        return PLAN_FEATURES[plan as keyof typeof PLAN_FEATURES].pdfDownload;
+      case 'aiChat':
+        return PLAN_FEATURES[plan as keyof typeof PLAN_FEATURES].aiChat;
+      default:
+        return false;
+    }
+  };
+
+  return { 
+    checkCredits, 
+    deductCredits, 
+    hasFeatureAccess,
+    logCreditTransaction,
+    userCredits,
+    userPlan
+  };
 };

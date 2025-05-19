@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,8 +9,8 @@ import { toast } from "@/components/ui/sonner";
 import { useTranslation } from "react-i18next";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentLanguage } from "@/i18n/config";
-import { canAffordFeature, FEATURE_COSTS, FEATURE_NAMES } from "@/utils/creditSystem";
-import { CreditCard } from "lucide-react";
+import { useCreditSystem } from "@/utils/creditSystem";
+import { Button } from "@/components/ui/button";
 
 const EditIdeaPage = () => {
   const { t } = useTranslation();
@@ -18,7 +19,9 @@ const EditIdeaPage = () => {
   const isReanalyzing = searchParams.get('reanalyze') === 'true';
   const navigate = useNavigate();
   const { authState } = useAuth();
+  const { checkCredits, deductCredits, userPlan } = useCreditSystem();
   const [isLoading, setIsLoading] = useState(true);
+  const [hasCredits, setHasCredits] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
@@ -29,7 +32,7 @@ const EditIdeaPage = () => {
       }
 
       try {
-        // Verificar se o usuário tem acesso a essa ideia
+        // Check if user has access to this idea
         const { data: idea, error: ideaError } = await supabase
           .from('ideas')
           .select('user_id')
@@ -42,7 +45,7 @@ const EditIdeaPage = () => {
           return;
         }
         
-        // Verificar se o usuário é o dono da ideia
+        // Check if user owns the idea
         if (idea.user_id !== authState.user?.id) {
           navigate('/dashboard/ideias');
           toast.error(t('ideaForm.unauthorized', "Você não tem permissão para editar esta ideia"));
@@ -51,17 +54,22 @@ const EditIdeaPage = () => {
         
         setIsAuthorized(true);
         
-        // Para reanálise, verificar se o usuário tem créditos suficientes
-        if (isReanalyzing && !canAffordFeature(authState.user, "reanalysis")) {
-          toast.error(
-            t('ideaForm.noCredits', `Você precisa de ${FEATURE_COSTS.reanalysis} crédito para ${FEATURE_NAMES.reanalysis.toLowerCase()}.`), 
-            {
-              action: {
-                label: t('ideaForm.buyCredits', "Comprar créditos"),
-                onClick: () => navigate('/dashboard/creditos')
+        // For reanalysis, check if user has enough credits (unless they're on Pro plan)
+        if (isReanalyzing && userPlan !== 'pro') {
+          const hasEnoughCredits = await checkCredits('REANALYSIS');
+          setHasCredits(hasEnoughCredits);
+          
+          if (!hasEnoughCredits) {
+            toast.error(
+              t('ideaForm.noCredits', "Você não tem créditos suficientes para reanalisar"), 
+              {
+                action: {
+                  label: t('ideaForm.buyCredits', "Comprar créditos"),
+                  onClick: () => navigate('/dashboard/creditos')
+                }
               }
-            }
-          );
+            );
+          }
         }
       } catch (error) {
         console.error("Error checking permissions:", error);
@@ -71,7 +79,7 @@ const EditIdeaPage = () => {
     };
 
     checkPermissions();
-  }, [authState.isAuthenticated, authState.user, ideaId, isReanalyzing, navigate, t]);
+  }, [authState.isAuthenticated, authState.user?.id, ideaId, isReanalyzing, navigate, t, checkCredits, userPlan]);
 
   if (!authState.isAuthenticated) {
     return (
@@ -98,10 +106,10 @@ const EditIdeaPage = () => {
   }
 
   if (!isAuthorized) {
-    return null; // Navegação já foi redirecionada
+    return null; // Redirect already handled
   }
 
-  if (isReanalyzing && !canAffordFeature(authState.user, "reanalysis")) {
+  if (isReanalyzing && !hasCredits && userPlan !== 'pro') {
     return (
       <div className="space-y-6">
         <h1 className="text-3xl font-bold tracking-tight">{t('ideaForm.reanalyzeTitle', "Reanalisar Ideia")}</h1>
@@ -110,13 +118,21 @@ const EditIdeaPage = () => {
             <CardTitle className="text-center text-red-500">{t('ideaForm.noCreditsTitle', "Créditos insuficientes")}</CardTitle>
           </CardHeader>
           <CardContent className="text-center">
-            <p>{t('ideaForm.noCreditsDescription', `Você precisa de pelo menos ${FEATURE_COSTS.reanalysis} crédito para reanalisar uma ideia.`)}</p>
-            <button 
-              className="mt-4 px-4 py-2 bg-brand-purple text-white rounded hover:bg-brand-purple/80"
-              onClick={() => navigate('/dashboard/creditos')}
-            >
-              {t('ideaForm.buyCredits', "Comprar créditos")}
-            </button>
+            <p>{t('ideaForm.noCreditsDescription', "Você precisa de pelo menos 1 crédito para reanalisar uma ideia.")}</p>
+            <div className="mt-4 flex justify-center gap-4">
+              <Button 
+                onClick={() => navigate('/dashboard/creditos')}
+                className="bg-brand-purple hover:bg-brand-purple/90"
+              >
+                {t('ideaForm.buyCredits', "Comprar créditos")}
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/planos')}
+              >
+                {t('ideaForm.upgradePlan', "Atualizar plano")}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -125,6 +141,14 @@ const EditIdeaPage = () => {
 
   // Log the current language when editing/reanalyzing
   console.log("Current language for editing/reanalyzing:", getCurrentLanguage());
+
+  // Update this function to handle form submission without onSubmitSuccess prop
+  const handleFormSubmit = async () => {
+    // If reanalyzing and user is not on Pro plan, deduct a credit
+    if (isReanalyzing && userPlan !== 'pro') {
+      await deductCredits('REANALYSIS', ideaId || undefined);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -139,16 +163,11 @@ const EditIdeaPage = () => {
           : t('ideaForm.editDescription', "Continue o preenchimento do seu rascunho")}
       </p>
       
-      {isReanalyzing && authState.user && (
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-md mb-4 flex items-center">
-          <CreditCard className="h-5 w-5 text-amber-500 mr-2 shrink-0" />
-          <p className="text-sm text-amber-700">
-            Esta ação custará {FEATURE_COSTS.reanalysis} crédito. Você possui atualmente {authState.user.credits} créditos.
-          </p>
-        </div>
-      )}
-      
-      <IdeaForm ideaId={ideaId || undefined} isReanalyzing={isReanalyzing} />
+      {/* Remove the onSubmitSuccess prop since it's not supported by the IdeaForm component */}
+      <IdeaForm 
+        ideaId={ideaId || undefined} 
+        isReanalyzing={isReanalyzing} 
+      />
     </div>
   );
 };

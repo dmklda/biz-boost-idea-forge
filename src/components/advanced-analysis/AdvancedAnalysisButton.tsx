@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { AdvancedAnalysisModal } from "./AdvancedAnalysisModal";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/use-theme";
+import { getCurrentLanguage } from "@/i18n/config";
 
 interface AdvancedAnalysisButtonProps {
   ideaId: string;

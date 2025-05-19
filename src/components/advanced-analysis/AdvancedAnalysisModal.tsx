@@ -26,7 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 import jsPDF from "jspdf";
-import { canAffordFeature, FEATURE_COSTS } from "@/utils/creditSystem";
+// import html2canvas from "html2canvas"; // Comentado, pois não será usado para o corpo principal
 
 interface AdvancedAnalysisModalProps {
   ideaId: string;
@@ -219,25 +219,6 @@ export function AdvancedAnalysisModal({
 
   // Função para gerar uma nova análise quando o botão for clicado
   const generateNewAnalysis = async () => {
-    if (!authState.user) {
-      toast.error("Você precisa estar logado para usar esta funcionalidade");
-      return;
-    }
-      
-    // Check if user has enough credits
-    if (!canAffordFeature(authState.user, "advanced")) {
-      toast.error(
-        `Você precisa de ${FEATURE_COSTS.advanced} créditos para análise avançada.`,
-        {
-          action: {
-            label: "Comprar créditos",
-            onClick: () => window.location.href = '/dashboard/creditos'
-          }
-        }
-      );
-      return;
-    }
-      
     setLoading(true);
     setProgress(0);
     setAttempts(0); // Reset attempts counter
@@ -247,70 +228,65 @@ export function AdvancedAnalysisModal({
       console.log("Iniciando geração de nova análise avançada para a ideia:", ideaId);
       
       // Clear any existing interval
-      if (pollInterval !== null) {
-        clearInterval(pollInterval);
-      }
+        if (pollInterval !== null) {
+          clearInterval(pollInterval);
+        }
         
       // Iniciar análise
-      try {
+        try {
         console.log("Iniciando geração de análise avançada...");
-        const response = await supabase.functions.invoke("advanced-analysis", {
-          body: { 
-            ideaId: ideaId,
-            userId: authState.user?.id,
-            prompt: "Forneça uma análise completa desta ideia de negócio, incluindo análise SWOT, análise de mercado, potencial financeiro, riscos e oportunidades."
+          const response = await supabase.functions.invoke("advanced-analysis", {
+            body: { ideaId }
+          });
+
+          if (response.error) {
+            throw new Error(response.error.message || "Error starting analysis");
           }
-        });
 
-        if (response.error) {
-          console.error("Error from advanced-analysis function:", response.error);
-          throw new Error(response.error.message || "Error starting analysis");
-        }
-
-        console.log("Analysis generation initiated:", response);
-      } catch (error) {
-        console.error("Error initiating advanced analysis:", error);
+          console.log("Analysis generation initiated:", response);
+        } catch (error) {
+          console.error("Error initiating advanced analysis:", error);
         toast.error(t('errors.fetchError') + ". " + t('errors.tryAgainLater'));
         setLoading(false);
         return;
-      }
+        }
         
-      // Start polling for results
-      const interval = window.setInterval(async () => {
-        const currentAttempts = attempts + 1;
-        setAttempts(currentAttempts);
-        
-        console.log(`Polling for analysis results (attempt ${currentAttempts}/10)...`);
-        
-        const { data: pollData, error: pollError } = await supabase
-          .from("advanced_analyses")
-          .select("*")
-          .eq("idea_id", ideaId)
-          .eq("user_id", authState.user?.id)
+        // Start polling for results
+        const interval = window.setInterval(async () => {
+          const currentAttempts = attempts + 1;
+          setAttempts(currentAttempts);
+          
+          console.log(`Polling for analysis results (attempt ${currentAttempts}/10)...`);
+          
+          const { data: pollData, error: pollError } = await supabase
+            .from("advanced_analyses")
+            .select("*")
+            .eq("idea_id", ideaId)
+            .eq("user_id", authState.user?.id)
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle();
-        
-        if (pollData) {
-          clearInterval(interval);
-          setPollInterval(null);
-          setAnalysis(pollData as AdvancedAnalysis);
-          setLoading(false);
-          setProgress(100);
+          
+          if (pollData) {
+            clearInterval(interval);
+            setPollInterval(null);
+            setAnalysis(pollData as AdvancedAnalysis);
+            setLoading(false);
+            setProgress(100);
           console.log("Nova análise encontrada:", pollData);
-        } else if (currentAttempts >= 10) {
-          clearInterval(interval);
-          setPollInterval(null);
+          } else if (currentAttempts >= 10) {
+            clearInterval(interval);
+            setPollInterval(null);
           toast.error(t('errors.analysisNotFound') + ". " +
                     t('errors.startNewAnalysis'));
-          setLoading(false);
-          console.log("Failed to find analysis after maximum attempts");
-        }
+            setLoading(false);
+            console.log("Failed to find analysis after maximum attempts");
+          }
+          
+          setAttempts(currentAttempts);
+        }, 3000);
         
-        setAttempts(currentAttempts);
-      }, 3000);
-        
-      setPollInterval(interval);
+        setPollInterval(interval);
     } catch (error) {
       console.error("Error fetching advanced analysis:", error);
       toast.error(t('errors.fetchError') + ". " +
