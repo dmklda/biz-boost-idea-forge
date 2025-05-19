@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "@/components/ui/sonner";
@@ -36,6 +35,54 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
     try {
       // If user is authenticated, process with Supabase
       if (authState.isAuthenticated && authState.user) {
+        // Lógica de créditos
+        if (isReanalyzing) {
+          // Sempre deduz crédito para reanálise
+          const { error: creditError } = await (supabase.rpc as any)('deduct_credits_and_log', {
+            p_user_id: authState.user.id,
+            p_amount: 1,
+            p_feature: 'reanalyze',
+            p_item_id: editingIdeaId,
+            p_description: 'Reanálise de ideia'
+          });
+          if (creditError) {
+            toast.error(t('ideaForm.insufficientCredits', "Créditos insuficientes para reanálise"));
+            setIsSubmitting(false);
+            setIsAnalyzing(false);
+            return;
+          }
+        } else {
+          // Análise básica
+          if (!authState.user.first_analysis_done) {
+            // Primeira análise grátis
+            const { error: updateError } = await supabase
+              .from('profiles')
+              .update({ first_analysis_done: true })
+              .eq('id', authState.user.id);
+            if (updateError) {
+              toast.error(t('ideaForm.analysisError', "Erro ao registrar primeira análise grátis"));
+              setIsSubmitting(false);
+              setIsAnalyzing(false);
+              return;
+            }
+          } else {
+            // Deduz crédito para demais análises
+            const { error: creditError } = await (supabase.rpc as any)('deduct_credits_and_log', {
+              p_user_id: authState.user.id,
+              p_amount: 1,
+              p_feature: 'basic_analysis',
+              p_item_id: editingIdeaId,
+              p_description: 'Análise básica de ideia'
+            });
+            if (creditError) {
+              toast.error(t('ideaForm.insufficientCredits', "Créditos insuficientes para análise"));
+              setIsSubmitting(false);
+              setIsAnalyzing(false);
+              return;
+            }
+          }
+        }
+        
         console.log("Sending form data:", formData);
         
         // Get current language

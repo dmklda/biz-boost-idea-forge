@@ -345,6 +345,21 @@ export function AdvancedAnalysisModal({
       return;
     }
 
+    // Lógica de créditos para download de PDF
+    if (authState.user?.plan !== 'pro') {
+      const { error: creditError } = await (supabase.rpc as any)('deduct_credits_and_log', {
+        p_user_id: authState.user.id,
+        p_amount: 1,
+        p_feature: 'download_pdf',
+        p_item_id: ideaId,
+        p_description: 'Download de PDF da análise avançada'
+      });
+      if (creditError) {
+        toast.error(t('ideaForm.insufficientCredits', "Créditos insuficientes para baixar PDF"));
+        return;
+      }
+    }
+
     try {
       setIsGeneratingPdf(true);
       toast.info(t('common.preparing') + ". " +

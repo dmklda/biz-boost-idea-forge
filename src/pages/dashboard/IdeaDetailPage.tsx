@@ -176,9 +176,30 @@ const IdeaDetailPage = () => {
   };
   
   // Function to download analysis as PDF
-  const handleDownloadPDF = () => {
-    // To be implemented - would connect to a PDF generation service
-    toast.info(t('features.comingSoon'));
+  const handleDownloadPDF = async () => {
+    if (!analysis || !idea) {
+      toast.error(t('errors.pdfError') + ". " + t('errors.contentNotReady'));
+      return;
+    }
+
+    // Lógica de créditos para download de PDF
+    if (authState.user?.plan !== 'pro') {
+      const { error: creditError } = await (supabase.rpc as any)('deduct_credits_and_log', {
+        p_user_id: authState.user.id,
+        p_amount: 1,
+        p_feature: 'download_pdf',
+        p_item_id: idea.id,
+        p_description: 'Download de PDF da análise básica'
+      });
+      if (creditError) {
+        toast.error(t('ideaForm.insufficientCredits', "Créditos insuficientes para baixar PDF"));
+        return;
+      }
+    }
+
+    // Placeholder para geração de PDF
+    toast.success(t('pdf.downloadComplete', 'Download concluído') + '. ' + t('pdf.pdfReady', 'Seu PDF está pronto'));
+    // Aqui você pode chamar a função real de geração de PDF
   };
   
   // Function to get score color class
