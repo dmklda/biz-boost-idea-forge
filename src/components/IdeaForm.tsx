@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { Card, CardContent } from "./ui/card";
 import { IdeaFormProvider } from "@/contexts/IdeaFormContext";
@@ -5,6 +6,7 @@ import { IdeaFormHeader } from "./idea-form/IdeaFormHeader";
 import { FormStepsContainer } from "./idea-form/FormStepsContainer";
 import { SaveDraftButton } from "./idea-form/SaveDraftButton";
 import { useFormSubmission } from "./idea-form/useFormSubmission";
+import { CreditConfirmModal } from "./idea-form/CreditConfirmModal";
 import { useLocation } from "react-router-dom";
 
 interface IdeaFormProps {
@@ -37,7 +39,13 @@ const FormContainer: React.FC<{
   isReanalyzing?: boolean;
   onAnalysisComplete?: () => void;
 }> = ({ wrapInCard, isReanalyzing, onAnalysisComplete }) => {
-  const { handleSubmit, isAnalysisComplete } = useFormSubmission(isReanalyzing);
+  const { 
+    handleSubmit, 
+    isAnalysisComplete, 
+    showCreditConfirm, 
+    setShowCreditConfirm, 
+    handleCreditConfirm 
+  } = useFormSubmission(isReanalyzing);
   
   // Use useEffect para chamar onAnalysisComplete quando a análise for concluída
   useEffect(() => {
@@ -52,10 +60,19 @@ const FormContainer: React.FC<{
   }
   
   const formContent = (
-    <form onSubmit={handleSubmit}>
-      <FormStepsContainer />
-      <SaveDraftButton />
-    </form>
+    <>
+      <form onSubmit={handleSubmit}>
+        <FormStepsContainer />
+        <SaveDraftButton />
+      </form>
+      
+      <CreditConfirmModal
+        isOpen={showCreditConfirm}
+        onClose={() => setShowCreditConfirm(false)}
+        onConfirm={handleCreditConfirm}
+        isReanalyzing={isReanalyzing}
+      />
+    </>
   );
 
   if (wrapInCard) {
