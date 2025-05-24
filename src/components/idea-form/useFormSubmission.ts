@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "@/components/ui/sonner";
@@ -7,7 +6,7 @@ import { useIdeaFormContext } from "@/contexts/IdeaFormContext";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { getCurrentLanguage } from "@/i18n/config";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog as ConfirmDialog, DialogContent as ConfirmDialogContent, DialogHeader as ConfirmDialogHeader, DialogTitle as ConfirmDialogTitle, DialogFooter as ConfirmDialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 export const useFormSubmission = (isReanalyzing?: boolean) => {
@@ -207,30 +206,27 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
     }
   };
 
-  // Create a credit confirmation dialog component
-  const CreditConfirmModal = () => (
-    <Dialog open={showCreditConfirm} onOpenChange={setShowCreditConfirm}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t('credits.confirmTitle', 'Confirmar uso de créditos')}</DialogTitle>
-        </DialogHeader>
-        <div className="py-4">
-          {isReanalyzing
-            ? t('credits.confirmReanalyze', 'Esta ação irá deduzir 1 crédito da sua conta. Deseja continuar?')
-            : t('credits.confirmBasicAnalysis', 'Esta ação irá deduzir 1 crédito da sua conta (exceto se for sua primeira análise gratuita). Deseja continuar?')}
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setShowCreditConfirm(false)}>{t('common.cancel')}</Button>
-          <Button onClick={() => { setShowCreditConfirm(false); pendingAction && pendingAction(); }}>{t('common.confirm', 'Confirmar')}</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-
   return { 
     handleSubmit: handleRequestSubmit, 
     isAnalysisComplete, 
     setIsAnalysisComplete,
-    CreditConfirmModal
+    CreditConfirmModal: (
+      <ConfirmDialog open={showCreditConfirm} onOpenChange={setShowCreditConfirm}>
+        <ConfirmDialogContent>
+          <ConfirmDialogHeader>
+            <ConfirmDialogTitle>{t('credits.confirmTitle', 'Confirmar uso de créditos')}</ConfirmDialogTitle>
+          </ConfirmDialogHeader>
+          <div className="py-4">
+            {isReanalyzing
+              ? t('credits.confirmReanalyze', 'Esta ação irá deduzir 1 crédito da sua conta. Deseja continuar?')
+              : t('credits.confirmBasicAnalysis', 'Esta ação irá deduzir 1 crédito da sua conta (exceto se for sua primeira análise gratuita). Deseja continuar?')}
+          </div>
+          <ConfirmDialogFooter>
+            <Button variant="outline" onClick={() => setShowCreditConfirm(false)}>{t('common.cancel')}</Button>
+            <Button onClick={() => { setShowCreditConfirm(false); pendingAction && pendingAction(); }}>{t('common.confirm', 'Confirmar')}</Button>
+          </ConfirmDialogFooter>
+        </ConfirmDialogContent>
+      </ConfirmDialog>
+    )
   };
 };

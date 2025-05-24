@@ -73,27 +73,21 @@ export type Database = {
           amount: number
           created_at: string
           description: string
-          feature: string | null
           id: string
-          item_id: string | null
           user_id: string
         }
         Insert: {
           amount: number
           created_at?: string
           description: string
-          feature?: string | null
           id?: string
-          item_id?: string | null
           user_id: string
         }
         Update: {
           amount?: number
           created_at?: string
           description?: string
-          feature?: string | null
           id?: string
-          item_id?: string | null
           user_id?: string
         }
         Relationships: [
@@ -340,7 +334,6 @@ export type Database = {
           created_at: string
           credits: number
           email: string
-          first_analysis_done: boolean | null
           id: string
           name: string
           plan: string
@@ -349,7 +342,6 @@ export type Database = {
           created_at?: string
           credits?: number
           email: string
-          first_analysis_done?: boolean | null
           id: string
           name: string
           plan?: string
@@ -358,7 +350,6 @@ export type Database = {
           created_at?: string
           credits?: number
           email?: string
-          first_analysis_done?: boolean | null
           id?: string
           name?: string
           plan?: string
@@ -427,33 +418,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      deduct_credits_and_log: {
-        Args: {
-          p_user_id: string
-          p_amount: number
-          p_feature: string
-          p_item_id?: string
-          p_description?: string
-        }
-        Returns: number
-      }
-      is_first_analysis: {
-        Args: { user_id_param: string }
-        Returns: boolean
-      }
       update_user_credits: {
         Args: { user_id: string; amount: number }
         Returns: undefined
-      }
-      use_credits_for_feature: {
-        Args: {
-          user_id_param: string
-          amount_param: number
-          description_param: string
-          feature_param: string
-          item_id_param?: string
-        }
-        Returns: boolean
       }
     }
     Enums: {
