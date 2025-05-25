@@ -42,7 +42,7 @@ const Header = () => {
   const handleLogoClick = (e: React.MouseEvent) => {
     if (isMobile) {
       e.preventDefault();
-      // On mobile, smart redirect based on auth state
+      // On mobile, smart redirect based on auth state - never go to landing page
       if (authState.isAuthenticated) {
         navigate('/dashboard');
       } else {

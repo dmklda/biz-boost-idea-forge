@@ -9,8 +9,12 @@ import Pricing from "../components/Pricing";
 import CTA from "../components/CTA";
 import Footer from "../components/Footer";
 import { IntelligentRedirect } from "../components/onboarding/IntelligentRedirect";
+import { useMobileRouteProtection } from "../hooks/useMobileRouteProtection";
 
 const Index = () => {
+  // Protect mobile users from accessing landing page
+  useMobileRouteProtection();
+
   return (
     <IntelligentRedirect>
       <div className="min-h-screen bg-gradient-to-b from-background to-background/95 relative overflow-hidden">
