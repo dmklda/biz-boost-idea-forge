@@ -32,7 +32,6 @@ import AdvancedAnalysisPage from "./pages/dashboard/AdvancedAnalysisPage";
 import DraftsPage from "./pages/dashboard/DraftsPage";
 import EditIdeaPage from "./pages/dashboard/EditIdeaPage";
 import DashboardResultsPage from "./pages/dashboard/ResultsPage";
-import ToolsPage from "./pages/dashboard/ToolsPage";
 
 // Platform pages
 import ApiPage from "./pages/platform/ApiPage";
