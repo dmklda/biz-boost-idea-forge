@@ -1,1366 +1,198 @@
+
 {
-  "testimonials": {
-    "tagline": "Depoimentos",
-    "title": "O que nossos usuários dizem",
-    "subtitle": "Empreendedores, investidores e criadores de conteúdo estão transformando suas ideias em negócios de sucesso",
-    "quote1": "A análise que recebi foi surpreendentemente precisa. Consegui identificar problemas no meu modelo de negócio que eu nem tinha percebido.",
-    "author1": "Marina Silva",
-    "role1": "Fundadora da TechStart",
-    "quote2": "Economizei meses de pesquisa e milhares de dólares com a validação da minha ideia. O relatório me ajudou a pivotar minha estratégia.",
-    "author2": "Pedro Santos",
-    "role2": "CEO da DeliveryPro",
-    "quote3": "Como investidor-anjo, uso o Startupideia para fazer uma pré-análise das startups que chegam até mim. É uma ferramenta indispensável.",
-    "author3": "Carlos Mendes",
-    "role3": "Investidor-anjo"
-  },
-  "pricing": {
-    "tagline": "Preços",
-    "title": "Planos e preços",
-    "subtitle": "Escolha o plano que melhor se adapta às suas necessidades de empreendedorismo",
-    "period": "/mês",
-    "mostPopular": "Mais Popular",
-    "monthly": "Mensal",
-    "annually": "Anual",
-    "free": {
-      "name": "Gratuito",
-      "description": "Para iniciantes que querem validar sua primeira ideia.",
-      "features": [
-        "1 análise de ideia",
-        "Resultados básicos",
-        "Sugestão de nome e slogan",
-        "Avaliação de viabilidade"
-      ],
-      "cta": "Começar Grátis"
-    },
-    "entrepreneur": {
-      "name": "Empreendedor",
-      "description": "Ideal para quem está começando e tem múltiplas ideias.",
-      "features": [
-        "5 análises de ideia por mês",
-        "Relatórios detalhados em PDF",
-        "Sugestões de MVP",
-        "Análise da concorrência",
-        "Plano de ação em 5 passos",
-        "Exportação para Notion/Google Docs"
-      ],
-      "cta": "Assinar Agora"
-    },
-    "business": {
-      "name": "Negócio",
-      "description": "Para equipes e empresas que precisam de análises avançadas.",
-      "features": [
-        "Análises ilimitadas",
-        "Relatórios completos",
-        "Modelos de negócio detalhados",
-        "Consultoria personalizada (1h/mês)",
-        "Comparação entre ideias",
-        "Análise de tendências de mercado",
-        "API para integração"
-      ],
-      "cta": "Contrate Agora"
-    }
-  },
   "header": {
     "howItWorks": "Como Funciona",
     "benefits": "Benefícios",
     "plans": "Planos",
     "startNow": "Começar Agora"
   },
-  "hero": {
-    "badges": {
-      "validation": "Validação inteligente de ideias de negócio",
-      "analysis": "Análise completa de viabilidade",
-      "insights": "Insights baseados em dados do mercado",
-      "planning": "Planejamento estratégico automatizado",
-      "mobile": {
-        "validation": "Validação inteligente",
-        "analysis": "Análise de viabilidade",
-        "insights": "Insights de mercado",
-        "planning": "Planejamento estratégico"
-      }
-    },
-    "badge": "Validação inteligente de ideia de negócio",
-    "title": "Transforme <span>ideias</span> em <gradientSpan>negócios</gradientSpan>",
-    "subtitle": "Descubra a viabilidade da sua ideia e receba um plano de ação completo para transformá-la em um negócio de sucesso.",
-    "validateIdea": "Teste Grátis",
-    "learnMore": "Como Funciona",
-    "trustedBy": "Usado por mais de 10.000 equipes em todo o mundo",
-    "dashboard": {
-      "title": "Fluxos de Trabalho Ativos",
-      "status": "Todos os Sistemas Ativos"
-    }
-  },
-  "howItWorks": {
-    "tagline": "Processo",
-    "title": "Como funciona",
-    "subtitle": "Um processo simples e eficiente para transformar sua ideia em um plano de negócios viável",
-    "step1": {
-      "number": "01",
-      "title": "Descreva sua ideia",
-      "description": "Responda algumas perguntas sobre sua ideia de negócio, como público-alvo, problema que resolve e modelo de monetização."
-    },
-    "step2": {
-      "number": "02",
-      "title": "Processamos os dados",
-      "description": "Algoritmos avançados processam sua ideia, analisando viabilidade, mercado e potencial de crescimento."
-    },
-    "step3": {
-      "number": "03",
-      "title": "Receba insights completos",
-      "description": "Obtenha uma análise detalhada com sugestões de nome, slogan, persona ideal, MVP e estratégias de monetização."
-    },
-    "step4": {
-      "number": "04",
-      "title": "Tome decisões informadas",
-      "description": "Use os insights para refinar sua ideia, criar um plano de ação e iniciar seu negócio com mais confiança."
-    }
-  },
-  "features": {
-    "tagline": "Recursos",
-    "title": "Valide sua ideia de forma completa",
-    "subtitle": "Nossa plataforma fornece uma análise completa da viabilidade e potencial do seu conceito de negócio.",
-    "viabilityAnalysis": {
-      "title": "Análise de Viabilidade",
-      "description": "Avaliação detalhada baseada em mercado, tendências e aplicabilidade prática da sua ideia."
-    },
-    "nameSloganPitch": {
-      "title": "Nome, Slogan e Pitch",
-      "description": "Sugestões criativas para apresentar seu negócio de forma impactante e memorável."
-    },
-    "modelEvaluation": {
-      "title": "Avaliação do Modelo",
-      "description": "Análise do seu modelo de negócio com pontos fortes e oportunidades de melhoria."
-    },
-    "nichePersona": {
-      "title": "Nicho e Persona",
-      "description": "Identificação do seu público-alvo ideal e criação de uma persona detalhada."
-    },
-    "mvpSuggestion": {
-      "title": "Sugestão de MVP",
-      "description": "Recomendações para criar um produto mínimo viável que valide sua ideia rapidamente."
-    },
-    "recommendedStack": {
-      "title": "Stack Recomendada",
-      "description": "Sugestão das melhores ferramentas e tecnologias para desenvolvimento do seu projeto."
-    },
-    "monetizationPotential": {
-      "title": "Potencial de Monetização",
-      "description": "Estratégias para gerar receita com seu negócio de forma sustentável."
-    },
-    "competitionDifferentials": {
-      "title": "Concorrência e Diferenciais",
-      "description": "Análise competitiva e identificação de fatores que destacam seu negócio no mercado."
-    },
-    "comingSoon": "Funcionalidade em breve"
-  },
-  "ideaForm": {
-    "title": "Análise de Negócio",
-    "subtitle": "Vamos analisar sua ideia de negócio",
-    "success": "Ideia registrada com sucesso!",
-    "error": "Erro ao processar sua solicitação",
-    "idea": {
-      "title": "Qual é a sua ideia de negócio?",
-      "placeholder": "Descreva brevemente sua ideia de negócio..."
-    },
-    "audience": {
-      "title": "Quem seria seu público-alvo?",
-      "placeholder": "Descreva os clientes ideais para seu negócio..."
-    },
-    "problem": {
-      "title": "Qual problema essa ideia resolve?",
-      "placeholder": "Descreva o problema que seu negócio solucionaria..."
-    },
-    "monetization": {
-      "title": "Como você planeja monetizá-la?",
-      "placeholder": "Descreva como seu negócio geraria receita..."
-    },
-    "competitors": {
-      "title": "Existem concorrentes no mercado?",
-      "yes": "Sim, existem soluções similares",
-      "no": "Não, esta é uma solução inovadora"
-    },
-    "budget": {
-      "title": "Qual seu orçamento de investimento inicial?",
-      "placeholder": "Digite o valor...",
-      "currency": "USD"
-    },
-    "location": {
-      "title": "Onde este negócio vai operar?",
-      "placeholder": "Selecione uma localização..."
-    },
-    "submit": "Enviar para Análise",
-    "submitting": "Analisando...",
-    "saveAsDraft": "Guardar como rascunho",
-    "savingDraft": "Salvar...",
-    "draftSaved": "Rascunho guardado com sucesso!",
-    "viewDrafts": "Ver rascunhos",
-    "reanalyzeTitle": "Reanálise de Ideia",
-    "reanalyzeSubtitle": "Refine a sua ideia para uma nova análise",
-    "editTitle": "Editar Ideia",
-    "editDescription": "Continue o preenchimento da sua ideia",
-    "analyze": "Analisar Ideia",
-    "analyzing": "Analisando...",
-    "compare": "Comparar Ideias",
-    "compareTitle": "Comparar Ideias",
-    "compareSubtitle": "Compare até 3 ideias para identificar a melhor oportunidade",
-    "compareButton": "Comparar Ideias",
-    "compareSelect": "Selecione ideias para comparar",
-    "compareSelectMin": "Selecione pelo menos 2 ideias",
-    "compareSelectMax": "Você pode selecionar até 3 ideias",
-    "compareSuccess": "Comparação de ideias realizada com sucesso",
-    "compareSelected": "Ideias selecionadas",
-    "compareNoIdeas": "Nenhuma ideia selecionada para comparação",
-    "compareAddMore": "Adicionar mais ideias",
-    "compareSelectIdea": "Selecione uma ideia",
-    "compareMinError": "Selecione pelo menos 2 ideias para comparar",
-    "analyzeIdea": "Analisar Ideia",
-    "analyzingIdea": "Analisando ideia...",
-    "analysisSuccess": "Análise de ideia realizada com sucesso",
-    "analysisError": "Erro ao analisar ideia",
-    "analysisSelected": "Ideia selecionada",
-    "analysisNoIdea": "Nenhuma ideia selecionada para análise"
-  },
-  "cta": {
-    "title": "Pronto para transformar sua ideia em realidade?",
-    "subtitle": "Nossa plataforma está esperando para analisar o potencial do seu próximo grande negócio. Comece agora mesmo!",
-    "validateIdea": "Validar Minha Ideia",
-    "seeExample": "Ver Exemplo de Análise"
-  },
-  "footer": {
-    "description": "Transforme suas ideias em negócios viáveis com análises impulsionadas por tecnologia avançada.",
-    "platform": "Plataforma",
-    "howItWorks": "Como funciona",
-    "benefits": "Benefícios",
-    "plans": "Planos",
-    "api": "API",
-    "resources": "Recursos",
-    "blog": "Blog",
-    "guides": "Guias",
-    "successCases": "Casos de sucesso",
-    "webinars": "Webinars",
-    "company": "Empresa",
-    "aboutUs": "Sobre nós",
-    "contact": "Contato",
-    "privacyPolicy": "Política de privacidade",
-    "termsOfUse": "Termos de uso",
-    "copyright": "Todos os direitos reservados."
-  },
-  "api": {
-    "tagline": "API",
-    "title": "Documentação da API",
-    "subtitle": "Integre nossas ferramentas de validação de ideias em sua aplicação com nossa API amigável para desenvolvedores",
-    "restApi": {
-      "title": "API REST",
-      "description": "API HTTP abrangente para validação e análise programática de ideias de negócio."
-    },
-    "websockets": {
-      "title": "API Websocket",
-      "description": "Interação em tempo real para análise contínua e atualizações durante o processo de validação."
-    },
-    "documentation": {
-      "title": "Como Começar",
-      "description": "Para começar a usar a API do Startupideia, você precisará de uma chave de API através do painel da sua conta. Uma vez que você tenha sua chave de API, poderá fazer solicitações autenticadas aos nossos endpoints."
-    },
-    "authentication": {
-      "title": "Autenticação",
-      "description": "Todas as solicitações à API devem incluir sua chave de API para autenticação. Usamos OAuth 2.0 para acesso seguro aos nossos recursos de API."
-    },
-    "endpoints": {
-      "title": "Endpoints Disponíveis",
-      "description": "Nossa API fornece vários endpoints para interagir com nosso sistema de validação de ideias:",
-      "getIdeas": "Recuperar todas as suas ideias previamente analisadas",
-      "analyzeIdea": "Enviar uma nova ideia para análise",
-      "getIdeaById": "Obter informações detalhadas sobre uma ideia específica",
-      "getReports": "Recuperar relatórios gerados para suas ideias"
-    },
-    "pricing": {
-      "title": "Preços da API",
-      "description": "Nossa API está disponível em todos os planos pagos com diferentes limites de solicitações:",
-      "entrepreneur": "Empreendedor: 100 chamadas de API/mês",
-      "business": "Negócio: Chamadas de API ilimitadas"
-    },
-    "sdks": {
-      "title": "SDKs e Bibliotecas",
-      "description": "Fornecemos bibliotecas de cliente em várias linguagens para facilitar a integração:",
-      "javascript": "JavaScript/TypeScript",
-      "python": "Python",
-      "php": "PHP",
-      "ruby": "Ruby"
-    },
-    "support": {
-      "title": "Suporte à API",
-      "description": "Precisa de ajuda para integrar nossa API? Nossa equipe de suporte para desenvolvedores está pronta para ajudar:",
-      "email": "Email: api@startupideia.com",
-      "docs": "Documentação Completa",
-      "community": "Comunidade de Desenvolvedores"
-    }
-  },
-  "blog": {
-    "tagline": "Blog",
-    "title": "Últimos Insights e Tendências",
-    "subtitle": "Explore nossos artigos mais recentes sobre empreendedorismo, validação de ideias e tendências de mercado",
-    "readMore": "Ler Mais",
-    "showLess": "Mostrar Menos",
-    "loadMore": "Carregar Mais Artigos",
-    "postNotFound": "Artigo não encontrado",
-    "backToBlog": "Voltar ao Blog",
-    "posts": {
-      "post1": {
-        "title": "5 Métricas Essenciais para Validar sua Ideia de Negócio",
-        "excerpt": "Saiba quais pontos de dados são mais importantes ao determinar se sua ideia tem potencial de mercado.",
-        "date": "1 de maio de 2025",
-        "category": "Validação de Ideias",
-        "content": "Ao validar uma ideia de negócio, existem várias métricas que podem ajudar a determinar se o seu conceito tem potencial para ter sucesso no mercado. Essas métricas incluem tamanho do mercado, custo de aquisição de clientes, valor vitalício dos clientes, margens de lucro e potencial de crescimento. Analisando esses indicadores-chave, os empreendedores podem tomar decisões informadas antes de investir recursos significativos."
-      },
-      "post2": {
-        "title": "Como Criar um MVP que Realmente Teste sua Hipótese",
-        "excerpt": "Construir o produto mínimo viável certo pode economizar meses de tempo de desenvolvimento.",
-        "date": "23 de abril de 2025",
-        "category": "Desenvolvimento de Produto",
-        "content": "Um produto mínimo viável (MVP) deve ser projetado com uma hipótese clara em mente. Em vez de se concentrar em recursos, concentre-se em qual suposição específica você precisa validar. Mantenha seu MVP enxuto, meça as métricas certas e esteja preparado para pivotar com base no feedback do usuário. Esta abordagem economizará tempo e recursos, fornecendo informações valiosas sobre a viabilidade da sua ideia."
-      },
-      "post3": {
-        "title": "Encontrando seu Nicho: Quando Mercados Menores Significam Lucros Maiores",
-        "excerpt": "Por que atingir um público mais restrito pode levar a um posicionamento de mercado mais forte e melhores retornos.",
-        "date": "15 de abril de 2025",
-        "category": "Análise de Mercado",
-        "content": "Contra-intuitivamente, atingir um segmento de mercado menor e mais específico muitas vezes pode levar a um maior sucesso para startups. Mercados de nicho geralmente têm menos concorrência, necessidades mais especializadas e clientes que estão dispostos a pagar preços premium por soluções adaptadas aos seus problemas específicos. Esta abordagem permite que você se estabeleça como especialista e construa uma base leal de clientes antes de considerar expansão."
-      },
-      "post4": {
-        "title": "O Guia do Empreendedor para Investimento Anjo em Angola",
-        "excerpt": "Como atrair investimento inicial para sua startup no crescente mercado angolano.",
-        "date": "8 de abril de 2025",
-        "category": "Financiamento",
-        "content": "O ecossistema de startups de Angola está evoluindo rapidamente, com mais investidores anjo procurando empreendimentos promissores. Para atrair esse capital, os empreendedores precisam entender as expectativas dos investidores locais, o ambiente regulatório e as oportunidades de networking. Este guia explora o panorama de investimentos angolano e fornece dicas práticas para garantir financiamento inicial neste mercado emergente."
-      },
-      "post5": {
-        "title": "Tendências Tecnológicas Remodelando Startups Africanas em 2025",
-        "excerpt": "As inovações e tecnologias que criam novas oportunidades para empreendedores em todo o continente.",
-        "date": "30 de março de 2025",
-        "category": "Tecnologia",
-        "content": "De soluções de pagamento móvel a tecnologias de energia sustentável, várias inovações-chave estão criando oportunidades sem precedentes para empreendedores africanos. Este artigo examina como essas tecnologias estão resolvendo desafios únicamente africanos enquanto criam modelos de negócios escaláveis com potencial de expansão global. Destacamos histórias de sucesso de várias regiões e setores."
-      },
-      "post6": {
-        "title": "Da Ideia ao Mercado: A Jornada da Plataforma de Startup da DMK",
-        "excerpt": "Um olhar interno sobre como o Startupideia foi desenvolvido e lançado em Angola.",
-        "date": "22 de março de 2025",
-        "category": "História de Sucesso",
-        "content": "Neste estudo de caso exclusivo, compartilhamos a jornada de desenvolvimento do Startupideia, desde o conceito inicial até o lançamento no mercado. O fundador Marciairo Kumbuessa discute os desafios enfrentados como desenvolvedor solo na construção de uma startup de tecnologia em Angola, e como a plataforma evoluiu com base nas necessidades dos empreendedores locais e no feedback dos primeiros usuários."
-      }
-    },
-    "submitCasePromo": "Tem uma história de sucesso? Envie o caso de estudo da sua startup para o nosso blog.",
-    "submitCaseLink": "Partilhe a sua história"
-  },
-  "guides": {
-    "tagline": "Guias",
-    "title": "Guias e Tutoriais",
-    "subtitle": "Recursos práticos para ajudar você a validar e desenvolver suas ideias de negócio",
-    "readGuide": "Ler Guia",
-    "hideGuide": "Esconder Guia",
-    "exploreAll": "Explorar Todos os Guias",
-    "guideNotFound": "Guia não encontrado",
-    "backToGuides": "Voltar aos Guias",
-    "items": {
-      "guide1": {
-        "title": "Como Validar sua Ideia de Startup em 7 Dias",
-        "description": "Um guia passo a passo para testar rapidamente a viabilidade do seu conceito de negócio antes de investir recursos significativos.",
-        "category": "Validação de Ideias",
-        "level": "Iniciante",
-        "content": "A validação de ideia é o primeiro passo crucial antes de iniciar qualquer empreendimento. Neste guia, exploramos um processo de 7 dias que inclui pesquisa de mercado, entrevistas com clientes potenciais, análise de concorrentes, testes de conceito e avaliação de feedback. Seguindo esta metodologia, você pode economizar tempo e dinheiro determinando se sua ideia tem potencial real antes de investir recursos significativos."
-      },
-      "guide2": {
-        "title": "Análise Competitiva para Startups",
-        "description": "Aprenda a identificar seus competidores, analisar suas forças e fraquezas, e encontrar seu diferencial no mercado.",
-        "category": "Pesquisa de Mercado",
-        "level": "Intermediário",
-        "content": "Uma análise competitiva completa permite que você identifique oportunidades no mercado e desenvolva uma proposta de valor única. Este guia cobre como mapear seus concorrentes diretos e indiretos, como analisar seus pontos fortes e fracos, e como usar essas informações para definir seu posicionamento. Você aprenderá a criar uma matriz de competição e a identificar lacunas no mercado que sua startup pode preencher."
-      },
-      "guide3": {
-        "title": "MVP: Do Conceito ao Lançamento",
-        "description": "Um guia prático para criar, testar e iterar seu Produto Mínimo Viável para máximo aprendizado.",
-        "category": "Desenvolvimento de Produto",
-        "level": "Avançado",
-        "content": "O Produto Mínimo Viável (MVP) é uma versão simplificada do seu produto que inclui apenas as funcionalidades essenciais. Este guia explica como definir o escopo do seu MVP, como desenvolvê-lo com recursos limitados, como testá-lo com usuários reais e como analisar os resultados para informar a próxima iteração. O foco é maximizar o aprendizado enquanto minimiza o tempo e o investimento inicial."
-      },
-      "guide4": {
-        "title": "Captação de Investimento para Startups Africanas",
-        "description": "Estratégias para atrair investimento em ecossistemas emergentes, focado no contexto angolano e africano.",
-        "category": "Financiamento",
-        "level": "Intermediário",
-        "content": "Este guia explora as particularidades da captação de investimento para startups no contexto africano, com ênfase especial no mercado angolano. Cobrimos as fontes de financiamento disponíveis, desde bootstrapping e investimento anjo até venture capital e financiamento governamental. Discutimos como adaptar seu pitch para diferentes tipos de investidores e como navegar os desafios específicos do ecossistema local, incluindo aspectos regulatórios e valorizações."
-      }
-    }
-  },
-  "successCases": {
-    "tagline": "Casos de Sucesso",
-    "title": "Histórias de Sucesso",
-    "subtitle": "Conheça startups e empresas que utilizaram nossa plataforma para validar e impulsionar seus negócios",
-    "results": "Resultados alcançados:",
-    "readFullCase": "Ler Caso Completo",
-    "showLess": "Mostrar Menos",
-    "caseNotFound": "Caso de sucesso não encontrado",
-    "backToCases": "Voltar aos Casos de Sucesso",
-    "cta": {
-      "title": "Seja nosso próximo caso de sucesso",
-      "subtitle": "Comece a validar suas ideias hoje e transforme-as em negócios bem-sucedidos",
-      "button": "Comece Agora"
-    },
-    "cases": {
-      "case1": {
-        "company": "FinTech Angola",
-        "description": "Uma startup fintech localizada em Luanda que estava tendo dificuldades para validar seu modelo de negócio de pagamentos móveis. Utilizando a plataforma Startupideia, eles conseguiram refinar seu público-alvo, ajustar seu modelo de receita e identificar parceiros estratégicos. A análise detalhada fornecida ajudou-os a entender melhor o comportamento financeiro de seus potenciais usuários e adaptar seu produto para atender às necessidades específicas do mercado angolano.",
-        "result": "Aumento de 150% na taxa de conversão e captação de investimento semente de $500.000 após aprimorar o modelo de negócio com base nas recomendações da plataforma."
-      },
-      "case2": {
-        "company": "EcoSolutions Huíla",
-        "description": "Uma empresa de soluções sustentáveis baseada no Lubango que estava desenvolvendo um sistema inovador de purificação de água para comunidades rurais. O desafio era encontrar um modelo de negócio que fosse economicamente viável enquanto atendia comunidades com recursos limitados. A plataforma Startupideia ajudou a empresa a desenvolver um modelo híbrido que combina vendas comerciais com iniciativas sociais financiadas, possibilitando escalar seu impacto.",
-        "result": "Implementação em 12 comunidades rurais, beneficiando mais de 5.000 pessoas no primeiro ano, e estabelecimento de parcerias com 3 ONGs internacionais para expandir o projeto."
-      },
-      "case3": {
-        "company": "EdTech Benguela",
-        "description": "Uma startup de tecnologia educacional que estava desenvolvendo uma plataforma de aprendizado móvel adaptada para a realidade angolana. Enfrentando um mercado competitivo e com desafios de conectividade, eles usaram o Startupideia para refinar sua proposta de valor e estratégia go-to-market. A análise detalhada do comportamento dos usuários e do ecossistema educacional local forneceu insights valiosos que direcionaram o desenvolvimento do produto.",
-        "result": "Crescimento de 200% na base de usuários em 6 meses e parceria com o Ministério da Educação para implementar a solução em 50 escolas públicas."
-      }
-    },
-    "submitButton": "Enviar Caso de Sucesso",
-    "submitForm": {
-      "title": "Envie a sua História de Sucesso",
-      "description": "Partilhe como construiu a sua startup e como a nossa plataforma o ajudou a ter sucesso. Casos selecionados serão apresentados no nosso blog.",
-      "nameLabel": "O Seu Nome",
-      "namePlaceholder": "Introduza o seu nome completo",
-      "emailLabel": "Endereço de E-mail",
-      "emailPlaceholder": "Introduza o seu endereço de e-mail",
-      "companyNameLabel": "Nome da Empresa",
-      "companyNamePlaceholder": "Introduza o nome da sua empresa",
-      "descriptionLabel": "Caso de Sucesso",
-      "descriptionPlaceholder": "Descreva a sua jornada, desafios e como os superou",
-      "submit": "Enviar História",
-      "submitting": "Enviando...",
-      "thankYou": "Obrigado pelo seu envio!"
-    },
-    "submitSuccess": {
-      "title": "Caso de Sucesso Enviado!",
-      "description": "Obrigado por partilhar a sua história. A nossa equipa irá analisá-la e entrar em contacto consigo em breve."
-    }
-  },
-  "webinars": {
-    "tagline": "Webinars",
-    "title": "Aprenda com Especialistas",
-    "subtitle": "Participe de nossos webinars ao vivo ou assista às gravações de sessões anteriores",
-    "upcoming": "Próximos Webinars",
-    "past": "Webinars Anteriores",
-    "registerNow": "Inscreva-se Agora",
-    "watchRecording": "Assistir Gravação",
-    "hostInfo": "Apresentado por:",
-    "items": {
-      "webinar1": {
-        "title": "Validação de Ideias: Da Concepção à Prova de Conceito",
-        "description": "Aprenda técnicas práticas para testar a viabilidade do seu conceito de negócio com recursos mínimos.",
-        "date": "10 de Maio, 2025",
-        "time": "19:00 WAT",
-        "host": "Marciairo Kumbuessa",
-        "role": "CEO e Fundador da DMK, Lda"
-      },
-      "webinar2": {
-        "title": "Captação de Investimento: O Que os Investidores Africanos Procuram",
-        "description": "Um painel com investidores experientes discutindo o que eles procuram em startups africanas.",
-        "date": "17 de Maio, 2025",
-        "time": "18:00 WAT",
-        "host": "Painel de Especialistas",
-        "role": "Investidores Anjo e VCs"
-      },
-      "webinar3": {
-        "title": "Análise de Mercado Eficaz para Empreendedores",
-        "description": "Metodologias para pesquisa de mercado que podem ser aplicadas com orçamentos limitados.",
-        "date": "24 de Maio, 2025",
-        "time": "19:00 WAT",
-        "host": "Dneisy Kumbuessa",
-        "role": "VP e Diretora de Vendas da DMK, Lda"
-      },
-      "webinar4": {
-        "title": "Construindo MVPs que os Clientes Realmente Desejam",
-        "description": "Como criar produtos mínimos viáveis que validem suas hipóteses de negócio de forma eficiente.",
-        "date": "5 de Abril, 2025",
-        "time": "19:00 WAT",
-        "host": "Marciairo Kumbuessa",
-        "role": "CEO e Fundador da DMK, Lda",
-        "recording": "https://www.youtube.com/watch?v=example1"
-      },
-      "webinar5": {
-        "title": "Estratégias de Crescimento para Startups Angolanas",
-        "description": "Táticas de crescimento adaptadas à realidade do mercado angolano.",
-        "date": "15 de Março, 2025",
-        "time": "18:00 WAT",
-        "host": "Dneisy Kumbuessa",
-        "role": "VP e Diretora de Vendas da DMK, Lda",
-        "recording": "https://www.youtube.com/watch?v=example2"
-      }
-    }
-  },
-  "aboutUs": {
-    "tagline": "Sobre Nós",
-    "title": "Nossa Missão",
-    "subtitle": "Estamos em uma missão para ajudar empreendedores a validar suas ideias de negócio e aumentar suas chances de sucesso",
-    "mission": {
-      "title": "Por Que Começamos",
-      "description1": "O Startupideia foi fundado por Marciairo Kumbuessa, um desenvolvedor solo com a visão de tornar a validação de ideias de negócio acessível aos empreendedores em Angola e além. Após experimentar em primeira mão os desafios de lançar negócios sem a validação adequada, ele criou o Startupideia para resolver este problema crítico.",
-      "description2": "Hoje, a DMK, Lda está ajudando empreendedores em toda Angola a tomar decisões baseadas em dados sobre suas ideias de negócio antes de investir recursos significativos."
-    },
-    "company": {
-      "title": "DMK, Lda",
-      "description": "O Startupideia é de propriedade e operado pela DMK, Lda, uma empresa angolana de tecnologia com sede no Lubango, Província da Huíla. Fundada com a missão de criar soluções inovadoras para empreendedores locais, a DMK está comprometida em promover o avanço tecnológico em Angola.",
-      "location": "Lubango, Província da Huíla, Angola",
-      "emails": "contact@startupideia.com, contact@dmklda.online"
-    },
-    "values": {
-      "title": "Nossos Valores",
-      "subtitle": "Os princípios que orientam nosso trabalho e nossos relacionamentos com os clientes",
-      "value1": {
-        "title": "Decisões Baseadas em Dados",
-        "description": "Acreditamos que negócios bem-sucedidos são construídos com base em evidências e insights, não apenas intuição e paixão."
-      },
-      "value2": {
-        "title": "Capacitação Empreendedora",
-        "description": "Nosso objetivo é democratizar o acesso a ferramentas de validação de negócios e conhecimento para empreendedores em Angola e África."
-      },
-      "value3": {
-        "title": "Inovação Contínua",
-        "description": "Estamos constantemente aprimorando nossos algoritmos e metodologias para fornecer a validação mais precisa possível."
-      }
-    },
-    "team": {
-      "title": "Nossa Liderança",
-      "subtitle": "Os visionários por trás do Startupideia",
-      "member1": {
-        "name": "Marciairo Kumbuessa",
-        "role": "CEO e Fundador",
-        "bio": "Desenvolvedor solo e empreendedor com paixão por criar soluções tecnológicas que abordam desafios locais."
-      },
-      "member2": {
-        "name": "Dneisy Kumbuessa",
-        "role": "Vice-Presidente e Diretora de Vendas",
-        "bio": "Lidera relacionamentos com clientes e operações de vendas, garantindo que nossas soluções atendam às necessidades dos empreendedores locais."
-      }
-    }
-  },
-  "contact": {
-    "title": "Contato",
-    "subtitle": "Entre em contato conosco para obter mais informações sobre nossos serviços",
-    "email": "contact@startupideia.com",
-    "phone": "+244 912 345 678",
-    "address": "Lubango, Província da Huíla, Angola",
-    "companyInfo": {
-      "name": "DMK, Lda",
-      "location": "Lubango, Província da Huíla, Angola",
-      "email1": "contact@startupideia.com",
-      "email2": "contact@dmklda.online"
-    }
-  },
-  "auth": {
-    "login": "Entrar",
-    "loginSubtitle": "Acesse sua conta para ver suas análises",
-    "register": "Registrar",
-    "registerSubtitle": "Registre-se para analisar suas ideias de negócio",
-    "email": "Email",
-    "password": "Senha",
-    "name": "Nome completo",
-    "loggingIn": "Entrando...",
-    "registering": "Registrando...",
-    "noAccount": "Ainda não tem uma conta?",
-    "alreadyHaveAccount": "Já tem uma conta?",
-    "loginSuccess": "Login realizado com sucesso!",
-    "loginFailed": "Falha ao fazer login",
-    "registerSuccess": "Registro realizado com sucesso!",
-    "registerFailed": "Falha ao registrar",
-    "errors": {
-      "invalidEmail": "Email inválido",
-      "passwordLength": "A senha deve ter pelo menos 6 caracteres",
-      "nameLength": "O nome deve ter pelo menos 2 caracteres"
-    },
-    "redirect": "Redirecionar..."
-  },
-  "dashboard": {
-    "title": "Dashboard",
-    "newAnalysis": "Nova Análise",
-    "statistics": {
-      "totalAnalyses": "Total de Análises",
-      "viabilityRate": "Taxa de Viabilidade",
-      "availableCredits": "Créditos Disponíveis",
-      "yourPlan": "Seu Plano",
-      "free": "Gratuito",
-      "premium": "Premium",
-      "addCredits": "Adicionar créditos",
-      "upgrade": "Fazer upgrade",
-      "compared": "em relação ao mês passado",
-      "totalAnalysesDescription": "Total de ideias analisadas"
-    },
-    "tabs": {
-      "overview": "Visão Geral",
-      "analytics": "Análises"
-    },
-    "charts": {
-      "performanceTitle": "Desempenho de Análises",
-      "performanceDescription": "Comparação mensal de análises e consultas",
-      "progressTitle": "Progresso de Análises",
-      "progressDescription": "Evolução das suas análises ao longo do tempo"
-    },
-    "recentIdeas": {
-      "title": "Ideias Recentes",
-      "description": "Suas últimas análises de ideias",
-      "viewAll": "Ver todas"
-    },
-    "insights": {
-      "title": "Insights",
-      "description": "Análise inteligente da sua atividade recente",
-      "activityTrend": "Tendência de Atividade",
-      "highActivity": "Sua atividade está acima da média dos usuários.",
-      "lowActivity": "Crie mais análises para insights completos.",
-      "successRate": "Taxa de Sucesso",
-      "goodSuccessRate": "Suas ideias têm boa viabilidade de mercado.",
-      "improvementNeeded": "Considere refinar suas ideias para melhor viabilidade.",
-      "nextSteps": "Próximos Passos",
-      "hasCredits": "Você tem créditos disponíveis para novas análises.",
-      "needsCredits": "Adicione créditos para continuar analisando ideias."
-    }
-  },
-  "credits": {
-    "title": "Meus Créditos",
-    "subtitle": "Gerencie seus créditos para análise de ideias",
-    "availableCredits": {
-      "title": "Créditos Disponíveis",
-      "description": "Seu saldo atual de créditos para análises",
-      "freePlan": "Plano Free (3 créditos/mês)",
-      "proPlan": "Plano Pro (créditos ilimitados)",
-      "upgradeBtn": "Atualizar para o plano Pro"
-    },
-    "buyCredits": {
-      "title": "Comprar Créditos",
-      "description": "Adquira mais créditos para análises",
-      "credits": "créditos",
-      "processing": "Processando...",
-      "buy": "Comprar",
-      "error": "Erro ao adicionar créditos"
-    },
-    "transactions": {
-      "title": "Histórico de Transações",
-      "description": "Seu histórico de compra e uso de créditos",
-      "date": "Data",
-      "type": "Tipo",
-      "details": "Detalhes",
-      "amount": "Quantidade",
-      "loading": "Carregando histórico de transações...",
-      "noTransactions": "Nenhuma transação encontrada.",
-      "purchase": "Compra",
-      "usage": "Uso",
-      "loadingError": "Erro ao carregar histórico de transações",
-      "addedSuccess": "Créditos adicionados com sucesso!"
-    }
-  },
-  "ideas": {
-    "title": "Minhas Ideias",
-    "subtitle": "Gerencie e analise suas ideias de negócio",
-    "tabs": {
-      "all": "Todas",
-      "favorites": "Favoritas",
-      "tags": "Tags",
-      "analyses": "Análises Avançadas"
-    },
-    "score": "Pontuação",
-    "viewDetails": "Ver detalhes",
-    "filterByTags": "Filtrar por tags",
-    "noTagsAvailable": "Nenhuma tag disponível",
-    "newIdea": "Nova Ideia",
-    "loading": "Carregando ideias...",
-    "noIdeasFound": "Nenhuma ideia encontrada.",
-    "notFound": "Ideia não encontrada",
-    "backToIdeas": "Voltar para Ideias",
-    "viewIdea": "Ver ideia",
-    "scoreStatus": {
-      "great": "Ótimo",
-      "medium": "Médio",
-      "low": "Baixo"
-    },
-    "detail": {
-      "overview": "Visão Geral",
-      "analysis": "Análise",
-      "recommendations": "Recomendações",
-      "financials": "Financeiro",
-      "viabilityScore": "Pontuação de Viabilidade",
-      "highScore": "Excelente viabilidade! Esta ideia tem um grande potencial de sucesso.",
-      "mediumScore": "Viabilidade moderada. A ideia tem potencial, mas requer ajustes.",
-      "lowScore": "Baixa viabilidade. Recomendamos revisar os principais aspectos da ideia.",
-      "ideaDetails": "Detalhes da Ideia",
-      "description": "Descrição",
-      "problemSolved": "Problema Resolvido",
-      "targetAudience": "Público-alvo",
-      "budget": "Orçamento",
-      "location": "Localização",
-      "monetization": "Monetização",
-      "competitors": "Concorrentes",
-      "quickSummary": "Resumo Rápido",
-      "strengths": "Pontos Fortes",
-      "weaknesses": "Pontos Fracos",
-      "swotAnalysis": "Análise SWOT",
-      "swotDescription": "Forças, Fraquezas, Oportunidades e Ameaças",
-      "opportunities": "Oportunidades",
-      "threats": "Ameaças",
-      "marketAnalysis": "Análise de Mercado",
-      "marketSize": "Tamanho do Mercado",
-      "growthPotential": "Potencial de Crescimento",
-      "barriers": "Barreiras de Entrada",
-      "competitorAnalysis": "Análise de Concorrentes",
-      "keyCompetitors": "Principais Concorrentes",
-      "competitiveAdvantage": "Vantagem Competitiva",
-      "marketGaps": "Lacunas de Mercado",
-      "noAnalysis": "Análise detalhada não disponível",
-      "recommendationsAndNextSteps": "Recomendações e Próximos Passos",
-      "actionItems": "Itens de Ação",
-      "nextSteps": "Próximos Passos",
-      "potentialChallenges": "Desafios Potenciais",
-      "suggestedResources": "Recursos Sugeridos",
-      "noRecommendations": "Recomendações não disponíveis",
-      "financialAnalysis": "Análise Financeira",
-      "revenuePotential": "Potencial de Receita",
-      "initialInvestment": "Investimento Inicial",
-      "breakEvenEstimate": "Estimativa de Ponto de Equilíbrio",
-      "fundingSuggestions": "Sugestões de Financiamento",
-      "noFinancials": "Análise financeira não disponível"
-    },
-    "table": {
-      "name": "Nome",
-      "status": "Status",
-      "score": "Pontuação",
-      "createdAt": "Criado em",
-      "actions": "Ações",
-      "view": "Ver análise"
-    },
-    "filters": {
-      "all": "Todas as Ideias",
-      "viable": "Viáveis",
-      "moderate": "Moderadas",
-      "favorites": "Favoritas"
-    },
-    "search": "Buscar ideias...",
-    "statuses": {
-      "pending": "Pendente",
-      "analyzed": "Analisada",
-      "inProgress": "Em Progresso"
-    },
-    "errors": {
-      "fetchFailed": "Erro ao carregar ideias",
-      "fetchIdeasError": "Erro ao buscar ideias para comparação",
-      "compareError": "Erro ao comparar ideias",
-      "fetchingDetails": "Erro ao buscar detalhes da ideia"
-    },
-    "emptyState": {
-      "title": "Você ainda não tem ideias analisadas",
-      "button": "Criar minha primeira ideia"
-    },
-    "favorite": "Favoritar",
-    "favorited": "Favoritado",
-    "addedToFavorites": "Adicionado aos favoritos",
-    "removedFromFavorites": "Removido dos favoritos",
-    "favoriteError": "Erro ao atualizar status de favorito",
-    "noFavorites": "Você ainda não tem ideias favoritas",
-    "viewDrafts": "Ver Rascunhos",
-    "unfavorite": "Desfavoritar",
-    "reanalyze": {
-      "button": "Reanalisar",
-      "noCredits": "Não tens créditos suficientes",
-      "buyCredits": "Comprar Créditos"
-    },
-    "history": {
-      "title": "Histórico de Ideias",
-      "description": "Visualize e gerencie todas as suas ideias analisadas",
-      "filters": "Filtros",
-      "filterOptions": "Opções de Filtro",
-      "dateRange": "Período",
-      "scoreFilter": "Pontuação",
-      "allScores": "Todas",
-      "highScore": "Alta (70-100)",
-      "mediumScore": "Média (40-69)",
-      "lowScore": "Baixa (0-39)",
-      "keywords": "Palavras-chave (separadas por vírgula)",
-      "keywordsPlaceholder": "Ex: app, saúde, educação",
-      "exportOptions": "Opções de exportação",
-      "noIdeas": "Nenhuma ideia encontrada",
-      "score": "Pontuação",
-      "status": "Status",
-      "date": "Data",
-      "actions": "Ações"
-    },
-    "compare": {
-      "title": "Comparar Ideias",
-      "subtitle": "Compare até 3 ideias para identificar a melhor oportunidade",
-      "button": "Comparar Ideias",
-      "select": "Selecione ideias para comparar",
-      "selectMin": "Selecione pelo menos 2 ideias",
-      "minError": "Selecione pelo menos 2 ideias para comparar",
-      "success": "Comparação de ideias realizada com sucesso",
-      "selectedIdeas": "Ideias selecionadas",
-      "noIdeasSelected": "Nenhuma ideia selecionada para comparação",
-      "addMoreIdeas": "Adicionar mais ideias",
-      "selectIdea": "Selecione uma ideia",
-      "selectMax": "Você pode selecionar até 3 ideias",
-      "maxSelected": "Você pode selecionar no máximo 3 ideias para comparação",
-      "needMoreIdeas": "Selecione pelo menos 2 ideias para comparar",
-      "selectForComparison": "Selecionar para comparação",
-      "viability": "Viabilidade",
-      "market": "Mercado",
-      "strengths": "Pontos Fortes",
-      "weaknesses": "Pontos Fracos",
-      "strengthsWeaknesses": "Forças e Fraquezas",
-      "description": "Descrição",
-      "audience": "Público-alvo",
-      "problem": "Problema",
-      "solution": "Solução",
-      "monetization": "Monetização",
-      "viabilityScore": "Pontuação de viabilidade",
-      "marketSize": "Tamanho do mercado",
-      "differentiation": "Diferenciação",
-      "notSpecified": "Não especificado",
-      "notAnalyzed": "Não analisado",
-      "insights": "Insights",
-      "noInsights": "Sem insights disponíveis",
-        "noAiInsights": "Sem insights de IA",
-      "completeAnalysis": "Complete a análise para gerar insights",
-      "aiInsights": "Análise de IA",
-      "generateAiInsightsDescription": "Gere insights avançados de IA para comparar suas ideias e descobrir qual tem maior potencial de mercado",
-      "generateAiInsights": "Gerar análise de IA",
-      "generatingInsights": "Gerando insights...",
-      "pleaseWait": "Esse processo pode levar até 30 segundos",
-      "noCreditsForInsights": "Você não possui créditos suficientes para esta análise",
-      "insightsGenerated": "Análise de IA concluída com sucesso!",
-      "insightsError": "Erro ao gerar insights de IA",
-      "fetchError": "Erro ao buscar detalhes das ideias",
-      "highScoreAdvantage": "Alta pontuação",
-      "scoreAdvantageDesc": "Esta ideia tem uma pontuação de viabilidade significativamente maior que as outras",
-      "lowScoreDisadvantage": "Baixa pontuação",
-      "scoreDisadvantageDesc": "Esta ideia tem uma pontuação de viabilidade significativamente menor que as outras, considere revisá-la",
-      "marketInsight": "Insight de mercado",
-      "overallRecommendation": "Recomendação geral",
-      "recommendedFocus": "Áreas de foco recomendadas",
-      "keyStrength": "Ponto forte principal",
-      "keyChallenge": "Desafio principal",
-      "insightComparison": "Comparação de insights",
-      "competitiveAdvantage": "Vantagem competitiva",
-      "marketPotential": "Potencial de mercado",
-      "executionDifficulty": "Dificuldade de execução",
-      "investmentRequired": "Investimento necessário",
-      "scalabilityPotential": "Potencial de escalabilidade",
-      "innovationLevel": "Nível de inovação",
-      "riskLevel": "Nível de risco"
-    }
-  },
   "nav": {
-    "backToHome": "Voltar à página inicial",
-    "dashboard": "Painel",
+    "dashboard": "Dashboard",
     "ideas": "Ideias",
     "credits": "Créditos",
     "profile": "Perfil",
-    "resources": "Recursos",
     "logout": "Sair",
-    "drafts": "Rascunhos"
+    "resources": "Recursos",
+    "drafts": "Rascunhos",
+    "tools": "Ferramentas"
+  },
+  "tools": {
+    "title": "Ferramentas",
+    "subtitle": "Potencialize seu negócio com nossas ferramentas especializadas",
+    "credit": "crédito",
+    "credits": "créditos",
+    "features": "Recursos",
+    "useTool": "Usar Ferramenta",
+    "notifyWhenReady": "Notificar quando disponível",
+    "openingTool": "Abrindo ferramenta...",
+    "comingSoonMessage": "Esta ferramenta estará disponível em breve!",
+    "status": {
+      "available": "Disponível",
+      "beta": "Beta",
+      "comingSoon": "Em Breve"
+    },
+    "categories": {
+      "publishing": "Publicação",
+      "reports": "Relatórios",
+      "finance": "Financeiro",
+      "design": "Design",
+      "marketing": "Marketing",
+      "web": "Web",
+      "analysis": "Análise"
+    },
+    "postGenerator": {
+      "name": "Gerador de Posts",
+      "description": "Crie posts profissionais para redes sociais com IA"
+    },
+    "reportCreator": {
+      "name": "Criador de Relatórios",
+      "description": "Gere relatórios empresariais completos e profissionais"
+    },
+    "invoiceGenerator": {
+      "name": "Gerador de Faturas",
+      "description": "Crie faturas e orçamentos profissionais rapidamente"
+    },
+    "aiImageEditor": {
+      "name": "Editor de Imagens IA",
+      "description": "Edite e melhore imagens usando inteligência artificial"
+    },
+    "contentPlanner": {
+      "name": "Planejador de Conteúdo",
+      "description": "Organize e planeje seu conteúdo de marketing"
+    },
+    "emailCampaigns": {
+      "name": "Campanhas de Email",
+      "description": "Crie campanhas de email marketing eficazes"
+    },
+    "landingPageBuilder": {
+      "name": "Construtor de Landing Pages",
+      "description": "Construa landing pages que convertem visitantes"
+    },
+    "competitorAnalysis": {
+      "name": "Análise de Concorrentes",
+      "description": "Analise seus concorrentes e identifique oportunidades"
+    },
+    "suggestTool": {
+      "title": "Precisa de uma ferramenta específica?",
+      "description": "Envie sua sugestão e ajude-nos a priorizar o desenvolvimento de novas ferramentas.",
+      "button": "Sugerir Ferramenta"
+    }
+  },
+  "ideaForm": {
+    "title": "Analisar Nova Ideia",
+    "subtitle": "Descreva sua ideia de negócio e receba uma análise detalhada"
+  },
+  "dashboard": {
+    "newAnalysis": "Nova Análise",
+    "statistics": {
+      "free": "Gratuito",
+      "premium": "Premium"
+    }
   },
   "notifications": {
     "title": "Notificações",
     "lowCredits": "Créditos baixos",
-    "lowCreditsDesc": "Seus créditos estão acabando. Adicione mais para continuar analisando ideias.",
-    "noNotifications": "Nenhuma notificação no momento"
+    "lowCreditsDesc": "Você tem poucos créditos restantes",
+    "noNotifications": "Nenhuma notificação"
   },
   "search": {
-    "placeholder": "Pesquisar ideias..."
+    "placeholder": "Buscar..."
   },
-  "common": {
-    "back": "Voltar",
-    "next": "Próximo",
-    "submit": "Enviar",
-    "cancel": "Cancelar",
-    "save": "Salvar",
-    "delete": "Excluir",
-    "edit": "Editar",
-    "view": "Ver",
-    "loading": "Carregando...",
-    "noResults": "Nenhum resultado encontrado",
-    "max": "máx",
-    "characters": "caracteres",
-    "dontKnow": "Não sei",
-    "remove": "Remover",
-    "add": "Adicionar",
-    "processing": "Processando...",
-    "clearAll": "Limpar tudo",
-    "copied": "Copiado!",
-    "share": "Compartilhar",
-    "pdf": "PDF",
-    "notSpecified": "Não especificado",
-    "errorOccurred": "Ocorreu um erro",
-    "close": "Fechar",
-    "saved": "Salvo",
-    "saving": "Salvando...",
-    "sending": "Enviando...",
-    "page": "Página {{page}}",
-    "generatedOn": "Gerado em",
-    "generatedBy": "Gerado por",
-    "generatedAt": "Gerado em",
-    "send": "Enviar",
-    "preparing": "Preparando...",
-    "shared": "Compartilhado",
-    "notFound": "Não encontrado",
-    "updated": "Atualizado"
-  },
-  "countries": {
-    "global": "Global",
-    "angola": "Angola",
-    "brazil": "Brasil",
-    "portugal": "Portugal",
-    "mozambique": "Moçambique",
-    "unitedstates": "Estados Unidos",
-    "canada": "Canadá",
-    "unitedkingdom": "Reino Unido",
-    "germany": "Alemanha",
-    "france": "França",
-    "australia": "Austrália",
-    "india": "Índia",
-    "china": "China",
-    "other": "Outros"
-  },
-  "monitoringStatus": {
-    "title": "Estado do sistema",
-    "active": "Todos os sistemas ativos",
-    "partial": "Problemas parciais",
-    "down": "Sistema inoperante",
-    "lastUpdated": "Última atualização",
-    "lastUpdatedDesc": "Última atualização do sistema",
-    "lastUpdatedAt": "Última atualização em",
-    "lastUpdatedBy": "Última atualização por"
-  },
-  "formSteps": {
-    "marketAnalysis": "Análise de Mercado",
-    "financialViability": "Viabilidade Financeira",
-    "competitiveAnalysis": "Análise Competitiva",
-    "progress": "Em progresso",
-    "analyzing": "Em análise",
-    "completed": "Concluída",
-    "accuracy": "Precisão",
-    "analyses": "Análises",
-    "average": "Média"
-  },
-  "dashboardCharts": {
-    "marketAnalysis": "Análise de Mercado",
-    "financialViability": "Viabilidade Financeira",
-    "competitiveAnalysis": "Análise Competitiva",
-    "accuracy": "Precisão",
-    "analyses": "Análises",
-    "average": "Média"
+  "credits": {
+    "title": "Créditos",
+    "subtitle": "Gerencie seus créditos e histórico de transações",
+    "availableCredits": {
+      "title": "Créditos Disponíveis",
+      "description": "Seus créditos atuais para análises",
+      "freePlan": "Plano gratuito",
+      "proPlan": "Plano premium",
+      "upgradeBtn": "Fazer Upgrade"
+    },
+    "buyCredits": {
+      "title": "Comprar Créditos",
+      "description": "Adicione mais créditos à sua conta",
+      "credits": "créditos",
+      "buy": "Comprar",
+      "processing": "Processando...",
+      "error": "Erro ao adicionar créditos"
+    },
+    "transactions": {
+      "title": "Histórico de Transações",
+      "description": "Suas transações de créditos",
+      "date": "Data",
+      "type": "Tipo",
+      "details": "Detalhes",
+      "amount": "Quantidade",
+      "loading": "Carregando...",
+      "noTransactions": "Nenhuma transação encontrada",
+      "purchase": "Compra",
+      "usage": "Uso",
+      "addedSuccess": "Créditos adicionados com sucesso!"
+    }
   },
   "settings": {
     "title": "Configurações",
-    "subtitle": "Gerencie suas preferências de conta e perfil",
+    "subtitle": "Gerencie suas preferências de conta",
     "profile": "Perfil",
     "account": "Conta",
     "notifications": "Notificações",
     "plan": "Plano",
     "personalInfo": "Informações Pessoais",
-    "personalInfoDesc": "Atualize suas informações de perfil",
+    "personalInfoDesc": "Atualize suas informações pessoais",
     "name": "Nome",
     "email": "Email",
-    "emailChangeNote": "O email não pode ser alterado",
+    "emailChangeNote": "Para alterar o email, entre em contato com o suporte",
     "language": "Idioma",
     "selectLanguage": "Selecione um idioma",
     "security": "Segurança",
     "securityDesc": "Gerencie sua senha e configurações de segurança",
-    "currentPassword": "Senha atual",
-    "newPassword": "Nova senha",
-    "confirmPassword": "Confirmar nova senha",
-    "changePassword": "Alterar senha",
+    "currentPassword": "Senha Atual",
+    "newPassword": "Nova Senha",
+    "confirmPassword": "Confirmar Senha",
+    "changePassword": "Alterar Senha",
     "dangerZone": "Zona de Perigo",
     "dangerZoneDesc": "Ações irreversíveis para sua conta",
-    "deleteAccount": "Excluir conta",
-    "deleteAccountDesc": "Ao excluir sua conta, todos os dados serão permanentemente removidos. Esta ação não pode ser desfeita.",
+    "deleteAccount": "Excluir Conta",
+    "deleteAccountDesc": "Esta ação não pode ser desfeita",
+    "confirmDeleteAccount": "Tem certeza que deseja excluir sua conta?",
     "notificationPreferences": "Preferências de Notificação",
-    "notificationPreferencesDesc": "Configure como você deseja receber notificações",
-    "emailNotifications": "Notificações por email",
+    "notificationPreferencesDesc": "Configure como você quer ser notificado",
+    "emailNotifications": "Notificações por Email",
     "emailNotificationsDesc": "Receba notificações por email",
-    "accountAlerts": "Alertas de conta",
-    "accountAlertsDesc": "Alertas importantes sobre sua conta",
-    "marketingEmails": "Emails de marketing",
-    "marketingEmailsDesc": "Receba ofertas e novidades",
-    "newFeatures": "Novos recursos",
-    "newFeaturesDesc": "Receba notificações sobre novos recursos",
-    "tips": "Dicas e sugestões",
-    "tipsDesc": "Receba dicas para melhorar suas ideias",
-    "notificationsUpdated": "Configurações de notificações atualizadas",
+    "accountAlerts": "Alertas da Conta",
+    "accountAlertsDesc": "Alertas sobre atividade da conta",
+    "marketingEmails": "Emails de Marketing",
+    "marketingEmailsDesc": "Receba emails sobre novos recursos",
+    "newFeatures": "Novos Recursos",
+    "newFeaturesDesc": "Seja notificado sobre novos recursos",
+    "tips": "Dicas e Truques",
+    "tipsDesc": "Receba dicas para melhor usar a plataforma",
     "currentPlan": "Plano Atual",
-    "currentPlanDesc": "Detalhes do seu plano e assinatura",
+    "currentPlanDesc": "Informações sobre seu plano atual",
     "freePlan": "Plano Gratuito",
-    "freePlanDesc": "Acesso básico com recursos limitados",
-    "proPlan": "Plano Pro",
+    "proPlan": "Plano Premium",
+    "freePlanDesc": "Acesso básico às funcionalidades",
     "proPlanDesc": "Acesso completo a todos os recursos",
     "free": "Gratuito",
     "premium": "Premium",
-    "currentCredits": "Créditos disponíveis",
-    "upgradePlan": "Fazer upgrade",
-    "managePlan": "Gerenciar assinatura",
+    "currentCredits": "Créditos atuais",
+    "upgradePlan": "Fazer Upgrade",
+    "managePlan": "Gerenciar Plano",
     "profileUpdated": "Perfil atualizado com sucesso",
-    "passwordUpdated": "Senha atualizada com sucesso",
-    "languageUpdated": "Idioma atualizado com sucesso",
-    "confirmDeleteAccount": "Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.",
+    "passwordUpdated": "Senha alterada com sucesso",
+    "languageUpdated": "Idioma alterado com sucesso",
+    "notificationsUpdated": "Preferências de notificação atualizadas",
     "accountDeleted": "Conta excluída com sucesso"
   },
-  "tags": {
-    "title": "Tags",
-    "add": "Adicionar tags",
-    "create": "Criar nova tag",
-    "edit": "Editar tag",
-    "delete": "Excluir tag",
-    "empty": "Nenhuma tag criada ainda",
-    "nameLabel": "Nome da tag",
-    "namePlaceholder": "Digite o nome da tag",
-    "colorLabel": "Cor da tag",
-    "success": {
-      "created": "Tag criada com sucesso",
-      "updated": "Tag atualizada com sucesso",
-      "deleted": "Tag excluída com sucesso",
-      "deletedDesc": "A tag foi excluída com sucesso",
-      "createdDesc": "A tag foi criada com sucesso",
-      "updatedDesc": "A tag foi atualizada com sucesso"
-    },
-    "errors": {
-      "emptyName": "O nome da tag não pode estar vazio",
-      "duplicate": "Já existe uma tag com este nome",
-      "createFailed": "Falha ao criar tag",
-      "updateFailed": "Falha ao atualizar tag",
-      "deleteFailed": "Falha ao excluir tag",
-      "createFailedDesc": "A tag não foi criada com sucesso",
-      "updateFailedDesc": "A tag não foi atualizada com sucesso",
-      "deleteFailedDesc": "A tag não foi excluída com sucesso"
-    }
-  },
-  "drafts": {
-    "title": "Meus Rascunhos",
-    "subtitle": "Continue trabalhando em suas ideias salvas",
-    "viewCompleted": "Ver ideias completas",
-    "search": "Buscar rascunhos...",
-    "listTitle": "Seus rascunhos",
-    "empty": "Você ainda não tem rascunhos salvos",
-    "noResults": "Nenhum rascunho foi encontrado para sua pesquisa",
-    "errors": {
-      "fetchFailed": "Erro ao carregar os rascunhos",
-      "fetchFailedDesc": "Os rascunhos não foram carregados com sucesso"
-    },
-    "table": {
-      "title": "Título",
-      "created": "Criado em",
-      "updated": "Atualizado em",
-      "status": "Status",
-      "actions": "Ações"
-    },
-    "continue": "Continuar",
-    "status": {
-      "draft": "Rascunho"
-    },
-    "delete": {
-      "title": "Excluir rascunho?",
-      "description": "Esta ação não pode ser desfeita. O rascunho será excluído permanentemente."
-    },
-    "deleteSuccess": "Rascunho excluído com sucesso",
-    "deleteError": "Erro ao excluir o rascunho",
-    "noDrafts": "Você ainda não tem rascunhos",
-    "createDraft": "Criar rascunho",
-    "lastEdited": "Última edição",
-    "confirmDelete": "Tem certeza que deseja excluir este rascunho?",
-    "confirmDeleteDescription": "Esta ação não pode ser desfeita"
-  },
-  "perfil": {
-    "title": "O Meu Perfil",
-    "subtitle": "Gerir as suas informações pessoais e preferências de conta",
-    "informações pessoais": {
-      "title": "Informação Pessoal",
-      "nome": "Nome Completo",
-      "e-mail": "E-mail",
-      "telefone": "Telefone",
-      "país": "País",
-      "língua": "Língua preferida",
-      "línguaDesc": "A língua preferida é a língua que você usa para interagir com o sistema"
-    },
-    "configurações de Conta": {
-      "title": "Definições da conta",
-      "changePassword": "Alterar Palavra-passe",
-      "currentPassword": "Palavra-passe Atual",
-      "newPassword": "Nova Palavra-passe",
-      "confirmPassword": "Confirmar nova palavra-passe",
-      "twoFactor": "Autenticação de dois fatores",
-      "enabled": "Habilitado",
-      "disabled": "Desativado",
-      "enabledDesc": "A autenticação de dois fatores está habilitada",
-      "disabledDesc": "A autenticação de dois fatores está desabilitada"
-    },
-    "notificações": {
-      "title": "Preferências de Notificação",
-      "análise": "Notificações de Análise",
-      "marketing": "Notificações de Marketing",
-      "newsletter": "Boletim informativo [TRADUZIR]",
-      "updates": "Atualizações do Produto",
-      "updatesDesc": "Receba notificações sobre atualizações do produto"
-    },
-    "zona de perigo": {
-      "título": "Zona de Perigo",
-      "deleteAccount": "Apagar conta",
-      "deleteWarning": "Esta ação não pode ser anulada. Todos os seus dados serão removidos permanentemente.",
-      "confirmDelete": "Sim, apagar a minha conta"
-    },
-    "guardar": "Guardar alterações"
-  },
-  "metrics": {
-    "title": "Métricas Avançadas",
-    "subtitle": "Análise detalhada e insights sobre os seus projetos",
-    "exportData": "Exportar Dados",
-    "exportSuccess": "Dados exportados com sucesso",
-    "timeRange": "Intervalo de Tempo",
-    "selectTimeRange": "Selecionar intervalo de tempo",
-    "last7Days": "Últimos 7 dias",
-    "last30Days": "Últimos 30 dias",
-    "last90Days": "Últimos 90 dias",
-    "lastYear": "O ano passado",
-    "allTime": "Todo o tempo",
-    "granularity": "Granularidade",
-    "selectGranularity": "Selecionar granularidade",
-    "daily": "Diariamente",
-    "semanalmente": "Semanalmente",
-    "mensalmente": "Mensalmente",
-    "totalAnalyses": "Análises Totais",
-    "averageScore": "Pontuação Média",
-    "topCategory": "Categoria Principal",
-    "viableIdeas": "Ideias Viáveis",
-    "trends": "Tendências",
-    "distribution": "Distribuição",
-    "desempenho": "Desempenho",
-    "analysisAndScoreTrend": "Tendência de Análise e Pontuação",
-    "analysisAndScoreTrendDesc": "Evolução da contagem de análises e pontuação média ao longo do tempo",
-    "analyses": "Análises",
-    "ideaCount": "Contagem de Ideias",
-    "scoreDistribution": "Distribuição de Pontuações",
-    "scoreDistributionDesc": "Distribuição de pontuações por intervalos",
-    "categoryDistribution": "Distribuição de Categorias",
-    "categoryDistributionDesc": "Distribuição percentual das ideias por categoria",
-    "ideaRadar": "Radar de Ideias",
-    "ideaRadarDesc": "Desempenho em diferentes dimensões de análise",
-    "performanceInsights": "Insights de Desempenho",
-    "performanceInsightsDesc": "Análise de desempenho das suas ideias",
-    "topPerforming": "Melhor desempenho",
-    "improvementNeeded": "Necessita de melhorias",
-    "recommendations": "Recomendações"
-  },
-  "advancedAnalysis": {
-    "button": "Análise Avançada",
-    "generating": "Gerando Análise Avançada...",
-    "title": "Análise Avançada",
-    "reanalyze": "Re-análise Avançada",
-    "motivation1": "Analisando potenciais de mercado...",
-    "motivation2": "Identificando oportunidades únicas...",
-    "motivation3": "Criando estratégias de crescimento...",
-    "motivation4": "Avaliando vantagens competitivas...",
-    "motivation5": "Definindo perfis de clientes ideais...",
-    "motivation6": "Gerando insights de monetização...",
-    "motivation7": "Calculando projeções financeiras...",
-    "motivation8": "Finalizando sua análise avançada...",
-    "patience": "Este processo pode levar alguns segundos, criando uma análise completa",
-    "chat": "Chat",
-    "pdf": {
-      "page": "Página {{page}}",
-      "generatedOn": "Gerado em",
-      "executiveSummary": "Resumo Executivo",
-      "businessName": "Nome do Negócio",
-      "slogan": "Slogan",
-      "concept": "Conceito do Negócio",
-      "differentials": "Diferenciais",
-      "firstSteps": "Primeiros Passos",
-      "marketAnalysis": "Análise de Mercado",
-      "marketSize": "Tamanho do Mercado",
-      "targetAudience": "Público-Alvo",
-      "marketTrends": "Tendências de Mercado",
-      "entryBarriers": "Barreiras de Entrada",
-      "customerAnalysis": "Análise de Clientes",
-      "personas": "Personas",
-      "persona": "Persona",
-      "occupation": "Ocupação",
-      "behavior": "Comportamento",
-      "acquisitionChannels": "Canais de Aquisição",
-      "competitorAnalysis": "Análise de Concorrentes",
-      "competitor": "Concorrente",
-      "strengths": "Pontos Fortes",
-      "weaknesses": "Pontos Fracos",
-      "strengthsLabel": "Pontos Fortes:",
-      "weaknessesLabel": "Pontos Fracos:",
-      "swotAnalysis": "Análise SWOT",
-      "swotStrengths": "Forças",
-      "swotWeaknesses": "Fraquezas",
-      "swotOpportunities": "Oportunidades",
-      "swotThreats": "Ameaças",
-      "monetizationModels": "Modelos de Monetização",
-      "revenue": "Receita Estimada",
-      "financialProjections": "Projeções Financeiras",
-      "firstYear": "Receita 1º Ano",
-      "thirdYear": "Receita 3º Ano",
-      "breakEven": "Ponto de Equilíbrio",
-      "expectedROI": "ROI Estimado (3 anos)",
-      "riskAnalysis": "Análise de Riscos",
-      "risk": "Risco",
-      "level": "Nível",
-      "mitigationStrategy": "Estratégia de Mitigação",
-      "mitigationStrategyLabel": "Estratégia de Mitigação:",
-      "implementationPlan": "Plano de Implementação",
-      "first30Days": "Primeiros 30 Dias",
-      "next60Days": "Próximos 60 Dias",
-      "next90Days": "Próximos 90 Dias",
-      "recommendedTools": "Ferramentas Recomendadas",
-      "category": "Categoria",
-      "yourBusinessIdea": "Sua Ideia de Negócio",
-      "ideaIdLabel": "ID da Ideia:"
-    },
-    "chatWelcome": "Olá! Como posso te ajudar a entender melhor sua análise avançada?",
-    "chatPlaceholder": "Digite sua mensagem..."
-  },
-  "analysis": {
-    "savedAnalyses": "Análises Avançadas Salvas",
-    "savedAnalysesDescription": "Veja e gerencie suas análises avançadas salvas",
-    "alreadySaved": "Esta análise já estava salva e foi atualizada",
-    "saveSuccess": "Análise avançada salva com sucesso",
-    "viewAnalysis": "Ver análise"
-  },
-  "mindmap": {
-    "title": "Mapa Mental"
+  "common": {
+    "save": "Salvar",
+    "saving": "Salvando...",
+    "updating": "Atualizando..."
   },
   "errors": {
-    "analysisNotFound": "Análise não encontrada",
-    "startNewAnalysis": "Inicie uma nova análise",
-    "fetchError": "Erro ao buscar análise",
-    "tryAgainLater": "Tente novamente mais tarde",
-    "shareError": "Erro ao compartilhar",
-    "tryAgain": "Tente novamente",
-    "pdfError": "Erro ao gerar PDF",
-    "contentNotReady": "O conteúdo não está pronto para download",
-    "pdfGenerationError": "Erro ao gerar PDF",
-    "saveError": "Erro ao salvar análise",
-    "missingData": "Dados insuficientes para salvar",
-    "chatError": "Desculpe, não consegui processar sua mensagem.",
-    "chatErrorDetail": "Não foi possível obter uma resposta da IA.",
-    "fetchingDetails": "Erro ao buscar detalhes da ideia",
-    "generalError": "Ocorreu um erro ao carregar os resultados",
-    "noData": "Dados não encontrados",
-    "backToDashboard": "Voltar ao Dashboard"
-  },
-  "results": {
-    "title": "Resultados da Análise",
-    "subtitle": "Veja os resultados da sua análise",
-    "back": "Voltar",
-    "download": "Baixar PDF",
-    "share": "Compartilhar",
-    "export": "Exportar",
-    "copyLink": "Copiar link",
-    "copyLinkSuccess": "Link copiado com sucesso",
-    "copyLinkError": "Erro ao copiar link",
-    "copyLinkErrorDetail": "Não foi possível copiar o link",
-    "shareSuccess": "Link compartilhado com sucesso",
-    "shareError": "Erro ao compartilhar",
-    "analysis": "Análise",
-    "analysisDescription": "Veja a análise detalhada da sua ideia",
-    "analysisDownload": "Baixar análise",
-    "analysisShare": "Compartilhar análise",
-    "analysisCopyLink": "Copiar link da análise",
-    "analysisBack": "Voltar para a lista de análises",
-    "analysisShareSuccess": "Análise compartilhada com sucesso",
-    "analysisShareError": "Erro ao compartilhar análise",
-    "analysisShareErrorDetail": "Não foi possível compartilhar a análise",
-    "analysisDownloadSuccess": "Análise baixada com sucesso",
-    "analysisDownloadError": "Erro ao baixar análise",
-    "analysisDownloadErrorDetail": "Não foi possível baixar a análise",
-    "analysisCopyLinkSuccess": "Link da análise copiado com sucesso",
-    "analysisCopyLinkError": "Erro ao copiar link da análise",
-    "analysisCopyLinkErrorDetail": "Não foi possível copiar o link da análise",
-    "analysisBackSuccess": "Voltando para a lista de análises",
-    "analysisBackError": "Erro ao voltar para a lista de análises",
-    "analysisBackErrorDetail": "Não foi possível voltar para a lista de análises",
-    "analysisError": "Erro ao buscar análise da ideia",
-    "analysisErrorDetail": "Não foi possível obter a análise",
-    "missingData": "Dados insuficientes para mostrar resultados",
-    "fetchError": "Erro ao buscar detalhes da ideia",
-    "generalError": "Ocorreu um erro ao carregar os resultados",
-    "noData": "Dados não encontrados",
-    "tryAgain": "Os resultados solicitados não foram encontrados. Tente analisar sua ideia novamente.",
-    "backToDashboard": "Voltar ao Dashboard",
-    "viability": "Viabilidade",
-    "notSpecified": "Não especificado",
-    "noItems": "Nenhum item identificado",
-    "noStrengths": "Nenhum ponto forte identificado",
-    "noWeaknesses": "Nenhum ponto fraco identificado",
-    "noCompetitors": "Nenhum concorrente específico identificado",
-    "strengths": "Pontos Fortes",
-    "weaknesses": "Pontos Fracos",
-    "tabs": {
-      "summary": "Resumo",
-      "swot": "SWOT",
-      "market": "Mercado",
-      "competitors": "Concorrentes",
-      "financial": "Financeiro",
-      "recommendations": "Recomendações"
-    },
-    "status": {
-      "label": "Status",
-      "viable": "Viável",
-      "viável": "Viável",
-      "moderate": "Moderado",
-      "moderado": "Moderado",
-      "low": "Baixo"
-    },
-    "summaryTitle": "Resumo da Análise",
-    "ideaDescription": "Descrição da Ideia",
-    "targetAudience": "Público-Alvo",
-    "problemSolved": "Problema Resolvido",
-    "overallScore": "Pontuação Geral",
-    "scoreExplanation": "Baseado na análise geral da ideia",
-    "keyStrengths": "Principais Pontos Fortes",
-    "keyWeaknesses": "Principais Pontos Fracos",
-    "swotAnalysis": "Análise SWOT",
-    "swot": {
-      "strengths": "Forças",
-      "weaknesses": "Fraquezas",
-      "opportunities": "Oportunidades",
-      "threats": "Ameaças"
-    },
-    "marketAnalysis": "Análise de Mercado",
-    "market": {
-      "size": "Tamanho do Mercado",
-      "audience": "Perfil do Público-Alvo",
-      "growth": "Potencial de Crescimento",
-      "barriers": "Barreiras de Entrada"
-    },
-    "competitorAnalysis": "Análise de Concorrentes",
-    "competitors": {
-      "keyCompetitors": "Principais Concorrentes",
-      "advantage": "Vantagem Competitiva",
-      "gaps": "Lacunas de Mercado"
-    },
-    "financialAnalysis": "Análise Financeira",
-    "financial": {
-      "revenue": "Potencial de Receita",
-      "investment": "Investimento Inicial",
-      "breakEven": "Estimativa de Break-Even",
-      "funding": "Sugestões de Financiamento"
-    },
-    "recommendationsTitle": "Recomendações",
-    "recommendations": {
-      "actionItems": "Ações Recomendadas",
-      "nextSteps": "Próximos Passos",
-      "challenges": "Desafios Potenciais",
-      "resources": "Recursos Sugeridos"
-    }
-  },
-  "pdf": {
-    "page": "Página {{page}}",
-    "of": "de",
-    "generating": "Gerando PDF...",
-    "downloadComplete": "Download concluído",
-    "pdfReady": "Seu PDF está pronto"
+    "updatingProfile": "Erro ao atualizar perfil",
+    "passwordsDoNotMatch": "As senhas não coincidem",
+    "changingPassword": "Erro ao alterar senha",
+    "deletingAccount": "Erro ao excluir conta"
   }
 }
