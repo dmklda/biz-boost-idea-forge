@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 interface GeneratedContent {
   id: string;
-  content_type: 'logo' | 'prd' | 'mvp';
+  content_type: string; // Changed from 'logo' | 'prd' | 'mvp' to string to match database
   title: string;
   content_data: any;
   file_url?: string;
