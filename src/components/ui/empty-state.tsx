@@ -5,7 +5,7 @@ interface EmptyStateProps {
   icon: React.ReactNode;
   title: string;
   description: string;
-  action: React.ReactNode;
+  action?: React.ReactNode;
 }
 
 export const EmptyState = ({ 
@@ -19,7 +19,7 @@ export const EmptyState = ({
       <div className="inline-flex justify-center mb-4">{icon}</div>
       <h2 className="text-xl font-semibold mb-2">{title}</h2>
       <p className="text-muted-foreground mb-6">{description}</p>
-      {action}
+      {action && action}
     </div>
   );
 };

@@ -62,14 +62,21 @@ const IdeaDetailPage = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [ideaTags, setIdeaTags] = useState<string[]>([]);
 
+  console.log("IdeaDetailPage: Component rendered for idea ID:", id);
+
   useEffect(() => {
     const fetchData = async () => {
-      if (!id || !authState.user?.id) return;
+      if (!id || !authState.user?.id) {
+        console.log("IdeaDetailPage: Missing ID or user, skipping fetch");
+        return;
+      }
 
       try {
+        console.log("IdeaDetailPage: Starting data fetch for idea", id);
         setLoading(true);
         
         // Fetch idea details
+        console.log("IdeaDetailPage: Fetching idea data");
         const { data: ideaData, error: ideaError } = await supabase
           .from('ideas')
           .select('*')
@@ -78,12 +85,16 @@ const IdeaDetailPage = () => {
           .single();
 
         if (ideaError || !ideaData) {
+          console.error("IdeaDetailPage: Error fetching idea data:", ideaError);
           toast.error(t('ideaDetail.notFound', "Ideia não encontrada"));
           navigate('/dashboard/ideias');
           return;
         }
 
+        console.log("IdeaDetailPage: Idea data fetched successfully:", ideaData.title);
+
         // Fetch analysis data
+        console.log("IdeaDetailPage: Fetching analysis data");
         const { data: analysisData, error: analysisError } = await supabase
           .from('idea_analyses')
           .select('*')
@@ -94,10 +105,13 @@ const IdeaDetailPage = () => {
           .maybeSingle();
 
         if (analysisError) {
-          console.error("Error fetching analysis:", analysisError);
+          console.error("IdeaDetailPage: Error fetching analysis:", analysisError);
+        } else if (analysisData) {
+          console.log("IdeaDetailPage: Analysis data found with score:", analysisData.score);
         }
 
         // Fetch favorite status
+        console.log("IdeaDetailPage: Fetching favorite status");
         const { data: favoriteData, error: favoriteError } = await supabase
           .from('idea_favorites')
           .select('id')
@@ -106,10 +120,11 @@ const IdeaDetailPage = () => {
           .maybeSingle();
 
         if (favoriteError) {
-          console.error("Error fetching favorite status:", favoriteError);
+          console.error("IdeaDetailPage: Error fetching favorite status:", favoriteError);
         }
 
         // Fetch tags
+        console.log("IdeaDetailPage: Fetching tags");
         const { data: tagsData, error: tagsError } = await supabase
           .from('idea_tags')
           .select('tags (name)')
@@ -117,13 +132,16 @@ const IdeaDetailPage = () => {
           .eq('user_id', authState.user.id);
 
         if (tagsError) {
-          console.error("Error fetching tags:", tagsError);
+          console.error("IdeaDetailPage: Error fetching tags:", tagsError);
         }
+
+        const tags = tagsData?.map((item: any) => item.tags.name) || [];
+        console.log("IdeaDetailPage: Tags fetched:", tags);
 
         setIdea({
           ...ideaData,
           is_favorite: !!favoriteData,
-          tags: tagsData?.map((item: any) => item.tags.name) || []
+          tags
         });
         
         if (analysisData) {
@@ -131,10 +149,12 @@ const IdeaDetailPage = () => {
         }
         
         setIsFavorite(!!favoriteData);
-        setIdeaTags(tagsData?.map((item: any) => item.tags.name) || []);
+        setIdeaTags(tags);
+
+        console.log("IdeaDetailPage: All data loaded successfully");
 
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("IdeaDetailPage: Unexpected error fetching data:", error);
         toast.error(t('ideaDetail.errorLoading', "Erro ao carregar dados da ideia"));
       } finally {
         setLoading(false);
@@ -147,6 +167,8 @@ const IdeaDetailPage = () => {
   const handleDelete = async () => {
     if (!id || !authState.user?.id) return;
 
+    console.log("IdeaDetailPage: Starting delete process for idea", id);
+
     try {
       const { error } = await supabase
         .from('ideas')
@@ -154,17 +176,22 @@ const IdeaDetailPage = () => {
         .eq('id', id)
         .eq('user_id', authState.user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("IdeaDetailPage: Error deleting idea:", error);
+        throw error;
+      }
 
+      console.log("IdeaDetailPage: Idea deleted successfully");
       toast.success(t('ideaDetail.deleteSuccess', "Ideia excluída com sucesso"));
       navigate('/dashboard/ideias');
     } catch (error) {
-      console.error("Error deleting idea:", error);
+      console.error("IdeaDetailPage: Error in delete process:", error);
       toast.error(t('ideaDetail.deleteError', "Erro ao excluir ideia"));
     }
   };
 
   const handleFavoriteToggle = (newIsFavorite: boolean) => {
+    console.log("IdeaDetailPage: Favorite toggled to:", newIsFavorite);
     setIsFavorite(newIsFavorite);
     if (idea) {
       setIdea({ ...idea, is_favorite: newIsFavorite });
@@ -172,6 +199,7 @@ const IdeaDetailPage = () => {
   };
 
   const handleTagsUpdate = (newTags: string[]) => {
+    console.log("IdeaDetailPage: Tags updated to:", newTags);
     setIdeaTags(newTags);
     if (idea) {
       setIdea({ ...idea, tags: newTags });
@@ -211,8 +239,12 @@ const IdeaDetailPage = () => {
   };
 
   const exportToPDF = async () => {
+    console.log("IdeaDetailPage: Starting PDF export");
     const element = document.getElementById('idea-detail-content');
-    if (!element) return;
+    if (!element) {
+      console.error("IdeaDetailPage: PDF export element not found");
+      return;
+    }
 
     try {
       const canvas = await html2canvas(element);
@@ -237,14 +269,16 @@ const IdeaDetailPage = () => {
       }
       
       pdf.save(`${idea?.title || 'ideia'}.pdf`);
+      console.log("IdeaDetailPage: PDF exported successfully");
       toast.success(t('ideaDetail.exportSuccess', "PDF exportado com sucesso"));
     } catch (error) {
-      console.error("Error exporting PDF:", error);
+      console.error("IdeaDetailPage: Error exporting PDF:", error);
       toast.error(t('ideaDetail.exportError', "Erro ao exportar PDF"));
     }
   };
 
   if (loading) {
+    console.log("IdeaDetailPage: Showing loading skeleton");
     return (
       <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -269,12 +303,15 @@ const IdeaDetailPage = () => {
   }
 
   if (!idea) {
+    console.log("IdeaDetailPage: No idea data available");
     return (
       <div className="flex items-center justify-center h-96">
         <p>{t('ideaDetail.notFound', "Ideia não encontrada")}</p>
       </div>
     );
   }
+
+  console.log("IdeaDetailPage: Rendering idea detail view for:", idea.title);
 
   return (
     <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 max-w-7xl mx-auto">
@@ -598,6 +635,7 @@ const IdeaDetailPage = () => {
         currentTitle={idea.title}
         currentDescription={idea.description}
         onSuccess={() => {
+          console.log("IdeaDetailPage: Reanalysis completed successfully");
           window.dispatchEvent(new CustomEvent('analysis-updated'));
           setShowReanalyzeModal(false);
         }}
