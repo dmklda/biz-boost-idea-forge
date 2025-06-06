@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,9 +15,13 @@ import {
   Calendar,
   Mail,
   Video,
-  Zap
+  Zap,
+  PenTool,
+  Briefcase
 } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
+import { PRDMVPGeneratorModal } from "@/components/tools/PRDMVPGeneratorModal";
+import { LogoGeneratorModal } from "@/components/tools/LogoGeneratorModal";
 
 interface Tool {
   id: string;
@@ -35,8 +38,30 @@ const ToolsPage = () => {
   const { t } = useTranslation();
   const { authState } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isPRDMVPModalOpen, setIsPRDMVPModalOpen] = useState(false);
+  const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
 
   const tools: Tool[] = [
+    {
+      id: "prd-mvp-generator",
+      name: t('tools.prdMvpGenerator.name', 'Gerador de PRD/MVP'),
+      description: t('tools.prdMvpGenerator.description', 'Crie documentos PRD e MVP profissionais a partir das suas ideias'),
+      price: 5,
+      status: "available",
+      category: "documents",
+      icon: Briefcase,
+      preview: "📋 PRD completo com especificações técnicas e roadmap"
+    },
+    {
+      id: "logo-generator",
+      name: t('tools.logoGenerator.name', 'Gerador de Logotipos'),
+      description: t('tools.logoGenerator.description', 'Crie logotipos únicos com IA baseados nas suas ideias'),
+      price: 3,
+      status: "available",
+      category: "images",
+      icon: PenTool,
+      preview: "🎨 Logotipo vetorial profissional personalizado"
+    },
     {
       id: "post-generator",
       name: t('tools.postGenerator.name', 'Gerador de Posts'),
@@ -135,13 +160,22 @@ const ToolsPage = () => {
 
     if (!authState.user || authState.user.credits < tool.price) {
       toast.error(t('tools.insufficientCredits', 'Créditos insuficientes'));
-      // Redirecionar para aba de créditos no perfil
       window.location.href = "/dashboard/configuracoes?tab=credits";
       return;
     }
 
-    toast.success(t('tools.toolActivated', 'Ferramenta ativada! Redirecionando...'));
-    // Aqui seria implementada a lógica específica de cada ferramenta
+    // Handle specific tools
+    switch (tool.id) {
+      case "prd-mvp-generator":
+        setIsPRDMVPModalOpen(true);
+        break;
+      case "logo-generator":
+        setIsLogoModalOpen(true);
+        break;
+      default:
+        toast.success(t('tools.toolActivated', 'Ferramenta ativada! Redirecionando...'));
+        break;
+    }
   };
 
   return (
@@ -249,6 +283,16 @@ const ToolsPage = () => {
           </p>
         </div>
       )}
+
+      {/* Modals */}
+      <PRDMVPGeneratorModal 
+        open={isPRDMVPModalOpen} 
+        onOpenChange={setIsPRDMVPModalOpen} 
+      />
+      <LogoGeneratorModal 
+        open={isLogoModalOpen} 
+        onOpenChange={setIsLogoModalOpen} 
+      />
     </div>
   );
 };
