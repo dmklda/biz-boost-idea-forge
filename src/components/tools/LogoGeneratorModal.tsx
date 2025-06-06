@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
 import { Loader2, Palette, Download, RefreshCw, Sparkles } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 
 interface Idea {
   id: string;
@@ -36,6 +38,12 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
   const [customPrompt, setCustomPrompt] = useState("");
   const [customName, setCustomName] = useState("");
   const [useCustomName, setUseCustomName] = useState(false);
+  
+  // New gpt-image-1 specific options
+  const [transparentBackground, setTransparentBackground] = useState(true);
+  const [outputFormat, setOutputFormat] = useState<string>("png");
+  const [quality, setQuality] = useState<string>("high");
+  
   const [isGeneratingName, setIsGeneratingName] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -126,14 +134,17 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
         title: useCustomName && customName ? customName : selectedIdea.title
       };
 
-      // Generate logo
+      // Generate logo with new gpt-image-1 options
       const { data, error } = await supabase.functions.invoke('generate-logo', {
         body: {
           idea: ideaForLogo,
           logoStyle,
           colorScheme,
           logoType,
-          customPrompt
+          customPrompt,
+          background: transparentBackground ? 'transparent' : 'opaque',
+          outputFormat,
+          quality
         }
       });
 
@@ -153,9 +164,10 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
     if (!generatedLogo) return;
     
     const fileName = useCustomName && customName ? customName : ideas.find(i => i.id === selectedIdeaId)?.title || 'logo';
+    const fileExtension = outputFormat === 'jpeg' ? 'jpg' : outputFormat;
     const link = document.createElement('a');
     link.href = generatedLogo;
-    link.download = `logo_${fileName.replace(/[^a-zA-Z0-9]/g, '_')}.png`;
+    link.download = `logo_${fileName.replace(/[^a-zA-Z0-9]/g, '_')}.${fileExtension}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -183,6 +195,18 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
     { value: "text_and_icon", label: "Texto + Ícone", description: "Combinação completa" }
   ];
 
+  const outputFormats = [
+    { value: "png", label: "PNG", description: "Melhor qualidade, ideal para transparência" },
+    { value: "webp", label: "WebP", description: "Menor tamanho, boa qualidade" },
+    { value: "jpeg", label: "JPEG", description: "Compatibilidade universal, sem transparência" }
+  ];
+
+  const qualityLevels = [
+    { value: "high", label: "Alta", description: "Máxima qualidade" },
+    { value: "medium", label: "Média", description: "Boa qualidade, menor tamanho" },
+    { value: "low", label: "Baixa", description: "Menor qualidade, arquivo pequeno" }
+  ];
+
   if (generatedLogo) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -190,10 +214,10 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Palette className="h-5 w-5" />
-              Logo Gerado
+              Logo Gerado com GPT-Image-1
             </DialogTitle>
             <DialogDescription>
-              Seu logo foi gerado com sucesso! Você pode baixar ou gerar uma nova versão.
+              Seu logo foi gerado com sucesso usando o modelo mais avançado da OpenAI!
             </DialogDescription>
           </DialogHeader>
 
@@ -226,14 +250,14 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Palette className="h-5 w-5" />
-            Gerador de Logotipos
+            Gerador de Logotipos - GPT-Image-1
           </DialogTitle>
           <DialogDescription>
-            Crie logotipos únicos e profissionais com IA baseados nas suas ideias existentes.
+            Crie logotipos únicos e profissionais com o modelo mais avançado da OpenAI.
           </DialogDescription>
         </DialogHeader>
 
@@ -332,7 +356,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
             </div>
           </div>
 
-          {/* Right Column - Style Settings */}
+          {/* Right Column - Style & Advanced Settings */}
           <div className="space-y-4">
             {/* Logo Style */}
             <div className="space-y-2">
@@ -374,23 +398,83 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
               </Select>
             </div>
 
-            {/* Custom Prompt */}
-            <div className="space-y-2">
-              <Label htmlFor="custom-prompt">Instruções Personalizadas</Label>
-              <Textarea
-                id="custom-prompt"
-                placeholder="Descreva elementos específicos, inspirações visuais..."
-                value={customPrompt}
-                onChange={(e) => setCustomPrompt(e.target.value)}
-                rows={3}
-                className="resize-none"
-              />
-            </div>
+            {/* Advanced Options - New for GPT-Image-1 */}
+            <Card className="border-blue-200 bg-blue-50/50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-blue-700">Opções Avançadas (GPT-Image-1)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {/* Transparent Background */}
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label className="text-sm">Fundo Transparente</Label>
+                    <p className="text-xs text-muted-foreground">Ideal para logos profissionais</p>
+                  </div>
+                  <Switch
+                    checked={transparentBackground}
+                    onCheckedChange={setTransparentBackground}
+                  />
+                </div>
+
+                {/* Output Format */}
+                <div className="space-y-2">
+                  <Label className="text-sm">Formato de Saída</Label>
+                  <Select value={outputFormat} onValueChange={setOutputFormat}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {outputFormats.map((format) => (
+                        <SelectItem key={format.value} value={format.value}>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{format.label}</span>
+                            <span className="text-xs text-muted-foreground">{format.description}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Quality */}
+                <div className="space-y-2">
+                  <Label className="text-sm">Qualidade</Label>
+                  <Select value={quality} onValueChange={setQuality}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {qualityLevels.map((level) => (
+                        <SelectItem key={level.value} value={level.value}>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{level.label}</span>
+                            <span className="text-xs text-muted-foreground">{level.description}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
         {/* Full Width Sections */}
         <div className="space-y-4">
+          {/* Custom Prompt */}
+          <div className="space-y-2">
+            <Label htmlFor="custom-prompt">Instruções Personalizadas</Label>
+            <Textarea
+              id="custom-prompt"
+              placeholder="Descreva elementos específicos, inspirações visuais..."
+              value={customPrompt}
+              onChange={(e) => setCustomPrompt(e.target.value)}
+              rows={3}
+              className="resize-none"
+            />
+          </div>
+
           {/* Pricing Info */}
           <Card className="border-brand-purple/20">
             <CardHeader className="pb-2">
@@ -401,7 +485,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
             </CardHeader>
             <CardContent className="pt-0">
               <p className="text-sm text-muted-foreground">
-                Esta ferramenta consome <strong>3 créditos</strong> por logo gerado.
+                Esta ferramenta consome <strong>3 créditos</strong> por logo gerado com GPT-Image-1.
                 Você possui <strong>{authState.user?.credits || 0} créditos</strong> disponíveis.
               </p>
             </CardContent>
@@ -416,10 +500,10 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
             {isGenerating ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Gerando Logo...
+                Gerando Logo com GPT-Image-1...
               </>
             ) : (
-              "Gerar Logo (3 créditos)"
+              "Gerar Logo com GPT-Image-1 (3 créditos)"
             )}
           </Button>
 

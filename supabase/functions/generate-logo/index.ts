@@ -14,7 +14,7 @@ serve(async (req) => {
   }
 
   try {
-    const { idea, logoStyle, colorScheme, logoType, customPrompt } = await req.json();
+    const { idea, logoStyle, colorScheme, logoType, customPrompt, background, outputFormat, quality } = await req.json();
 
     if (!idea) {
       throw new Error('Idea is required');
@@ -81,6 +81,11 @@ serve(async (req) => {
     console.log(`Generating logo for idea: ${idea.title}`);
     console.log(`Prompt: ${prompt}`);
 
+    // Determine the best settings based on user preferences
+    const logoBackground = background || 'transparent';
+    const logoOutputFormat = outputFormat || 'png';
+    const logoQuality = quality || 'high';
+
     const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
@@ -88,12 +93,14 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'dall-e-3',
+        model: 'gpt-image-1',
         prompt: prompt,
         n: 1,
         size: '1024x1024',
-        quality: 'hd',
-        response_format: 'b64_json'
+        quality: logoQuality,
+        background: logoBackground,
+        output_format: logoOutputFormat,
+        moderation: 'auto'
       }),
     });
 
@@ -103,19 +110,26 @@ serve(async (req) => {
     }
 
     const data = await response.json();
+    
+    // gpt-image-1 always returns base64, no URL option
     const base64Image = data.data[0].b64_json;
     
     // Convert base64 to blob for storage
     const imageData = Uint8Array.from(atob(base64Image), c => c.charCodeAt(0));
     
-    // Generate unique filename
-    const fileName = `${user.id}/${crypto.randomUUID()}.png`;
+    // Generate unique filename with correct extension
+    const fileExtension = logoOutputFormat === 'jpeg' ? 'jpg' : logoOutputFormat;
+    const fileName = `${user.id}/${crypto.randomUUID()}.${fileExtension}`;
     
-    // Upload to Supabase Storage
+    // Upload to Supabase Storage with correct content type
+    const contentType = logoOutputFormat === 'png' ? 'image/png' : 
+                       logoOutputFormat === 'jpeg' ? 'image/jpeg' : 
+                       'image/webp';
+    
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('generated-content')
       .upload(fileName, imageData, {
-        contentType: 'image/png',
+        contentType: contentType,
         upsert: false
       });
 
@@ -131,15 +145,19 @@ serve(async (req) => {
 
     const publicUrl = urlData.publicUrl;
 
-    // Save to generated_content table
+    // Save to generated_content table with new options
     const contentData = {
       logoStyle,
       colorScheme,
       logoType,
       customPrompt,
+      background: logoBackground,
+      outputFormat: logoOutputFormat,
+      quality: logoQuality,
       ideaTitle: idea.title,
       ideaDescription: idea.description,
-      prompt
+      prompt,
+      model: 'gpt-image-1'
     };
 
     const { data: savedContent, error: saveError } = await supabase
@@ -160,7 +178,7 @@ serve(async (req) => {
       // Don't throw error here, just log it - user still gets the logo
     }
 
-    console.log('Logo generated and saved successfully');
+    console.log('Logo generated and saved successfully with gpt-image-1');
 
     return new Response(JSON.stringify({ 
       logoUrl: publicUrl,
@@ -168,6 +186,10 @@ serve(async (req) => {
       style: logoStyle,
       colorScheme,
       logoType,
+      background: logoBackground,
+      outputFormat: logoOutputFormat,
+      quality: logoQuality,
+      model: 'gpt-image-1',
       savedContentId: savedContent?.id
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
