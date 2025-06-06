@@ -3,13 +3,14 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
-import { Loader2, Palette, Download, RefreshCw } from "lucide-react";
+import { Loader2, Palette, Download, RefreshCw, Sparkles } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
 interface Idea {
@@ -34,6 +35,9 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
   const [colorScheme, setColorScheme] = useState<string>("brand");
   const [logoType, setLogoType] = useState<string>("text_and_icon");
   const [customPrompt, setCustomPrompt] = useState("");
+  const [customName, setCustomName] = useState("");
+  const [useCustomName, setUseCustomName] = useState(false);
+  const [isGeneratingName, setIsGeneratingName] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedLogo, setGeneratedLogo] = useState<string>("");
@@ -67,6 +71,49 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
     }
   };
 
+  const generateNameFromIdea = async () => {
+    if (!selectedIdeaId) return;
+
+    const selectedIdea = ideas.find(idea => idea.id === selectedIdeaId);
+    if (!selectedIdea) return;
+
+    setIsGeneratingName(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('gpt-chat', {
+        body: {
+          messages: [
+            {
+              role: 'system',
+              content: 'Você é um especialista em naming e branding. Crie nomes criativos, memoráveis e profissionais para empresas/produtos baseados na descrição fornecida.'
+            },
+            {
+              role: 'user',
+              content: `Baseado nesta ideia de negócio, sugira 1 nome criativo e profissional para a empresa/produto:
+              
+Descrição: ${selectedIdea.description}
+${selectedIdea.audience ? `Público-alvo: ${selectedIdea.audience}` : ''}
+${selectedIdea.problem ? `Problema que resolve: ${selectedIdea.problem}` : ''}
+
+Retorne apenas o nome, sem explicações adicionais.`
+            }
+          ]
+        }
+      });
+
+      if (error) throw error;
+
+      const generatedName = data.content.trim();
+      setCustomName(generatedName);
+      setUseCustomName(true);
+      toast.success('Nome gerado com sucesso!');
+    } catch (error) {
+      console.error('Error generating name:', error);
+      toast.error('Erro ao gerar nome');
+    } finally {
+      setIsGeneratingName(false);
+    }
+  };
+
   const handleGenerate = async () => {
     if (!selectedIdeaId || !authState.user) return;
 
@@ -83,16 +130,22 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
           p_amount: 3,
           p_feature: 'logo_generation',
           p_item_id: selectedIdea.id,
-          p_description: `Geração de logo para: ${selectedIdea.title}`
+          p_description: `Geração de logo para: ${useCustomName && customName ? customName : selectedIdea.title}`
         }
       );
 
       if (creditsError) throw creditsError;
 
+      // Prepare idea with custom name if provided
+      const ideaForLogo = {
+        ...selectedIdea,
+        title: useCustomName && customName ? customName : selectedIdea.title
+      };
+
       // Generate logo
       const { data, error } = await supabase.functions.invoke('generate-logo', {
         body: {
-          idea: selectedIdea,
+          idea: ideaForLogo,
           logoStyle,
           colorScheme,
           logoType,
@@ -115,9 +168,10 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
   const downloadLogo = () => {
     if (!generatedLogo) return;
     
+    const fileName = useCustomName && customName ? customName : ideas.find(i => i.id === selectedIdeaId)?.title || 'logo';
     const link = document.createElement('a');
     link.href = generatedLogo;
-    link.download = `logo_${ideas.find(i => i.id === selectedIdeaId)?.title || 'logo'}.png`;
+    link.download = `logo_${fileName.replace(/[^a-zA-Z0-9]/g, '_')}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -170,12 +224,12 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
               </div>
             </div>
 
-            <div className="flex gap-2 justify-center">
-              <Button onClick={downloadLogo} variant="outline">
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+              <Button onClick={downloadLogo} variant="outline" className="w-full sm:w-auto">
                 <Download className="h-4 w-4 mr-2" />
                 Baixar Logo
               </Button>
-              <Button onClick={() => setGeneratedLogo("")} variant="outline">
+              <Button onClick={() => setGeneratedLogo("")} variant="outline" className="w-full sm:w-auto">
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Gerar Novo
               </Button>
@@ -188,7 +242,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Palette className="h-5 w-5" />
@@ -199,107 +253,160 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
-          {/* Idea Selection */}
-          <div className="space-y-2">
-            <Label htmlFor="idea-select">Selecionar Ideia</Label>
-            {isLoading ? (
-              <div className="flex items-center justify-center py-4">
-                <Loader2 className="h-6 w-6 animate-spin" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column - Main Settings */}
+          <div className="space-y-4">
+            {/* Idea Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="idea-select">Selecionar Ideia</Label>
+              {isLoading ? (
+                <div className="flex items-center justify-center py-4">
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                </div>
+              ) : (
+                <Select value={selectedIdeaId} onValueChange={setSelectedIdeaId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Escolha uma ideia para gerar o logo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ideas.map((idea) => (
+                      <SelectItem key={idea.id} value={idea.id}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{idea.title}</span>
+                          <span className="text-xs text-muted-foreground truncate max-w-60">
+                            {idea.description}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+
+            {/* Custom Name Section */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label>Nome para o Logo</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={generateNameFromIdea}
+                  disabled={!selectedIdeaId || isGeneratingName}
+                  className="text-xs"
+                >
+                  {isGeneratingName ? (
+                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-3 w-3 mr-1" />
+                  )}
+                  Gerar Nome
+                </Button>
               </div>
-            ) : (
-              <Select value={selectedIdeaId} onValueChange={setSelectedIdeaId}>
+              
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="use-custom-name"
+                  checked={useCustomName}
+                  onChange={(e) => setUseCustomName(e.target.checked)}
+                  className="rounded border-gray-300"
+                />
+                <Label htmlFor="use-custom-name" className="text-sm">
+                  Usar nome personalizado
+                </Label>
+              </div>
+
+              {useCustomName && (
+                <Input
+                  placeholder="Digite o nome para aparecer no logo"
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                />
+              )}
+            </div>
+
+            {/* Logo Type */}
+            <div className="space-y-2">
+              <Label>Tipo de Logo</Label>
+              <Select value={logoType} onValueChange={setLogoType}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Escolha uma ideia para gerar o logo" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {ideas.map((idea) => (
-                    <SelectItem key={idea.id} value={idea.id}>
+                  {logoTypes.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
                       <div className="flex flex-col">
-                        <span className="font-medium">{idea.title}</span>
-                        <span className="text-xs text-muted-foreground truncate max-w-60">
-                          {idea.description}
-                        </span>
+                        <span className="font-medium">{type.label}</span>
+                        <span className="text-xs text-muted-foreground">{type.description}</span>
                       </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            )}
+            </div>
           </div>
 
-          {/* Logo Style */}
-          <div className="space-y-2">
-            <Label>Estilo do Logo</Label>
-            <Select value={logoStyle} onValueChange={setLogoStyle}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {logoStyles.map((style) => (
-                  <SelectItem key={style.value} value={style.value}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{style.label}</span>
-                      <span className="text-xs text-muted-foreground">{style.description}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Right Column - Style Settings */}
+          <div className="space-y-4">
+            {/* Logo Style */}
+            <div className="space-y-2">
+              <Label>Estilo do Logo</Label>
+              <Select value={logoStyle} onValueChange={setLogoStyle}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {logoStyles.map((style) => (
+                    <SelectItem key={style.value} value={style.value}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{style.label}</span>
+                        <span className="text-xs text-muted-foreground">{style.description}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          {/* Color Scheme */}
-          <div className="space-y-2">
-            <Label>Esquema de Cores</Label>
-            <Select value={colorScheme} onValueChange={setColorScheme}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {colorSchemes.map((scheme) => (
-                  <SelectItem key={scheme.value} value={scheme.value}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{scheme.label}</span>
-                      <span className="text-xs text-muted-foreground">{scheme.description}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            {/* Color Scheme */}
+            <div className="space-y-2">
+              <Label>Esquema de Cores</Label>
+              <Select value={colorScheme} onValueChange={setColorScheme}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {colorSchemes.map((scheme) => (
+                    <SelectItem key={scheme.value} value={scheme.value}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{scheme.label}</span>
+                        <span className="text-xs text-muted-foreground">{scheme.description}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          {/* Logo Type */}
-          <div className="space-y-2">
-            <Label>Tipo de Logo</Label>
-            <Select value={logoType} onValueChange={setLogoType}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {logoTypes.map((type) => (
-                  <SelectItem key={type.value} value={type.value}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{type.label}</span>
-                      <span className="text-xs text-muted-foreground">{type.description}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {/* Custom Prompt */}
+            <div className="space-y-2">
+              <Label htmlFor="custom-prompt">Instruções Personalizadas</Label>
+              <Textarea
+                id="custom-prompt"
+                placeholder="Descreva elementos específicos, inspirações visuais..."
+                value={customPrompt}
+                onChange={(e) => setCustomPrompt(e.target.value)}
+                rows={3}
+                className="resize-none"
+              />
+            </div>
           </div>
+        </div>
 
-          {/* Custom Prompt */}
-          <div className="space-y-2">
-            <Label htmlFor="custom-prompt">Instruções Personalizadas (Opcional)</Label>
-            <Textarea
-              id="custom-prompt"
-              placeholder="Descreva elementos específicos que gostaria no logo, inspirações visuais, ou direcionamentos especiais..."
-              value={customPrompt}
-              onChange={(e) => setCustomPrompt(e.target.value)}
-              rows={3}
-            />
-          </div>
-
+        {/* Full Width Sections */}
+        <div className="space-y-4">
           {/* Pricing Info */}
           <Card className="border-brand-purple/20">
             <CardHeader className="pb-2">
