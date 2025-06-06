@@ -646,7 +646,6 @@ const IdeaDetailPage = () => {
           open={showAdvancedModal}
           onOpenChange={setShowAdvancedModal}
           ideaId={idea.id}
-          analysisId={analysis.id}
         />
       )}
     </div>

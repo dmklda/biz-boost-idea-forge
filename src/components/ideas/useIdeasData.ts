@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/components/ui/sonner";
@@ -15,10 +15,18 @@ export interface Idea {
   tags?: string[];
 }
 
-export const useIdeasData = () => {
+export interface TagType {
+  id: string;
+  name: string;
+  color: string;
+}
+
+export const useIdeasData = (userId?: string) => {
   const { authState } = useAuth();
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTags, setSelectedTags] = useState<TagType[]>([]);
+  const [allTags, setAllTags] = useState<TagType[]>([]);
 
   console.log("useIdeasData: Hook initialized");
 
@@ -118,10 +126,29 @@ export const useIdeasData = () => {
     }
   }, [authState.user?.id]);
 
+  const fetchTags = useCallback(async () => {
+    if (!authState.user?.id) return;
+
+    try {
+      const { data: tagsData, error } = await supabase
+        .from('tags')
+        .select('*')
+        .eq('user_id', authState.user.id)
+        .order('name');
+
+      if (error) throw error;
+      
+      setAllTags(tagsData as TagType[]);
+    } catch (error) {
+      console.error("useIdeasData: Error fetching tags:", error);
+    }
+  }, [authState.user?.id]);
+
   useEffect(() => {
     console.log("useIdeasData: useEffect triggered, fetching ideas");
     fetchIdeas();
-  }, [fetchIdeas]);
+    fetchTags();
+  }, [fetchIdeas, fetchTags]);
 
   // Listen for real-time updates
   useEffect(() => {
@@ -173,9 +200,34 @@ export const useIdeasData = () => {
     };
   }, [authState.user?.id, fetchIdeas]);
 
+  // Compute derived data
+  const favoriteIdeas = useMemo(() => {
+    return ideas.filter(idea => idea.is_favorite);
+  }, [ideas]);
+
+  const filteredIdeas = useMemo(() => {
+    if (selectedTags.length === 0) return ideas;
+    
+    return ideas.filter(idea => 
+      selectedTags.some(selectedTag => 
+        idea.tags?.includes(selectedTag.name)
+      )
+    );
+  }, [ideas, selectedTags]);
+
+  const handleTagsChange = useCallback((tags: TagType[]) => {
+    setSelectedTags(tags);
+  }, []);
+
   return {
     ideas,
+    favoriteIdeas,
+    filteredIdeas,
     loading,
+    allTags,
+    selectedTags,
+    handleTagsChange,
+    fetchIdeas,
     refetch: fetchIdeas
   };
 };

@@ -36,9 +36,10 @@ export interface TagType {
 interface TagsSelectorProps {
   ideaId: string;
   onTagsChange?: (tags: TagType[]) => void;
+  onTagsUpdate?: (newTags: string[]) => void;
 }
 
-export const TagsSelector = ({ ideaId, onTagsChange }: TagsSelectorProps) => {
+export const TagsSelector = ({ ideaId, onTagsChange, onTagsUpdate }: TagsSelectorProps) => {
   const { t } = useTranslation();
   const { authState } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -105,6 +106,11 @@ export const TagsSelector = ({ ideaId, onTagsChange }: TagsSelectorProps) => {
       // Notify parent component if needed
       if (onTagsChange) {
         onTagsChange(selectedTagsData);
+      }
+      
+      // Also call onTagsUpdate if provided (for string array format)
+      if (onTagsUpdate) {
+        onTagsUpdate(selectedTagsData.map(tag => tag.name));
       }
     } catch (error) {
       console.error("Error fetching idea tags:", error);
@@ -173,7 +179,16 @@ export const TagsSelector = ({ ideaId, onTagsChange }: TagsSelectorProps) => {
         if (error) throw error;
         
         // Update local state
-        setSelectedTags(prev => prev.filter(t => t.id !== tag.id));
+        const updatedTags = selectedTags.filter(t => t.id !== tag.id);
+        setSelectedTags(updatedTags);
+        
+        // Notify parent components
+        if (onTagsChange) {
+          onTagsChange(updatedTags);
+        }
+        if (onTagsUpdate) {
+          onTagsUpdate(updatedTags.map(t => t.name));
+        }
       } else {
         // Add tag to idea
         const { error } = await supabase
@@ -187,15 +202,16 @@ export const TagsSelector = ({ ideaId, onTagsChange }: TagsSelectorProps) => {
         if (error) throw error;
         
         // Update local state
-        setSelectedTags(prev => [...prev, tag]);
-      }
-      
-      // Notify parent component if needed
-      if (onTagsChange) {
-        const updatedTags = isTagSelected 
-          ? selectedTags.filter(t => t.id !== tag.id)
-          : [...selectedTags, tag];
-        onTagsChange(updatedTags);
+        const updatedTags = [...selectedTags, tag];
+        setSelectedTags(updatedTags);
+        
+        // Notify parent components
+        if (onTagsChange) {
+          onTagsChange(updatedTags);
+        }
+        if (onTagsUpdate) {
+          onTagsUpdate(updatedTags.map(t => t.name));
+        }
       }
     } catch (error) {
       console.error("Error toggling tag:", error);
