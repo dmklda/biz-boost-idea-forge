@@ -1,6 +1,7 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Palette, FileText, Lightbulb, BarChart3, TrendingUp, Users, DollarSign, Target, Presentation, Briefcase, Search, Calculator, MessageSquare, Brain, Zap, Globe, ShoppingCart } from "lucide-react";
+import { Palette, FileText, Lightbulb, BarChart3, TrendingUp, Users, DollarSign, Target, Presentation, Briefcase, Search, Calculator, MessageSquare, Brain, Zap, Globe, ShoppingCart, PieChart, LineChart, Calendar, Megaphone, BookOpen, Settings2, Rocket, Shield, Eye, Cpu, Trophy, Star } from "lucide-react";
 import { useState } from "react";
 import { LogoGeneratorModal } from "@/components/tools/LogoGeneratorModal";
 import { PRDMVPGeneratorModal } from "@/components/tools/PRDMVPGeneratorModal";
@@ -19,6 +20,14 @@ const ToolsPage = () => {
     setIsPRDModalOpen(true);
   };
 
+  // Debug function for button clicks
+  const handleToolClick = (toolName: string, action: () => void) => {
+    console.log(`Tool button clicked: ${toolName}`);
+    console.log(`Button element:`, event?.target);
+    console.log(`Action function:`, action);
+    action();
+  };
+
   const designTools = [
     {
       title: "Gerador de Logo",
@@ -34,6 +43,14 @@ const ToolsPage = () => {
       icon: Lightbulb,
       action: () => console.log("Name generator - Coming soon"),
       color: "from-green-500 to-emerald-500",
+      disabled: true
+    },
+    {
+      title: "Paleta de Cores",
+      description: "Gere paletas de cores harmoniosas para sua marca",
+      icon: Eye,
+      action: () => console.log("Color Palette - Coming soon"),
+      color: "from-cyan-500 to-blue-500",
       disabled: true
     }
   ];
@@ -60,6 +77,14 @@ const ToolsPage = () => {
       icon: Presentation,
       action: () => console.log("Pitch Deck - Coming soon"),
       color: "from-indigo-500 to-purple-500",
+      disabled: true
+    },
+    {
+      title: "Plano de Negócios",
+      description: "Crie um plano de negócios completo e detalhado",
+      icon: BookOpen,
+      action: () => console.log("Business Plan - Coming soon"),
+      color: "from-teal-500 to-cyan-500",
       disabled: true
     }
   ];
@@ -96,6 +121,14 @@ const ToolsPage = () => {
       action: () => console.log("User Research - Coming soon"),
       color: "from-cyan-500 to-blue-500",
       disabled: true
+    },
+    {
+      title: "Análise SWOT",
+      description: "Avalie forças, fraquezas, oportunidades e ameaças",
+      icon: Shield,
+      action: () => console.log("SWOT Analysis - Coming soon"),
+      color: "from-purple-500 to-indigo-500",
+      disabled: true
     }
   ];
 
@@ -122,6 +155,14 @@ const ToolsPage = () => {
       icon: Search,
       action: () => console.log("SEO Analyzer - Coming soon"),
       color: "from-teal-500 to-green-500",
+      disabled: true
+    },
+    {
+      title: "Social Media Planner",
+      description: "Planeje e organize suas redes sociais",
+      icon: Calendar,
+      action: () => console.log("Social Media Planner - Coming soon"),
+      color: "from-blue-500 to-indigo-500",
       disabled: true
     }
   ];
@@ -150,6 +191,41 @@ const ToolsPage = () => {
       action: () => console.log("Process Automation - Coming soon"),
       color: "from-sky-500 to-cyan-500",
       disabled: true
+    },
+    {
+      title: "Roadmap Generator",
+      description: "Crie roadmaps de produto e desenvolvimento",
+      icon: Rocket,
+      action: () => console.log("Roadmap Generator - Coming soon"),
+      color: "from-green-500 to-teal-500",
+      disabled: true
+    }
+  ];
+
+  const advancedTools = [
+    {
+      title: "Análise de Tendências",
+      description: "Identifique tendências de mercado e oportunidades",
+      icon: LineChart,
+      action: () => console.log("Trend Analysis - Coming soon"),
+      color: "from-orange-500 to-amber-500",
+      disabled: true
+    },
+    {
+      title: "Previsão de Receita",
+      description: "Projete receitas futuras com base em dados",
+      icon: PieChart,
+      action: () => console.log("Revenue Forecast - Coming soon"),
+      color: "from-indigo-500 to-blue-500",
+      disabled: true
+    },
+    {
+      title: "Modelo de Pricing",
+      description: "Defina estratégias de precificação inteligentes",
+      icon: Star,
+      action: () => console.log("Pricing Model - Coming soon"),
+      color: "from-rose-500 to-pink-500",
+      disabled: true
     }
   ];
 
@@ -174,12 +250,22 @@ const ToolsPage = () => {
             </CardHeader>
             <CardContent>
               <Button 
-                onClick={() => {
-                  console.log(`Clicked tool: ${tool.title}`);
-                  tool.action();
-                }} 
-                className="w-full"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log(`🔥 BUTTON CLICKED: ${tool.title}`);
+                  console.log(`🔥 Event target:`, e.target);
+                  console.log(`🔥 Current target:`, e.currentTarget);
+                  console.log(`🔥 Tool disabled:`, tool.disabled);
+                  console.log(`🔥 Action function:`, tool.action);
+                  
+                  if (!tool.disabled) {
+                    handleToolClick(tool.title, tool.action);
+                  }
+                }}
+                className="w-full relative z-10" 
                 disabled={tool.disabled}
+                type="button"
               >
                 {tool.disabled ? "Em breve" : "Usar ferramenta"}
               </Button>
@@ -209,18 +295,20 @@ const ToolsPage = () => {
       
       {renderToolCategory("Negócios e Estratégia", businessTools, "Ferramentas para planejamento e crescimento")}
 
+      {renderToolCategory("Ferramentas Avançadas", advancedTools, "Análises avançadas e previsões inteligentes")}
+
       {/* Modals */}
       <LogoGeneratorModal 
         open={isLogoModalOpen} 
         onOpenChange={(open) => {
-          console.log(`Logo modal state changing to: ${open}`);
+          console.log(`🔥 Logo modal state changing to: ${open}`);
           setIsLogoModalOpen(open);
         }} 
       />
       <PRDMVPGeneratorModal 
         open={isPRDModalOpen} 
         onOpenChange={(open) => {
-          console.log(`PRD modal state changing to: ${open}`);
+          console.log(`🔥 PRD modal state changing to: ${open}`);
           setIsPRDModalOpen(open);
         }} 
       />
