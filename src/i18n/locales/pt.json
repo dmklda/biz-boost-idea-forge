@@ -338,7 +338,7 @@
         "excerpt": "As inovações e tecnologias que criam novas oportunidades para empreendedores em todo o continente.",
         "date": "30 de março de 2025",
         "category": "Tecnologia",
-        "content": "De soluções de pagamento móvel a tecnologias de energia sustentável, várias inovações-chave estão criando oportunidades sem precedentes para empreendedores africanos. Este artigo examina como essas tecnologias estão resolvendo desafios únicamente africanos enquanto criam modelos de negócios escaláveis com potencial de expansão global. Destacamos histórias de sucesso de várias regiões e setores."
+        "content": "De soluções de pagamento móvel a tecnologias de energia sustentável, várias inovações-chave estão criando oportunidades sem precedentes para empreendedores africanos. Este artigo examina como essas tecnologias estão resolvendo desafios únicos africanos enquanto criam modelos de negócios escaláveis com potencial de expansão global. Destacamos histórias de sucesso de várias regiões e setores."
       },
       "post6": {
         "title": "Da Ideia ao Mercado: A Jornada da Plataforma de Startup da DMK",
@@ -860,7 +860,8 @@
     "profile": "Perfil",
     "resources": "Recursos",
     "logout": "Sair",
-    "drafts": "Rascunhos"
+    "drafts": "Rascunhos",
+    "tools": "Ferramentas"
   },
   "notifications": {
     "title": "Notificações",
@@ -1362,5 +1363,61 @@
     "generating": "Gerando PDF...",
     "downloadComplete": "Download concluído",
     "pdfReady": "Seu PDF está pronto"
+  },
+  "tools": {
+    "title": "Ferramentas",
+    "subtitle": "Potencialize seu negócio com nossas ferramentas inteligentes",
+    "credits": "créditos",
+    "preview": "Preview",
+    "useTool": "Usar Ferramenta",
+    "notifyWhenReady": "Notificar quando pronto",
+    "comingSoon": "Esta ferramenta estará disponível em breve!",
+    "insufficientCredits": "Créditos insuficientes. Redirecionando para comprar mais créditos...",
+    "toolActivated": "Ferramenta ativada! Redirecionando...",
+    "noToolsFound": "Nenhuma ferramenta encontrada",
+    "noToolsFoundDesc": "Tente uma categoria diferente ou volte mais tarde.",
+    "categories": {
+      "all": "Todas",
+      "publication": "Publicação",
+      "reports": "Relatórios",
+      "documents": "Documentos",
+      "images": "Imagens"
+    },
+    "status": {
+      "available": "Disponível",
+      "comingSoon": "Em Breve"
+    },
+    "postGenerator": {
+      "name": "Gerador de Posts",
+      "description": "Crie posts profissionais para redes sociais em segundos"
+    },
+    "reportCreator": {
+      "name": "Criador de Relatórios",
+      "description": "Gere relatórios profissionais e análises detalhadas"
+    },
+    "invoiceGenerator": {
+      "name": "Gerador de Faturas",
+      "description": "Crie faturas e documentos fiscais profissionais"
+    },
+    "aiImageEditor": {
+      "name": "Editor de Imagens IA",
+      "description": "Edite e melhore imagens com inteligência artificial"
+    },
+    "presentationMaker": {
+      "name": "Criador de Apresentações",
+      "description": "Apresentações profissionais em minutos"
+    },
+    "brandKit": {
+      "name": "Kit de Marca",
+      "description": "Crie identidade visual completa para sua marca"
+    },
+    "contentCalendar": {
+      "name": "Calendário de Conteúdo",
+      "description": "Planeje e organize seu conteúdo"
+    },
+    "emailCampaigns": {
+      "name": "Campanhas de Email",
+      "description": "Crie campanhas de email marketing eficazes"
+    }
   }
 }

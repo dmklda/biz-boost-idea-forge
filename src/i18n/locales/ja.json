@@ -1,4 +1,3 @@
-
 {
   "common": {
     "welcome": "ようこそ",
@@ -96,7 +95,8 @@
     "metrics": "メトリクス",
     "resources": "リソース",
     "history": "履歴",
-    "drafts": "下書き"
+    "drafts": "下書き",
+    "tools": "ツール"
   },
   "auth": {
     "signIn": "サインイン",
@@ -284,5 +284,64 @@
     "newIdea": "新規アイデア",
     "viewIdeas": "アイデアを見る",
     "buyCredits": "クレジットを購入"
+  },
+  "tools": {
+    "title": "ツール",
+    "subtitle": "インテリジェントなツールでビジネスを強化",
+    "credits": "クレジット",
+    "preview": "プレビュー",
+    "useTool": "ツールを使用",
+    "notifyWhenReady": "準備完了時に通知",
+    "comingSoon": "このツールは間もなく利用可能になります！",
+    "insufficientCredits": "クレジットが不足しています。クレジット購入ページにリダイレクトしています...",
+    "toolActivated": "ツールが有効化されました！リダイレクトしています...",
+    "noToolsFound": "ツールが見つかりませんでした",
+    "noToolsFoundDesc": "別のカテゴリを試すか、後でもう一度お試しください。",
+    "categories": {
+      "all": "すべて",
+      "publication": "パブリケーション",
+      "reports": "レポート",
+      "documents": "ドキュメント",
+      "images": "画像"
+    },
+    "status": {
+      "available": "利用可能",
+      "comingSoon": "近日公開"
+    },
+    "postGenerator": {
+      "name": "投稿ジェネレーター",
+      "description": "数秒でプロフェッショナルなソーシャルメディア投稿を作成"
+    },
+    "reportCreator": {
+      "name": "レポート作成者",
+      "description": "プロフェッショナルなレポートと詳細な分析を生成"
+    },
+    "invoiceGenerator": {
+      "name": "請求書ジェネレーター",
+      "description": "プロフェッショナルな請求書と会計書類を作成"
+    },
+    "aiImageEditor": {
+      "name": "AI画像エディタ",
+      "description": "人工知能で画像を編集・強化"
+    },
+    "presentationMaker": {
+      "name": "プレゼンテーション作成者",
+      "description": "数分でプロフェッショナルなプレゼンテーション"
+    },
+    "brandKit": {
+      "name": "ブランドキット",
+      "description": "ブランドの完全なビジュアルアイデンティティを作成"
+    },
+    "contentCalendar": {
+      "name": "コンテンツカレンダー",
+      "description": "コンテンツを計画・整理"
+    },
+    "emailCampaigns": {
+      "name": "メールキャンペーン",
+      "description": "効果的なメールマーケティングキャンペーンを作成"
+    }
+  },
+  "settings": {
+    "credits": "クレジット"
   }
 }

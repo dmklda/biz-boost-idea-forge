@@ -15,6 +15,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Bell, CreditCard, Globe, Lock, ShieldAlert, User } from "lucide-react";
+import { AvailableCreditsCard } from "@/components/dashboard/AvailableCreditsCard";
+import { BuyCreditsCard } from "@/components/dashboard/BuyCreditsCard";
+import { TransactionsCard } from "@/components/dashboard/TransactionsCard";
 
 interface Profile {
   name: string;
@@ -51,6 +54,10 @@ const UserSettingsPage = () => {
   
   // Language settings
   const [language, setLanguage] = useState(i18n.language);
+
+  // Get initial tab from URL params
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialTab = urlParams.get('tab') || 'profile';
   
   // Handle saving profile changes
   const handleProfileUpdate = async (e: React.FormEvent) => {
@@ -156,10 +163,10 @@ const UserSettingsPage = () => {
       </div>
       
       <div className="w-full">
-        <Tabs defaultValue="profile" className="w-full space-y-6">
+        <Tabs defaultValue={initialTab} className="w-full space-y-6">
           <Card className="shadow-sm border-0 bg-muted/50">
             <CardContent className="p-1 sm:p-2">
-              <TabsList className="w-full grid grid-cols-2 md:grid-cols-4 gap-1">
+              <TabsList className="w-full grid grid-cols-2 md:grid-cols-5 gap-1">
                 <TabsTrigger value="profile">
                   <User className="h-3 w-3 mr-1 sm:h-4 sm:w-4 sm:mr-2" />
                   <span className="truncate">{t('settings.profile')}</span>
@@ -175,6 +182,10 @@ const UserSettingsPage = () => {
                 <TabsTrigger value="plan">
                   <CreditCard className="h-3 w-3 mr-1 sm:h-4 sm:w-4 sm:mr-2" />
                   <span className="truncate">{t('settings.plan')}</span>
+                </TabsTrigger>
+                <TabsTrigger value="credits">
+                  <CreditCard className="h-3 w-3 mr-1 sm:h-4 sm:w-4 sm:mr-2" />
+                  <span className="truncate">{t('settings.credits', 'Créditos')}</span>
                 </TabsTrigger>
               </TabsList>
             </CardContent>
@@ -480,6 +491,15 @@ const UserSettingsPage = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+          
+          {/* Credits Tab - New */}
+          <TabsContent value="credits" className="space-y-4">
+            <div className="grid gap-4 md:gap-6">
+              <AvailableCreditsCard />
+              <BuyCreditsCard />
+              <TransactionsCard />
+            </div>
           </TabsContent>
         </Tabs>
       </div>

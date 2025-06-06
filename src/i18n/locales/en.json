@@ -761,7 +761,8 @@
     "profile": "Profile",
     "resources": "Resources",
     "logout": "Logout",
-    "drafts": "Drafts"
+    "drafts": "Drafts",
+    "tools": "Tools"
   },
   "notifications": {
     "title": "Notifications",
@@ -1014,5 +1015,61 @@
     "topPerforming": "Top Performing",
     "improvementNeeded": "Improvement Needed",
     "recommendations": "Recommendations"
+  },
+  "tools": {
+    "title": "Tools",
+    "subtitle": "Supercharge your business with our intelligent tools",
+    "credits": "credits",
+    "preview": "Preview",
+    "useTool": "Use Tool",
+    "notifyWhenReady": "Notify when ready",
+    "comingSoon": "This tool will be available soon!",
+    "insufficientCredits": "Insufficient credits. Redirecting to purchase more credits...",
+    "toolActivated": "Tool activated! Redirecting...",
+    "noToolsFound": "No tools found",
+    "noToolsFoundDesc": "Try a different category or come back later.",
+    "categories": {
+      "all": "All",
+      "publication": "Publication",
+      "reports": "Reports",
+      "documents": "Documents",
+      "images": "Images"
+    },
+    "status": {
+      "available": "Available",
+      "comingSoon": "Coming Soon"
+    },
+    "postGenerator": {
+      "name": "Post Generator",
+      "description": "Create professional social media posts in seconds"
+    },
+    "reportCreator": {
+      "name": "Report Creator",
+      "description": "Generate professional reports and detailed analysis"
+    },
+    "invoiceGenerator": {
+      "name": "Invoice Generator",
+      "description": "Create professional invoices and fiscal documents"
+    },
+    "aiImageEditor": {
+      "name": "AI Image Editor",
+      "description": "Edit and enhance images with artificial intelligence"
+    },
+    "presentationMaker": {
+      "name": "Presentation Maker",
+      "description": "Professional presentations in minutes"
+    },
+    "brandKit": {
+      "name": "Brand Kit",
+      "description": "Create complete visual identity for your brand"
+    },
+    "contentCalendar": {
+      "name": "Content Calendar",
+      "description": "Plan and organize your content"
+    },
+    "emailCampaigns": {
+      "name": "Email Campaigns",
+      "description": "Create effective email marketing campaigns"
+    }
   }
 }

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -33,6 +32,7 @@ import AdvancedAnalysisPage from "./pages/dashboard/AdvancedAnalysisPage";
 import DraftsPage from "./pages/dashboard/DraftsPage";
 import EditIdeaPage from "./pages/dashboard/EditIdeaPage";
 import DashboardResultsPage from "./pages/dashboard/ResultsPage";
+import ToolsPage from "./pages/dashboard/ToolsPage";
 
 // Platform pages
 import ApiPage from "./pages/platform/ApiPage";
@@ -134,7 +134,7 @@ const App = () => {
                       <Route path="ideias/:id" element={<IdeaDetailPage />} />
                       <Route path="ideias/editar" element={<EditIdeaPage />} />
                       <Route path="rascunhos" element={<DraftsPage />} />
-                      <Route path="creditos" element={<CreditsPage />} />
+                      <Route path="ferramentas" element={<ToolsPage />} />
                       <Route path="configuracoes" element={<UserSettingsPage />} />
                       <Route path="recursos" element={<ResourceCenterPage />} />
                       <Route path="metricas" element={<AdvancedMetricsPage />} />

@@ -1,4 +1,3 @@
-
 {
   "common": {
     "welcome": "Bienvenido",
@@ -96,7 +95,8 @@
     "metrics": "Métricas",
     "resources": "Recursos",
     "history": "Historial",
-    "drafts": "Borradores"
+    "drafts": "Borradores",
+    "tools": "Herramientas"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -284,5 +284,61 @@
     "newIdea": "Nueva Idea",
     "viewIdeas": "Ver Ideas",
     "buyCredits": "Comprar Créditos"
+  },
+  "tools": {
+    "title": "Herramientas",
+    "subtitle": "Potencia tu negocio con nuestras herramientas inteligentes",
+    "credits": "créditos",
+    "preview": "Vista previa",
+    "useTool": "Usar Herramienta",
+    "notifyWhenReady": "Notificar cuando esté listo",
+    "comingSoon": "¡Esta herramienta estará disponible pronto!",
+    "insufficientCredits": "Créditos insuficientes. Redirigiendo para comprar más créditos...",
+    "toolActivated": "¡Herramienta activada! Redirigiendo...",
+    "noToolsFound": "No se encontraron herramientas",
+    "noToolsFoundDesc": "Prueba una categoría diferente o vuelve más tarde.",
+    "categories": {
+      "all": "Todas",
+      "publication": "Publicación",
+      "reports": "Informes",
+      "documents": "Documentos",
+      "images": "Imágenes"
+    },
+    "status": {
+      "available": "Disponible",
+      "comingSoon": "Próximamente"
+    },
+    "postGenerator": {
+      "name": "Generador de Posts",
+      "description": "Crea posts profesionales para redes sociales en segundos"
+    },
+    "reportCreator": {
+      "name": "Creador de Informes",
+      "description": "Genera informes profesionales y análisis detallados"
+    },
+    "invoiceGenerator": {
+      "name": "Generador de Facturas",
+      "description": "Crea facturas y documentos fiscales profesionales"
+    },
+    "aiImageEditor": {
+      "name": "Editor de Imágenes IA",
+      "description": "Edita y mejora imágenes con inteligencia artificial"
+    },
+    "presentationMaker": {
+      "name": "Creador de Presentaciones",
+      "description": "Presentaciones profesionales en minutos"
+    },
+    "brandKit": {
+      "name": "Kit de Marca",
+      "description": "Crea identidad visual completa para tu marca"
+    },
+    "contentCalendar": {
+      "name": "Calendario de Contenido",
+      "description": "Planifica y organiza tu contenido"
+    },
+    "emailCampaigns": {
+      "name": "Campañas de Email",
+      "description": "Crea campañas de email marketing efectivas"
+    }
   }
 }
