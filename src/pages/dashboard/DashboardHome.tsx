@@ -34,6 +34,7 @@ import { IdeaForm } from "@/components/IdeaForm";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRefreshAnalyses } from "@/hooks/use-refresh-analyses";
+import { InsightsCard } from "@/components/dashboard/InsightsCard";
 
 const DashboardHome = () => {
   const { t } = useTranslation();
@@ -297,60 +298,8 @@ const DashboardHome = () => {
         </Card>
       </div>
       
-      {/* Insights Card */}
-      <Card className="shadow-sm">
-        <CardHeader className="pb-2 md:pb-4">
-          <CardTitle className="text-lg md:text-xl">{t('dashboard.insights.title') || "Insights"}</CardTitle>
-          <CardDescription>
-            {t('dashboard.insights.description') || "Análise inteligente da sua atividade recente"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-3">
-            <div className="bg-muted/50 p-3 md:p-4 rounded-lg flex items-start space-x-3">
-              <div className="bg-brand-purple/10 rounded-full p-2 mt-1">
-                <TrendingUp className="h-5 w-5 text-brand-purple" />
-              </div>
-              <div>
-                <h3 className="font-medium text-sm">{t('dashboard.insights.activityTrend') || "Tendência de Atividade"}</h3>
-                <p className="text-muted-foreground text-xs mt-1">
-                  {ideaCount > 3 
-                    ? t('dashboard.insights.highActivity') || "Sua atividade está acima da média dos usuários."
-                    : t('dashboard.insights.lowActivity') || "Crie mais análises para obter insights completos."}
-                </p>
-              </div>
-            </div>
-            
-            <div className="bg-muted/50 p-3 md:p-4 rounded-lg flex items-start space-x-3">
-              <div className="bg-blue-500/10 rounded-full p-2 mt-1">
-                <BarChartIcon className="h-5 w-5 text-blue-500" />
-              </div>
-              <div>
-                <h3 className="font-medium text-sm">{t('dashboard.insights.successRate') || "Taxa de Sucesso"}</h3>
-                <p className="text-muted-foreground text-xs mt-1">
-                  {viabilityRate > 60
-                    ? t('dashboard.insights.goodSuccessRate') || "Suas ideias têm boa viabilidade de mercado."
-                    : t('dashboard.insights.improvementNeeded') || "Considere refinar suas ideias para melhor viabilidade."}
-                </p>
-              </div>
-            </div>
-            
-            <div className="bg-muted/50 p-3 md:p-4 rounded-lg flex items-start space-x-3">
-              <div className="bg-green-500/10 rounded-full p-2 mt-1">
-                <Calendar className="h-5 w-5 text-green-500" />
-              </div>
-              <div>
-                <h3 className="font-medium text-sm">{t('dashboard.insights.nextSteps') || "Próximos Passos"}</h3>
-                <p className="text-muted-foreground text-xs mt-1">
-                  {user?.credits > 0 
-                    ? t('dashboard.insights.hasCredits') || "Você tem créditos disponíveis para novas análises."
-                    : t('dashboard.insights.needsCredits') || "Adicione créditos para continuar analisando ideias."}
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* AI-Generated Insights Card */}
+      <InsightsCard />
       
       {/* Charts */}
       <Tabs defaultValue="overview" className="space-y-4">
