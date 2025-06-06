@@ -19,46 +19,49 @@ import ResultsPage from './pages/dashboard/ResultsPage';
 import ToolsPage from './pages/dashboard/ToolsPage';
 import DraftsPage from './pages/dashboard/DraftsPage';
 import { MyContentPage } from "@/pages/dashboard/MyContentPage";
+import { CompareIdeasModalProvider } from './components/ideas/CompareIdeasModal';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/planos" element={<PlansPage />} />
-        <Route
-          path="/login"
-          element={
-            <div className="flex justify-center items-center h-screen">
-              <div className="w-full max-w-md">
-                <Auth
-                  supabaseClient={supabase}
-                  appearance={{ theme: ThemeSupa }}
-                  providers={['google', 'github']}
-                  redirectTo={`${window.location.origin}/dashboard`}
-                />
+    <CompareIdeasModalProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/planos" element={<PlansPage />} />
+          <Route
+            path="/login"
+            element={
+              <div className="flex justify-center items-center h-screen">
+                <div className="w-full max-w-md">
+                  <Auth
+                    supabaseClient={supabase}
+                    appearance={{ theme: ThemeSupa }}
+                    providers={['google', 'github']}
+                    redirectTo={`${window.location.origin}/dashboard`}
+                  />
+                </div>
               </div>
-            </div>
-          }
-        />
+            }
+          />
 
-        {/* Dashboard Routes */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<DashboardHome />} />
-          <Route path="ideias" element={<IdeasPage />} />
-          <Route path="ideias/:id" element={<IdeaDetailPage />} />
-          <Route path="ideias/:id/edit" element={<EditIdeaPage />} />
-          <Route path="rascunhos" element={<DraftsPage />} />
-          <Route path="ferramentas" element={<ToolsPage />} />
-          <Route path="conteudos" element={<MyContentPage />} />
-          <Route path="configuracoes" element={<UserSettingsPage />} />
-          <Route path="analise-avancada" element={<AdvancedAnalysisPage />} />
-          <Route path="metricas-avancadas" element={<AdvancedMetricsPage />} />
-          <Route path="central-recursos" element={<ResourceCenterPage />} />
-          <Route path="resultados/:id" element={<ResultsPage />} />
-        </Route>
-      </Routes>
-    </Router>
+          {/* Dashboard Routes */}
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route index element={<DashboardHome />} />
+            <Route path="ideias" element={<IdeasPage />} />
+            <Route path="ideias/:id" element={<IdeaDetailPage />} />
+            <Route path="ideias/:id/edit" element={<EditIdeaPage />} />
+            <Route path="rascunhos" element={<DraftsPage />} />
+            <Route path="ferramentas" element={<ToolsPage />} />
+            <Route path="conteudos" element={<MyContentPage />} />
+            <Route path="configuracoes" element={<UserSettingsPage />} />
+            <Route path="analise-avancada" element={<AdvancedAnalysisPage />} />
+            <Route path="metricas-avancadas" element={<AdvancedMetricsPage />} />
+            <Route path="central-recursos" element={<ResourceCenterPage />} />
+            <Route path="resultados/:id" element={<ResultsPage />} />
+          </Route>
+        </Routes>
+      </Router>
+    </CompareIdeasModalProvider>
   );
 }
 
