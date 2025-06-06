@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +12,7 @@ import { FavoriteButton } from "@/components/ideas/FavoriteButton";
 import { TagBadge } from "@/components/ideas/TagBadge";
 import { TagsSelector } from "@/components/ideas/TagsSelector";
 import { AdvancedAnalysisModal } from "@/components/advanced-analysis/AdvancedAnalysisModal";
+import { ReanalyzeModal } from "@/components/ideas/ReanalyzeModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
@@ -58,6 +58,7 @@ const IdeaDetailPage = () => {
   const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAdvancedModal, setShowAdvancedModal] = useState(false);
+  const [showReanalyzeModal, setShowReanalyzeModal] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [ideaTags, setIdeaTags] = useState<string[]>([]);
 
@@ -245,17 +246,20 @@ const IdeaDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
+      <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <Skeleton className="h-10 w-10" />
-          <Skeleton className="h-8 w-64" />
+          <div className="space-y-2 flex-1">
+            <Skeleton className="h-8 w-full max-w-md" />
+            <Skeleton className="h-4 w-48" />
+          </div>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+          <div className="lg:col-span-2 space-y-4 lg:space-y-6">
             <Skeleton className="h-64 w-full" />
             <Skeleton className="h-48 w-full" />
           </div>
-          <div className="space-y-6">
+          <div className="space-y-4 lg:space-y-6">
             <Skeleton className="h-32 w-full" />
             <Skeleton className="h-48 w-full" />
           </div>
@@ -273,55 +277,59 @@ const IdeaDetailPage = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
+    <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 max-w-7xl mx-auto">
+      {/* Header - Mobile Optimized */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard/ideias')}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold break-words">{idea.title}</h1>
-            <p className="text-muted-foreground">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg sm:text-2xl font-bold break-words line-clamp-2">{idea.title}</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground truncate">
               {t('ideaDetail.createdAt', "Criado em")} {formatDate(idea.created_at)}
             </p>
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
+        {/* Action Buttons - Mobile Optimized */}
+        <div className="flex flex-wrap items-center gap-2">
           <FavoriteButton
             ideaId={idea.id}
             isFavorite={isFavorite}
             size="sm"
             onToggle={handleFavoriteToggle}
           />
-          <Button variant="outline" size="sm" onClick={exportToPDF}>
-            <Download className="h-4 w-4 mr-2" />
-            {t('ideaDetail.exportPdf', "Exportar PDF")}
+          <Button variant="outline" size="sm" onClick={exportToPDF} className="text-xs">
+            <Download className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">{t('ideaDetail.exportPdf', "Exportar PDF")}</span>
           </Button>
-          <Button variant="outline" size="sm" asChild>
-            <Link to={`/dashboard/ideias/edit?id=${idea.id}&reanalyze=true`}>
-              <Edit className="h-4 w-4 mr-2" />
-              {t('ideaDetail.reanalyze', "Reanalisar")}
-            </Link>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setShowReanalyzeModal(true)}
+            className="text-xs"
+          >
+            <Edit className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">{t('ideaDetail.reanalyze', "Reanalisar")}</span>
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
-                <Trash2 className="h-4 w-4 mr-2" />
-                {t('ideaDetail.delete', "Excluir")}
+              <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700 text-xs">
+                <Trash2 className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">{t('ideaDetail.delete', "Excluir")}</span>
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="mx-4 max-w-lg">
               <AlertDialogHeader>
                 <AlertDialogTitle>{t('ideaDetail.confirmDelete', "Confirmar exclusão")}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <AlertDialogDescription className="text-sm">
                   {t('ideaDetail.deleteWarning', "Esta ação não pode ser desfeita. Isso excluirá permanentemente sua ideia e todos os dados relacionados.")}
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t('common.cancel', "Cancelar")}</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+              <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                <AlertDialogCancel className="w-full sm:w-auto">{t('common.cancel', "Cancelar")}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} className="w-full sm:w-auto bg-red-600 hover:bg-red-700">
                   {t('ideaDetail.delete', "Excluir")}
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -330,23 +338,23 @@ const IdeaDetailPage = () => {
         </div>
       </div>
 
-      <div id="idea-detail-content" className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div id="idea-detail-content" className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 lg:space-y-6">
           {/* Idea Information */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                {t('ideaDetail.ideaInfo', "Informações da Ideia")}
+            <CardHeader className="pb-3 px-4 sm:px-6">
+              <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-base sm:text-lg">
+                <span>{t('ideaDetail.ideaInfo', "Informações da Ideia")}</span>
                 {analysis && (
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="px-3 py-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant="outline" className="px-2 py-1 text-xs">
                       {analysis.score}% viabilidade
                     </Badge>
                     {analysis.status && (
                       <Badge 
                         variant="outline" 
-                        className={cn("px-3 py-1 border", getStatusColor(analysis.status))}
+                        className={cn("px-2 py-1 text-xs border", getStatusColor(analysis.status))}
                       >
                         {getStatusText(analysis.status)}
                       </Badge>
@@ -355,30 +363,30 @@ const IdeaDetailPage = () => {
                 )}
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 px-4 sm:px-6">
               <div>
                 <h3 className="font-semibold text-sm mb-2">{t('ideaDetail.description', "Descrição")}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{idea.description}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed break-words">{idea.description}</p>
               </div>
               
               {idea.audience && (
                 <div>
                   <h3 className="font-semibold text-sm mb-2">{t('ideaDetail.audience', "Público-alvo")}</h3>
-                  <p className="text-sm text-muted-foreground">{idea.audience}</p>
+                  <p className="text-sm text-muted-foreground break-words">{idea.audience}</p>
                 </div>
               )}
               
               {idea.problem && (
                 <div>
                   <h3 className="font-semibold text-sm mb-2">{t('ideaDetail.problem', "Problema")}</h3>
-                  <p className="text-sm text-muted-foreground">{idea.problem}</p>
+                  <p className="text-sm text-muted-foreground break-words">{idea.problem}</p>
                 </div>
               )}
               
               {idea.monetization && (
                 <div>
                   <h3 className="font-semibold text-sm mb-2">{t('ideaDetail.monetization', "Monetização")}</h3>
-                  <p className="text-sm text-muted-foreground">{idea.monetization}</p>
+                  <p className="text-sm text-muted-foreground break-words">{idea.monetization}</p>
                 </div>
               )}
               
@@ -395,7 +403,7 @@ const IdeaDetailPage = () => {
                 {idea.location && (
                   <div>
                     <h3 className="font-semibold text-sm mb-2">{t('ideaDetail.location', "Localização")}</h3>
-                    <p className="text-sm text-muted-foreground">{idea.location}</p>
+                    <p className="text-sm text-muted-foreground break-words">{idea.location}</p>
                   </div>
                 )}
               </div>
@@ -405,64 +413,65 @@ const IdeaDetailPage = () => {
           {/* Analysis Results */}
           {analysis && (
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  {t('ideaDetail.analysisResults', "Resultados da Análise")}
+              <CardHeader className="pb-3 px-4 sm:px-6">
+                <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-base sm:text-lg">
+                  <span>{t('ideaDetail.analysisResults', "Resultados da Análise")}</span>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setShowAdvancedModal(true)}
+                    className="text-xs w-full sm:w-auto"
                   >
                     <MessageSquare className="h-4 w-4 mr-2" />
                     {t('ideaDetail.advancedAnalysis', "Análise Avançada")}
                   </Button>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                {/* SWOT Analysis */}
+              <CardContent className="space-y-4 lg:space-y-6 px-4 sm:px-6">
+                {/* SWOT Analysis - Mobile Optimized */}
                 {analysis.swot_analysis && (
                   <div>
-                    <h3 className="font-semibold mb-3">{t('ideaDetail.swotAnalysis', "Análise SWOT")}</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <h3 className="font-semibold mb-3 text-sm sm:text-base">{t('ideaDetail.swotAnalysis', "Análise SWOT")}</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       {analysis.swot_analysis.strengths && (
-                        <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                          <h4 className="font-medium text-green-800 mb-2">{t('ideaDetail.strengths', "Forças")}</h4>
-                          <ul className="text-sm text-green-700 space-y-1">
+                        <div className="p-3 sm:p-4 bg-green-50 rounded-lg border border-green-200">
+                          <h4 className="font-medium text-green-800 mb-2 text-sm">{t('ideaDetail.strengths', "Forças")}</h4>
+                          <ul className="text-xs sm:text-sm text-green-700 space-y-1">
                             {analysis.swot_analysis.strengths.map((strength: string, index: number) => (
-                              <li key={index}>• {strength}</li>
+                              <li key={index} className="break-words">• {strength}</li>
                             ))}
                           </ul>
                         </div>
                       )}
                       
                       {analysis.swot_analysis.weaknesses && (
-                        <div className="p-4 bg-red-50 rounded-lg border border-red-200">
-                          <h4 className="font-medium text-red-800 mb-2">{t('ideaDetail.weaknesses', "Fraquezas")}</h4>
-                          <ul className="text-sm text-red-700 space-y-1">
+                        <div className="p-3 sm:p-4 bg-red-50 rounded-lg border border-red-200">
+                          <h4 className="font-medium text-red-800 mb-2 text-sm">{t('ideaDetail.weaknesses', "Fraquezas")}</h4>
+                          <ul className="text-xs sm:text-sm text-red-700 space-y-1">
                             {analysis.swot_analysis.weaknesses.map((weakness: string, index: number) => (
-                              <li key={index}>• {weakness}</li>
+                              <li key={index} className="break-words">• {weakness}</li>
                             ))}
                           </ul>
                         </div>
                       )}
                       
                       {analysis.swot_analysis.opportunities && (
-                        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                          <h4 className="font-medium text-blue-800 mb-2">{t('ideaDetail.opportunities', "Oportunidades")}</h4>
-                          <ul className="text-sm text-blue-700 space-y-1">
+                        <div className="p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200">
+                          <h4 className="font-medium text-blue-800 mb-2 text-sm">{t('ideaDetail.opportunities', "Oportunidades")}</h4>
+                          <ul className="text-xs sm:text-sm text-blue-700 space-y-1">
                             {analysis.swot_analysis.opportunities.map((opportunity: string, index: number) => (
-                              <li key={index}>• {opportunity}</li>
+                              <li key={index} className="break-words">• {opportunity}</li>
                             ))}
                           </ul>
                         </div>
                       )}
                       
                       {analysis.swot_analysis.threats && (
-                        <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
-                          <h4 className="font-medium text-orange-800 mb-2">{t('ideaDetail.threats', "Ameaças")}</h4>
-                          <ul className="text-sm text-orange-700 space-y-1">
+                        <div className="p-3 sm:p-4 bg-orange-50 rounded-lg border border-orange-200">
+                          <h4 className="font-medium text-orange-800 mb-2 text-sm">{t('ideaDetail.threats', "Ameaças")}</h4>
+                          <ul className="text-xs sm:text-sm text-orange-700 space-y-1">
                             {analysis.swot_analysis.threats.map((threat: string, index: number) => (
-                              <li key={index}>• {threat}</li>
+                              <li key={index} className="break-words">• {threat}</li>
                             ))}
                           </ul>
                         </div>
@@ -474,13 +483,13 @@ const IdeaDetailPage = () => {
                 {/* Recommendations */}
                 {analysis.recommendations && (
                   <div>
-                    <h3 className="font-semibold mb-3">{t('ideaDetail.recommendations', "Recomendações")}</h3>
-                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                      <ul className="text-sm text-blue-800 space-y-2">
+                    <h3 className="font-semibold mb-3 text-sm sm:text-base">{t('ideaDetail.recommendations', "Recomendações")}</h3>
+                    <div className="p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <ul className="text-xs sm:text-sm text-blue-800 space-y-2">
                         {analysis.recommendations.map((recommendation: string, index: number) => (
                           <li key={index} className="flex items-start gap-2">
                             <span className="text-blue-600 mt-1">•</span>
-                            <span>{recommendation}</span>
+                            <span className="break-words">{recommendation}</span>
                           </li>
                         ))}
                       </ul>
@@ -492,21 +501,20 @@ const IdeaDetailPage = () => {
           )}
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
+        {/* Sidebar - Mobile Optimized */}
+        <div className="space-y-4 lg:space-y-6">
           {/* Tags */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-base">{t('ideaDetail.tags', "Tags")}</CardTitle>
+            <CardHeader className="pb-3 px-4 sm:px-6">
+              <CardTitle className="text-sm sm:text-base">{t('ideaDetail.tags', "Tags")}</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 sm:px-6">
               <TagsSelector
                 ideaId={idea.id}
-                selectedTags={ideaTags}
                 onTagsUpdate={handleTagsUpdate}
               />
               {ideaTags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-3">
+                <div className="flex flex-wrap gap-1 sm:gap-2 mt-3">
                   {ideaTags.map((tag, index) => (
                     <TagBadge key={index} name={tag} />
                   ))}
@@ -515,24 +523,24 @@ const IdeaDetailPage = () => {
             </CardContent>
           </Card>
 
-          {/* Quick Stats */}
+          {/* Quick Stats - Mobile Optimized */}
           {analysis && (
             <Card>
-              <CardHeader>
-                <CardTitle className="text-base">{t('ideaDetail.quickStats', "Estatísticas Rápidas")}</CardTitle>
+              <CardHeader className="pb-3 px-4 sm:px-6">
+                <CardTitle className="text-sm sm:text-base">{t('ideaDetail.quickStats', "Estatísticas Rápidas")}</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 sm:space-y-4 px-4 sm:px-6">
                 {analysis.market_size && (
                   <div>
                     <h4 className="font-medium text-sm mb-1">{t('ideaDetail.marketSize', "Tamanho do Mercado")}</h4>
-                    <p className="text-sm text-muted-foreground">{analysis.market_size}</p>
+                    <p className="text-sm text-muted-foreground break-words">{analysis.market_size}</p>
                   </div>
                 )}
                 
                 {analysis.differentiation && (
                   <div>
                     <h4 className="font-medium text-sm mb-1">{t('ideaDetail.differentiation', "Diferenciação")}</h4>
-                    <p className="text-sm text-muted-foreground">{analysis.differentiation}</p>
+                    <p className="text-sm text-muted-foreground break-words">{analysis.differentiation}</p>
                   </div>
                 )}
                 
@@ -543,7 +551,7 @@ const IdeaDetailPage = () => {
                       {analysis.strengths.slice(0, 3).map((strength, index) => (
                         <li key={index} className="flex items-start gap-2">
                           <span className="text-green-600 mt-1">•</span>
-                          <span>{strength}</span>
+                          <span className="break-words">{strength}</span>
                         </li>
                       ))}
                     </ul>
@@ -553,13 +561,13 @@ const IdeaDetailPage = () => {
             </Card>
           )}
 
-          {/* Actions */}
+          {/* Actions - Mobile Optimized */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-base">{t('ideaDetail.actions', "Ações")}</CardTitle>
+            <CardHeader className="pb-3 px-4 sm:px-6">
+              <CardTitle className="text-sm sm:text-base">{t('ideaDetail.actions', "Ações")}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <Button variant="outline" size="sm" className="w-full" asChild>
+            <CardContent className="space-y-2 sm:space-y-3 px-4 sm:px-6">
+              <Button variant="outline" size="sm" className="w-full text-xs" asChild>
                 <Link to={`/dashboard/resultados/${idea.id}`}>
                   <BarChart3 className="h-4 w-4 mr-2" />
                   {t('ideaDetail.viewResults', "Ver Resultados Completos")}
@@ -570,7 +578,7 @@ const IdeaDetailPage = () => {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="w-full"
+                  className="w-full text-xs"
                   onClick={() => setShowAdvancedModal(true)}
                 >
                   <MessageSquare className="h-4 w-4 mr-2" />
@@ -582,11 +590,23 @@ const IdeaDetailPage = () => {
         </div>
       </div>
 
-      {/* Advanced Analysis Modal */}
+      {/* Modals */}
+      <ReanalyzeModal
+        isOpen={showReanalyzeModal}
+        onClose={() => setShowReanalyzeModal(false)}
+        ideaId={idea.id}
+        currentTitle={idea.title}
+        currentDescription={idea.description}
+        onSuccess={() => {
+          window.dispatchEvent(new CustomEvent('analysis-updated'));
+          setShowReanalyzeModal(false);
+        }}
+      />
+
       {analysis && (
         <AdvancedAnalysisModal
-          isOpen={showAdvancedModal}
-          onClose={() => setShowAdvancedModal(false)}
+          open={showAdvancedModal}
+          onOpenChange={setShowAdvancedModal}
           ideaId={idea.id}
           analysisId={analysis.id}
         />

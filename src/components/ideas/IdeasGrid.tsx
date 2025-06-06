@@ -48,7 +48,7 @@ export const IdeasGrid: React.FC<IdeasGridProps> = ({
   if (ideas.length === 0) {
     return (
       <EmptyState
-        icon={Lightbulb}
+        icon={<Lightbulb className="h-12 w-12" />}
         title={t('ideas.empty.title', "Nenhuma ideia encontrada")}
         description={t('ideas.empty.description', "Você ainda não tem ideias. Crie sua primeira ideia!")}
       />
@@ -56,7 +56,7 @@ export const IdeasGrid: React.FC<IdeasGridProps> = ({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
       {ideas.map((idea) => (
         <IdeaCard
           key={idea.id}
