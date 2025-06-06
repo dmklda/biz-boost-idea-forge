@@ -1,5 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,6 +23,21 @@ serve(async (req) => {
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
+    }
+
+    // Get the user from the request
+    const authHeader = req.headers.get('Authorization');
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
+    // Get user from JWT token
+    const jwt = authHeader?.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabase.auth.getUser(jwt);
+    
+    if (userError || !user) {
+      throw new Error('Unauthorized');
     }
 
     // Build the logo generation prompt
@@ -72,13 +88,12 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-image-1',
+        model: 'dall-e-3',
         prompt: prompt,
         n: 1,
         size: '1024x1024',
-        quality: 'high',
-        output_format: 'png',
-        background: 'transparent'
+        quality: 'hd',
+        response_format: 'b64_json'
       }),
     });
 
@@ -88,19 +103,72 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    
-    // gpt-image-1 returns base64 data, we need to convert it to a data URL
     const base64Image = data.data[0].b64_json;
-    const logoUrl = `data:image/png;base64,${base64Image}`;
+    
+    // Convert base64 to blob for storage
+    const imageData = Uint8Array.from(atob(base64Image), c => c.charCodeAt(0));
+    
+    // Generate unique filename
+    const fileName = `${user.id}/${crypto.randomUUID()}.png`;
+    
+    // Upload to Supabase Storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('generated-content')
+      .upload(fileName, imageData, {
+        contentType: 'image/png',
+        upsert: false
+      });
 
-    console.log('Logo generated successfully');
+    if (uploadError) {
+      console.error('Storage upload error:', uploadError);
+      throw new Error('Failed to save logo to storage');
+    }
+
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from('generated-content')
+      .getPublicUrl(fileName);
+
+    const publicUrl = urlData.publicUrl;
+
+    // Save to generated_content table
+    const contentData = {
+      logoStyle,
+      colorScheme,
+      logoType,
+      customPrompt,
+      ideaTitle: idea.title,
+      ideaDescription: idea.description,
+      prompt
+    };
+
+    const { data: savedContent, error: saveError } = await supabase
+      .from('generated_content')
+      .insert({
+        user_id: user.id,
+        idea_id: idea.id,
+        content_type: 'logo',
+        title: `Logo - ${idea.title}`,
+        content_data: contentData,
+        file_url: publicUrl
+      })
+      .select()
+      .single();
+
+    if (saveError) {
+      console.error('Database save error:', saveError);
+      // Don't throw error here, just log it - user still gets the logo
+    }
+
+    console.log('Logo generated and saved successfully');
 
     return new Response(JSON.stringify({ 
-      logoUrl,
+      logoUrl: publicUrl,
       ideaTitle: idea.title,
       style: logoStyle,
       colorScheme,
-      logoType
+      logoType,
+      savedContentId: savedContent?.id
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

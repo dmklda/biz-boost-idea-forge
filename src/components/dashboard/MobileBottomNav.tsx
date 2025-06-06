@@ -1,9 +1,8 @@
-
 import React from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Lightbulb, Plus, Wrench, User } from "lucide-react";
+import { LayoutDashboard, Lightbulb, Plus, Wrench, User, Archive } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { IdeaForm } from "@/components/IdeaForm";
 import { useAuth } from "@/hooks/useAuth";
@@ -41,16 +40,16 @@ export const MobileBottomNav = () => {
       badge: false
     }, 
     {
-      title: t('dashboard.newAnalysis'),
-      icon: Plus,
-      path: '#',
-      onClick: () => setIsAnalysisDialogOpen(true),
-      badge: false
-    },
-    {
       title: t('nav.tools', 'Ferramentas'),
       icon: Wrench,
       path: '/dashboard/ferramentas',
+      onClick: undefined,
+      badge: false
+    },
+    {
+      title: "Conteúdos",
+      icon: Archive,
+      path: '/dashboard/conteudos',
       onClick: undefined,
       badge: false
     }, 

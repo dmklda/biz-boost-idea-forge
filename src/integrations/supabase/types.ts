@@ -106,6 +106,50 @@ export type Database = {
           },
         ]
       }
+      generated_content: {
+        Row: {
+          content_data: Json
+          content_type: string
+          created_at: string
+          file_url: string | null
+          id: string
+          idea_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content_data: Json
+          content_type: string
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          idea_id?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content_data?: Json
+          content_type?: string
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          idea_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_content_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       idea_analyses: {
         Row: {
           ai_insights: Json | null

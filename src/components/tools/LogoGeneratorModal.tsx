@@ -140,7 +140,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
       if (error) throw error;
 
       setGeneratedLogo(data.logoUrl);
-      toast.success('Logo gerado com sucesso!');
+      toast.success('Logo gerado e salvo em "Meus Conteúdos"!');
     } catch (error) {
       console.error('Error generating logo:', error);
       toast.error('Erro ao gerar logo');

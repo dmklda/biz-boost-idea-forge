@@ -1,7 +1,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Home, BarChart, Settings, LogOut, Calendar, PlusCircle, Save, Wrench } from "lucide-react";
+import { Home, BarChart, Settings, LogOut, Calendar, PlusCircle, Save, Wrench, Archive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -53,6 +53,12 @@ export const DashboardSidebar = ({
       title: t('nav.tools', 'Ferramentas'),
       icon: Wrench,
       path: '/dashboard/ferramentas',
+      onClick: undefined
+    },
+    {
+      title: "Meus Conteúdos",
+      icon: Archive,
+      path: '/dashboard/conteudos',
       onClick: undefined
     }, 
     {

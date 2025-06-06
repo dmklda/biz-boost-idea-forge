@@ -1,5 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,6 +23,21 @@ serve(async (req) => {
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
+    }
+
+    // Get the user from the request
+    const authHeader = req.headers.get('Authorization');
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
+    // Get user from JWT token
+    const jwt = authHeader?.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabase.auth.getUser(jwt);
+    
+    if (userError || !user) {
+      throw new Error('Unauthorized');
     }
 
     // Build the prompt based on document type
@@ -175,12 +191,45 @@ Formate o documento em Markdown com seções práticas e actionáveis, focando n
     const data = await response.json();
     const document = data.choices[0].message.content;
 
-    console.log(`${documentType.toUpperCase()} generated successfully`);
+    // Save to generated_content table
+    const contentData = {
+      documentType,
+      customRequirements,
+      ideaTitle: idea.title,
+      ideaDescription: idea.description,
+      ideaAudience: idea.audience,
+      ideaProblem: idea.problem,
+      ideaMonetization: idea.monetization,
+      document
+    };
+
+    const documentTitle = documentType === 'prd' ? 'PRD' : 'Plano MVP';
+
+    const { data: savedContent, error: saveError } = await supabase
+      .from('generated_content')
+      .insert({
+        user_id: user.id,
+        idea_id: idea.id,
+        content_type: documentType,
+        title: `${documentTitle} - ${idea.title}`,
+        content_data: contentData,
+        file_url: null
+      })
+      .select()
+      .single();
+
+    if (saveError) {
+      console.error('Database save error:', saveError);
+      // Don't throw error here, just log it - user still gets the document
+    }
+
+    console.log(`${documentType.toUpperCase()} generated and saved successfully`);
 
     return new Response(JSON.stringify({ 
       document,
       documentType,
-      ideaTitle: idea.title 
+      ideaTitle: idea.title,
+      savedContentId: savedContent?.id
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
