@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,20 +21,33 @@ const ResultsPage = () => {
   const [loading, setLoading] = useState(true);
   const [idea, setIdea] = useState<any>(null);
   const [analysis, setAnalysis] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchIdeaAndAnalysis = async () => {
-      if (!authState.isAuthenticated || !ideaId) {
-        toast.error(t('results.missingData', "Dados insuficientes para mostrar resultados"));
+      console.log("ResultsPage: Starting fetch with ideaId:", ideaId, "authState:", authState.isAuthenticated);
+      
+      if (!authState.isAuthenticated) {
+        console.log("ResultsPage: User not authenticated, redirecting to login");
+        toast.error(t('results.authRequired', "Você precisa estar logado para ver os resultados"));
+        navigate("/login");
+        return;
+      }
+
+      if (!ideaId) {
+        console.log("ResultsPage: No ideaId provided, redirecting to dashboard");
+        toast.error(t('results.missingData', "ID da ideia não fornecido"));
         navigate("/dashboard");
         return;
       }
 
       try {
         setLoading(true);
+        setError(null);
+        console.log("ResultsPage: Fetching idea data for ID:", ideaId);
 
-        // Fetch idea details
+        // Fetch idea details with error handling
         const { data: ideaData, error: ideaError } = await supabase
           .from('ideas')
           .select('*')
@@ -43,121 +56,179 @@ const ResultsPage = () => {
           .single();
 
         if (ideaError) {
-          console.error("Error fetching idea:", ideaError);
-          toast.error(t('results.fetchError', "Erro ao buscar detalhes da ideia"));
+          console.error("ResultsPage: Error fetching idea:", ideaError);
+          if (ideaError.code === 'PGRST116') {
+            toast.error(t('results.ideaNotFound', "Ideia não encontrada"));
+          } else {
+            toast.error(t('results.fetchError', "Erro ao buscar detalhes da ideia"));
+          }
           navigate("/dashboard");
           return;
         }
 
-        // Fetch analysis details
+        console.log("ResultsPage: Idea data fetched successfully:", ideaData);
+
+        // Fetch analysis details with better error handling
         const { data: analysisData, error: analysisError } = await supabase
           .from('idea_analyses')
           .select('*')
           .eq('idea_id', ideaId)
           .eq('user_id', authState.user?.id)
           .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
+          .limit(1);
 
         if (analysisError) {
-          console.error("Error fetching analysis:", analysisError);
+          console.error("ResultsPage: Error fetching analysis:", analysisError);
           toast.error(t('results.analysisError', "Erro ao buscar análise da ideia"));
-          navigate("/dashboard");
-          return;
+          setError("Erro ao carregar análise");
+        } else if (!analysisData || analysisData.length === 0) {
+          console.log("ResultsPage: No analysis found for idea:", ideaId);
+          toast.error(t('results.noAnalysis', "Nenhuma análise encontrada para esta ideia"));
+          setError("Nenhuma análise encontrada");
+        } else {
+          console.log("ResultsPage: Analysis data fetched successfully:", analysisData[0]);
+          setAnalysis(analysisData[0]);
         }
 
         setIdea(ideaData);
-        setAnalysis(analysisData);
       } catch (error) {
-        console.error("Error in fetchIdeaAndAnalysis:", error);
-        toast.error(t('results.generalError', "Ocorreu um erro ao carregar os resultados"));
-        navigate("/dashboard");
+        console.error("ResultsPage: Unexpected error:", error);
+        toast.error(t('results.generalError', "Ocorreu um erro inesperado"));
+        setError("Erro inesperado");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchIdeaAndAnalysis();
-  }, [ideaId, authState, navigate, t]);
+    // Only fetch if we have the required dependencies
+    if (authState.isAuthenticated !== undefined) {
+      fetchIdeaAndAnalysis();
+    }
+  }, [ideaId, authState.isAuthenticated, authState.user?.id, navigate, t]);
 
+  // Loading state
   if (loading) {
     return (
-      <div className="p-4">
-        <div className="mb-8">
-          <Skeleton className="h-12 w-3/4 mb-4" />
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-6 w-full mt-2" />
+      <div className="p-4 space-y-6">
+        <div className="flex items-center justify-between mb-6">
+          <Skeleton className="h-8 w-48" />
+          <div className="flex gap-2">
+            <Skeleton className="h-10 w-24" />
+            <Skeleton className="h-10 w-24" />
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          {[1, 2, 3, 4].map(i => (
-            <Skeleton key={i} className="h-24" />
-          ))}
-        </div>
+        
+        <Card className="border shadow overflow-hidden">
+          <div className="bg-gradient-to-r from-brand-blue to-brand-purple p-6">
+            <Skeleton className="h-8 w-3/4 mb-4 bg-white/20" />
+            <Skeleton className="h-4 w-full bg-white/20" />
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="text-center">
+                <Skeleton className="h-8 w-16 mx-auto mb-2" />
+                <Skeleton className="h-4 w-20 mx-auto" />
+              </div>
+            ))}
+          </div>
+        </Card>
+        
         <Skeleton className="h-96" />
       </div>
     );
   }
 
-  if (!idea || !analysis) {
+  // Error state
+  if (error || !idea) {
     return (
       <div className="p-4">
         <Card>
           <CardContent className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">{t('results.noData', "Dados não encontrados")}</h2>
+            <h2 className="text-2xl font-bold mb-4">
+              {t('results.errorTitle', "Erro ao carregar resultados")}
+            </h2>
             <p className="text-muted-foreground mb-6">
-              {t('results.tryAgain', "Os resultados solicitados não foram encontrados. Tente analisar sua ideia novamente.")}
+              {error || t('results.tryAgain', "Os resultados solicitados não foram encontrados. Tente analisar sua ideia novamente.")}
             </p>
-            <Button onClick={() => navigate("/dashboard")}>
-              {t('results.backToDashboard', "Voltar ao Dashboard")}
-            </Button>
+            <div className="flex gap-4 justify-center">
+              <Button onClick={() => navigate("/dashboard")}>
+                {t('results.backToDashboard', "Voltar ao Dashboard")}
+              </Button>
+              {idea && (
+                <Button variant="outline" onClick={() => navigate(`/dashboard/ideias/${idea.id}`)}>
+                  {t('results.viewIdea', "Ver Ideia")}
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  // Formatar dados de análise para exibição
-  const score = analysis.score || 0;
-  const status = analysis.status || "Moderate";
-  const swotAnalysis = analysis.swot_analysis || {
+  // Formatar dados de análise para exibição com fallbacks seguros
+  const score = analysis?.score || 0;
+  const status = analysis?.status || "Moderate";
+  const swotAnalysis = analysis?.swot_analysis || {
     strengths: [],
     weaknesses: [],
     opportunities: [],
     threats: []
   };
-  const marketAnalysis = analysis.market_analysis || {
+  const marketAnalysis = analysis?.market_analysis || {
     market_size: "",
     target_audience: "",
     growth_potential: "",
     barriers_to_entry: []
   };
-  const competitorAnalysis = analysis.competitor_analysis || {
+  const competitorAnalysis = analysis?.competitor_analysis || {
     key_competitors: [],
     competitive_advantage: "",
     market_gaps: []
   };
-  const financialAnalysis = analysis.financial_analysis || {
+  const financialAnalysis = analysis?.financial_analysis || {
     revenue_potential: "",
     initial_investment: "",
     break_even_estimate: "",
     funding_suggestions: []
   };
-  const recommendations = analysis.recommendations || {
+  const recommendations = analysis?.recommendations || {
     action_items: [],
     next_steps: [],
     potential_challenges: [],
     suggested_resources: []
   };
 
-  // Fix for TypeScript error - Using string casting for specific translation paths
-  const statusTranslation = t(`results.status.${status.toLowerCase()}`, status) as string;
+  // Safe status translation with fallback
+  const getStatusTranslation = (status: string) => {
+    try {
+      return t(`results.status.${status.toLowerCase()}`, status) as string;
+    } catch {
+      return status;
+    }
+  };
   
+  const statusTranslation = getStatusTranslation(status);
+
   return (
     <div className="pb-16 md:pb-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl md:text-2xl font-bold">{t('results.title', "Resultados da Análise")}</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => navigate("/dashboard")}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">{t('common.back', "Voltar")}</span>
+          </Button>
+          <h1 className="text-xl md:text-2xl font-bold truncate">
+            {t('results.title', "Resultados da Análise")}
+          </h1>
+        </div>
         
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {!isMobile && (
             <>
               <Button variant="outline" size={isMobile ? "sm" : "default"} className="flex items-center gap-2">
@@ -179,20 +250,20 @@ const ResultsPage = () => {
       
       <Card className="mb-6 border shadow overflow-hidden">
         <CardContent className="p-0">
-          <div className="bg-gradient-to-r from-brand-blue to-brand-purple p-6 text-white">
-            <h1 className="text-xl md:text-2xl font-bold mb-2">{idea.title}</h1>
-            <p className="text-white/80">{idea.description}</p>
+          <div className="bg-gradient-to-r from-brand-blue to-brand-purple p-4 md:p-6 text-white">
+            <h1 className="text-lg md:text-2xl font-bold mb-2 break-words">{idea.title}</h1>
+            <p className="text-white/80 text-sm md:text-base break-words">{idea.description}</p>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100 bg-white">
-            <div className="p-4 text-center">
-              <div className="text-2xl font-bold text-brand-blue">
+            <div className="p-3 md:p-4 text-center">
+              <div className="text-xl md:text-2xl font-bold text-brand-blue">
                 {score}%
               </div>
               <div className="text-xs md:text-sm text-gray-500">{t('results.viability', "Viabilidade")}</div>
             </div>
-            <div className="p-4 text-center">
-              <div className="text-2xl font-bold" style={{ 
+            <div className="p-3 md:p-4 text-center">
+              <div className="text-sm md:text-xl font-bold truncate" style={{ 
                 color: status === "Viable" ? "#16a34a" : 
                        status === "Moderate" ? "#ca8a04" : "#dc2626" 
               }}>
@@ -200,22 +271,22 @@ const ResultsPage = () => {
               </div>
               <div className="text-xs md:text-sm text-gray-500">{t('results.status.label', "Status") as string}</div>
             </div>
-            <div className="p-4 text-center">
-              <div className="text-2xl font-bold text-brand-green">
+            <div className="p-3 md:p-4 text-center">
+              <div className="text-xl md:text-2xl font-bold text-brand-green">
                 {swotAnalysis.strengths?.length || 0}
               </div>
               <div className="text-xs md:text-sm text-gray-500">{t('results.strengths', "Pontos Fortes")}</div>
             </div>
-            <div className="p-4 text-center">
-              <div className="text-2xl font-bold text-red-500">
+            <div className="p-3 md:p-4 text-center">
+              <div className="text-xl md:text-2xl font-bold text-red-500">
                 {swotAnalysis.weaknesses?.length || 0}
               </div>
               <div className="text-xs md:text-sm text-gray-500">{t('results.weaknesses', "Pontos Fracos")}</div>
             </div>
           </div>
           
-          {/* Add Advanced Analysis Button */}
-          {!loading && idea && analysis && (
+          {/* Advanced Analysis Button */}
+          {idea && analysis && (
             <div className="p-4 bg-gray-50 flex justify-center">
               <AdvancedAnalysisButton 
                 ideaId={idea.id} 
@@ -227,47 +298,47 @@ const ResultsPage = () => {
       </Card>
       
       <Tabs defaultValue="summary" className="w-full">
-        <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 mb-6">
-          <TabsTrigger value="summary">{t('results.tabs.summary', "Resumo")}</TabsTrigger>
-          <TabsTrigger value="swot">{t('results.tabs.swot', "SWOT")}</TabsTrigger>
-          <TabsTrigger value="market">{t('results.tabs.market', "Mercado")}</TabsTrigger>
-          <TabsTrigger value="competitors">{t('results.tabs.competitors', "Concorrentes")}</TabsTrigger>
-          <TabsTrigger value="financial">{t('results.tabs.financial', "Financeiro")}</TabsTrigger>
-          <TabsTrigger value="recommendations">{t('results.tabs.recommendations', "Recomendações")}</TabsTrigger>
+        <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 mb-6 overflow-x-auto">
+          <TabsTrigger value="summary" className="text-xs sm:text-sm">{t('results.tabs.summary', "Resumo")}</TabsTrigger>
+          <TabsTrigger value="swot" className="text-xs sm:text-sm">{t('results.tabs.swot', "SWOT")}</TabsTrigger>
+          <TabsTrigger value="market" className="text-xs sm:text-sm">{t('results.tabs.market', "Mercado")}</TabsTrigger>
+          <TabsTrigger value="competitors" className="text-xs sm:text-sm">{t('results.tabs.competitors', "Concorrentes")}</TabsTrigger>
+          <TabsTrigger value="financial" className="text-xs sm:text-sm">{t('results.tabs.financial', "Financeiro")}</TabsTrigger>
+          <TabsTrigger value="recommendations" className="text-xs sm:text-sm">{t('results.tabs.recommendations', "Recomendações")}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="summary" className="mt-0">
           <Card>
-            <CardContent className="p-6">
-              <h2 className="text-xl font-bold mb-4">{t('results.summaryTitle', "Resumo da Análise")}</h2>
+            <CardContent className="p-4 md:p-6">
+              <h2 className="text-lg md:text-xl font-bold mb-4">{t('results.summaryTitle', "Resumo da Análise")}</h2>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="font-semibold mb-2">{t('results.ideaDescription', "Descrição da Ideia")}</h3>
-                  <p className="text-muted-foreground mb-4">{idea.description}</p>
+                  <p className="text-muted-foreground mb-4 break-words">{idea.description}</p>
                   
                   <h3 className="font-semibold mb-2">{t('results.targetAudience', "Público-Alvo")}</h3>
-                  <p className="text-muted-foreground mb-4">{idea.audience || t('results.notSpecified', "Não especificado")}</p>
+                  <p className="text-muted-foreground mb-4 break-words">{idea.audience || t('results.notSpecified', "Não especificado")}</p>
                   
                   <h3 className="font-semibold mb-2">{t('results.problemSolved', "Problema Resolvido")}</h3>
-                  <p className="text-muted-foreground">{idea.problem || t('results.notSpecified', "Não especificado")}</p>
+                  <p className="text-muted-foreground break-words">{idea.problem || t('results.notSpecified', "Não especificado")}</p>
                 </div>
                 
                 <div>
                   <h3 className="font-semibold mb-2">{t('results.overallScore', "Pontuação Geral")}</h3>
                   <div className="flex items-center mb-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-r from-brand-blue to-brand-purple flex items-center justify-center text-white text-2xl font-bold mr-4">
+                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-brand-blue to-brand-purple flex items-center justify-center text-white text-lg md:text-2xl font-bold mr-4 shrink-0">
                       {score}%
                     </div>
-                    <div>
-                      <p className="font-medium">{statusTranslation}</p>
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">{statusTranslation}</p>
                       <p className="text-sm text-muted-foreground">{t('results.scoreExplanation', "Baseado na análise geral da ideia")}</p>
                     </div>
                   </div>
                   
                   <h3 className="font-semibold mb-2">{t('results.keyStrengths', "Principais Pontos Fortes")}</h3>
-                  <ul className="list-disc list-inside text-muted-foreground mb-4">
+                  <ul className="list-disc list-inside text-muted-foreground mb-4 space-y-1">
                     {swotAnalysis.strengths?.slice(0, 3).map((strength: string, i: number) => (
-                      <li key={i}>{strength}</li>
+                      <li key={i} className="break-words">{strength}</li>
                     ))}
                     {(!swotAnalysis.strengths || swotAnalysis.strengths.length === 0) && (
                       <li>{t('results.noStrengths', "Nenhum ponto forte identificado")}</li>
@@ -275,9 +346,9 @@ const ResultsPage = () => {
                   </ul>
                   
                   <h3 className="font-semibold mb-2">{t('results.keyWeaknesses', "Principais Pontos Fracos")}</h3>
-                  <ul className="list-disc list-inside text-muted-foreground">
+                  <ul className="list-disc list-inside text-muted-foreground space-y-1">
                     {swotAnalysis.weaknesses?.slice(0, 3).map((weakness: string, i: number) => (
-                      <li key={i}>{weakness}</li>
+                      <li key={i} className="break-words">{weakness}</li>
                     ))}
                     {(!swotAnalysis.weaknesses || swotAnalysis.weaknesses.length === 0) && (
                       <li>{t('results.noWeaknesses', "Nenhum ponto fraco identificado")}</li>
@@ -511,21 +582,21 @@ const ResultsPage = () => {
         </TabsContent>
       </Tabs>
       
-      {/* Share button floating (mobile only) */}
+      {/* Mobile floating buttons */}
       {isMobile && (
         <div className="fixed bottom-20 right-4 z-40">
           <div className="flex flex-col gap-2">
             <Button 
               size="icon" 
               className="rounded-full shadow-lg bg-brand-purple hover:bg-brand-purple/90 h-12 w-12"
-              onClick={() => {}} // Add your share function here
+              onClick={() => {}} 
             >
               <Share2 className="h-5 w-5" />
             </Button>
             <Button 
               size="icon" 
               className="rounded-full shadow-lg bg-brand-purple hover:bg-brand-purple/90 h-12 w-12"
-              onClick={() => {}} // Add your download function here
+              onClick={() => {}} 
             >
               <Download className="h-5 w-5" />
             </Button>
