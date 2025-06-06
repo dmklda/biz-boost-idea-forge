@@ -13,16 +13,9 @@ import { Search, Download, Eye, Trash2, Image, FileText, Calendar } from "lucide
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tables } from "@/integrations/supabase/types";
 
-interface GeneratedContent {
-  id: string;
-  content_type: 'logo' | 'prd' | 'mvp';
-  title: string;
-  content_data: any;
-  file_url?: string;
-  created_at: string;
-  idea_id?: string;
-}
+type GeneratedContent = Tables<'generated_content'>;
 
 export const MyContentPage = () => {
   const { authState } = useAuth();
@@ -113,7 +106,7 @@ export const MyContentPage = () => {
   };
 
   const downloadDocument = (content: GeneratedContent) => {
-    const documentContent = content.content_data.document;
+    const documentContent = (content.content_data as any).document;
     const blob = new Blob([documentContent], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
     
@@ -273,7 +266,7 @@ export const MyContentPage = () => {
               {(selectedContent.content_type === 'prd' || selectedContent.content_type === 'mvp') && (
                 <div className="prose max-w-none">
                   <pre className="whitespace-pre-wrap text-sm bg-muted p-4 rounded-lg">
-                    {selectedContent.content_data.document}
+                    {(selectedContent.content_data as any).document}
                   </pre>
                 </div>
               )}

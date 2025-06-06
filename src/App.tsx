@@ -1,22 +1,23 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { supabase } from './integrations/supabase/client';
-import { LandingPage } from './pages/LandingPage';
-import { PricingPage } from './pages/PricingPage';
-import { DashboardLayout } from './layouts/DashboardLayout';
-import { DashboardHome } from './pages/dashboard/DashboardHome';
-import { IdeasPage } from './pages/dashboard/IdeasPage';
-import { IdeaDetailPage } from './pages/dashboard/IdeaDetailPage';
-import { EditIdeaPage } from './pages/dashboard/EditIdeaPage';
-import { UserSettingsPage } from './pages/dashboard/UserSettingsPage';
-import { AdvancedAnalysisPage } from './pages/dashboard/AdvancedAnalysisPage';
-import { AdvancedMetricsPage } from './pages/dashboard/AdvancedMetricsPage';
-import { ResourceCenterPage } from './pages/dashboard/ResourceCenterPage';
-import { ResultsPage } from './pages/dashboard/ResultsPage';
-import { ToolsPage } from './pages/dashboard/ToolsPage';
-import { DraftsPage } from './pages/dashboard/DraftsPage';
+import LandingPage from './pages/Index';
+import PlansPage from './pages/plans/PlansPage';
+import DashboardLayout from './pages/dashboard/DashboardLayout';
+import DashboardHome from './pages/dashboard/DashboardHome';
+import IdeasPage from './pages/dashboard/IdeasPage';
+import IdeaDetailPage from './pages/dashboard/IdeaDetailPage';
+import EditIdeaPage from './pages/dashboard/EditIdeaPage';
+import UserSettingsPage from './pages/dashboard/UserSettingsPage';
+import AdvancedAnalysisPage from './pages/dashboard/AdvancedAnalysisPage';
+import AdvancedMetricsPage from './pages/dashboard/AdvancedMetricsPage';
+import ResourceCenterPage from './pages/dashboard/ResourceCenterPage';
+import ResultsPage from './pages/dashboard/ResultsPage';
+import ToolsPage from './pages/dashboard/ToolsPage';
+import DraftsPage from './pages/dashboard/DraftsPage';
 import { MyContentPage } from "@/pages/dashboard/MyContentPage";
 
 function App() {
@@ -24,7 +25,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/planos" element={<PricingPage />} />
+        <Route path="/planos" element={<PlansPage />} />
         <Route
           path="/login"
           element={
