@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -79,30 +78,15 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
 
     setIsGeneratingName(true);
     try {
-      const { data, error } = await supabase.functions.invoke('gpt-chat', {
+      const { data, error } = await supabase.functions.invoke('generate-business-name', {
         body: {
-          messages: [
-            {
-              role: 'system',
-              content: 'Você é um especialista em naming e branding. Crie nomes criativos, memoráveis e profissionais para empresas/produtos baseados na descrição fornecida.'
-            },
-            {
-              role: 'user',
-              content: `Baseado nesta ideia de negócio, sugira 1 nome criativo e profissional para a empresa/produto:
-              
-Descrição: ${selectedIdea.description}
-${selectedIdea.audience ? `Público-alvo: ${selectedIdea.audience}` : ''}
-${selectedIdea.problem ? `Problema que resolve: ${selectedIdea.problem}` : ''}
-
-Retorne apenas o nome, sem explicações adicionais.`
-            }
-          ]
+          idea: selectedIdea
         }
       });
 
       if (error) throw error;
 
-      const generatedName = data.content.trim();
+      const generatedName = data.name;
       setCustomName(generatedName);
       setUseCustomName(true);
       toast.success('Nome gerado com sucesso!');
