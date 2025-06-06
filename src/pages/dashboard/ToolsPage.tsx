@@ -298,13 +298,13 @@ const ToolsPage = () => {
   ];
 
   const categories = [
-    { id: "all", name: "Todos", count: allTools.length },
-    { id: "design", name: "Design", count: allTools.filter(t => t.category === "design").length },
-    { id: "documentation", name: "Documentação", count: allTools.filter(t => t.category === "documentation").length },
-    { id: "analysis", name: "Análise", count: allTools.filter(t => t.category === "analysis").length },
-    { id: "marketing", name: "Marketing", count: allTools.filter(t => t.category === "marketing").length },
-    { id: "business", name: "Negócios", count: allTools.filter(t => t.category === "business").length },
-    { id: "advanced", name: "Avançadas", count: allTools.filter(t => t.category === "advanced").length }
+    { id: "all", name: "Todos", shortName: "Todos", count: allTools.length },
+    { id: "design", name: "Design", shortName: "Design", count: allTools.filter(t => t.category === "design").length },
+    { id: "documentation", name: "Documentação", shortName: "Docs", count: allTools.filter(t => t.category === "documentation").length },
+    { id: "analysis", name: "Análise", shortName: "Análise", count: allTools.filter(t => t.category === "analysis").length },
+    { id: "marketing", name: "Marketing", shortName: "Marketing", count: allTools.filter(t => t.category === "marketing").length },
+    { id: "business", name: "Negócios", shortName: "Negócios", count: allTools.filter(t => t.category === "business").length },
+    { id: "advanced", name: "Avançadas", shortName: "Avançadas", count: allTools.filter(t => t.category === "advanced").length }
   ];
 
   const filteredTools = allTools.filter(tool => {
@@ -381,11 +381,16 @@ const ToolsPage = () => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 mb-6">
+        <TabsList className="flex w-full items-center justify-start rounded-md bg-muted p-1 text-muted-foreground overflow-x-auto scrollbar-hide mb-6">
           {categories.map((category) => (
-            <TabsTrigger key={category.id} value={category.id} className="text-xs">
-              {category.name}
-              <Badge variant="secondary" className="ml-1 text-xs">
+            <TabsTrigger 
+              key={category.id} 
+              value={category.id} 
+              className="flex items-center gap-1 whitespace-nowrap px-3 py-1.5 text-xs sm:text-sm font-medium shrink-0"
+            >
+              <span className="hidden sm:inline">{category.name}</span>
+              <span className="sm:hidden">{category.shortName}</span>
+              <Badge variant="secondary" className="text-xs px-1 py-0 h-4 min-w-[1.25rem] flex items-center justify-center">
                 {category.count}
               </Badge>
             </TabsTrigger>
