@@ -81,12 +81,12 @@ const ToolsPage = () => {
 
       {/* Modals */}
       <LogoGeneratorModal 
-        isOpen={isLogoModalOpen} 
-        onClose={() => setIsLogoModalOpen(false)} 
+        open={isLogoModalOpen} 
+        onOpenChange={setIsLogoModalOpen} 
       />
       <PRDMVPGeneratorModal 
-        isOpen={isPRDModalOpen} 
-        onClose={() => setIsPRDModalOpen(false)} 
+        open={isPRDModalOpen} 
+        onOpenChange={setIsPRDModalOpen} 
       />
     </div>
   );
