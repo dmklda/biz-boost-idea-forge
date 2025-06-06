@@ -1,7 +1,6 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Palette, FileText, Lightbulb, BarChart3, TrendingUp, Users, DollarSign, Target, PresentationChart, Briefcase, Search, Calculator, MessageSquare, Brain, Zap, Globe, ShoppingCart } from "lucide-react";
+import { Palette, FileText, Lightbulb, BarChart3, TrendingUp, Users, DollarSign, Target, Presentation, Briefcase, Search, Calculator, MessageSquare, Brain, Zap, Globe, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { LogoGeneratorModal } from "@/components/tools/LogoGeneratorModal";
 import { PRDMVPGeneratorModal } from "@/components/tools/PRDMVPGeneratorModal";
@@ -58,7 +57,7 @@ const ToolsPage = () => {
     {
       title: "Pitch Deck Generator",
       description: "Gere apresentações profissionais para investidores",
-      icon: PresentationChart,
+      icon: Presentation,
       action: () => console.log("Pitch Deck - Coming soon"),
       color: "from-indigo-500 to-purple-500",
       disabled: true
