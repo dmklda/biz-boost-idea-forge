@@ -1,16 +1,14 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Palette, FileText, Lightbulb, Trophy } from "lucide-react";
+import { Palette, FileText, Lightbulb } from "lucide-react";
 import { useState } from "react";
 import { LogoGeneratorModal } from "@/components/tools/LogoGeneratorModal";
 import { PRDMVPGeneratorModal } from "@/components/tools/PRDMVPGeneratorModal";
-import { useNavigate } from "react-router-dom";
 
 const ToolsPage = () => {
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
   const [isPRDModalOpen, setIsPRDModalOpen] = useState(false);
-  const navigate = useNavigate();
 
   const tools = [
     {
@@ -34,13 +32,6 @@ const ToolsPage = () => {
       action: () => console.log("Coming soon"),
       color: "from-green-500 to-emerald-500",
       disabled: true
-    },
-    {
-      title: "Gamificação",
-      description: "Veja seu progresso, conquistas e nível atual",
-      icon: Trophy,
-      action: () => navigate('/dashboard/gamificacao'),
-      color: "from-yellow-500 to-orange-500"
     }
   ];
 

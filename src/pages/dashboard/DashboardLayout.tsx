@@ -1,10 +1,12 @@
+
 import { useState, useEffect } from "react";
 import { Navigate, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useGamification } from "@/hooks/useGamification";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { MobileBottomNav } from "@/components/dashboard/MobileBottomNav";
 import { Button } from "@/components/ui/button";
-import { Menu, Plus, Bell, Search } from "lucide-react";
+import { Menu, Plus, Bell, Search, Trophy, Settings, LogOut } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -18,6 +20,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 const DashboardLayout = () => {
   // Extract both authState and logout function
   const { authState, logout } = useAuth();
+  const { userLevel } = useGamification();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const isMobile = useIsMobile();
   const { t } = useTranslation();
@@ -155,7 +158,7 @@ const DashboardLayout = () => {
                 {!isMobile && <div className="text-sm hidden md:block">
                     <span className="font-medium">{authState.user?.name}</span>
                     <div className="text-xs text-muted-foreground">
-                      {authState.user?.plan === "free" ? t('dashboard.statistics.free') : t('dashboard.statistics.premium')}
+                      {authState.user?.plan === "free" ? "Plano Free" : "Plano Premium"} • Nível {userLevel?.current_level || 1}
                     </div>
                   </div>}
                 
@@ -167,15 +170,31 @@ const DashboardLayout = () => {
                       </div>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>{authState.user?.name || ""}</DropdownMenuLabel>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col">
+                        <span>{authState.user?.name || ""}</span>
+                        <span className="text-xs text-muted-foreground font-normal">
+                          {authState.user?.plan === "free" ? "Plano Free" : "Plano Premium"} • Nível {userLevel?.current_level || 1}
+                        </span>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link to="/dashboard/configuracoes">
+                      <Link to="/dashboard/gamificacao" className="flex items-center cursor-pointer">
+                        <Trophy className="mr-2 h-4 w-4" />
+                        Progresso
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard/configuracoes" className="flex items-center cursor-pointer">
+                        <Settings className="mr-2 h-4 w-4" />
                         {t('nav.profile')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => logout()}>
+                    <DropdownMenuItem onClick={() => logout()} className="cursor-pointer">
+                      <LogOut className="mr-2 h-4 w-4" />
                       {t('nav.logout')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>

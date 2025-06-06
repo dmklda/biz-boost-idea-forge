@@ -1,13 +1,14 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import { MenuIcon, X, ArrowRight, LogIn, User, LayoutDashboard, Settings, LogOut } from "lucide-react";
+import { MenuIcon, X, ArrowRight, LogIn, User, LayoutDashboard, Settings, LogOut, Trophy } from "lucide-react";
 import { ThemeToggle } from "./ui/theme-toggle";
 import { LanguageSwitcher } from "./ui/language-switcher";
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useGamification } from "@/hooks/useGamification";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +24,7 @@ const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const { t } = useTranslation();
   const { authState, logout } = useAuth();
+  const { userLevel } = useGamification();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   
@@ -97,16 +99,34 @@ const Header = () => {
                       {authState.user?.name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="hidden md:inline-block">{authState.user?.name}</span>
+                  <div className="hidden md:flex flex-col items-start">
+                    <span className="text-sm">{authState.user?.name}</span>
+                    <div className="text-xs text-muted-foreground">
+                      {authState.user?.plan === "free" ? "Plano Free" : "Plano Premium"} • Nível {userLevel?.current_level || 1}
+                    </div>
+                  </div>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>{authState.user?.name}</DropdownMenuLabel>
+                <DropdownMenuLabel>
+                  <div className="flex flex-col">
+                    <span>{authState.user?.name}</span>
+                    <span className="text-xs text-muted-foreground font-normal">
+                      {authState.user?.plan === "free" ? "Plano Free" : "Plano Premium"} • Nível {userLevel?.current_level || 1}
+                    </span>
+                  </div>
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link to="/dashboard" className="flex items-center cursor-pointer">
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     {t('nav.dashboard')}
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard/gamificacao" className="flex items-center cursor-pointer">
+                    <Trophy className="mr-2 h-4 w-4" />
+                    Progresso
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -161,12 +181,25 @@ const Header = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>{authState.user?.name}</DropdownMenuLabel>
+                <DropdownMenuLabel>
+                  <div className="flex flex-col">
+                    <span>{authState.user?.name}</span>
+                    <span className="text-xs text-muted-foreground font-normal">
+                      {authState.user?.plan === "free" ? "Plano Free" : "Plano Premium"} • Nível {userLevel?.current_level || 1}
+                    </span>
+                  </div>
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link to="/dashboard" className="flex items-center cursor-pointer">
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     {t('nav.dashboard')}
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard/gamificacao" className="flex items-center cursor-pointer">
+                    <Trophy className="mr-2 h-4 w-4" />
+                    Progresso
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -214,6 +247,14 @@ const Header = () => {
                 >
                   <LayoutDashboard className="h-5 w-5" />
                   {t('nav.dashboard')}
+                </Link>
+                <Link 
+                  to="/dashboard/gamificacao" 
+                  className="flex items-center gap-2 py-3 text-xl font-semibold text-foreground hover:text-brand-purple transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Trophy className="h-5 w-5" />
+                  Progresso
                 </Link>
                 <Link 
                   to="/dashboard/configuracoes" 
