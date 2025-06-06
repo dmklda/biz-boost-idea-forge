@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -7,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { IdeaForm } from "@/components/IdeaForm";
 import { useAuth } from "@/hooks/useAuth";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export const MobileBottomNav = () => {
   const { t } = useTranslation();
@@ -90,6 +92,15 @@ export const MobileBottomNav = () => {
           })}
         </div>
       </div>
+
+      {/* Floating New Analysis Button - Mobile Only */}
+      <Button
+        onClick={() => setIsAnalysisDialogOpen(true)}
+        className="md:hidden fixed bottom-20 right-4 z-40 h-14 w-14 rounded-full bg-brand-purple hover:bg-brand-purple/90 shadow-lg"
+        size="icon"
+      >
+        <Plus className="h-6 w-6 text-white" />
+      </Button>
 
       {/* New Analysis Dialog */}
       <Dialog open={isAnalysisDialogOpen} onOpenChange={setIsAnalysisDialogOpen}>
