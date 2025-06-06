@@ -1,753 +1,595 @@
-import { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { Progress } from "@/components/ui/progress";
-import { 
-  ArrowLeft, 
-  Download, 
-  Share2, 
-  Calendar, 
-  Check, 
-  AlertTriangle, 
-  X, 
-  FileText, 
-  Users, 
-  Tag, 
-  DollarSign,
-  MapPin,
-  Coins
-} from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useTranslation } from "react-i18next";
-import { toast } from "@/components/ui/sonner";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { FavoriteButton } from "@/components/ideas/FavoriteButton";
-import { TagsSelector, TagType } from "@/components/ideas/TagsSelector";
-import { AdvancedAnalysisButton } from "@/components/advanced-analysis";
 
-// Define types for idea and analysis data
-interface Idea {
+import { useEffect, useState } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Edit, BarChart3, Trash2, Download, MessageSquare } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/components/ui/sonner";
+import { useTranslation } from "react-i18next";
+import { FavoriteButton } from "@/components/ideas/FavoriteButton";
+import { TagBadge } from "@/components/ideas/TagBadge";
+import { TagsSelector } from "@/components/ideas/TagsSelector";
+import { AdvancedAnalysisModal } from "@/components/advanced-analysis/AdvancedAnalysisModal";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { cn } from "@/lib/utils";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
+interface IdeaData {
   id: string;
   title: string;
   description: string;
-  audience: string | null;
-  problem: string | null;
-  budget: number | null;
-  location: string | null;
-  monetization: string | null;
-  has_competitors: string | null;
+  audience: string;
+  problem: string;
+  has_competitors: string;
+  monetization: string;
+  budget: number;
+  location: string;
   created_at: string;
+  is_favorite: boolean;
+  tags: string[];
 }
 
-interface Analysis {
+interface AnalysisData {
   id: string;
-  idea_id: string;
   score: number;
   status: string;
-  swot_analysis: SwotAnalysis | null;
-  market_analysis: MarketAnalysis | null;
-  recommendations: Recommendations | null;
-  competitor_analysis: CompetitorAnalysis | null;
-  financial_analysis: FinancialAnalysis | null;
-  created_at: string;
-}
-
-interface SwotAnalysis {
+  market_analysis: any;
+  competitor_analysis: any;
+  financial_analysis: any;
+  swot_analysis: any;
+  recommendations: any;
+  market_size: string;
   strengths: string[];
   weaknesses: string[];
-  opportunities: string[];
-  threats: string[];
-}
-
-interface MarketAnalysis {
-  market_size: string;
-  target_audience: string;
-  growth_potential: string;
-  barriers_to_entry: string[];
-}
-
-interface Recommendations {
-  action_items: string[];
-  next_steps: string[];
-  potential_challenges: string[];
-  suggested_resources: string[];
-}
-
-interface CompetitorAnalysis {
-  key_competitors: string[];
-  competitive_advantage: string;
-  market_gaps: string[];
-}
-
-interface FinancialAnalysis {
-  revenue_potential: string;
-  initial_investment: string;
-  break_even_estimate: string;
-  funding_suggestions: string[];
+  differentiation: string;
 }
 
 const IdeaDetailPage = () => {
-  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
-  const { authState } = useAuth();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
-  const [idea, setIdea] = useState<Idea | null>(null);
-  const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const { authState } = useAuth();
+  const { t } = useTranslation();
+  const [idea, setIdea] = useState<IdeaData | null>(null);
+  const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [shareDialogOpen, setShareDialogOpen] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(false);
-  const [tags, setTags] = useState<TagType[]>([]);
-  
-  // Fetch idea and analysis data
+  const [showAdvancedModal, setShowAdvancedModal] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [ideaTags, setIdeaTags] = useState<string[]>([]);
+
   useEffect(() => {
-    const fetchIdeaDetails = async () => {
+    const fetchData = async () => {
       if (!id || !authState.user?.id) return;
-      
+
       try {
         setLoading(true);
         
-        // Fetch the idea details
+        // Fetch idea details
         const { data: ideaData, error: ideaError } = await supabase
           .from('ideas')
           .select('*')
           .eq('id', id)
           .eq('user_id', authState.user.id)
           .single();
-          
-        if (ideaError) throw ideaError;
-        if (!ideaData) {
-          toast.error(t('ideas.notFound'));
+
+        if (ideaError || !ideaData) {
+          toast.error(t('ideaDetail.notFound', "Ideia não encontrada"));
           navigate('/dashboard/ideias');
           return;
         }
-        
-        setIdea(ideaData);
-        
-        // Fetch the analysis details
+
+        // Fetch analysis data
         const { data: analysisData, error: analysisError } = await supabase
           .from('idea_analyses')
           .select('*')
           .eq('idea_id', id)
+          .eq('user_id', authState.user.id)
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle();
-          
-        if (analysisError) throw analysisError;
+
+        if (analysisError) {
+          console.error("Error fetching analysis:", analysisError);
+        }
+
+        // Fetch favorite status
+        const { data: favoriteData, error: favoriteError } = await supabase
+          .from('idea_favorites')
+          .select('id')
+          .eq('user_id', authState.user.id)
+          .eq('idea_id', id)
+          .maybeSingle();
+
+        if (favoriteError) {
+          console.error("Error fetching favorite status:", favoriteError);
+        }
+
+        // Fetch tags
+        const { data: tagsData, error: tagsError } = await supabase
+          .from('idea_tags')
+          .select('tags (name)')
+          .eq('idea_id', id)
+          .eq('user_id', authState.user.id);
+
+        if (tagsError) {
+          console.error("Error fetching tags:", tagsError);
+        }
+
+        setIdea({
+          ...ideaData,
+          is_favorite: !!favoriteData,
+          tags: tagsData?.map((item: any) => item.tags.name) || []
+        });
         
         if (analysisData) {
-          // Convert the JSON fields to properly typed objects with type assertions
-          const typedAnalysis: Analysis = {
-            id: analysisData.id,
-            idea_id: analysisData.idea_id,
-            score: analysisData.score,
-            status: analysisData.status,
-            created_at: analysisData.created_at,
-            swot_analysis: analysisData.swot_analysis as unknown as SwotAnalysis,
-            market_analysis: analysisData.market_analysis as unknown as MarketAnalysis,
-            recommendations: analysisData.recommendations as unknown as Recommendations,
-            competitor_analysis: analysisData.competitor_analysis as unknown as CompetitorAnalysis,
-            financial_analysis: analysisData.financial_analysis as unknown as FinancialAnalysis,
-          };
-          
-          setAnalysis(typedAnalysis);
+          setAnalysis(analysisData);
         }
+        
+        setIsFavorite(!!favoriteData);
+        setIdeaTags(tagsData?.map((item: any) => item.tags.name) || []);
+
       } catch (error) {
-        console.error("Error fetching idea details:", error);
-        toast.error(t('errors.fetchingDetails'));
+        console.error("Error fetching data:", error);
+        toast.error(t('ideaDetail.errorLoading', "Erro ao carregar dados da ideia"));
       } finally {
         setLoading(false);
       }
     };
-    
-    fetchIdeaDetails();
+
+    fetchData();
   }, [id, authState.user?.id, navigate, t]);
-  
-  // Function to handle sharing
-  const handleShare = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/resultados?id=${id}`);
-    setCopySuccess(true);
-    setTimeout(() => setCopySuccess(false), 2000);
-  };
-  
-  // Function to download analysis as PDF
-  const handleDownloadPDF = async () => {
-    if (!analysis || !idea) {
-      toast.error(t('errors.pdfError') + ". " + t('errors.contentNotReady'));
-      return;
-    }
 
-    // Lógica de créditos para download de PDF
-    if (authState.user?.plan !== 'pro') {
-      const { error: creditError } = await (supabase.rpc as any)('deduct_credits_and_log', {
-        p_user_id: authState.user.id,
-        p_amount: 1,
-        p_feature: 'download_pdf',
-        p_item_id: idea.id,
-        p_description: 'Download de PDF da análise básica'
-      });
-      if (creditError) {
-        toast.error(t('ideaForm.insufficientCredits', "Créditos insuficientes para baixar PDF"));
-        return;
+  const handleDelete = async () => {
+    if (!id || !authState.user?.id) return;
+
+    try {
+      const { error } = await supabase
+        .from('ideas')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', authState.user.id);
+
+      if (error) throw error;
+
+      toast.success(t('ideaDetail.deleteSuccess', "Ideia excluída com sucesso"));
+      navigate('/dashboard/ideias');
+    } catch (error) {
+      console.error("Error deleting idea:", error);
+      toast.error(t('ideaDetail.deleteError', "Erro ao excluir ideia"));
+    }
+  };
+
+  const handleFavoriteToggle = (newIsFavorite: boolean) => {
+    setIsFavorite(newIsFavorite);
+    if (idea) {
+      setIdea({ ...idea, is_favorite: newIsFavorite });
+    }
+  };
+
+  const handleTagsUpdate = (newTags: string[]) => {
+    setIdeaTags(newTags);
+    if (idea) {
+      setIdea({ ...idea, tags: newTags });
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'viable':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'moderate':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'not viable':
+        return 'bg-red-100 text-red-800 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    const translations: Record<string, string> = {
+      'viable': t('ideas.status.viable', 'Viável'),
+      'moderate': t('ideas.status.moderate', 'Moderado'),
+      'not viable': t('ideas.status.notViable', 'Não Viável')
+    };
+    return translations[status?.toLowerCase()] || status;
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const exportToPDF = async () => {
+    const element = document.getElementById('idea-detail-content');
+    if (!element) return;
+
+    try {
+      const canvas = await html2canvas(element);
+      const imgData = canvas.toDataURL('image/png');
+      
+      const pdf = new jsPDF();
+      const imgWidth = 210;
+      const pageHeight = 295;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      
+      let position = 0;
+      
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+      
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
       }
+      
+      pdf.save(`${idea?.title || 'ideia'}.pdf`);
+      toast.success(t('ideaDetail.exportSuccess', "PDF exportado com sucesso"));
+    } catch (error) {
+      console.error("Error exporting PDF:", error);
+      toast.error(t('ideaDetail.exportError', "Erro ao exportar PDF"));
     }
+  };
 
-    // Placeholder para geração de PDF
-    toast.success(t('pdf.downloadComplete', 'Download concluído') + '. ' + t('pdf.pdfReady', 'Seu PDF está pronto'));
-    // Aqui você pode chamar a função real de geração de PDF
-  };
-  
-  // Function to get score color class
-  const getScoreColorClass = (score: number) => {
-    if (score >= 70) return "text-green-500";
-    if (score >= 40) return "text-amber-500";
-    return "text-red-500";
-  };
-  
-  // Function to get status badge
-  const getStatusBadge = (score: number) => {
-    if (score >= 70) {
-      return <Badge className="bg-green-500/10 text-green-600 border-green-500">{t('ideas.scoreStatus.great')}</Badge>;
-    } else if (score >= 40) {
-      return <Badge className="bg-amber-500/10 text-amber-600 border-amber-500">{t('ideas.scoreStatus.medium')}</Badge>;
-    } else {
-      return <Badge className="bg-red-500/10 text-red-600 border-red-500">{t('ideas.scoreStatus.low')}</Badge>;
-    }
-  };
-  
-  // Handle tags change
-  const handleTagsChange = (updatedTags: TagType[]) => {
-    setTags(updatedTags);
-  };
-  
-  // Render loading state
   if (loading) {
     return (
-      <div className="space-y-4">
-        <div className="flex items-center">
-          <Button variant="ghost" size="sm" className="animate-pulse">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            <div className="h-4 w-20 bg-muted rounded"></div>
-          </Button>
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-10 w-10" />
+          <Skeleton className="h-8 w-64" />
         </div>
-        
-        <div className="h-8 w-3/4 bg-muted rounded animate-pulse"></div>
-        <div className="h-4 w-1/2 bg-muted rounded animate-pulse"></div>
-        
-        <Card className="animate-pulse shadow-sm">
-          <CardHeader>
-            <div className="h-6 w-1/3 bg-muted rounded"></div>
-            <div className="h-4 w-1/2 bg-muted rounded"></div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="h-20 bg-muted rounded"></div>
-            <div className="h-20 bg-muted rounded"></div>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-48 w-full" />
+          </div>
+          <div className="space-y-6">
+            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-48 w-full" />
+          </div>
+        </div>
       </div>
     );
   }
-  
+
   if (!idea) {
     return (
-      <div className="text-center py-10">
-        <h2 className="text-xl font-medium">{t('ideas.notFound')}</h2>
-        <Button variant="ghost" className="mt-4" asChild>
-          <Link to="/dashboard/ideias">{t('ideas.backToIdeas')}</Link>
-        </Button>
+      <div className="flex items-center justify-center h-96">
+        <p>{t('ideaDetail.notFound', "Ideia não encontrada")}</p>
       </div>
     );
   }
-  
+
   return (
-    <div className="space-y-6 pb-24">
-      {/* Back button and actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard/ideias')} className="w-fit">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          {t('common.back')}
-        </Button>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard/ideias')}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold break-words">{idea.title}</h1>
+            <p className="text-muted-foreground">
+              {t('ideaDetail.createdAt', "Criado em")} {formatDate(idea.created_at)}
+            </p>
+          </div>
+        </div>
         
         <div className="flex items-center gap-2">
-          <FavoriteButton 
-            ideaId={idea.id} 
-            variant="outline" 
+          <FavoriteButton
+            ideaId={idea.id}
+            isFavorite={isFavorite}
             size="sm"
-            showText={true}
+            onToggle={handleFavoriteToggle}
           />
-          
-          <Button variant="outline" size="sm" onClick={handleShare} className="flex items-center gap-1">
-            <Share2 className="h-4 w-4" />
-            <span className="hidden sm:inline">{copySuccess ? t('common.copied') : t('common.share')}</span>
+          <Button variant="outline" size="sm" onClick={exportToPDF}>
+            <Download className="h-4 w-4 mr-2" />
+            {t('ideaDetail.exportPdf', "Exportar PDF")}
           </Button>
-          
-          <Button variant="outline" size="sm" onClick={handleDownloadPDF} className="flex items-center gap-1">
-            <Download className="h-4 w-4" />
-            <span className="hidden sm:inline">{t('common.pdf')}</span>
+          <Button variant="outline" size="sm" asChild>
+            <Link to={`/dashboard/ideias/edit?id=${idea.id}&reanalyze=true`}>
+              <Edit className="h-4 w-4 mr-2" />
+              {t('ideaDetail.reanalyze', "Reanalisar")}
+            </Link>
           </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                <Trash2 className="h-4 w-4 mr-2" />
+                {t('ideaDetail.delete', "Excluir")}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t('ideaDetail.confirmDelete', "Confirmar exclusão")}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t('ideaDetail.deleteWarning', "Esta ação não pode ser desfeita. Isso excluirá permanentemente sua ideia e todos os dados relacionados.")}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t('common.cancel', "Cancelar")}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+                  {t('ideaDetail.delete', "Excluir")}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
-      
-      {/* Idea header */}
-      <div>
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{idea.title}</h1>
-        </div>
-        <div className="flex flex-wrap items-center gap-2 mt-2">
-          <div className="flex items-center gap-2 text-muted-foreground text-sm">
-            <Calendar className="h-4 w-4" />
-            <span>{new Date(idea.created_at).toLocaleDateString()}</span>
-            {analysis && (
-              <>
-                <span>•</span>
-                {getStatusBadge(analysis.score)}
-              </>
-            )}
-          </div>
-          {/* Add tags selector */}
-          <div className="ml-auto">
-            <TagsSelector ideaId={idea.id} onTagsChange={handleTagsChange} />
-          </div>
-        </div>
-      </div>
-      
-      {/* Analysis content */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid grid-cols-2 md:grid-cols-4">
-          <TabsTrigger value="overview">{t('ideas.detail.overview')}</TabsTrigger>
-          <TabsTrigger value="analysis">{t('ideas.detail.analysis')}</TabsTrigger>
-          <TabsTrigger value="recommendations">{t('ideas.detail.recommendations')}</TabsTrigger>
-          <TabsTrigger value="financials">{t('ideas.detail.financials')}</TabsTrigger>
-        </TabsList>
-        
-        {/* Overview tab */}
-        <TabsContent value="overview" className="space-y-4">
-          {/* Score card */}
-          {analysis && (
-            <Card className="shadow-sm">
-              <CardHeader className="pb-3">
-                <CardTitle>{t('ideas.detail.viabilityScore')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col items-center sm:flex-row sm:justify-between gap-4">
-                  <div className="text-center sm:text-left">
-                    <span className={`text-5xl font-bold ${getScoreColorClass(analysis.score)}`}>
-                      {analysis.score}%
-                    </span>
-                    <p className="text-muted-foreground mt-2 max-w-md">
-                      {analysis.score >= 70
-                        ? t('ideas.detail.highScore')
-                        : analysis.score >= 40
-                        ? t('ideas.detail.mediumScore')
-                        : t('ideas.detail.lowScore')}
-                    </p>
-                  </div>
-                  
-                  <div className="w-full sm:max-w-xs">
-                    <Progress value={analysis.score} className="h-3" />
-                    <div className="flex justify-between mt-1 text-xs text-muted-foreground">
-                      <span>0%</span>
-                      <span>50%</span>
-                      <span>100%</span>
-                    </div>
-                  </div>
-                </div>
 
-                {/* Add Advanced Analysis Button */}
+      <div id="idea-detail-content" className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Content */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Idea Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                {t('ideaDetail.ideaInfo', "Informações da Ideia")}
                 {analysis && (
-                  <div className="mt-4 flex justify-center sm:justify-end">
-                    <AdvancedAnalysisButton 
-                      ideaId={idea.id} 
-                      className="ml-2"
-                    />
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="px-3 py-1">
+                      {analysis.score}% viabilidade
+                    </Badge>
+                    {analysis.status && (
+                      <Badge 
+                        variant="outline" 
+                        className={cn("px-3 py-1 border", getStatusColor(analysis.status))}
+                      >
+                        {getStatusText(analysis.status)}
+                      </Badge>
+                    )}
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          )}
-          
-          {/* Idea details */}
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
-              <CardTitle>{t('ideas.detail.ideaDetails')}</CardTitle>
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h3 className="font-medium text-sm flex items-center gap-1">
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                  {t('ideas.detail.description')}
-                </h3>
-                <p className="mt-1">{idea.description}</p>
+                <h3 className="font-semibold text-sm mb-2">{t('ideaDetail.description', "Descrição")}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{idea.description}</p>
               </div>
               
-              <div>
-                <h3 className="font-medium text-sm flex items-center gap-1">
-                  <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-                  {t('ideas.detail.problemSolved')}
-                </h3>
-                <p className="mt-1">{idea.problem || t('common.notSpecified')}</p>
-              </div>
+              {idea.audience && (
+                <div>
+                  <h3 className="font-semibold text-sm mb-2">{t('ideaDetail.audience', "Público-alvo")}</h3>
+                  <p className="text-sm text-muted-foreground">{idea.audience}</p>
+                </div>
+              )}
               
-              <div>
-                <h3 className="font-medium text-sm flex items-center gap-1">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  {t('ideas.detail.targetAudience')}
-                </h3>
-                <p className="mt-1">{idea.audience || t('common.notSpecified')}</p>
-              </div>
+              {idea.problem && (
+                <div>
+                  <h3 className="font-semibold text-sm mb-2">{t('ideaDetail.problem', "Problema")}</h3>
+                  <p className="text-sm text-muted-foreground">{idea.problem}</p>
+                </div>
+              )}
+              
+              {idea.monetization && (
+                <div>
+                  <h3 className="font-semibold text-sm mb-2">{t('ideaDetail.monetization', "Monetização")}</h3>
+                  <p className="text-sm text-muted-foreground">{idea.monetization}</p>
+                </div>
+              )}
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {idea.budget !== null && (
+                {idea.budget > 0 && (
                   <div>
-                    <h3 className="font-medium text-sm flex items-center gap-1">
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
-                      {t('ideas.detail.budget')}
-                    </h3>
-                    <p className="mt-1">
-                      {new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'USD'
-                      }).format(idea.budget)}
+                    <h3 className="font-semibold text-sm mb-2">{t('ideaDetail.budget', "Orçamento")}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      R$ {idea.budget.toLocaleString('pt-BR')}
                     </p>
                   </div>
                 )}
                 
                 {idea.location && (
                   <div>
-                    <h3 className="font-medium text-sm flex items-center gap-1">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      {t('ideas.detail.location')}
-                    </h3>
-                    <p className="mt-1">{idea.location}</p>
-                  </div>
-                )}
-                
-                {idea.monetization && (
-                  <div>
-                    <h3 className="font-medium text-sm flex items-center gap-1">
-                      <Coins className="h-4 w-4 text-muted-foreground" />
-                      {t('ideas.detail.monetization')}
-                    </h3>
-                    <p className="mt-1">{idea.monetization}</p>
-                  </div>
-                )}
-                
-                {idea.has_competitors && (
-                  <div>
-                    <h3 className="font-medium text-sm flex items-center gap-1">
-                      <Tag className="h-4 w-4 text-muted-foreground" />
-                      {t('ideas.detail.competitors')}
-                    </h3>
-                    <p className="mt-1">{idea.has_competitors}</p>
+                    <h3 className="font-semibold text-sm mb-2">{t('ideaDetail.location', "Localização")}</h3>
+                    <p className="text-sm text-muted-foreground">{idea.location}</p>
                   </div>
                 )}
               </div>
             </CardContent>
           </Card>
-          
-          {/* Quick summary */}
-          {analysis && analysis.swot_analysis && (
-            <Card className="shadow-sm">
-              <CardHeader className="pb-3">
-                <CardTitle>{t('ideas.detail.quickSummary')}</CardTitle>
+
+          {/* Analysis Results */}
+          {analysis && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  {t('ideaDetail.analysisResults', "Resultados da Análise")}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowAdvancedModal(true)}
+                  >
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    {t('ideaDetail.advancedAnalysis', "Análise Avançada")}
+                  </Button>
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <h3 className="font-medium text-sm flex items-center gap-1 text-green-500">
-                      <Check className="h-4 w-4" />
-                      {t('ideas.detail.strengths')}
-                    </h3>
-                    <ul className="ml-6 list-disc text-sm space-y-1">
-                      {analysis.swot_analysis.strengths?.map?.((strength, idx) => (
-                        <li key={idx}>{strength}</li>
-                      )) || <li>{t('common.notSpecified')}</li>}
-                    </ul>
+              <CardContent className="space-y-6">
+                {/* SWOT Analysis */}
+                {analysis.swot_analysis && (
+                  <div>
+                    <h3 className="font-semibold mb-3">{t('ideaDetail.swotAnalysis', "Análise SWOT")}</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {analysis.swot_analysis.strengths && (
+                        <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                          <h4 className="font-medium text-green-800 mb-2">{t('ideaDetail.strengths', "Forças")}</h4>
+                          <ul className="text-sm text-green-700 space-y-1">
+                            {analysis.swot_analysis.strengths.map((strength: string, index: number) => (
+                              <li key={index}>• {strength}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {analysis.swot_analysis.weaknesses && (
+                        <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+                          <h4 className="font-medium text-red-800 mb-2">{t('ideaDetail.weaknesses', "Fraquezas")}</h4>
+                          <ul className="text-sm text-red-700 space-y-1">
+                            {analysis.swot_analysis.weaknesses.map((weakness: string, index: number) => (
+                              <li key={index}>• {weakness}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {analysis.swot_analysis.opportunities && (
+                        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                          <h4 className="font-medium text-blue-800 mb-2">{t('ideaDetail.opportunities', "Oportunidades")}</h4>
+                          <ul className="text-sm text-blue-700 space-y-1">
+                            {analysis.swot_analysis.opportunities.map((opportunity: string, index: number) => (
+                              <li key={index}>• {opportunity}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {analysis.swot_analysis.threats && (
+                        <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
+                          <h4 className="font-medium text-orange-800 mb-2">{t('ideaDetail.threats', "Ameaças")}</h4>
+                          <ul className="text-sm text-orange-700 space-y-1">
+                            {analysis.swot_analysis.threats.map((threat: string, index: number) => (
+                              <li key={index}>• {threat}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <h3 className="font-medium text-sm flex items-center gap-1 text-red-500">
-                      <X className="h-4 w-4" />
-                      {t('ideas.detail.weaknesses')}
-                    </h3>
-                    <ul className="ml-6 list-disc text-sm space-y-1">
-                      {analysis.swot_analysis.weaknesses?.map?.((weakness, idx) => (
-                        <li key={idx}>{weakness}</li>
-                      )) || <li>{t('common.notSpecified')}</li>}
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-        
-        {/* Analysis tab */}
-        <TabsContent value="analysis" className="space-y-4">
-          {analysis && analysis.swot_analysis ? (
-            <>
-              <Card className="shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle>{t('ideas.detail.swotAnalysis')}</CardTitle>
-                  <CardDescription>
-                    {t('ideas.detail.swotDescription')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <h3 className="font-medium text-sm flex items-center gap-1 text-green-500">
-                        <Check className="h-4 w-4" />
-                        {t('ideas.detail.strengths')}
-                      </h3>
-                      <ul className="ml-6 list-disc space-y-1">
-                        {analysis.swot_analysis.strengths?.map?.((strength, idx) => (
-                          <li key={idx}>{strength}</li>
-                        )) || <li>{t('common.notSpecified')}</li>}
-                      </ul>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h3 className="font-medium text-sm flex items-center gap-1 text-red-500">
-                        <X className="h-4 w-4" />
-                        {t('ideas.detail.weaknesses')}
-                      </h3>
-                      <ul className="ml-6 list-disc space-y-1">
-                        {analysis.swot_analysis.weaknesses?.map?.((weakness, idx) => (
-                          <li key={idx}>{weakness}</li>
-                        )) || <li>{t('common.notSpecified')}</li>}
-                      </ul>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h3 className="font-medium text-sm flex items-center gap-1 text-blue-500">
-                        <AlertTriangle className="h-4 w-4" />
-                        {t('ideas.detail.opportunities')}
-                      </h3>
-                      <ul className="ml-6 list-disc space-y-1">
-                        {analysis.swot_analysis.opportunities?.map?.((opportunity, idx) => (
-                          <li key={idx}>{opportunity}</li>
-                        )) || <li>{t('common.notSpecified')}</li>}
-                      </ul>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h3 className="font-medium text-sm flex items-center gap-1 text-amber-500">
-                        <AlertTriangle className="h-4 w-4" />
-                        {t('ideas.detail.threats')}
-                      </h3>
-                      <ul className="ml-6 list-disc space-y-1">
-                        {analysis.swot_analysis.threats?.map?.((threat, idx) => (
-                          <li key={idx}>{threat}</li>
-                        )) || <li>{t('common.notSpecified')}</li>}
+                )}
+
+                {/* Recommendations */}
+                {analysis.recommendations && (
+                  <div>
+                    <h3 className="font-semibold mb-3">{t('ideaDetail.recommendations', "Recomendações")}</h3>
+                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <ul className="text-sm text-blue-800 space-y-2">
+                        {analysis.recommendations.map((recommendation: string, index: number) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="text-blue-600 mt-1">•</span>
+                            <span>{recommendation}</span>
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-              
-              {analysis.market_analysis && (
-                <Card className="shadow-sm">
-                  <CardHeader className="pb-3">
-                    <CardTitle>{t('ideas.detail.marketAnalysis')}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <h3 className="font-medium text-sm">{t('ideas.detail.marketSize')}</h3>
-                      <p className="mt-1">{analysis.market_analysis.market_size}</p>
-                    </div>
-                    
-                    <div>
-                      <h3 className="font-medium text-sm">{t('ideas.detail.targetAudience')}</h3>
-                      <p className="mt-1">{analysis.market_analysis.target_audience}</p>
-                    </div>
-                    
-                    <div>
-                      <h3 className="font-medium text-sm">{t('ideas.detail.growthPotential')}</h3>
-                      <p className="mt-1">{analysis.market_analysis.growth_potential}</p>
-                    </div>
-                    
-                    <div>
-                      <h3 className="font-medium text-sm">{t('ideas.detail.barriers')}</h3>
-                      <ul className="ml-6 list-disc mt-1">
-                        {analysis.market_analysis.barriers_to_entry?.map?.((barrier, idx) => (
-                          <li key={idx}>{barrier}</li>
-                        )) || <li>{t('common.notSpecified')}</li>}
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-              
-              {analysis.competitor_analysis && (
-                <Card className="shadow-sm">
-                  <CardHeader className="pb-3">
-                    <CardTitle>{t('ideas.detail.competitorAnalysis')}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <h3 className="font-medium text-sm">{t('ideas.detail.keyCompetitors')}</h3>
-                      <ul className="ml-6 list-disc mt-1">
-                        {analysis.competitor_analysis.key_competitors?.map?.((competitor, idx) => (
-                          <li key={idx}>{competitor}</li>
-                        )) || <li>{t('common.notSpecified')}</li>}
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <h3 className="font-medium text-sm">{t('ideas.detail.competitiveAdvantage')}</h3>
-                      <p className="mt-1">{analysis.competitor_analysis.competitive_advantage}</p>
-                    </div>
-                    
-                    <div>
-                      <h3 className="font-medium text-sm">{t('ideas.detail.marketGaps')}</h3>
-                      <ul className="ml-6 list-disc mt-1">
-                        {analysis.competitor_analysis.market_gaps?.map?.((gap, idx) => (
-                          <li key={idx}>{gap}</li>
-                        )) || <li>{t('common.notSpecified')}</li>}
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </>
-          ) : (
-            <Card className="shadow-sm">
-              <CardContent className="p-6 text-center">
-                <div className="text-muted-foreground">
-                  {t('ideas.detail.noAnalysis')}
-                </div>
+                )}
               </CardContent>
             </Card>
           )}
-        </TabsContent>
-        
-        {/* Recommendations tab */}
-        <TabsContent value="recommendations" className="space-y-4">
-          {analysis && analysis.recommendations ? (
-            <Card className="shadow-sm">
-              <CardHeader className="pb-3">
-                <CardTitle>{t('ideas.detail.recommendationsAndNextSteps')}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.actionItems')}</h3>
-                  <ul className="ml-6 list-disc mt-1">
-                    {analysis.recommendations.action_items?.map?.((item, idx) => (
-                      <li key={idx}>{item}</li>
-                    )) || <li>{t('common.notSpecified')}</li>}
-                  </ul>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.nextSteps')}</h3>
-                  <ul className="ml-6 list-disc mt-1">
-                    {analysis.recommendations.next_steps?.map?.((step, idx) => (
-                      <li key={idx}>{step}</li>
-                    )) || <li>{t('common.notSpecified')}</li>}
-                  </ul>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.potentialChallenges')}</h3>
-                  <ul className="ml-6 list-disc mt-1">
-                    {analysis.recommendations.potential_challenges?.map?.((challenge, idx) => (
-                      <li key={idx}>{challenge}</li>
-                    )) || <li>{t('common.notSpecified')}</li>}
-                  </ul>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.suggestedResources')}</h3>
-                  <ul className="ml-6 list-disc mt-1">
-                    {analysis.recommendations.suggested_resources?.map?.((resource, idx) => (
-                      <li key={idx}>{resource}</li>
-                    )) || <li>{t('common.notSpecified')}</li>}
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card className="shadow-sm">
-              <CardContent className="p-6 text-center">
-                <div className="text-muted-foreground">
-                  {t('ideas.detail.noRecommendations')}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-        
-        {/* Financials tab */}
-        <TabsContent value="financials" className="space-y-4">
-          {analysis && analysis.financial_analysis ? (
-            <Card className="shadow-sm">
-              <CardHeader className="pb-3">
-                <CardTitle>{t('ideas.detail.financialAnalysis')}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.revenuePotential')}</h3>
-                  <p className="mt-1">{analysis.financial_analysis.revenue_potential}</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.initialInvestment')}</h3>
-                  <p className="mt-1">{analysis.financial_analysis.initial_investment}</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.breakEvenEstimate')}</h3>
-                  <p className="mt-1">{analysis.financial_analysis.break_even_estimate}</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-sm">{t('ideas.detail.fundingSuggestions')}</h3>
-                  <ul className="ml-6 list-disc mt-1">
-                    {analysis.financial_analysis.funding_suggestions?.map?.((suggestion, idx) => (
-                      <li key={idx}>{suggestion}</li>
-                    )) || <li>{t('common.notSpecified')}</li>}
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card className="shadow-sm">
-              <CardContent className="p-6 text-center">
-                <div className="text-muted-foreground">
-                  {t('ideas.detail.noFinancials')}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-      </Tabs>
-      
-      {/* Share button floating (mobile only) */}
-      {isMobile && (
-        <div className="fixed bottom-20 right-4 z-40">
-          <div className="flex flex-col gap-2">
-            <Button 
-              size="icon" 
-              className="rounded-full shadow-lg bg-brand-purple hover:bg-brand-purple/90 h-12 w-12"
-              onClick={handleShare}
-            >
-              <Share2 className="h-5 w-5" />
-            </Button>
-            <Button 
-              size="icon" 
-              className="rounded-full shadow-lg bg-brand-purple hover:bg-brand-purple/90 h-12 w-12"
-              onClick={handleDownloadPDF}
-            >
-              <Download className="h-5 w-5" />
-            </Button>
-          </div>
         </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Tags */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">{t('ideaDetail.tags', "Tags")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <TagsSelector
+                ideaId={idea.id}
+                selectedTags={ideaTags}
+                onTagsUpdate={handleTagsUpdate}
+              />
+              {ideaTags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {ideaTags.map((tag, index) => (
+                    <TagBadge key={index} name={tag} />
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Quick Stats */}
+          {analysis && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">{t('ideaDetail.quickStats', "Estatísticas Rápidas")}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {analysis.market_size && (
+                  <div>
+                    <h4 className="font-medium text-sm mb-1">{t('ideaDetail.marketSize', "Tamanho do Mercado")}</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.market_size}</p>
+                  </div>
+                )}
+                
+                {analysis.differentiation && (
+                  <div>
+                    <h4 className="font-medium text-sm mb-1">{t('ideaDetail.differentiation', "Diferenciação")}</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.differentiation}</p>
+                  </div>
+                )}
+                
+                {analysis.strengths && analysis.strengths.length > 0 && (
+                  <div>
+                    <h4 className="font-medium text-sm mb-2">{t('ideaDetail.topStrengths', "Principais Forças")}</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      {analysis.strengths.slice(0, 3).map((strength, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span className="text-green-600 mt-1">•</span>
+                          <span>{strength}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">{t('ideaDetail.actions', "Ações")}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button variant="outline" size="sm" className="w-full" asChild>
+                <Link to={`/dashboard/resultados/${idea.id}`}>
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  {t('ideaDetail.viewResults', "Ver Resultados Completos")}
+                </Link>
+              </Button>
+              
+              {analysis && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full"
+                  onClick={() => setShowAdvancedModal(true)}
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  {t('ideaDetail.chatWithAi', "Conversar com IA")}
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Advanced Analysis Modal */}
+      {analysis && (
+        <AdvancedAnalysisModal
+          isOpen={showAdvancedModal}
+          onClose={() => setShowAdvancedModal(false)}
+          ideaId={idea.id}
+          analysisId={analysis.id}
+        />
       )}
     </div>
   );

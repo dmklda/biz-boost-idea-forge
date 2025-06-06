@@ -7,6 +7,7 @@ import { MoreVertical, Edit, Trash2, BarChart3, CheckSquare } from "lucide-react
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { FavoriteButton } from "./FavoriteButton";
 import { TagBadge } from "./TagBadge";
+import { ReanalyzeModal } from "./ReanalyzeModal";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -49,6 +50,7 @@ export const IdeaCard = ({
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [localIsFavorite, setLocalIsFavorite] = useState(is_favorite);
+  const [showReanalyzeModal, setShowReanalyzeModal] = useState(false);
 
   const handleCardClick = (e: React.MouseEvent) => {
     // Don't navigate if clicking on interactive elements
@@ -80,6 +82,12 @@ export const IdeaCard = ({
     }
   };
 
+  const handleReanalyze = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowReanalyzeModal(true);
+  };
+
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -98,6 +106,11 @@ export const IdeaCard = ({
 
   const handleFavoriteToggle = (isFavorite: boolean) => {
     setLocalIsFavorite(isFavorite);
+  };
+
+  const handleReanalyzeSuccess = () => {
+    // Emit event to refresh data
+    window.dispatchEvent(new CustomEvent('analysis-updated'));
   };
 
   const getStatusColor = (status: string) => {
@@ -131,118 +144,135 @@ export const IdeaCard = ({
   };
 
   return (
-    <Card 
-      className={cn(
-        "group transition-all duration-200 hover:shadow-md cursor-pointer relative overflow-hidden",
-        isSelected && "ring-2 ring-brand-blue shadow-lg",
-        className
-      )}
-      onClick={handleCardClick}
-    >
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-sm md:text-base line-clamp-2 break-words group-hover:text-brand-blue transition-colors">
-              {title}
-            </h3>
-            <div className="flex items-center gap-2 mt-2 flex-wrap">
-              <span className="text-xs text-muted-foreground">
-                {formatDate(created_at)}
-              </span>
-              {score !== null && score !== undefined && (
-                <Badge variant="outline" className="text-xs px-2 py-0">
-                  {score}% viabilidade
-                </Badge>
-              )}
-              {status && (
-                <Badge 
-                  variant="outline" 
-                  className={cn("text-xs px-2 py-0 border", getStatusColor(status))}
-                >
-                  {getStatusText(status)}
+    <>
+      <Card 
+        className={cn(
+          "group transition-all duration-200 hover:shadow-md cursor-pointer relative overflow-hidden",
+          isSelected && "ring-2 ring-brand-blue shadow-lg",
+          className
+        )}
+        onClick={handleCardClick}
+      >
+        <CardHeader className="pb-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-sm md:text-base line-clamp-2 break-words group-hover:text-brand-blue transition-colors">
+                {title}
+              </h3>
+              <div className="flex items-center gap-2 mt-2 flex-wrap">
+                <span className="text-xs text-muted-foreground">
+                  {formatDate(created_at)}
+                </span>
+                {score !== null && score !== undefined && (
+                  <Badge variant="outline" className="text-xs px-2 py-0">
+                    {score}% viabilidade
+                  </Badge>
+                )}
+                {status && (
+                  <Badge 
+                    variant="outline" 
+                    className={cn("text-xs px-2 py-0 border", getStatusColor(status))}
+                  >
+                    {getStatusText(status)}
+                  </Badge>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-1 shrink-0">
+              <FavoriteButton
+                ideaId={id}
+                isFavorite={localIsFavorite}
+                onToggle={handleFavoriteToggle}
+                size="sm"
+              />
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={handleEdit} className="flex items-center gap-2">
+                    <Edit className="h-4 w-4" />
+                    {t('ideas.actions.edit', 'Editar')}
+                  </DropdownMenuItem>
+                  {(score !== null && score !== undefined) && (
+                    <>
+                      <DropdownMenuItem onClick={handleReanalyze} className="flex items-center gap-2">
+                        <Edit className="h-4 w-4" />
+                        {t('ideas.actions.reanalyze', 'Reanalisar')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={handleAnalyze} className="flex items-center gap-2">
+                        <BarChart3 className="h-4 w-4" />
+                        {t('ideas.actions.viewResults', 'Ver Resultados')}
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  <DropdownMenuItem 
+                    onClick={handleDelete} 
+                    className="flex items-center gap-2 text-red-600 focus:text-red-600"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {t('ideas.actions.delete', 'Excluir')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="pb-3">
+          <p className="text-sm text-muted-foreground line-clamp-3 break-words leading-relaxed">
+            {description}
+          </p>
+          
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-3">
+              {tags.slice(0, 3).map((tag, index) => (
+                <TagBadge key={index} name={tag} />
+              ))}
+              {tags.length > 3 && (
+                <Badge variant="outline" className="text-xs">
+                  +{tags.length - 3}
                 </Badge>
               )}
             </div>
-          </div>
-          
-          <div className="flex items-center gap-1 shrink-0">
-            <FavoriteButton
-              ideaId={id}
-              isFavorite={localIsFavorite}
-              onToggle={handleFavoriteToggle}
+          )}
+        </CardContent>
+
+        {showSelectButton && (
+          <CardFooter className="pt-0">
+            <Button
+              onClick={handleSelect}
+              variant={isSelected ? "default" : "outline"}
               size="sm"
-            />
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={handleEdit} className="flex items-center gap-2">
-                  <Edit className="h-4 w-4" />
-                  {t('ideas.actions.edit', 'Editar')}
-                </DropdownMenuItem>
-                {(score !== null && score !== undefined) && (
-                  <DropdownMenuItem onClick={handleAnalyze} className="flex items-center gap-2">
-                    <BarChart3 className="h-4 w-4" />
-                    {t('ideas.actions.viewResults', 'Ver Resultados')}
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem 
-                  onClick={handleDelete} 
-                  className="flex items-center gap-2 text-red-600 focus:text-red-600"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  {t('ideas.actions.delete', 'Excluir')}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className="pb-3">
-        <p className="text-sm text-muted-foreground line-clamp-3 break-words leading-relaxed">
-          {description}
-        </p>
-        
-        {tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-3">
-            {tags.slice(0, 3).map((tag, index) => (
-              <TagBadge key={index} name={tag} />
-            ))}
-            {tags.length > 3 && (
-              <Badge variant="outline" className="text-xs">
-                +{tags.length - 3}
-              </Badge>
-            )}
-          </div>
+              className="w-full flex items-center gap-2"
+            >
+              <CheckSquare className="h-4 w-4" />
+              {isSelected 
+                ? t('ideas.compare.selected', 'Selecionada') 
+                : t('ideas.compare.select', 'Selecionar')
+              }
+            </Button>
+          </CardFooter>
         )}
-      </CardContent>
+      </Card>
 
-      {showSelectButton && (
-        <CardFooter className="pt-0">
-          <Button
-            onClick={handleSelect}
-            variant={isSelected ? "default" : "outline"}
-            size="sm"
-            className="w-full flex items-center gap-2"
-          >
-            <CheckSquare className="h-4 w-4" />
-            {isSelected 
-              ? t('ideas.compare.selected', 'Selecionada') 
-              : t('ideas.compare.select', 'Selecionar')
-            }
-          </Button>
-        </CardFooter>
-      )}
-    </Card>
+      <ReanalyzeModal
+        isOpen={showReanalyzeModal}
+        onClose={() => setShowReanalyzeModal(false)}
+        ideaId={id}
+        currentTitle={title}
+        currentDescription={description}
+        onSuccess={handleReanalyzeSuccess}
+      />
+    </>
   );
 };

@@ -1,18 +1,16 @@
+
 import React from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { EmptyState } from "@/components/ui/empty-state";
-import { Lightbulb, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { IdeaCard } from "./IdeaCard";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Lightbulb } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export interface Idea {
   id: string;
   title: string;
   description: string;
   created_at: string;
-  is_favorite?: boolean;
+  is_favorite: boolean;
   score?: number | null;
   status?: string | null;
   tags?: string[];
@@ -20,49 +18,62 @@ export interface Idea {
 
 interface IdeasGridProps {
   ideas: Idea[];
-  loading: boolean;
-  emptyAction?: React.ReactNode;
+  loading?: boolean;
+  onUpdate?: () => void;
+  showSelectButton?: boolean;
+  selectedIdeas?: string[];
+  onIdeaSelect?: (ideaId: string) => void;
 }
 
-export const IdeasGrid = ({ ideas, loading, emptyAction }: IdeasGridProps) => {
+export const IdeasGrid: React.FC<IdeasGridProps> = ({ 
+  ideas, 
+  loading = false, 
+  onUpdate,
+  showSelectButton = false,
+  selectedIdeas = [],
+  onIdeaSelect
+}) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {[1, 2, 3, 4, 5, 6].map(i => (
-          <Skeleton key={i} className="h-[200px]" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <div key={index} className="h-64 bg-gray-200 animate-pulse rounded-lg" />
         ))}
       </div>
     );
   }
-  
+
   if (ideas.length === 0) {
     return (
       <EmptyState
-        icon={<Lightbulb className="h-10 w-10 text-muted-foreground" />}
-        title={t('ideas.noIdeas', "Nenhuma ideia encontrada")}
-        description={t('ideas.createFirst', "Crie sua primeira ideia para começar")}
-        action={
-          emptyAction || (
-            <Button onClick={() => navigate("/new-idea")} className="bg-brand-purple hover:bg-brand-purple/90">
-              <Plus className="mr-2 h-4 w-4" />
-              {t('ideas.newIdea', "Nova Ideia")}
-            </Button>
-          )
-        }
+        icon={Lightbulb}
+        title={t('ideas.empty.title', "Nenhuma ideia encontrada")}
+        description={t('ideas.empty.description', "Você ainda não tem ideias. Crie sua primeira ideia!")}
       />
     );
   }
-  
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {ideas.map(idea => (
-        <IdeaCard 
-          key={idea.id} 
-          idea={idea} 
-          onUpdate={() => {}} // This will be passed from the parent component
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      {ideas.map((idea) => (
+        <IdeaCard
+          key={idea.id}
+          id={idea.id}
+          title={idea.title}
+          description={idea.description}
+          created_at={idea.created_at}
+          is_favorite={idea.is_favorite}
+          score={idea.score}
+          status={idea.status}
+          tags={idea.tags}
+          showSelectButton={showSelectButton}
+          isSelected={selectedIdeas.includes(idea.id)}
+          onSelect={onIdeaSelect}
+          onEdit={() => onUpdate?.()}
+          onDelete={() => onUpdate?.()}
+          onAnalyze={() => onUpdate?.()}
         />
       ))}
     </div>

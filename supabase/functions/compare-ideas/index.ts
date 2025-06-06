@@ -33,9 +33,12 @@ serve(async (req) => {
   }
 
   try {
-    // Verificar o corpo da requisição antes de fazer o parse como JSON
+    console.log('Starting compare-ideas function');
+    
+    // Verificar o corpo da requisição
     const text = await req.text();
     if (!text || text.trim() === '') {
+      console.error('Empty request body');
       return new Response(
         JSON.stringify({ error: 'Corpo da requisição vazio' }),
         { 
@@ -45,10 +48,11 @@ serve(async (req) => {
       )
     }
 
-    // Parse do corpo da requisição com tratamento de erro
+    // Parse do corpo da requisição
     let requestBody;
     try {
       requestBody = JSON.parse(text);
+      console.log('Request body parsed:', { ideas: requestBody.ideas?.length });
     } catch (parseError) {
       console.error("Erro ao parsear o corpo da requisição:", parseError);
       return new Response(
@@ -60,10 +64,11 @@ serve(async (req) => {
       )
     }
 
-    const { ideas, apiKey } = requestBody;
+    const { ideas } = requestBody;
 
     // Validar os dados de entrada
     if (!Array.isArray(ideas) || ideas.length < 2 || ideas.length > 3) {
+      console.error('Invalid ideas array:', { length: ideas?.length });
       return new Response(
         JSON.stringify({ error: 'Deve fornecer entre 2 e 3 ideias para comparação' }),
         { 
@@ -74,12 +79,13 @@ serve(async (req) => {
     }
 
     // Verificar se temos uma chave de API
-    const openaiApiKey = Deno.env.get('OPENAI_API_KEY') || apiKey;
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openaiApiKey) {
+      console.error('OpenAI API key not found');
       return new Response(
         JSON.stringify({ error: 'API key não encontrada' }),
         { 
-          status: 400,
+          status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       )
@@ -101,13 +107,15 @@ serve(async (req) => {
       differentiation: idea.differentiation || "Não especificado"
     }));
 
+    console.log('Ideas data prepared for comparison:', ideasData.length);
+
     // Criar cliente OpenAI
     const configuration = new Configuration({ apiKey: openaiApiKey });
     const openai = new OpenAIApi(configuration);
 
     // Construir prompt para a análise
     const prompt = `
-Analise e compare as seguintes ideias de negócios:
+Analise e compare as seguintes ideias de negócios em português brasileiro:
 
 ${ideasData.map((idea, index) => `
 IDEIA ${index + 1}: ${idea.title}
@@ -115,83 +123,76 @@ Descrição: ${idea.description}
 Público-alvo: ${idea.audience}
 Problema a resolver: ${idea.problem}
 Monetização: ${idea.monetization}
-Pontuação: ${idea.score}
+Pontuação atual: ${idea.score}%
 Status: ${idea.status}
-Pontos fortes: ${idea.strengths.join(', ')}
-Pontos fracos: ${idea.weaknesses.join(', ')}
+Pontos fortes: ${idea.strengths.join(', ') || 'Não especificado'}
+Pontos fracos: ${idea.weaknesses.join(', ') || 'Não especificado'}
 Tamanho do mercado: ${idea.market_size}
 Diferenciação: ${idea.differentiation}
 `).join('\n')}
 
-Por favor, forneça uma análise comparativa das ideias em formato JSON com os seguintes elementos:
-1. "competitiveAdvantage": Uma análise das vantagens competitivas de cada ideia em relação às outras
-2. "marketPotential": Avaliação do potencial de mercado de cada ideia (baixo, médio, alto)
-3. "executionDifficulty": Avaliação da dificuldade de execução de cada ideia (baixa, média, alta)
-4. "investmentRequired": Estimativa relativa do investimento necessário para cada ideia (baixo, médio, alto)
-5. "scalabilityPotential": Avaliação do potencial de escalabilidade de cada ideia (baixo, médio, alto)
-6. "innovationLevel": Avaliação do nível de inovação de cada ideia (baixo, médio, alto)
-7. "riskLevel": Avaliação do nível de risco de cada ideia (baixo, médio, alto)
-8. "keyStrengthComparison": Uma análise dos principais pontos fortes de cada ideia
-9. "keyWeaknessComparison": Uma análise dos principais pontos fracos de cada ideia
-10. "recommendedFocus": Recomendações específicas para melhorar cada ideia
-11. "overallRecommendation": Uma recomendação final sobre qual ideia parece mais promissora e por quê
+Forneça uma análise comparativa APENAS em formato JSON válido. Responda com exatamente este formato:
 
-Forneça o resultado apenas em formato JSON válido, sem qualquer texto adicional antes ou depois do JSON. Certifique-se de que a resposta seja um objeto JSON completo, sem erros de sintaxe.
-
-Formato da resposta:
 {
-  "competitiveAdvantage": "análise aqui",
-  "marketPotential": ["baixo", "médio", "alto"],
-  "executionDifficulty": ["baixa", "média", "alta"],
-  "investmentRequired": ["baixo", "médio", "alto"],
-  "scalabilityPotential": ["baixo", "médio", "alto"],
-  "innovationLevel": ["baixo", "médio", "alto"],
-  "riskLevel": ["baixo", "médio", "alto"],
-  "keyStrengthComparison": "análise aqui",
-  "keyWeaknessComparison": "análise aqui",
-  "recommendedFocus": "recomendações aqui",
-  "overallRecommendation": "recomendação final aqui"
+  "competitiveAdvantage": "Análise detalhada das vantagens competitivas de cada ideia em relação às outras",
+  "marketPotential": ["baixo/médio/alto para ideia 1", "baixo/médio/alto para ideia 2", "baixo/médio/alto para ideia 3 se houver"],
+  "executionDifficulty": ["baixa/média/alta para ideia 1", "baixa/média/alta para ideia 2", "baixa/média/alta para ideia 3 se houver"],
+  "investmentRequired": ["baixo/médio/alto para ideia 1", "baixo/médio/alto para ideia 2", "baixo/médio/alto para ideia 3 se houver"],
+  "scalabilityPotential": ["baixo/médio/alto para ideia 1", "baixo/médio/alto para ideia 2", "baixo/médio/alto para ideia 3 se houver"],
+  "innovationLevel": ["baixo/médio/alto para ideia 1", "baixo/médio/alto para ideia 2", "baixo/médio/alto para ideia 3 se houver"],
+  "riskLevel": ["baixo/médio/alto para ideia 1", "baixo/médio/alto para ideia 2", "baixo/médio/alto para ideia 3 se houver"],
+  "keyStrengthComparison": "Análise comparativa dos principais pontos fortes de cada ideia",
+  "keyWeaknessComparison": "Análise comparativa dos principais pontos fracos de cada ideia",
+  "recommendedFocus": "Recomendações específicas para melhorar cada ideia",
+  "overallRecommendation": "Recomendação final sobre qual ideia parece mais promissora e por quê"
 }
-`;
+
+IMPORTANTE: Responda APENAS com o JSON, sem texto adicional antes ou depois.`;
 
     console.log("Enviando prompt para o OpenAI...");
 
-    // Chamar a API OpenAI com parâmetros mais seguros para garantir resposta completa
+    // Chamar a API OpenAI
     const completion = await openai.createCompletion({
       model: "gpt-3.5-turbo-instruct",
       prompt: prompt,
-      max_tokens: 3000, // Aumentar o limite de tokens ainda mais
-      temperature: 0.3, // Reduzir ainda mais a temperatura para maior previsibilidade
-      stop: null, // Remover qualquer stop token para garantir resposta completa
+      max_tokens: 2500,
+      temperature: 0.3,
+      stop: null,
     });
 
-    // Verificar se a resposta da OpenAI existe e tem o conteúdo esperado
+    console.log("Resposta recebida do OpenAI");
+
+    // Verificar se a resposta da OpenAI existe
     if (!completion.data || !completion.data.choices || completion.data.choices.length === 0) {
       console.error("Resposta da OpenAI inválida ou vazia");
       throw new Error("A API OpenAI retornou uma resposta inválida ou vazia");
     }
 
-    // Processar a resposta com tratamento de erro aprimorado
+    // Processar a resposta
     const rawResponse = completion.data.choices[0].text?.trim() || "";
-    
-    console.log("Resposta recebida do OpenAI");
-    console.log("Tamanho da resposta:", rawResponse.length);
+    console.log("Raw response length:", rawResponse.length);
     
     let insights;
     try {
-      // Tentar encontrar um objeto JSON válido na resposta, usando regex para maior precisão
-      const jsonRegex = /{[\s\S]*}/;
-      const jsonMatch = rawResponse.match(jsonRegex);
+      // Limpar a resposta e tentar extrair JSON
+      let cleanResponse = rawResponse;
       
-      if (!jsonMatch) {
-        console.error("Não foi possível encontrar um objeto JSON válido na resposta da OpenAI");
-        throw new Error("Formato de resposta inválido da API OpenAI");
+      // Remover qualquer texto antes do primeiro {
+      const firstBrace = cleanResponse.indexOf('{');
+      if (firstBrace > 0) {
+        cleanResponse = cleanResponse.substring(firstBrace);
       }
       
-      const jsonStr = jsonMatch[0];
-      insights = JSON.parse(jsonStr);
+      // Remover qualquer texto após o último }
+      const lastBrace = cleanResponse.lastIndexOf('}');
+      if (lastBrace > 0) {
+        cleanResponse = cleanResponse.substring(0, lastBrace + 1);
+      }
       
-      // Validar se temos os campos esperados
+      insights = JSON.parse(cleanResponse);
+      console.log("Insights parsed successfully");
+      
+      // Validar campos obrigatórios
       const requiredFields = [
         'competitiveAdvantage', 'marketPotential', 'executionDifficulty', 
         'investmentRequired', 'scalabilityPotential', 'overallRecommendation'
@@ -203,11 +204,12 @@ Formato da resposta:
         console.log(`Campos ausentes na resposta: ${missingFields.join(', ')}`);
         insights = createFallbackInsights(ideasData, missingFields, insights);
       }
+      
     } catch (e) {
       console.error("Erro ao processar resposta JSON:", e);
-      console.log("Resposta recebida:", rawResponse);
+      console.log("Resposta problemática:", rawResponse.substring(0, 500) + "...");
       
-      // Criar um insights de fallback em caso de falha no parsing
+      // Criar insights de fallback
       insights = createFallbackInsights(ideasData);
     }
 
@@ -220,6 +222,7 @@ Formato da resposta:
     const authHeader = req.headers.get('Authorization')
     
     if (!authHeader) {
+      console.error('No authorization header');
       return new Response(
         JSON.stringify({ error: 'Autorização necessária' }),
         { 
@@ -234,6 +237,7 @@ Formato da resposta:
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token)
     
     if (userError || !user) {
+      console.error('User authentication failed:', userError);
       return new Response(
         JSON.stringify({ error: 'Usuário não autenticado' }),
         { 
@@ -242,6 +246,8 @@ Formato da resposta:
         }
       )
     }
+
+    console.log('User authenticated:', user.id);
 
     // Salvar os insights na tabela de comparações
     const ideaIds = ideasData.map(idea => idea.id);
@@ -258,31 +264,11 @@ Formato da resposta:
       
     if (comparisonError) {
       console.error("Erro ao salvar comparação:", comparisonError);
+    } else {
+      console.log('Comparison saved with ID:', comparisonData?.id);
     }
 
-    // Atualizar os insights das ideias individuais
-    for (const idea of ideasData) {
-      const { error: updateError } = await supabaseClient
-        .from('idea_analyses')
-        .update({
-          ai_insights: {
-            lastComparison: new Date().toISOString(),
-            comparedWith: ideaIds.filter(id => id !== idea.id),
-            insights: {
-              competitiveAdvantage: insights.competitiveAdvantage,
-              marketPotential: insights.marketPotential,
-              recommendedFocus: insights.recommendedFocus,
-              overallRecommendation: insights.overallRecommendation
-            }
-          },
-          last_insight_generation: new Date().toISOString()
-        })
-        .eq('idea_id', idea.id);
-        
-      if (updateError) {
-        console.error(`Erro ao atualizar insights para ideia ${idea.id}:`, updateError);
-      }
-    }
+    console.log('Comparison completed successfully');
 
     // Retornar os insights
     return new Response(
@@ -297,10 +283,13 @@ Formato da resposta:
     )
     
   } catch (error) {
-    console.error("Erro:", error);
+    console.error("Erro geral:", error);
     
     return new Response(
-      JSON.stringify({ error: 'Erro interno do servidor', details: error.message }),
+      JSON.stringify({ 
+        error: 'Erro interno do servidor', 
+        details: error.message 
+      }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -312,17 +301,17 @@ Formato da resposta:
 // Função para criar insights básicos quando a IA não retornar dados adequados
 function createFallbackInsights(ideasData: any[], missingFields: string[] = [], partialInsights: any = {}) {
   const fallbackInsights = {
-    competitiveAdvantage: "Não foi possível gerar uma análise detalhada das vantagens competitivas. Recomendamos rever os dados das ideias e tentar novamente.",
+    competitiveAdvantage: "Análise detalhada não disponível no momento. Recomendamos revisar os dados das ideias e tentar novamente.",
     marketPotential: ideasData.map(() => "médio"),
     executionDifficulty: ideasData.map(() => "média"),
     investmentRequired: ideasData.map(() => "médio"),
     scalabilityPotential: ideasData.map(() => "médio"),
     innovationLevel: ideasData.map(() => "médio"),
     riskLevel: ideasData.map(() => "médio"),
-    keyStrengthComparison: "Não foi possível comparar os pontos fortes em detalhes.",
-    keyWeaknessComparison: "Não foi possível comparar os pontos fracos em detalhes.",
+    keyStrengthComparison: "Comparação de pontos fortes não disponível no momento.",
+    keyWeaknessComparison: "Comparação de pontos fracos não disponível no momento.",
     recommendedFocus: "Recomendamos focar na validação adicional destas ideias com potenciais clientes e especialistas do setor.",
-    overallRecommendation: "Devido a limitações na análise, não foi possível determinar qual ideia é mais promissora. Sugerimos revisar os dados fornecidos e tentar novamente, ou consultar um especialista no setor."
+    overallRecommendation: "Análise detalhada não disponível. Todas as ideias apresentam potencial e merecem consideração adicional. Sugerimos revisar os dados e tentar novamente."
   };
   
   // Manter qualquer campo que já tenha sido retornado corretamente
