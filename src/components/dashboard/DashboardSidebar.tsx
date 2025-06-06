@@ -1,7 +1,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Home, BarChart, Settings, LogOut, Calendar, PlusCircle, Save, Wrench, Archive } from "lucide-react";
+import { Home, BarChart, Settings, LogOut, Calendar, PlusCircle, Save, Wrench, Archive, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -59,6 +59,12 @@ export const DashboardSidebar = ({
       title: "Meus Conteúdos",
       icon: Archive,
       path: '/dashboard/conteudos',
+      onClick: undefined
+    },
+    {
+      title: "Gamificação",
+      icon: Trophy,
+      path: '/dashboard/gamificacao',
       onClick: undefined
     }, 
     {

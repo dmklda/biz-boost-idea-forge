@@ -1,7 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, BarChart, Target, Lightbulb, Calendar, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { TrendingUp, BarChart, Target, Lightbulb, Calendar } from "lucide-react";
 import { useDailyInsights } from "@/hooks/useDailyInsights";
 import { useTranslation } from "react-i18next";
 
@@ -15,7 +14,7 @@ const iconMap = {
 
 export const InsightsCard = () => {
   const { t } = useTranslation();
-  const { insights, isLoading, error, refreshInsights } = useDailyInsights();
+  const { insights, isLoading, error } = useDailyInsights();
 
   const getIconComponent = (iconName: string) => {
     const IconComponent = iconMap[iconName as keyof typeof iconMap] || Lightbulb;
@@ -43,25 +42,13 @@ export const InsightsCard = () => {
   return (
     <Card className="shadow-sm">
       <CardHeader className="pb-2 md:pb-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-lg md:text-xl">
-              {t('dashboard.insights.title') || "Insights Inteligentes"}
-            </CardTitle>
-            <CardDescription>
-              {t('dashboard.insights.description') || "Análise personalizada gerada por IA baseada na sua atividade"}
-            </CardDescription>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={refreshInsights}
-            disabled={isLoading}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-            Atualizar
-          </Button>
+        <div>
+          <CardTitle className="text-lg md:text-xl">
+            {t('dashboard.insights.title') || "Insights Inteligentes"}
+          </CardTitle>
+          <CardDescription>
+            {t('dashboard.insights.description') || "Análise personalizada gerada por IA baseada na sua atividade"}
+          </CardDescription>
         </div>
       </CardHeader>
       <CardContent>
@@ -75,18 +62,10 @@ export const InsightsCard = () => {
         ) : error ? (
           <div className="text-center py-4 text-muted-foreground">
             <p className="text-sm text-red-500">{error}</p>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={refreshInsights}
-              className="mt-2"
-            >
-              Tentar novamente
-            </Button>
           </div>
         ) : (
           <div className="grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-3">
-            {insights.map((insight, index) => {
+            {insights.slice(0, 3).map((insight, index) => {
               const IconComponent = getIconComponent(insight.icon);
               return (
                 <div 

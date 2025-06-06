@@ -41,8 +41,10 @@ export const useDailyInsights = () => {
       }
 
       if (data?.insights?.insights) {
-        setInsights(data.insights.insights);
-        console.log('Insights loaded successfully:', data.insights.insights);
+        // Ensure we always have exactly 3 insights
+        const insightsArray = data.insights.insights.slice(0, 3);
+        setInsights(insightsArray);
+        console.log('Insights loaded successfully:', insightsArray);
       } else {
         throw new Error('Invalid insights data received');
       }
@@ -50,14 +52,28 @@ export const useDailyInsights = () => {
       console.error('Error generating insights:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate insights');
       
-      // Fallback insights
+      // Fallback insights - always exactly 3
       setInsights([
         {
-          type: "fallback",
+          type: "activity_trend",
           title: "Continue Criando",
           description: "Sua jornada empreendedora está progredindo. Continue analisando suas ideias para obter insights valiosos.",
           recommendation: "Crie uma nova análise para obter recomendações personalizadas.",
           icon: "Lightbulb"
+        },
+        {
+          type: "performance",
+          title: "Foco no Crescimento",
+          description: "Cada ideia desenvolvida é um passo importante no seu crescimento como empreendedor.",
+          recommendation: "Revise suas análises anteriores para identificar oportunidades de melhoria.",
+          icon: "Target"
+        },
+        {
+          type: "engagement",
+          title: "Mantenha o Ritmo",
+          description: "Sua dedicação ao processo de validação demonstra comprometimento com o sucesso.",
+          recommendation: "Estabeleça metas semanais para manter o progresso constante.",
+          icon: "BarChart"
         }
       ]);
     } finally {
@@ -74,7 +90,6 @@ export const useDailyInsights = () => {
   return {
     insights,
     isLoading,
-    error,
-    refreshInsights: generateInsights
+    error
   };
 };

@@ -118,18 +118,26 @@ serve(async (req) => {
 
     // Generate insights using OpenAI
     const prompt = `
-    Analise os dados de atividade do usuário e gere 3 insights inteligentes e personalizados em português brasileiro.
-    
+    Analise os dados de atividade do usuário e gere EXATAMENTE 3 insights inteligentes e personalizados em português brasileiro.
+
     Dados do usuário:
     ${JSON.stringify(userData, null, 2)}
-    
-    Gere insights que sejam:
-    1. Específicos e baseados nos dados reais do usuário
-    2. Acionáveis com recomendações claras
-    3. Motivacionais e construtivos
-    4. Relevantes para empreendedores
-    
-    Retorne um JSON no seguinte formato:
+
+    IMPORTANTE: Você DEVE gerar EXATAMENTE 3 insights únicos e diferentes entre si. Cada insight deve ser:
+    1. Específico e baseado nos dados reais do usuário
+    2. Acionável com recomendações claras
+    3. Motivacional e construtivo
+    4. Relevante para empreendedores
+    5. Único e não repetitivo
+
+    Tipos de insights disponíveis:
+    - activity_trend: Para padrões de atividade
+    - performance: Para análise de desempenho
+    - engagement: Para engajamento e uso da plataforma
+    - growth: Para crescimento e desenvolvimento
+    - strategy: Para estratégias e planejamento
+
+    Retorne OBRIGATORIAMENTE um JSON no seguinte formato com EXATAMENTE 3 insights:
     {
       "insights": [
         {
@@ -138,11 +146,25 @@ serve(async (req) => {
           "description": "Descrição detalhada baseada nos dados",
           "recommendation": "Recomendação específica de ação",
           "icon": "TrendingUp" | "BarChart" | "Target" | "Lightbulb" | "Calendar"
+        },
+        {
+          "type": "performance",
+          "title": "Título do insight",
+          "description": "Descrição detalhada baseada nos dados",
+          "recommendation": "Recomendação específica de ação",
+          "icon": "TrendingUp" | "BarChart" | "Target" | "Lightbulb" | "Calendar"
+        },
+        {
+          "type": "engagement",
+          "title": "Título do insight",
+          "description": "Descrição detalhada baseada nos dados",
+          "recommendation": "Recomendação específica de ação",
+          "icon": "TrendingUp" | "BarChart" | "Target" | "Lightbulb" | "Calendar"
         }
       ]
     }
-    
-    Foque em padrões reais dos dados fornecidos e evite insights genéricos.
+
+    Foque em padrões reais dos dados fornecidos e evite insights genéricos. CERTIFIQUE-SE de retornar EXATAMENTE 3 insights diferentes.
     `;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -154,11 +176,11 @@ serve(async (req) => {
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'Você é um especialista em análise de dados de empreendedorismo que gera insights personalizados para ajudar empreendedores a melhorar seus resultados.' },
+          { role: 'system', content: 'Você é um especialista em análise de dados de empreendedorismo que gera insights personalizados para ajudar empreendedores a melhorar seus resultados. Sempre retorne exatamente 3 insights únicos e diferentes.' },
           { role: 'user', content: prompt }
         ],
         temperature: 0.7,
-        max_tokens: 1000
+        max_tokens: 1200
       }),
     });
 
@@ -168,9 +190,14 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
+    let aiResponse = data.choices[0].message.content;
     
     console.log('AI response received:', aiResponse);
+
+    // Clean up the response if it has markdown formatting
+    if (aiResponse.includes('```json')) {
+      aiResponse = aiResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+    }
 
     // Parse AI response
     let insightsData;
@@ -178,7 +205,7 @@ serve(async (req) => {
       insightsData = JSON.parse(aiResponse);
     } catch (parseError) {
       console.error('Error parsing AI response:', parseError);
-      // Fallback insights if AI parsing fails
+      // Fallback insights if AI parsing fails - always exactly 3
       insightsData = {
         insights: [
           {
@@ -187,6 +214,50 @@ serve(async (req) => {
             description: `Você já criou ${userData.profile.totalIdeas} ideias e realizou ${userData.profile.totalAnalyses} análises.`,
             recommendation: "Continue explorando novas ideias para expandir seu portfólio empreendedor.",
             icon: "TrendingUp"
+          },
+          {
+            type: "performance",
+            title: "Desenvolvimento Contínuo",
+            description: "Sua experiência como empreendedor está crescendo a cada análise realizada.",
+            recommendation: "Foque em implementar as recomendações das suas análises anteriores.",
+            icon: "Target"
+          },
+          {
+            type: "engagement",
+            title: "Mantenha o Momentum",
+            description: "Sua dedicação ao processo de validação de ideias é fundamental para o sucesso.",
+            recommendation: "Estabeleça uma rotina regular de análise de novas oportunidades.",
+            icon: "BarChart"
+          }
+        ]
+      };
+    }
+
+    // Ensure we always have exactly 3 insights
+    if (!insightsData.insights || insightsData.insights.length !== 3) {
+      console.warn('AI did not return exactly 3 insights, using fallback');
+      insightsData = {
+        insights: [
+          {
+            type: "activity_trend",
+            title: "Progresso Constante",
+            description: `Com ${userData.profile.totalIdeas} ideias criadas, você está construindo um portfólio sólido.`,
+            recommendation: "Continue desenvolvendo novas ideias semanalmente para manter o crescimento.",
+            icon: "TrendingUp"
+          },
+          {
+            type: "performance",
+            title: "Qualidade em Foco",
+            description: "Cada análise realizada aprimora sua capacidade de avaliar oportunidades de negócio.",
+            recommendation: "Revise suas análises anteriores para identificar padrões de sucesso.",
+            icon: "Target"
+          },
+          {
+            type: "engagement",
+            title: "Engajamento Ativo",
+            description: "Sua participação ativa na plataforma demonstra comprometimento com o sucesso.",
+            recommendation: "Explore as ferramentas disponíveis para maximizar seus resultados.",
+            icon: "BarChart"
           }
         ]
       };

@@ -18,6 +18,7 @@ import ResourceCenterPage from './pages/dashboard/ResourceCenterPage';
 import ResultsPage from './pages/dashboard/ResultsPage';
 import ToolsPage from './pages/dashboard/ToolsPage';
 import DraftsPage from './pages/dashboard/DraftsPage';
+import GamificationPage from './pages/dashboard/GamificationPage';
 import { MyContentPage } from "@/pages/dashboard/MyContentPage";
 import { CompareIdeasModalProvider } from './components/ideas/CompareIdeasModal';
 import { AuthProvider } from './hooks/useAuth';
@@ -42,6 +43,7 @@ function App() {
               <Route path="rascunhos" element={<DraftsPage />} />
               <Route path="ferramentas" element={<ToolsPage />} />
               <Route path="conteudos" element={<MyContentPage />} />
+              <Route path="gamificacao" element={<GamificationPage />} />
               <Route path="configuracoes" element={<UserSettingsPage />} />
               <Route path="analise-avancada" element={<AdvancedAnalysisPage />} />
               <Route path="metricas-avancadas" element={<AdvancedMetricsPage />} />
