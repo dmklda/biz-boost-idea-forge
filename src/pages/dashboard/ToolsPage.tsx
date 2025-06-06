@@ -1,7 +1,15 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Palette, FileText, Lightbulb, BarChart3, TrendingUp, Users, DollarSign, Target, Presentation, Briefcase, Search, Calculator, MessageSquare, Brain, Zap, Globe, ShoppingCart, PieChart, LineChart, Calendar, Megaphone, BookOpen, Settings2, Rocket, Shield, Eye, Cpu, Trophy, Star } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Palette, FileText, Lightbulb, BarChart3, TrendingUp, Users, DollarSign, Target, 
+  Presentation, Briefcase, Search, Calculator, MessageSquare, Zap, Globe, 
+  PieChart, LineChart, Calendar, Megaphone, BookOpen, Settings2, Rocket, 
+  Shield, Eye, Star, Edit, Receipt, ImageIcon
+} from "lucide-react";
 import { useState } from "react";
 import { LogoGeneratorModal } from "@/components/tools/LogoGeneratorModal";
 import { PRDMVPGeneratorModal } from "@/components/tools/PRDMVPGeneratorModal";
@@ -9,33 +17,33 @@ import { PRDMVPGeneratorModal } from "@/components/tools/PRDMVPGeneratorModal";
 const ToolsPage = () => {
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
   const [isPRDModalOpen, setIsPRDModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
 
   const handleLogoOpen = () => {
-    console.log("Logo modal opening...");
     setIsLogoModalOpen(true);
   };
 
   const handlePRDOpen = () => {
-    console.log("PRD modal opening...");
     setIsPRDModalOpen(true);
   };
 
-  // Debug function for button clicks
   const handleToolClick = (toolName: string, action: () => void) => {
-    console.log(`Tool button clicked: ${toolName}`);
-    console.log(`Button element:`, event?.target);
-    console.log(`Action function:`, action);
+    console.log(`Tool clicked: ${toolName}`);
     action();
   };
 
-  const designTools = [
+  const allTools = [
+    // Design e Branding
     {
       title: "Gerador de Logo",
       description: "Crie logos profissionais para sua startup usando IA",
       icon: Palette,
       action: handleLogoOpen,
       color: "from-purple-500 to-pink-500",
-      category: "design"
+      category: "design",
+      credits: 5,
+      status: "available"
     },
     {
       title: "Gerador de Nomes",
@@ -43,7 +51,9 @@ const ToolsPage = () => {
       icon: Lightbulb,
       action: () => console.log("Name generator - Coming soon"),
       color: "from-green-500 to-emerald-500",
-      disabled: true
+      category: "design",
+      credits: 3,
+      status: "coming-soon"
     },
     {
       title: "Paleta de Cores",
@@ -51,17 +61,31 @@ const ToolsPage = () => {
       icon: Eye,
       action: () => console.log("Color Palette - Coming soon"),
       color: "from-cyan-500 to-blue-500",
-      disabled: true
-    }
-  ];
+      category: "design",
+      credits: 2,
+      status: "coming-soon"
+    },
+    {
+      title: "Editor de Imagens com IA",
+      description: "Edite e aprimore imagens usando inteligência artificial",
+      icon: ImageIcon,
+      action: () => console.log("AI Image Editor - Coming soon"),
+      color: "from-violet-500 to-purple-500",
+      category: "design",
+      credits: 4,
+      status: "coming-soon"
+    },
 
-  const documentationTools = [
+    // Documentação
     {
       title: "PRD/MVP Generator",
       description: "Gere documentos técnicos detalhados para sua ideia",
       icon: FileText,
       action: handlePRDOpen,
-      color: "from-blue-500 to-cyan-500"
+      color: "from-blue-500 to-cyan-500",
+      category: "documentation",
+      credits: 8,
+      status: "available"
     },
     {
       title: "Business Model Canvas",
@@ -69,7 +93,9 @@ const ToolsPage = () => {
       icon: Briefcase,
       action: () => console.log("Business Model Canvas - Coming soon"),
       color: "from-orange-500 to-red-500",
-      disabled: true
+      category: "documentation",
+      credits: 6,
+      status: "coming-soon"
     },
     {
       title: "Pitch Deck Generator",
@@ -77,7 +103,9 @@ const ToolsPage = () => {
       icon: Presentation,
       action: () => console.log("Pitch Deck - Coming soon"),
       color: "from-indigo-500 to-purple-500",
-      disabled: true
+      category: "documentation",
+      credits: 10,
+      status: "coming-soon"
     },
     {
       title: "Plano de Negócios",
@@ -85,18 +113,31 @@ const ToolsPage = () => {
       icon: BookOpen,
       action: () => console.log("Business Plan - Coming soon"),
       color: "from-teal-500 to-cyan-500",
-      disabled: true
-    }
-  ];
+      category: "documentation",
+      credits: 12,
+      status: "coming-soon"
+    },
+    {
+      title: "Criador de Relatórios",
+      description: "Gere relatórios executivos e analíticos profissionais",
+      icon: BarChart3,
+      action: () => console.log("Report Creator - Coming soon"),
+      color: "from-emerald-500 to-green-500",
+      category: "documentation",
+      credits: 7,
+      status: "coming-soon"
+    },
 
-  const analysisTools = [
+    // Análise e Pesquisa
     {
       title: "Análise de Mercado",
       description: "Pesquise e analise seu mercado-alvo",
       icon: TrendingUp,
       action: () => console.log("Market Analysis - Coming soon"),
       color: "from-emerald-500 to-teal-500",
-      disabled: true
+      category: "analysis",
+      credits: 9,
+      status: "coming-soon"
     },
     {
       title: "Análise Financeira",
@@ -104,15 +145,19 @@ const ToolsPage = () => {
       icon: DollarSign,
       action: () => console.log("Financial Analysis - Coming soon"),
       color: "from-yellow-500 to-orange-500",
-      disabled: true
+      category: "analysis",
+      credits: 8,
+      status: "coming-soon"
     },
     {
       title: "Análise de Concorrentes",
       description: "Identifique e analise seus principais concorrentes",
-      icon: BarChart3,
+      icon: Shield,
       action: () => console.log("Competitor Analysis - Coming soon"),
       color: "from-red-500 to-pink-500",
-      disabled: true
+      category: "analysis",
+      credits: 7,
+      status: "coming-soon"
     },
     {
       title: "Pesquisa de Usuários",
@@ -120,26 +165,21 @@ const ToolsPage = () => {
       icon: Users,
       action: () => console.log("User Research - Coming soon"),
       color: "from-cyan-500 to-blue-500",
-      disabled: true
+      category: "analysis",
+      credits: 6,
+      status: "coming-soon"
     },
-    {
-      title: "Análise SWOT",
-      description: "Avalie forças, fraquezas, oportunidades e ameaças",
-      icon: Shield,
-      action: () => console.log("SWOT Analysis - Coming soon"),
-      color: "from-purple-500 to-indigo-500",
-      disabled: true
-    }
-  ];
 
-  const marketingTools = [
+    // Marketing Digital
     {
       title: "Estratégia de Marketing",
       description: "Desenvolva estratégias de marketing digital",
       icon: Target,
       action: () => console.log("Marketing Strategy - Coming soon"),
       color: "from-pink-500 to-rose-500",
-      disabled: true
+      category: "marketing",
+      credits: 8,
+      status: "coming-soon"
     },
     {
       title: "Gerador de Conteúdo",
@@ -147,7 +187,19 @@ const ToolsPage = () => {
       icon: MessageSquare,
       action: () => console.log("Content Generator - Coming soon"),
       color: "from-violet-500 to-purple-500",
-      disabled: true
+      category: "marketing",
+      credits: 4,
+      status: "coming-soon"
+    },
+    {
+      title: "Gerador de Posts",
+      description: "Crie posts otimizados para redes sociais",
+      icon: Megaphone,
+      action: () => console.log("Post Generator - Coming soon"),
+      color: "from-blue-500 to-indigo-500",
+      category: "marketing",
+      credits: 3,
+      status: "coming-soon"
     },
     {
       title: "SEO Analyzer",
@@ -155,7 +207,9 @@ const ToolsPage = () => {
       icon: Search,
       action: () => console.log("SEO Analyzer - Coming soon"),
       color: "from-teal-500 to-green-500",
-      disabled: true
+      category: "marketing",
+      credits: 5,
+      status: "coming-soon"
     },
     {
       title: "Social Media Planner",
@@ -163,26 +217,21 @@ const ToolsPage = () => {
       icon: Calendar,
       action: () => console.log("Social Media Planner - Coming soon"),
       color: "from-blue-500 to-indigo-500",
-      disabled: true
-    }
-  ];
+      category: "marketing",
+      credits: 6,
+      status: "coming-soon"
+    },
 
-  const businessTools = [
+    // Negócios e Estratégia
     {
       title: "Calculadora de Valuation",
       description: "Estime o valor da sua startup",
       icon: Calculator,
       action: () => console.log("Valuation Calculator - Coming soon"),
       color: "from-amber-500 to-yellow-500",
-      disabled: true
-    },
-    {
-      title: "Gerador de Ideias",
-      description: "Gere novas ideias de negócio com IA",
-      icon: Brain,
-      action: () => console.log("Idea Generator - Coming soon"),
-      color: "from-lime-500 to-green-500",
-      disabled: true
+      category: "business",
+      credits: 7,
+      status: "coming-soon"
     },
     {
       title: "Automação de Processos",
@@ -190,7 +239,9 @@ const ToolsPage = () => {
       icon: Zap,
       action: () => console.log("Process Automation - Coming soon"),
       color: "from-sky-500 to-cyan-500",
-      disabled: true
+      category: "business",
+      credits: 9,
+      status: "coming-soon"
     },
     {
       title: "Roadmap Generator",
@@ -198,18 +249,31 @@ const ToolsPage = () => {
       icon: Rocket,
       action: () => console.log("Roadmap Generator - Coming soon"),
       color: "from-green-500 to-teal-500",
-      disabled: true
-    }
-  ];
+      category: "business",
+      credits: 8,
+      status: "coming-soon"
+    },
+    {
+      title: "Gerador de Faturas",
+      description: "Crie faturas e documentos financeiros profissionais",
+      icon: Receipt,
+      action: () => console.log("Invoice Generator - Coming soon"),
+      color: "from-orange-500 to-amber-500",
+      category: "business",
+      credits: 4,
+      status: "coming-soon"
+    },
 
-  const advancedTools = [
+    // Ferramentas Avançadas
     {
       title: "Análise de Tendências",
       description: "Identifique tendências de mercado e oportunidades",
       icon: LineChart,
       action: () => console.log("Trend Analysis - Coming soon"),
       color: "from-orange-500 to-amber-500",
-      disabled: true
+      category: "advanced",
+      credits: 10,
+      status: "coming-soon"
     },
     {
       title: "Previsão de Receita",
@@ -217,7 +281,9 @@ const ToolsPage = () => {
       icon: PieChart,
       action: () => console.log("Revenue Forecast - Coming soon"),
       color: "from-indigo-500 to-blue-500",
-      disabled: true
+      category: "advanced",
+      credits: 12,
+      status: "coming-soon"
     },
     {
       title: "Modelo de Pricing",
@@ -225,59 +291,76 @@ const ToolsPage = () => {
       icon: Star,
       action: () => console.log("Pricing Model - Coming soon"),
       color: "from-rose-500 to-pink-500",
-      disabled: true
+      category: "advanced",
+      credits: 9,
+      status: "coming-soon"
     }
   ];
 
-  const renderToolCategory = (title: string, tools: any[], description: string) => (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-semibold">{title}</h2>
-        <p className="text-muted-foreground text-sm">{description}</p>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {tools.map((tool, index) => (
-          <Card key={index} className="relative overflow-hidden hover:shadow-lg transition-shadow">
-            <div className={`absolute inset-0 bg-gradient-to-br ${tool.color} opacity-5`} />
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg bg-gradient-to-br ${tool.color}`}>
-                  <tool.icon className="h-6 w-6 text-white" />
-                </div>
-                {tool.title}
-              </CardTitle>
-              <CardDescription>{tool.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button 
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log(`🔥 BUTTON CLICKED: ${tool.title}`);
-                  console.log(`🔥 Event target:`, e.target);
-                  console.log(`🔥 Current target:`, e.currentTarget);
-                  console.log(`🔥 Tool disabled:`, tool.disabled);
-                  console.log(`🔥 Action function:`, tool.action);
-                  
-                  if (!tool.disabled) {
-                    handleToolClick(tool.title, tool.action);
-                  }
-                }}
-                className="w-full relative z-10" 
-                disabled={tool.disabled}
-                type="button"
-              >
-                {tool.disabled ? "Em breve" : "Usar ferramenta"}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
+  const categories = [
+    { id: "all", name: "Todos", count: allTools.length },
+    { id: "design", name: "Design", count: allTools.filter(t => t.category === "design").length },
+    { id: "documentation", name: "Documentação", count: allTools.filter(t => t.category === "documentation").length },
+    { id: "analysis", name: "Análise", count: allTools.filter(t => t.category === "analysis").length },
+    { id: "marketing", name: "Marketing", count: allTools.filter(t => t.category === "marketing").length },
+    { id: "business", name: "Negócios", count: allTools.filter(t => t.category === "business").length },
+    { id: "advanced", name: "Avançadas", count: allTools.filter(t => t.category === "advanced").length }
+  ];
+
+  const filteredTools = allTools.filter(tool => {
+    const matchesSearch = tool.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         tool.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = activeTab === "all" || tool.category === activeTab;
+    return matchesSearch && matchesCategory;
+  });
+
+  const renderToolCard = (tool: any, index: number) => (
+    <Card key={index} className="relative overflow-hidden hover:shadow-lg transition-all duration-200 group">
+      <div className={`absolute inset-0 bg-gradient-to-br ${tool.color} opacity-5 group-hover:opacity-10 transition-opacity`} />
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-lg bg-gradient-to-br ${tool.color} group-hover:scale-110 transition-transform`}>
+              <tool.icon className="h-6 w-6 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-semibold text-base truncate">{tool.title}</div>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant={tool.status === "available" ? "default" : "secondary"} className="text-xs">
+                  {tool.status === "available" ? "Disponível" : "Em breve"}
+                </Badge>
+                <span className="text-xs text-muted-foreground font-medium">
+                  {tool.credits} créditos
+                </span>
+              </div>
+            </div>
+          </div>
+        </CardTitle>
+        <CardDescription className="text-sm leading-relaxed">
+          {tool.description}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <Button 
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (tool.status === "available") {
+              handleToolClick(tool.title, tool.action);
+            }
+          }}
+          className="w-full relative z-10" 
+          disabled={tool.status === "coming-soon"}
+          variant={tool.status === "available" ? "default" : "outline"}
+        >
+          {tool.status === "available" ? "Usar ferramenta" : "Em breve"}
+        </Button>
+      </CardContent>
+    </Card>
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Ferramentas</h1>
         <p className="text-muted-foreground">
@@ -285,32 +368,57 @@ const ToolsPage = () => {
         </p>
       </div>
 
-      {renderToolCategory("Design e Branding", designTools, "Ferramentas para criar a identidade visual da sua startup")}
-      
-      {renderToolCategory("Documentação", documentationTools, "Gere documentos profissionais e estruturados")}
-      
-      {renderToolCategory("Análise e Pesquisa", analysisTools, "Analise mercado, concorrentes e oportunidades")}
-      
-      {renderToolCategory("Marketing Digital", marketingTools, "Desenvolva estratégias de marketing eficazes")}
-      
-      {renderToolCategory("Negócios e Estratégia", businessTools, "Ferramentas para planejamento e crescimento")}
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+        <Input
+          placeholder="Pesquisar ferramentas..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10"
+        />
+      </div>
 
-      {renderToolCategory("Ferramentas Avançadas", advancedTools, "Análises avançadas e previsões inteligentes")}
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 mb-6">
+          {categories.map((category) => (
+            <TabsTrigger key={category.id} value={category.id} className="text-xs">
+              {category.name}
+              <Badge variant="secondary" className="ml-1 text-xs">
+                {category.count}
+              </Badge>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        {categories.map((category) => (
+          <TabsContent key={category.id} value={category.id}>
+            {filteredTools.length > 0 ? (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredTools.map((tool, index) => renderToolCard(tool, index))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">Nenhuma ferramenta encontrada</h3>
+                <p className="text-muted-foreground">
+                  Tente ajustar sua pesquisa ou navegar por outras categorias
+                </p>
+              </div>
+            )}
+          </TabsContent>
+        ))}
+      </Tabs>
 
       {/* Modals */}
       <LogoGeneratorModal 
         open={isLogoModalOpen} 
-        onOpenChange={(open) => {
-          console.log(`🔥 Logo modal state changing to: ${open}`);
-          setIsLogoModalOpen(open);
-        }} 
+        onOpenChange={setIsLogoModalOpen} 
       />
       <PRDMVPGeneratorModal 
         open={isPRDModalOpen} 
-        onOpenChange={(open) => {
-          console.log(`🔥 PRD modal state changing to: ${open}`);
-          setIsPRDModalOpen(open);
-        }} 
+        onOpenChange={setIsPRDModalOpen} 
       />
     </div>
   );
