@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -57,52 +58,44 @@ export const IdeaCard = ({
   const [localIsFavorite, setLocalIsFavorite] = useState(is_favorite);
   const [showReanalyzeModal, setShowReanalyzeModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCardClick = (e: React.MouseEvent) => {
     // Não navegar se clicar em elementos interativos
     const target = e.target as HTMLElement;
     const isInteractiveElement = target.closest('button') || 
                                  target.closest('[role="menuitem"]') || 
-                                 target.closest('[data-radix-collection-item]') ||
-                                 target.closest('[data-radix-dropdown-menu-trigger]') ||
-                                 target.closest('[data-radix-dropdown-menu-content]') ||
                                  target.closest('.dropdown-trigger') ||
-                                 target.closest('.favorite-button') ||
-                                 target.closest('.action-button');
+                                 target.closest('.favorite-button');
     
     if (isInteractiveElement) {
-      e.preventDefault();
-      e.stopPropagation();
       return;
     }
     
     if (showSelectButton && onSelect) {
       onSelect(id);
     } else {
-      console.log("IdeaCard: Navigating to idea details for", id);
       navigate(`/dashboard/ideias/${id}`);
     }
   };
 
   const handleSelect = (e: React.MouseEvent) => {
-    e.preventDefault();
     e.stopPropagation();
-    console.log("IdeaCard: Select button clicked for", id);
     onSelect?.(id);
   };
 
   const handleEdit = async (e: React.MouseEvent) => {
-    e.preventDefault();
     e.stopPropagation();
     
-    console.log("IdeaCard: Edit button clicked for idea", id);
+    if (isLoading) return;
+    setIsLoading(true);
     
-    if (onEdit) {
-      onEdit(id);
-      return;
-    }
-
     try {
+      if (onEdit) {
+        onEdit(id);
+        return;
+      }
+
       // Verificar se a ideia existe e pertence ao usuário
       const { data: ideaData, error: ideaError } = await supabase
         .from('ideas')
@@ -112,32 +105,29 @@ export const IdeaCard = ({
         .single();
 
       if (ideaError || !ideaData) {
-        console.error("Error checking idea:", ideaError);
         toast.error("Ideia não encontrada ou você não tem permissão para editá-la");
         return;
       }
 
-      console.log("IdeaCard: Navigating to edit page for", ideaData.title);
       navigate(`/dashboard/ideias/${id}/edit`);
     } catch (error) {
       console.error("Error in handleEdit:", error);
       toast.error("Erro ao verificar ideia");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleViewDetails = (e: React.MouseEvent) => {
-    e.preventDefault();
     e.stopPropagation();
-    
-    console.log("IdeaCard: View details clicked for idea", id);
     navigate(`/dashboard/ideias/${id}`);
   };
 
   const handleViewResults = async (e: React.MouseEvent) => {
-    e.preventDefault();
     e.stopPropagation();
     
-    console.log("IdeaCard: View results clicked for idea", id);
+    if (isLoading) return;
+    setIsLoading(true);
     
     try {
       // Verificar se tem análise
@@ -156,45 +146,41 @@ export const IdeaCard = ({
       }
 
       if (analysisData && analysisData.length > 0) {
-        console.log("IdeaCard: Analysis found, navigating to results");
         navigate(`/dashboard/resultados/${id}`);
       } else {
-        console.log("IdeaCard: No analysis found, navigating to analyze page");
         navigate(`/dashboard/ideias/${id}/analyze`);
       }
     } catch (error) {
       console.error("Error in handleViewResults:", error);
       navigate(`/dashboard/ideias/${id}/analyze`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleReanalyze = (e: React.MouseEvent) => {
-    e.preventDefault();
     e.stopPropagation();
-    console.log("IdeaCard: Reanalyze clicked for idea", id);
     setShowReanalyzeModal(true);
   };
 
   const handleDelete = async (e: React.MouseEvent) => {
-    e.preventDefault();
     e.stopPropagation();
     
-    console.log("IdeaCard: Delete clicked for idea", id);
+    if (isDeleting || isLoading) return;
     
+    // Confirmar delete
+    if (!window.confirm("Tem certeza que deseja excluir esta ideia?")) {
+      return;
+    }
+
     if (onDelete) {
       onDelete(id);
       return;
     }
 
-    // Confirmar delete
-    if (!confirm("Tem certeza que deseja excluir esta ideia?")) {
-      return;
-    }
-
+    setIsDeleting(true);
+    
     try {
-      setIsDeleting(true);
-      console.log("IdeaCard: Starting delete process for", id);
-      
       // Deletar a ideia
       const { error: deleteError } = await supabase
         .from('ideas')
@@ -208,7 +194,6 @@ export const IdeaCard = ({
         return;
       }
 
-      console.log("IdeaCard: Idea deleted successfully");
       toast.success("Ideia excluída com sucesso");
       
       // Emitir evento para atualização global
@@ -230,12 +215,10 @@ export const IdeaCard = ({
   };
 
   const handleFavoriteToggle = (isFavorite: boolean) => {
-    console.log("IdeaCard: Favorite toggled for", id, "to", isFavorite);
     setLocalIsFavorite(isFavorite);
   };
 
   const handleReanalyzeSuccess = () => {
-    console.log("IdeaCard: Reanalysis successful for", id);
     // Emitir evento para refresh dos dados
     window.dispatchEvent(new CustomEvent('analysis-updated'));
   };
@@ -307,11 +290,7 @@ export const IdeaCard = ({
             </div>
             
             <div className="flex items-center gap-1 shrink-0">
-              <div
-                className="favorite-button"
-                onClick={(e) => e.stopPropagation()}
-                onTouchStart={(e) => e.stopPropagation()}
-              >
+              <div className="favorite-button">
                 <FavoriteButton
                   ideaId={id}
                   isFavorite={localIsFavorite}
@@ -326,26 +305,14 @@ export const IdeaCard = ({
                     variant="ghost" 
                     size="sm" 
                     className={cn(
-                      "h-10 w-10 p-0 opacity-100 transition-opacity dropdown-trigger action-button",
+                      "h-10 w-10 p-0 dropdown-trigger",
                       isMobile ? "min-h-[44px] min-w-[44px]" : ""
                     )}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    onTouchStart={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
                   >
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent 
-                  align="end" 
-                  className="w-48"
-                  onClick={(e) => e.stopPropagation()}
-                >
+                <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem 
                     onClick={handleViewDetails}
                     className={cn(
@@ -359,26 +326,28 @@ export const IdeaCard = ({
                   
                   <DropdownMenuItem 
                     onClick={handleEdit} 
+                    disabled={isLoading}
                     className={cn(
                       "flex items-center gap-2 cursor-pointer",
                       isMobile ? "min-h-[44px]" : "min-h-auto"
                     )}
                   >
                     <Edit className="h-4 w-4" />
-                    {t('ideas.actions.edit', 'Editar')}
+                    {isLoading ? 'Carregando...' : t('ideas.actions.edit', 'Editar')}
                   </DropdownMenuItem>
                   
                   {(score !== null && score !== undefined) && (
                     <>
                       <DropdownMenuItem 
                         onClick={handleViewResults}
+                        disabled={isLoading}
                         className={cn(
                           "flex items-center gap-2 cursor-pointer",
                           isMobile ? "min-h-[44px]" : "min-h-auto"
                         )}
                       >
                         <BarChart3 className="h-4 w-4" />
-                        {t('ideas.actions.viewResults', 'Ver Resultados')}
+                        {isLoading ? 'Carregando...' : t('ideas.actions.viewResults', 'Ver Resultados')}
                       </DropdownMenuItem>
                       
                       <DropdownMenuItem 
@@ -400,7 +369,7 @@ export const IdeaCard = ({
                       "flex items-center gap-2 text-red-600 focus:text-red-600 cursor-pointer",
                       isMobile ? "min-h-[44px]" : "min-h-auto"
                     )}
-                    disabled={isDeleting}
+                    disabled={isDeleting || isLoading}
                   >
                     <Trash2 className="h-4 w-4" />
                     {isDeleting ? 'Excluindo...' : t('ideas.actions.delete', 'Excluir')}

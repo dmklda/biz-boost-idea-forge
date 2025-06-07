@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -247,12 +246,12 @@ const IdeaDetailPage = () => {
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <div className="flex justify-between items-start gap-4">
-              <div className="flex-1 min-w-0">
-                <CardTitle className="text-lg md:text-xl break-words">
+            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
+              <div className="flex-1 min-w-0 space-y-3">
+                <CardTitle className="text-lg md:text-xl leading-tight break-words hyphens-auto">
                   {idea.title}
                 </CardTitle>
-                <div className="flex items-center gap-2 mt-2 flex-wrap">
+                <div className="flex items-center gap-2 flex-wrap">
                   <Badge variant="outline" className="text-xs">
                     <Calendar className="h-3 w-3 mr-1" />
                     {new Date(idea.created_at).toLocaleDateString('pt-BR')}
@@ -264,7 +263,8 @@ const IdeaDetailPage = () => {
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              
+              <div className="flex items-center gap-2 shrink-0 flex-wrap">
                 <FavoriteButton
                   ideaId={idea.id}
                   isFavorite={false}
@@ -290,6 +290,16 @@ const IdeaDetailPage = () => {
                     {analysis ? "Ver Análise" : "Analisar"}
                   </span>
                 </Button>
+                {analysis && (
+                  <Button
+                    onClick={() => setShowAdvancedAnalysis(true)}
+                    className="bg-gradient-to-r from-brand-blue to-brand-purple hover:opacity-90 transition-all flex items-center gap-2"
+                    size="sm"
+                  >
+                    <TrendingUp className="h-4 w-4" />
+                    <span className="hidden sm:inline">Análise Avançada</span>
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
@@ -441,7 +451,7 @@ const IdeaDetailPage = () => {
                           <li key={i} className="text-muted-foreground break-words">{item}</li>
                         ))}
                         {safeGetArray(swotAnalysis, 'threats').length === 0 && (
-                          <li className="text-muted-foreground">Nenhuma ameaça identificada</li>
+                          <li>Nenhuma ameaça identificada</li>
                         )}
                       </ul>
                     </div>
@@ -628,22 +638,6 @@ const IdeaDetailPage = () => {
               </Card>
             </TabsContent>
           </Tabs>
-        )}
-
-        {analysis && (
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex justify-center">
-                <Button
-                  onClick={() => setShowAdvancedAnalysis(true)}
-                  className="bg-gradient-to-r from-brand-blue to-brand-purple hover:opacity-90 transition-all"
-                >
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                  Análise Avançada
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         )}
       </div>
 
