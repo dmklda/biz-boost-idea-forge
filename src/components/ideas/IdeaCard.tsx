@@ -1,9 +1,8 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Edit, Trash2, BarChart3, CheckSquare } from "lucide-react";
+import { MoreVertical, Edit, Trash2, BarChart3, CheckSquare, Eye } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { FavoriteButton } from "./FavoriteButton";
 import { TagBadge } from "./TagBadge";
@@ -14,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/components/ui/sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export interface IdeaCardProps {
   id: string;
@@ -53,6 +53,7 @@ export const IdeaCard = ({
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { authState } = useAuth();
+  const isMobile = useIsMobile();
   const [localIsFavorite, setLocalIsFavorite] = useState(is_favorite);
   const [showReanalyzeModal, setShowReanalyzeModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -63,6 +64,8 @@ export const IdeaCard = ({
     const isInteractiveElement = target.closest('button') || 
                                  target.closest('[role="menuitem"]') || 
                                  target.closest('[data-radix-collection-item]') ||
+                                 target.closest('[data-radix-dropdown-menu-trigger]') ||
+                                 target.closest('[data-radix-dropdown-menu-content]') ||
                                  target.closest('.dropdown-trigger') ||
                                  target.closest('.favorite-button') ||
                                  target.closest('.action-button');
@@ -76,6 +79,7 @@ export const IdeaCard = ({
     if (showSelectButton && onSelect) {
       onSelect(id);
     } else {
+      console.log("IdeaCard: Navigating to idea details for", id);
       navigate(`/dashboard/ideias/${id}`);
     }
   };
@@ -83,6 +87,7 @@ export const IdeaCard = ({
   const handleSelect = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    console.log("IdeaCard: Select button clicked for", id);
     onSelect?.(id);
   };
 
@@ -90,34 +95,83 @@ export const IdeaCard = ({
     e.preventDefault();
     e.stopPropagation();
     
+    console.log("IdeaCard: Edit button clicked for idea", id);
+    
     if (onEdit) {
       onEdit(id);
-    } else {
-      // Verificar se a ideia existe antes de navegar
-      try {
-        const { data, error } = await supabase
-          .from('ideas')
-          .select('id')
-          .eq('id', id)
-          .eq('user_id', authState.user?.id)
-          .single();
+      return;
+    }
 
-        if (error || !data) {
-          toast.error("Ideia não encontrada");
-          return;
-        }
+    try {
+      // Verificar se a ideia existe e pertence ao usuário
+      const { data: ideaData, error: ideaError } = await supabase
+        .from('ideas')
+        .select('id, title')
+        .eq('id', id)
+        .eq('user_id', authState.user?.id)
+        .single();
 
-        navigate(`/dashboard/ideias/${id}/edit`);
-      } catch (error) {
-        console.error("Error checking idea:", error);
-        toast.error("Erro ao verificar ideia");
+      if (ideaError || !ideaData) {
+        console.error("Error checking idea:", ideaError);
+        toast.error("Ideia não encontrada ou você não tem permissão para editá-la");
+        return;
       }
+
+      console.log("IdeaCard: Navigating to edit page for", ideaData.title);
+      navigate(`/dashboard/ideias/${id}/edit`);
+    } catch (error) {
+      console.error("Error in handleEdit:", error);
+      toast.error("Erro ao verificar ideia");
+    }
+  };
+
+  const handleViewDetails = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log("IdeaCard: View details clicked for idea", id);
+    navigate(`/dashboard/ideias/${id}`);
+  };
+
+  const handleViewResults = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log("IdeaCard: View results clicked for idea", id);
+    
+    try {
+      // Verificar se tem análise
+      const { data: analysisData, error: analysisError } = await supabase
+        .from('idea_analyses')
+        .select('id, created_at')
+        .eq('idea_id', id)
+        .eq('user_id', authState.user?.id)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (analysisError) {
+        console.error("Error checking analysis:", analysisError);
+        toast.error("Erro ao verificar análise");
+        return;
+      }
+
+      if (analysisData && analysisData.length > 0) {
+        console.log("IdeaCard: Analysis found, navigating to results");
+        navigate(`/dashboard/resultados/${id}`);
+      } else {
+        console.log("IdeaCard: No analysis found, navigating to analyze page");
+        navigate(`/dashboard/ideias/${id}/analyze`);
+      }
+    } catch (error) {
+      console.error("Error in handleViewResults:", error);
+      navigate(`/dashboard/ideias/${id}/analyze`);
     }
   };
 
   const handleReanalyze = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    console.log("IdeaCard: Reanalyze clicked for idea", id);
     setShowReanalyzeModal(true);
   };
 
@@ -125,29 +179,36 @@ export const IdeaCard = ({
     e.preventDefault();
     e.stopPropagation();
     
+    console.log("IdeaCard: Delete clicked for idea", id);
+    
     if (onDelete) {
       onDelete(id);
       return;
     }
 
-    // Implementar delete nativo aqui
-    if (!confirm("Tem certeza que deseja excluir esta ideia?")) return;
+    // Confirmar delete
+    if (!confirm("Tem certeza que deseja excluir esta ideia?")) {
+      return;
+    }
 
     try {
       setIsDeleting(true);
+      console.log("IdeaCard: Starting delete process for", id);
       
-      const { error } = await supabase
+      // Deletar a ideia
+      const { error: deleteError } = await supabase
         .from('ideas')
         .delete()
         .eq('id', id)
         .eq('user_id', authState.user?.id);
 
-      if (error) {
-        console.error("Error deleting idea:", error);
+      if (deleteError) {
+        console.error("Error deleting idea:", deleteError);
         toast.error("Erro ao excluir ideia");
         return;
       }
 
+      console.log("IdeaCard: Idea deleted successfully");
       toast.success("Ideia excluída com sucesso");
       
       // Emitir evento para atualização global
@@ -155,49 +216,26 @@ export const IdeaCard = ({
         detail: { ideaId: id }
       }));
 
+      // Forçar refresh da página se estiver na lista de ideias
+      if (window.location.pathname === '/dashboard/ideias') {
+        window.location.reload();
+      }
+
     } catch (error) {
-      console.error("Error deleting idea:", error);
+      console.error("Error in handleDelete:", error);
       toast.error("Erro ao excluir ideia");
     } finally {
       setIsDeleting(false);
     }
   };
 
-  const handleAnalyze = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (onAnalyze) {
-      onAnalyze(id);
-      return;
-    }
-
-    // Verificar se tem análise antes de navegar
-    try {
-      const { data: analysisData } = await supabase
-        .from('idea_analyses')
-        .select('id')
-        .eq('idea_id', id)
-        .eq('user_id', authState.user?.id)
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-      if (analysisData && analysisData.length > 0) {
-        navigate(`/dashboard/resultados/${id}?id=${id}`);
-      } else {
-        navigate(`/dashboard/ideias/${id}/analyze`);
-      }
-    } catch (error) {
-      console.error("Error checking analysis:", error);
-      navigate(`/dashboard/ideias/${id}/analyze`);
-    }
-  };
-
   const handleFavoriteToggle = (isFavorite: boolean) => {
+    console.log("IdeaCard: Favorite toggled for", id, "to", isFavorite);
     setLocalIsFavorite(isFavorite);
   };
 
   const handleReanalyzeSuccess = () => {
+    console.log("IdeaCard: Reanalysis successful for", id);
     // Emitir evento para refresh dos dados
     window.dispatchEvent(new CustomEvent('analysis-updated'));
   };
@@ -287,7 +325,10 @@ export const IdeaCard = ({
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="h-10 w-10 p-0 opacity-100 transition-opacity dropdown-trigger action-button min-h-[44px] min-w-[44px]"
+                    className={cn(
+                      "h-10 w-10 p-0 opacity-100 transition-opacity dropdown-trigger action-button",
+                      isMobile ? "min-h-[44px] min-w-[44px]" : ""
+                    )}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -306,33 +347,59 @@ export const IdeaCard = ({
                   onClick={(e) => e.stopPropagation()}
                 >
                   <DropdownMenuItem 
+                    onClick={handleViewDetails}
+                    className={cn(
+                      "flex items-center gap-2 cursor-pointer",
+                      isMobile ? "min-h-[44px]" : "min-h-auto"
+                    )}
+                  >
+                    <Eye className="h-4 w-4" />
+                    {t('ideas.actions.viewDetails', 'Ver Detalhes')}
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem 
                     onClick={handleEdit} 
-                    className="flex items-center gap-2 cursor-pointer min-h-[44px] md:min-h-auto"
+                    className={cn(
+                      "flex items-center gap-2 cursor-pointer",
+                      isMobile ? "min-h-[44px]" : "min-h-auto"
+                    )}
                   >
                     <Edit className="h-4 w-4" />
                     {t('ideas.actions.edit', 'Editar')}
                   </DropdownMenuItem>
+                  
                   {(score !== null && score !== undefined) && (
                     <>
                       <DropdownMenuItem 
-                        onClick={handleReanalyze} 
-                        className="flex items-center gap-2 cursor-pointer min-h-[44px] md:min-h-auto"
-                      >
-                        <Edit className="h-4 w-4" />
-                        {t('ideas.actions.reanalyze', 'Reanalisar')}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={handleAnalyze} 
-                        className="flex items-center gap-2 cursor-pointer min-h-[44px] md:min-h-auto"
+                        onClick={handleViewResults}
+                        className={cn(
+                          "flex items-center gap-2 cursor-pointer",
+                          isMobile ? "min-h-[44px]" : "min-h-auto"
+                        )}
                       >
                         <BarChart3 className="h-4 w-4" />
                         {t('ideas.actions.viewResults', 'Ver Resultados')}
                       </DropdownMenuItem>
+                      
+                      <DropdownMenuItem 
+                        onClick={handleReanalyze} 
+                        className={cn(
+                          "flex items-center gap-2 cursor-pointer",
+                          isMobile ? "min-h-[44px]" : "min-h-auto"
+                        )}
+                      >
+                        <Edit className="h-4 w-4" />
+                        {t('ideas.actions.reanalyze', 'Reanalisar')}
+                      </DropdownMenuItem>
                     </>
                   )}
+                  
                   <DropdownMenuItem 
                     onClick={handleDelete} 
-                    className="flex items-center gap-2 text-red-600 focus:text-red-600 cursor-pointer min-h-[44px] md:min-h-auto"
+                    className={cn(
+                      "flex items-center gap-2 text-red-600 focus:text-red-600 cursor-pointer",
+                      isMobile ? "min-h-[44px]" : "min-h-auto"
+                    )}
                     disabled={isDeleting}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -369,7 +436,10 @@ export const IdeaCard = ({
               onClick={handleSelect}
               variant={isSelected ? "default" : "outline"}
               size="sm"
-              className="w-full flex items-center gap-2 min-h-[44px]"
+              className={cn(
+                "w-full flex items-center gap-2",
+                isMobile ? "min-h-[44px]" : ""
+              )}
             >
               <CheckSquare className="h-4 w-4" />
               {isSelected 

@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface FavoriteButtonProps {
   ideaId: string;
@@ -23,6 +24,7 @@ export const FavoriteButton = ({
   onToggle 
 }: FavoriteButtonProps) => {
   const { authState } = useAuth();
+  const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(false);
   const [localIsFavorite, setLocalIsFavorite] = useState(isFavorite);
   const [lastClickTime, setLastClickTime] = useState(0);
@@ -31,27 +33,28 @@ export const FavoriteButton = ({
     e.preventDefault();
     e.stopPropagation();
 
-    // Prevenir duplo clique no mobile
+    // Prevenir cliques múltiplos rápidos
     const currentTime = Date.now();
-    if (currentTime - lastClickTime < 300) {
+    if (currentTime - lastClickTime < 500) { // Aumentado para 500ms
+      console.log("FavoriteButton: Preventing rapid click");
       return;
     }
     setLastClickTime(currentTime);
 
-    if (!authState.user?.id || isLoading) return;
+    if (!authState.user?.id || isLoading) {
+      console.log("FavoriteButton: No user or already loading");
+      return;
+    }
 
     try {
       setIsLoading(true);
       const newFavoriteStatus = !localIsFavorite;
       
+      console.log("FavoriteButton: Toggling favorite for", ideaId, "to", newFavoriteStatus);
+      
       // Update otimista
       setLocalIsFavorite(newFavoriteStatus);
       onToggle?.(newFavoriteStatus);
-
-      // Emitir evento global para updates em tempo real
-      window.dispatchEvent(new CustomEvent('favorite-updated', {
-        detail: { ideaId, isFavorite: newFavoriteStatus }
-      }));
 
       if (newFavoriteStatus) {
         // Adicionar aos favoritos
@@ -67,13 +70,11 @@ export const FavoriteButton = ({
           // Reverter update otimista
           setLocalIsFavorite(!newFavoriteStatus);
           onToggle?.(!newFavoriteStatus);
-          window.dispatchEvent(new CustomEvent('favorite-updated', {
-            detail: { ideaId, isFavorite: !newFavoriteStatus }
-          }));
           toast.error("Erro ao adicionar aos favoritos");
           return;
         }
 
+        console.log("FavoriteButton: Successfully added to favorites");
         toast.success("Adicionado aos favoritos");
       } else {
         // Remover dos favoritos
@@ -88,26 +89,24 @@ export const FavoriteButton = ({
           // Reverter update otimista
           setLocalIsFavorite(!newFavoriteStatus);
           onToggle?.(!newFavoriteStatus);
-          window.dispatchEvent(new CustomEvent('favorite-updated', {
-            detail: { ideaId, isFavorite: !newFavoriteStatus }
-          }));
           toast.error("Erro ao remover dos favoritos");
           return;
         }
 
+        console.log("FavoriteButton: Successfully removed from favorites");
         toast.success("Removido dos favoritos");
       }
 
-      console.log(`Favorite status updated for idea ${ideaId}: ${newFavoriteStatus}`);
+      // Emitir evento global para updates em tempo real
+      window.dispatchEvent(new CustomEvent('favorite-updated', {
+        detail: { ideaId, isFavorite: newFavoriteStatus }
+      }));
 
     } catch (error) {
       console.error("Error toggling favorite:", error);
       // Reverter update otimista
       setLocalIsFavorite(!localIsFavorite);
       onToggle?.(!localIsFavorite);
-      window.dispatchEvent(new CustomEvent('favorite-updated', {
-        detail: { ideaId, isFavorite: !localIsFavorite }
-      }));
       toast.error("Erro ao atualizar favoritos");
     } finally {
       setIsLoading(false);
@@ -126,7 +125,8 @@ export const FavoriteButton = ({
       variant="ghost"
       size={size}
       className={cn(
-        "p-1 h-auto transition-all duration-200 min-h-[44px] min-w-[44px] md:min-h-auto md:min-w-auto",
+        "p-1 h-auto transition-all duration-200",
+        isMobile ? "min-h-[44px] min-w-[44px]" : "min-h-auto min-w-auto",
         localIsFavorite 
           ? "text-red-500 hover:text-red-600" 
           : "text-gray-400 hover:text-red-500",
@@ -134,7 +134,7 @@ export const FavoriteButton = ({
         className
       )}
       onClick={handleToggleFavorite}
-      onTouchStart={handleToggleFavorite}
+      onTouchEnd={isMobile ? handleToggleFavorite : undefined}
       disabled={isLoading}
       aria-label={localIsFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
     >
