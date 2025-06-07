@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 
-// Define mobile breakpoints for consistency
+// Definir breakpoints mobile para consistência
 const MOBILE_BREAKPOINT = 768;
 const TABLET_BREAKPOINT = 1024;
 
@@ -10,7 +10,7 @@ export function useIsMobile() {
     if (typeof window !== 'undefined') {
       return window.innerWidth < MOBILE_BREAKPOINT;
     }
-    return false; // Default to desktop on server
+    return false; // Padrão para desktop no servidor
   });
 
   useEffect(() => {
@@ -20,10 +20,20 @@ export function useIsMobile() {
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     };
     
-    window.addEventListener("resize", handleResize);
-    handleResize(); // Set initial value
+    // Usar throttle para melhor performance no mobile
+    let timeoutId: NodeJS.Timeout;
+    const throttledResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleResize, 100);
+    };
     
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener("resize", throttledResize);
+    handleResize(); // Definir valor inicial
+    
+    return () => {
+      window.removeEventListener("resize", throttledResize);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   return isMobile;
@@ -44,10 +54,19 @@ export function useIsTablet() {
       setIsTablet(window.innerWidth >= MOBILE_BREAKPOINT && window.innerWidth < TABLET_BREAKPOINT);
     };
     
-    window.addEventListener("resize", handleResize);
+    let timeoutId: NodeJS.Timeout;
+    const throttledResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleResize, 100);
+    };
+    
+    window.addEventListener("resize", throttledResize);
     handleResize();
     
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", throttledResize);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   return isTablet;
@@ -74,11 +93,35 @@ export function useScreenSize() {
       else setScreenSize('desktop');
     };
     
-    window.addEventListener("resize", handleResize);
+    let timeoutId: NodeJS.Timeout;
+    const throttledResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleResize, 100);
+    };
+    
+    window.addEventListener("resize", throttledResize);
     handleResize();
     
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", throttledResize);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   return screenSize;
+}
+
+// Hook adicional para detectar interações touch
+export function useIsTouchDevice() {
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  useEffect(() => {
+    const checkTouchDevice = () => {
+      setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    };
+
+    checkTouchDevice();
+  }, []);
+
+  return isTouchDevice;
 }

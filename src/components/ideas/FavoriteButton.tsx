@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,10 +25,18 @@ export const FavoriteButton = ({
   const { authState } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [localIsFavorite, setLocalIsFavorite] = useState(isFavorite);
+  const [lastClickTime, setLastClickTime] = useState(0);
 
-  const handleToggleFavorite = async (e: React.MouseEvent) => {
+  const handleToggleFavorite = async (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Prevenir duplo clique no mobile
+    const currentTime = Date.now();
+    if (currentTime - lastClickTime < 300) {
+      return;
+    }
+    setLastClickTime(currentTime);
 
     if (!authState.user?.id || isLoading) return;
 
@@ -36,17 +44,17 @@ export const FavoriteButton = ({
       setIsLoading(true);
       const newFavoriteStatus = !localIsFavorite;
       
-      // Optimistic update
+      // Update otimista
       setLocalIsFavorite(newFavoriteStatus);
       onToggle?.(newFavoriteStatus);
 
-      // Emit global event for real-time updates
+      // Emitir evento global para updates em tempo real
       window.dispatchEvent(new CustomEvent('favorite-updated', {
         detail: { ideaId, isFavorite: newFavoriteStatus }
       }));
 
       if (newFavoriteStatus) {
-        // Add to favorites
+        // Adicionar aos favoritos
         const { error } = await supabase
           .from('idea_favorites')
           .insert({
@@ -56,7 +64,7 @@ export const FavoriteButton = ({
 
         if (error) {
           console.error("Error adding to favorites:", error);
-          // Revert optimistic update
+          // Reverter update otimista
           setLocalIsFavorite(!newFavoriteStatus);
           onToggle?.(!newFavoriteStatus);
           window.dispatchEvent(new CustomEvent('favorite-updated', {
@@ -68,7 +76,7 @@ export const FavoriteButton = ({
 
         toast.success("Adicionado aos favoritos");
       } else {
-        // Remove from favorites
+        // Remover dos favoritos
         const { error } = await supabase
           .from('idea_favorites')
           .delete()
@@ -77,7 +85,7 @@ export const FavoriteButton = ({
 
         if (error) {
           console.error("Error removing from favorites:", error);
-          // Revert optimistic update
+          // Reverter update otimista
           setLocalIsFavorite(!newFavoriteStatus);
           onToggle?.(!newFavoriteStatus);
           window.dispatchEvent(new CustomEvent('favorite-updated', {
@@ -94,7 +102,7 @@ export const FavoriteButton = ({
 
     } catch (error) {
       console.error("Error toggling favorite:", error);
-      // Revert optimistic update
+      // Reverter update otimista
       setLocalIsFavorite(!localIsFavorite);
       onToggle?.(!localIsFavorite);
       window.dispatchEvent(new CustomEvent('favorite-updated', {
@@ -106,17 +114,19 @@ export const FavoriteButton = ({
     }
   };
 
-  // Sync with external prop changes
-  if (isFavorite !== localIsFavorite && !isLoading) {
-    setLocalIsFavorite(isFavorite);
-  }
+  // Sincronizar com mudanças externas do prop
+  useEffect(() => {
+    if (isFavorite !== localIsFavorite && !isLoading) {
+      setLocalIsFavorite(isFavorite);
+    }
+  }, [isFavorite, localIsFavorite, isLoading]);
 
   return (
     <Button
       variant="ghost"
       size={size}
       className={cn(
-        "p-1 h-auto transition-all duration-200",
+        "p-1 h-auto transition-all duration-200 min-h-[44px] min-w-[44px] md:min-h-auto md:min-w-auto",
         localIsFavorite 
           ? "text-red-500 hover:text-red-600" 
           : "text-gray-400 hover:text-red-500",
@@ -124,6 +134,7 @@ export const FavoriteButton = ({
         className
       )}
       onClick={handleToggleFavorite}
+      onTouchStart={handleToggleFavorite}
       disabled={isLoading}
       aria-label={localIsFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
     >
