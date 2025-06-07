@@ -55,7 +55,14 @@ export const IdeaCard = ({
   const handleCardClick = (e: React.MouseEvent) => {
     // Don't navigate if clicking on interactive elements
     const target = e.target as HTMLElement;
-    if (target.closest('button') || target.closest('[role="menuitem"]')) {
+    const isInteractiveElement = target.closest('button') || 
+                                 target.closest('[role="menuitem"]') || 
+                                 target.closest('[data-radix-collection-item]') ||
+                                 target.closest('.dropdown-trigger');
+    
+    if (isInteractiveElement) {
+      e.preventDefault();
+      e.stopPropagation();
       return;
     }
     
@@ -180,36 +187,61 @@ export const IdeaCard = ({
             </div>
             
             <div className="flex items-center gap-1 shrink-0">
-              <FavoriteButton
-                ideaId={id}
-                isFavorite={localIsFavorite}
-                onToggle={handleFavoriteToggle}
-                size="sm"
-              />
+              <div
+                onClick={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+              >
+                <FavoriteButton
+                  ideaId={id}
+                  isFavorite={localIsFavorite}
+                  onToggle={handleFavoriteToggle}
+                  size="sm"
+                />
+              </div>
               
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={(e) => e.stopPropagation()}
+                    className="h-10 w-10 p-0 opacity-0 group-hover:opacity-100 md:opacity-100 transition-opacity dropdown-trigger"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onTouchStart={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
                   >
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={handleEdit} className="flex items-center gap-2">
+                <DropdownMenuContent 
+                  align="end" 
+                  className="w-48"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <DropdownMenuItem 
+                    onClick={handleEdit} 
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
                     <Edit className="h-4 w-4" />
                     {t('ideas.actions.edit', 'Editar')}
                   </DropdownMenuItem>
                   {(score !== null && score !== undefined) && (
                     <>
-                      <DropdownMenuItem onClick={handleReanalyze} className="flex items-center gap-2">
+                      <DropdownMenuItem 
+                        onClick={handleReanalyze} 
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
                         <Edit className="h-4 w-4" />
                         {t('ideas.actions.reanalyze', 'Reanalisar')}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={handleAnalyze} className="flex items-center gap-2">
+                      <DropdownMenuItem 
+                        onClick={handleAnalyze} 
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
                         <BarChart3 className="h-4 w-4" />
                         {t('ideas.actions.viewResults', 'Ver Resultados')}
                       </DropdownMenuItem>
@@ -217,7 +249,7 @@ export const IdeaCard = ({
                   )}
                   <DropdownMenuItem 
                     onClick={handleDelete} 
-                    className="flex items-center gap-2 text-red-600 focus:text-red-600"
+                    className="flex items-center gap-2 text-red-600 focus:text-red-600 cursor-pointer"
                   >
                     <Trash2 className="h-4 w-4" />
                     {t('ideas.actions.delete', 'Excluir')}

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -23,6 +24,35 @@ const ResultsPage = () => {
   const [analysis, setAnalysis] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const isMobile = useIsMobile();
+
+  // Safe data parsing functions
+  const safeParseJSON = (data: any, fallback: any = {}) => {
+    if (typeof data === 'object' && data !== null) {
+      return data;
+    }
+    if (typeof data === 'string') {
+      try {
+        return JSON.parse(data);
+      } catch {
+        return fallback;
+      }
+    }
+    return fallback;
+  };
+
+  const safeGetArray = (obj: any, key: string, fallback: any[] = []) => {
+    const value = obj?.[key];
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+    return fallback;
+  };
 
   useEffect(() => {
     const fetchIdeaAndAnalysis = async () => {
@@ -166,38 +196,38 @@ const ResultsPage = () => {
     );
   }
 
-  // Formatar dados de análise para exibição com fallbacks seguros
+  // Safe parsing of analysis data with fallbacks
   const score = analysis?.score || 0;
   const status = analysis?.status || "Moderate";
-  const swotAnalysis = analysis?.swot_analysis || {
+  const swotAnalysis = safeParseJSON(analysis?.swot_analysis, {
     strengths: [],
     weaknesses: [],
     opportunities: [],
     threats: []
-  };
-  const marketAnalysis = analysis?.market_analysis || {
+  });
+  const marketAnalysis = safeParseJSON(analysis?.market_analysis, {
     market_size: "",
     target_audience: "",
     growth_potential: "",
     barriers_to_entry: []
-  };
-  const competitorAnalysis = analysis?.competitor_analysis || {
+  });
+  const competitorAnalysis = safeParseJSON(analysis?.competitor_analysis, {
     key_competitors: [],
     competitive_advantage: "",
     market_gaps: []
-  };
-  const financialAnalysis = analysis?.financial_analysis || {
+  });
+  const financialAnalysis = safeParseJSON(analysis?.financial_analysis, {
     revenue_potential: "",
     initial_investment: "",
     break_even_estimate: "",
     funding_suggestions: []
-  };
-  const recommendations = analysis?.recommendations || {
+  });
+  const recommendations = safeParseJSON(analysis?.recommendations, {
     action_items: [],
     next_steps: [],
     potential_challenges: [],
     suggested_resources: []
-  };
+  });
 
   // Safe status translation with fallback
   const getStatusTranslation = (status: string) => {
@@ -273,13 +303,13 @@ const ResultsPage = () => {
             </div>
             <div className="p-3 md:p-4 text-center">
               <div className="text-xl md:text-2xl font-bold text-brand-green">
-                {swotAnalysis.strengths?.length || 0}
+                {safeGetArray(swotAnalysis, 'strengths').length || 0}
               </div>
               <div className="text-xs md:text-sm text-gray-500">{t('results.strengths', "Pontos Fortes")}</div>
             </div>
             <div className="p-3 md:p-4 text-center">
               <div className="text-xl md:text-2xl font-bold text-red-500">
-                {swotAnalysis.weaknesses?.length || 0}
+                {safeGetArray(swotAnalysis, 'weaknesses').length || 0}
               </div>
               <div className="text-xs md:text-sm text-gray-500">{t('results.weaknesses', "Pontos Fracos")}</div>
             </div>
@@ -337,20 +367,20 @@ const ResultsPage = () => {
                   
                   <h3 className="font-semibold mb-2">{t('results.keyStrengths', "Principais Pontos Fortes")}</h3>
                   <ul className="list-disc list-inside text-muted-foreground mb-4 space-y-1">
-                    {swotAnalysis.strengths?.slice(0, 3).map((strength: string, i: number) => (
+                    {safeGetArray(swotAnalysis, 'strengths').slice(0, 3).map((strength: string, i: number) => (
                       <li key={i} className="break-words">{strength}</li>
                     ))}
-                    {(!swotAnalysis.strengths || swotAnalysis.strengths.length === 0) && (
+                    {safeGetArray(swotAnalysis, 'strengths').length === 0 && (
                       <li>{t('results.noStrengths', "Nenhum ponto forte identificado")}</li>
                     )}
                   </ul>
                   
                   <h3 className="font-semibold mb-2">{t('results.keyWeaknesses', "Principais Pontos Fracos")}</h3>
                   <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                    {swotAnalysis.weaknesses?.slice(0, 3).map((weakness: string, i: number) => (
+                    {safeGetArray(swotAnalysis, 'weaknesses').slice(0, 3).map((weakness: string, i: number) => (
                       <li key={i} className="break-words">{weakness}</li>
                     ))}
-                    {(!swotAnalysis.weaknesses || swotAnalysis.weaknesses.length === 0) && (
+                    {safeGetArray(swotAnalysis, 'weaknesses').length === 0 && (
                       <li>{t('results.noWeaknesses', "Nenhum ponto fraco identificado")}</li>
                     )}
                   </ul>
@@ -368,10 +398,10 @@ const ResultsPage = () => {
                 <div className="bg-green-50 p-4 rounded-lg">
                   <h3 className="font-semibold text-green-800 mb-2">{t('results.swot.strengths', "Forças")}</h3>
                   <ul className="list-disc list-inside">
-                    {swotAnalysis.strengths?.map((item: string, i: number) => (
-                      <li key={i} className="text-muted-foreground">{item}</li>
+                    {safeGetArray(swotAnalysis, 'strengths').map((item: string, i: number) => (
+                      <li key={i} className="text-muted-foreground break-words">{item}</li>
                     ))}
-                    {(!swotAnalysis.strengths || swotAnalysis.strengths.length === 0) && (
+                    {safeGetArray(swotAnalysis, 'strengths').length === 0 && (
                       <li className="text-muted-foreground">{t('results.noItems', "Nenhum item identificado")}</li>
                     )}
                   </ul>
@@ -380,10 +410,10 @@ const ResultsPage = () => {
                 <div className="bg-red-50 p-4 rounded-lg">
                   <h3 className="font-semibold text-red-800 mb-2">{t('results.swot.weaknesses', "Fraquezas")}</h3>
                   <ul className="list-disc list-inside">
-                    {swotAnalysis.weaknesses?.map((item: string, i: number) => (
-                      <li key={i} className="text-muted-foreground">{item}</li>
+                    {safeGetArray(swotAnalysis, 'weaknesses').map((item: string, i: number) => (
+                      <li key={i} className="text-muted-foreground break-words">{item}</li>
                     ))}
-                    {(!swotAnalysis.weaknesses || swotAnalysis.weaknesses.length === 0) && (
+                    {safeGetArray(swotAnalysis, 'weaknesses').length === 0 && (
                       <li className="text-muted-foreground">{t('results.noItems', "Nenhum item identificado")}</li>
                     )}
                   </ul>
@@ -392,10 +422,10 @@ const ResultsPage = () => {
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <h3 className="font-semibold text-blue-800 mb-2">{t('results.swot.opportunities', "Oportunidades")}</h3>
                   <ul className="list-disc list-inside">
-                    {swotAnalysis.opportunities?.map((item: string, i: number) => (
-                      <li key={i} className="text-muted-foreground">{item}</li>
+                    {safeGetArray(swotAnalysis, 'opportunities').map((item: string, i: number) => (
+                      <li key={i} className="text-muted-foreground break-words">{item}</li>
                     ))}
-                    {(!swotAnalysis.opportunities || swotAnalysis.opportunities.length === 0) && (
+                    {safeGetArray(swotAnalysis, 'opportunities').length === 0 && (
                       <li className="text-muted-foreground">{t('results.noItems', "Nenhum item identificado")}</li>
                     )}
                   </ul>
@@ -404,10 +434,10 @@ const ResultsPage = () => {
                 <div className="bg-amber-50 p-4 rounded-lg">
                   <h3 className="font-semibold text-amber-800 mb-2">{t('results.swot.threats', "Ameaças")}</h3>
                   <ul className="list-disc list-inside">
-                    {swotAnalysis.threats?.map((item: string, i: number) => (
-                      <li key={i} className="text-muted-foreground">{item}</li>
+                    {safeGetArray(swotAnalysis, 'threats').map((item: string, i: number) => (
+                      <li key={i} className="text-muted-foreground break-words">{item}</li>
                     ))}
-                    {(!swotAnalysis.threats || swotAnalysis.threats.length === 0) && (
+                    {safeGetArray(swotAnalysis, 'threats').length === 0 && (
                       <li className="text-muted-foreground">{t('results.noItems', "Nenhuma ameaça identificada")}</li>
                     )}
                   </ul>
@@ -424,22 +454,22 @@ const ResultsPage = () => {
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="font-semibold mb-2">{t('results.market.size', "Tamanho do Mercado")}</h3>
-                  <p className="text-muted-foreground mb-4">{marketAnalysis.market_size || t('results.notSpecified', "Não especificado")}</p>
+                  <p className="text-muted-foreground mb-4 break-words">{marketAnalysis.market_size || t('results.notSpecified', "Não especificado")}</p>
                   
                   <h3 className="font-semibold mb-2">{t('results.market.audience', "Perfil do Público-Alvo")}</h3>
-                  <p className="text-muted-foreground mb-4">{marketAnalysis.target_audience || t('results.notSpecified', "Não especificado")}</p>
+                  <p className="text-muted-foreground mb-4 break-words">{marketAnalysis.target_audience || t('results.notSpecified', "Não especificado")}</p>
                 </div>
                 
                 <div>
                   <h3 className="font-semibold mb-2">{t('results.market.growth', "Potencial de Crescimento")}</h3>
-                  <p className="text-muted-foreground mb-4">{marketAnalysis.growth_potential || t('results.notSpecified', "Não especificado")}</p>
+                  <p className="text-muted-foreground mb-4 break-words">{marketAnalysis.growth_potential || t('results.notSpecified', "Não especificado")}</p>
                   
                   <h3 className="font-semibold mb-2">{t('results.market.barriers', "Barreiras de Entrada")}</h3>
                   <ul className="list-disc list-inside text-muted-foreground">
-                    {marketAnalysis.barriers_to_entry?.map((item: string, i: number) => (
-                      <li key={i}>{item}</li>
+                    {safeGetArray(marketAnalysis, 'barriers_to_entry').map((item: string, i: number) => (
+                      <li key={i} className="break-words">{item}</li>
                     ))}
-                    {(!marketAnalysis.barriers_to_entry || marketAnalysis.barriers_to_entry.length === 0) && (
+                    {safeGetArray(marketAnalysis, 'barriers_to_entry').length === 0 && (
                       <li>{t('results.noItems', "Nenhum item identificado")}</li>
                     )}
                   </ul>
@@ -456,11 +486,11 @@ const ResultsPage = () => {
               
               <h3 className="font-semibold mb-2">{t('results.competitors.keyCompetitors', "Principais Concorrentes")}</h3>
               <div className="mb-6">
-                {competitorAnalysis.key_competitors?.length > 0 ? (
+                {safeGetArray(competitorAnalysis, 'key_competitors').length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {competitorAnalysis.key_competitors.map((competitor: string, i: number) => (
+                    {safeGetArray(competitorAnalysis, 'key_competitors').map((competitor: string, i: number) => (
                       <div key={i} className="border rounded-lg p-4">
-                        <p className="font-medium">{competitor}</p>
+                        <p className="font-medium break-words">{competitor}</p>
                       </div>
                     ))}
                   </div>
@@ -472,16 +502,16 @@ const ResultsPage = () => {
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="font-semibold mb-2">{t('results.competitors.advantage', "Vantagem Competitiva")}</h3>
-                  <p className="text-muted-foreground mb-4">{competitorAnalysis.competitive_advantage || t('results.notSpecified', "Não especificado")}</p>
+                  <p className="text-muted-foreground mb-4 break-words">{competitorAnalysis.competitive_advantage || t('results.notSpecified', "Não especificado")}</p>
                 </div>
                 
                 <div>
                   <h3 className="font-semibold mb-2">{t('results.competitors.gaps', "Lacunas de Mercado")}</h3>
                   <ul className="list-disc list-inside text-muted-foreground">
-                    {competitorAnalysis.market_gaps?.map((gap: string, i: number) => (
-                      <li key={i}>{gap}</li>
+                    {safeGetArray(competitorAnalysis, 'market_gaps').map((gap: string, i: number) => (
+                      <li key={i} className="break-words">{gap}</li>
                     ))}
-                    {(!competitorAnalysis.market_gaps || competitorAnalysis.market_gaps.length === 0) && (
+                    {safeGetArray(competitorAnalysis, 'market_gaps').length === 0 && (
                       <li>{t('results.noItems', "Nenhuma lacuna identificada")}</li>
                     )}
                   </ul>
@@ -498,22 +528,22 @@ const ResultsPage = () => {
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="font-semibold mb-2">{t('results.financial.revenue', "Potencial de Receita")}</h3>
-                  <p className="text-muted-foreground mb-4">{financialAnalysis.revenue_potential || t('results.notSpecified', "Não especificado")}</p>
+                  <p className="text-muted-foreground mb-4 break-words">{financialAnalysis.revenue_potential || t('results.notSpecified', "Não especificado")}</p>
                   
                   <h3 className="font-semibold mb-2">{t('results.financial.investment', "Investimento Inicial")}</h3>
-                  <p className="text-muted-foreground mb-4">{financialAnalysis.initial_investment || t('results.notSpecified', "Não especificado")}</p>
+                  <p className="text-muted-foreground mb-4 break-words">{financialAnalysis.initial_investment || t('results.notSpecified', "Não especificado")}</p>
                 </div>
                 
                 <div>
                   <h3 className="font-semibold mb-2">{t('results.financial.breakEven', "Estimativa de Break-Even")}</h3>
-                  <p className="text-muted-foreground mb-4">{financialAnalysis.break_even_estimate || t('results.notSpecified', "Não especificado")}</p>
+                  <p className="text-muted-foreground mb-4 break-words">{financialAnalysis.break_even_estimate || t('results.notSpecified', "Não especificado")}</p>
                   
                   <h3 className="font-semibold mb-2">{t('results.financial.funding', "Sugestões de Financiamento")}</h3>
                   <ul className="list-disc list-inside text-muted-foreground">
-                    {financialAnalysis.funding_suggestions?.map((suggestion: string, i: number) => (
-                      <li key={i}>{suggestion}</li>
+                    {safeGetArray(financialAnalysis, 'funding_suggestions').map((suggestion: string, i: number) => (
+                      <li key={i} className="break-words">{suggestion}</li>
                     ))}
-                    {(!financialAnalysis.funding_suggestions || financialAnalysis.funding_suggestions.length === 0) && (
+                    {safeGetArray(financialAnalysis, 'funding_suggestions').length === 0 && (
                       <li>{t('results.noItems', "Nenhuma sugestão identificada")}</li>
                     )}
                   </ul>
@@ -531,10 +561,10 @@ const ResultsPage = () => {
               <h3 className="font-semibold mb-2">{t('results.recommendations.actionItems', "Ações Recomendadas")}</h3>
               <div className="mb-6">
                 <ul className="list-disc list-inside text-muted-foreground">
-                  {recommendations.action_items?.map((item: string, i: number) => (
-                    <li key={i}>{item}</li>
+                  {safeGetArray(recommendations, 'action_items').map((item: string, i: number) => (
+                    <li key={i} className="break-words">{item}</li>
                   ))}
-                  {(!recommendations.action_items || recommendations.action_items.length === 0) && (
+                  {safeGetArray(recommendations, 'action_items').length === 0 && (
                     <li>{t('results.noItems', "Nenhuma ação recomendada")}</li>
                   )}
                 </ul>
@@ -543,10 +573,10 @@ const ResultsPage = () => {
               <h3 className="font-semibold mb-2">{t('results.recommendations.nextSteps', "Próximos Passos")}</h3>
               <div className="mb-6">
                 <ul className="list-disc list-inside text-muted-foreground">
-                  {recommendations.next_steps?.map((step: string, i: number) => (
-                    <li key={i}>{step}</li>
+                  {safeGetArray(recommendations, 'next_steps').map((step: string, i: number) => (
+                    <li key={i} className="break-words">{step}</li>
                   ))}
-                  {(!recommendations.next_steps || recommendations.next_steps.length === 0) && (
+                  {safeGetArray(recommendations, 'next_steps').length === 0 && (
                     <li>{t('results.noItems', "Nenhum próximo passo identificado")}</li>
                   )}
                 </ul>
@@ -556,10 +586,10 @@ const ResultsPage = () => {
                 <div>
                   <h3 className="font-semibold mb-2">{t('results.recommendations.challenges', "Desafios Potenciais")}</h3>
                   <ul className="list-disc list-inside text-muted-foreground">
-                    {recommendations.potential_challenges?.map((challenge: string, i: number) => (
-                      <li key={i}>{challenge}</li>
+                    {safeGetArray(recommendations, 'potential_challenges').map((challenge: string, i: number) => (
+                      <li key={i} className="break-words">{challenge}</li>
                     ))}
-                    {(!recommendations.potential_challenges || recommendations.potential_challenges.length === 0) && (
+                    {safeGetArray(recommendations, 'potential_challenges').length === 0 && (
                       <li>{t('results.noItems', "Nenhum desafio identificado")}</li>
                     )}
                   </ul>
@@ -568,10 +598,10 @@ const ResultsPage = () => {
                 <div>
                   <h3 className="font-semibold mb-2">{t('results.recommendations.resources', "Recursos Sugeridos")}</h3>
                   <ul className="list-disc list-inside text-muted-foreground">
-                    {recommendations.suggested_resources?.map((resource: string, i: number) => (
-                      <li key={i}>{resource}</li>
+                    {safeGetArray(recommendations, 'suggested_resources').map((resource: string, i: number) => (
+                      <li key={i} className="break-words">{resource}</li>
                     ))}
-                    {(!recommendations.suggested_resources || recommendations.suggested_resources.length === 0) && (
+                    {safeGetArray(recommendations, 'suggested_resources').length === 0 && (
                       <li>{t('results.noItems', "Nenhum recurso sugerido")}</li>
                     )}
                   </ul>
