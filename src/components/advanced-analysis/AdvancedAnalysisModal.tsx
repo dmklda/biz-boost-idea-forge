@@ -27,6 +27,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 import jsPDF from "jspdf";
 import { Dialog as ConfirmDialog, DialogContent as ConfirmDialogContent, DialogHeader as ConfirmDialogHeader, DialogTitle as ConfirmDialogTitle, DialogFooter as ConfirmDialogFooter } from "@/components/ui/dialog";
+import { useGamification } from '@/hooks/useGamification';
 // import html2canvas from "html2canvas"; // Comentado, pois não será usado para o corpo principal
 
 interface AdvancedAnalysisModalProps {
@@ -81,6 +82,7 @@ export function AdvancedAnalysisModal({
   const [analysisCheckCompleted, setAnalysisCheckCompleted] = useState(false);
   const [showCreditConfirm, setShowCreditConfirm] = useState(false);
   const [pendingAction, setPendingAction] = useState<null | (() => void)>(null);
+  const { addPoints, checkAndAwardAchievements } = useGamification();
 
   const motivationalPhrases = [
     t('advancedAnalysis.motivation1'),
@@ -290,7 +292,17 @@ export function AdvancedAnalysisModal({
             setAnalysis(pollData as AdvancedAnalysis);
             setLoading(false);
             setProgress(100);
-          console.log("Nova análise encontrada:", pollData);
+            // Gamificação: Pontuação ao concluir análise avançada
+            addPoints(15, 'Análise Avançada');
+            // Checagem de conquistas automáticas (badges)
+            try {
+              const { count: totalAdvancedAnalyses } = await supabase
+                .from('advanced_analyses')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', authState.user.id);
+              await checkAndAwardAchievements('advanced_analysis', { totalAdvancedAnalyses });
+            } catch {}
+            console.log("Nova análise encontrada:", pollData);
           } else if (currentAttempts >= 10) {
             clearInterval(interval);
             setPollInterval(null);

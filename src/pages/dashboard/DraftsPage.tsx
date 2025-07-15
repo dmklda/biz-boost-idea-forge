@@ -9,6 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pencil, Trash2, AlertCircle } from "lucide-react";
+import { IdeaForm } from "@/components/IdeaForm";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const DraftsPage = () => {
   const { t } = useTranslation();
@@ -19,6 +21,7 @@ const DraftsPage = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
   const analyzedIdeaId = searchParams.get('analyzed');
+  const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchDrafts = async () => {
@@ -59,7 +62,7 @@ const DraftsPage = () => {
   }, [authState.isAuthenticated, authState.user?.id, analyzedIdeaId, navigate, t]);
 
   const handleEditDraft = (id: string) => {
-    navigate(`/dashboard/editar?id=${id}`);
+    navigate(`/dashboard/ideias/${id}/edit`);
   };
 
   const handleDeleteDraft = async (id: string) => {
@@ -100,7 +103,7 @@ const DraftsPage = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">{t('drafts.title', "Meus Rascunhos")}</h1>
         <Button 
-          onClick={() => navigate('/dashboard')}
+          onClick={() => setIsAnalysisDialogOpen(true)}
           className="bg-brand-blue hover:bg-brand-blue/90"
         >
           {t('drafts.newDraft', "Novo Rascunho")}
@@ -131,7 +134,7 @@ const DraftsPage = () => {
             <h2 className="text-xl font-semibold mb-2">{t('drafts.empty', "Nenhum rascunho encontrado")}</h2>
             <p className="text-muted-foreground mb-4">{t('drafts.emptyDesc', "Você ainda não criou nenhum rascunho")}</p>
             <Button 
-              onClick={() => navigate('/dashboard')}
+              onClick={() => setIsAnalysisDialogOpen(true)}
               className="bg-brand-blue hover:bg-brand-blue/90"
             >
               {t('drafts.create', "Criar uma ideia")}
@@ -173,6 +176,17 @@ const DraftsPage = () => {
           ))}
         </div>
       )}
+      <Dialog open={isAnalysisDialogOpen} onOpenChange={setIsAnalysisDialogOpen}>
+        <DialogContent className="sm:max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>{t('ideaForm.title')}</DialogTitle>
+            <DialogDescription>{t('ideaForm.subtitle')}</DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <IdeaForm onAnalysisComplete={() => setIsAnalysisDialogOpen(false)} />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

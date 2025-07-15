@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IdeaForm } from "@/components/IdeaForm";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,9 +12,8 @@ import { getCurrentLanguage } from "@/i18n/config";
 
 const EditIdeaPage = () => {
   const { t } = useTranslation();
-  const [searchParams] = useSearchParams();
-  const ideaId = searchParams.get('id');
-  const isReanalyzing = searchParams.get('reanalyze') === 'true';
+  const { id: ideaId } = useParams();
+  const isReanalyzing = useParams().reanalyze === 'true';
   const navigate = useNavigate();
   const { authState } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
@@ -64,6 +63,7 @@ const EditIdeaPage = () => {
             // Continue anyway
           } else if (profile.credits < 1) {
             setHasCredits(false);
+            toast.error("Você não tem créditos suficientes para reanalisar esta ideia.");
             toast.error(
               t('ideaForm.noCredits', "Você não tem créditos suficientes para reanalisar"), 
               {

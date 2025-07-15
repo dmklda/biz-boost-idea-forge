@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { toast } from '@/components/ui/sonner';
 
 interface Achievement {
   id: string;
@@ -190,6 +191,49 @@ export const useGamification = () => {
     }
   };
 
+  // Função utilitária para checar e premiar conquistas
+  const checkAndAwardAchievements = async (action: string, extra?: any) => {
+    if (!authState.user) return;
+    // Evita duplicidade
+    const hasAchievement = (type: string) => achievements.some(a => a.achievement_type === type);
+
+    // Primeira ideia criada
+    if (action === 'create_idea' && !hasAchievement('first_idea')) {
+      await addAchievement('first_idea', 'Primeira ideia criada', 'Você criou sua primeira ideia!', 10, 'star');
+      toast.success('🏅 Conquista desbloqueada: Primeira ideia criada!');
+    }
+    // 10 ideias criadas
+    if (action === 'create_idea' && extra?.totalIdeas === 10 && !hasAchievement('10_ideas')) {
+      await addAchievement('10_ideas', '10 ideias criadas', 'Você criou 10 ideias!', 25, 'star');
+      toast.success('🏅 Conquista desbloqueada: 10 ideias criadas!');
+    }
+    // Primeira análise avançada
+    if (action === 'advanced_analysis' && !hasAchievement('first_advanced_analysis')) {
+      await addAchievement('first_advanced_analysis', 'Primeira análise avançada', 'Você concluiu sua primeira análise avançada!', 15, 'zap');
+      toast.success('🏆 Conquista desbloqueada: Primeira análise avançada!');
+    }
+    // 10 análises avançadas
+    if (action === 'advanced_analysis' && extra?.totalAdvancedAnalyses === 10 && !hasAchievement('10_advanced_analyses')) {
+      await addAchievement('10_advanced_analyses', '10 análises avançadas', 'Você concluiu 10 análises avançadas!', 30, 'zap');
+      toast.success('🏆 Conquista desbloqueada: 10 análises avançadas!');
+    }
+    // Primeira comparação
+    if (action === 'compare_ideas' && !hasAchievement('first_comparison')) {
+      await addAchievement('first_comparison', 'Primeira comparação', 'Você comparou ideias pela primeira vez!', 10, 'target');
+      toast.success('🎯 Conquista desbloqueada: Primeira comparação!');
+    }
+    // 10 comparações
+    if (action === 'compare_ideas' && extra?.totalComparisons === 10 && !hasAchievement('10_comparisons')) {
+      await addAchievement('10_comparisons', '10 comparações', 'Você comparou ideias 10 vezes!', 25, 'target');
+      toast.success('🎯 Conquista desbloqueada: 10 comparações!');
+    }
+    // Perfil completo
+    if (action === 'complete_profile' && !hasAchievement('profile_complete')) {
+      await addAchievement('profile_complete', 'Perfil completo', 'Você completou seu perfil!', 20, 'award');
+      toast.success('🎖️ Conquista desbloqueada: Perfil completo!');
+    }
+  };
+
   useEffect(() => {
     if (authState.user) {
       setIsLoading(true);
@@ -206,6 +250,7 @@ export const useGamification = () => {
     addPoints,
     addAchievement,
     fetchUserLevel,
-    fetchAchievements
+    fetchAchievements,
+    checkAndAwardAchievements
   };
 };

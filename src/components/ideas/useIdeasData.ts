@@ -1,46 +1,22 @@
-
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { toast } from "@/components/ui/sonner";
+import { TagType } from "./TagsFilter";
+import { Idea } from "./IdeasGrid";
 
-export interface Idea {
-  id: string;
-  title: string;
-  description: string;
-  created_at: string;
-  is_favorite: boolean;
-  score?: number | null;
-  status?: string | null;
-  tags?: string[];
-}
-
-export interface TagType {
-  id: string;
-  name: string;
-  color: string;
-}
-
-export const useIdeasData = (userId?: string) => {
-  const { authState } = useAuth();
+export const useIdeasData = (userId: string | undefined) => {
   const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [favoriteIdeas, setFavoriteIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTags, setSelectedTags] = useState<TagType[]>([]);
   const [allTags, setAllTags] = useState<TagType[]>([]);
-
-  console.log("useIdeasData: Hook initialized");
-
-  const fetchIdeas = useCallback(async () => {
-    if (!authState.user?.id) {
-      console.log("useIdeasData: No user ID available, skipping fetch");
-      return;
-    }
-
+  
+  const fetchIdeas = async () => {
+    if (!userId) return;
+    
     try {
-      console.log("useIdeasData: Starting fetch for user", authState.user.id);
       setLoading(true);
-
-      // Fetch ideas with analysis scores
+      
+      // Fetch all ideas
       const { data: ideasData, error: ideasError } = await supabase
         .from('ideas')
         .select(`
@@ -48,177 +24,109 @@ export const useIdeasData = (userId?: string) => {
           title,
           description,
           created_at,
-          idea_analyses!inner (
-            score,
-            status
-          )
+          idea_analyses (score, status, created_at)
         `)
-        .eq('user_id', authState.user.id)
+        .eq('user_id', userId)
         .order('created_at', { ascending: false });
-
-      if (ideasError) {
-        console.error("useIdeasData: Error fetching ideas:", ideasError);
-        throw ideasError;
-      }
-
-      console.log("useIdeasData: Ideas fetched successfully, count:", ideasData?.length || 0);
-
-      // Fetch favorites for all ideas
-      const ideaIds = ideasData?.map(idea => idea.id) || [];
+        
+      if (ideasError) throw ideasError;
+      
+      // Fetch favorites
       const { data: favoritesData, error: favoritesError } = await supabase
         .from('idea_favorites')
         .select('idea_id')
-        .eq('user_id', authState.user.id)
-        .in('idea_id', ideaIds);
-
-      if (favoritesError) {
-        console.error("useIdeasData: Error fetching favorites:", favoritesError);
-      }
-
-      const favoriteIds = new Set(favoritesData?.map(fav => fav.idea_id) || []);
-      console.log("useIdeasData: Favorites loaded for", favoriteIds.size, "ideas");
-
-      // Fetch tags for all ideas
-      const { data: tagsData, error: tagsError } = await supabase
+        .eq('user_id', userId);
+        
+      if (favoritesError) throw favoritesError;
+      
+      // Fetch tags for each idea
+      const { data: ideaTagsData, error: ideaTagsError } = await supabase
         .from('idea_tags')
-        .select(`
-          idea_id,
-          tags (name)
-        `)
-        .eq('user_id', authState.user.id)
-        .in('idea_id', ideaIds);
-
-      if (tagsError) {
-        console.error("useIdeasData: Error fetching tags:", tagsError);
-      }
-
-      // Group tags by idea_id
-      const tagsByIdea = tagsData?.reduce((acc, item) => {
-        if (!acc[item.idea_id]) {
-          acc[item.idea_id] = [];
+        .select('idea_id, tag_id, tags (id, name, color)')
+        .eq('user_id', userId);
+        
+      if (ideaTagsError) throw ideaTagsError;
+      
+      // Process the data
+      const favoriteIdeaIds = new Set(favoritesData?.map((fav: any) => fav.idea_id) || []);
+      
+      // Create a map of idea_id to tags
+      const ideaTagsMap: Record<string, string[]> = {};
+      ideaTagsData?.forEach((ideaTag: any) => {
+        if (!ideaTagsMap[ideaTag.idea_id]) {
+          ideaTagsMap[ideaTag.idea_id] = [];
         }
-        acc[item.idea_id].push(item.tags.name);
-        return acc;
-      }, {} as Record<string, string[]>) || {};
-
-      console.log("useIdeasData: Tags loaded for", Object.keys(tagsByIdea).length, "ideas");
-
-      // Combine all data
-      const formattedIdeas: Idea[] = ideasData?.map(idea => ({
-        id: idea.id,
-        title: idea.title,
-        description: idea.description,
-        created_at: idea.created_at,
-        is_favorite: favoriteIds.has(idea.id),
-        score: idea.idea_analyses?.[0]?.score || null,
-        status: idea.idea_analyses?.[0]?.status || null,
-        tags: tagsByIdea[idea.id] || []
-      })) || [];
-
-      console.log("useIdeasData: Final formatted ideas:", formattedIdeas.length);
-      setIdeas(formattedIdeas);
-
+        ideaTagsMap[ideaTag.idea_id].push(ideaTag.tags.name);
+      });
+      
+      // Process ideas with their analysis data and favorite status
+      const processedIdeas = ideasData?.map((idea: any) => {
+        // Sort analyses to ensure the latest is first
+        const sortedAnalyses = idea.idea_analyses?.length > 0 
+          ? [...idea.idea_analyses].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          : [];
+        
+        return {
+          id: idea.id,
+          title: idea.title,
+          description: idea.description,
+          created_at: idea.created_at,
+          is_favorite: favoriteIdeaIds.has(idea.id),
+          score: sortedAnalyses?.[0]?.score || null,
+          status: sortedAnalyses?.[0]?.status || null,
+          tags: ideaTagsMap[idea.id] || []
+        };
+      });
+      
+      setIdeas(processedIdeas || []);
+      setFavoriteIdeas(processedIdeas?.filter(idea => idea.is_favorite) || []);
     } catch (error) {
-      console.error("useIdeasData: Error in fetchIdeas:", error);
-      toast.error("Erro ao carregar ideias");
+      console.error("Error fetching ideas:", error);
     } finally {
       setLoading(false);
     }
-  }, [authState.user?.id]);
-
-  const fetchTags = useCallback(async () => {
-    if (!authState.user?.id) return;
-
+  };
+  
+  const fetchTags = async () => {
+    if (!userId) return;
+    
     try {
-      const { data: tagsData, error } = await supabase
+      const { data, error } = await supabase
         .from('tags')
         .select('*')
-        .eq('user_id', authState.user.id)
-        .order('name');
-
+        .eq('user_id', userId);
+        
       if (error) throw error;
       
-      setAllTags(tagsData as TagType[]);
+      setAllTags(data.map((tag: any) => ({
+        id: tag.id,
+        name: tag.name,
+        color: tag.color
+      })));
     } catch (error) {
-      console.error("useIdeasData: Error fetching tags:", error);
+      console.error("Error fetching tags:", error);
     }
-  }, [authState.user?.id]);
-
+  };
+  
   useEffect(() => {
-    console.log("useIdeasData: useEffect triggered, fetching ideas");
-    fetchIdeas();
-    fetchTags();
-  }, [fetchIdeas, fetchTags]);
-
-  // Listen for real-time updates
-  useEffect(() => {
-    if (!authState.user?.id) return;
-
-    console.log("useIdeasData: Setting up real-time listeners");
-
-    const handleAnalysisUpdate = () => {
-      console.log("useIdeasData: Analysis update event received, refetching data");
+    if (userId) {
       fetchIdeas();
-    };
-
-    const handleFavoriteUpdate = (event: CustomEvent) => {
-      console.log("useIdeasData: Favorite update event received", event.detail);
-      const { ideaId, isFavorite } = event.detail;
-      
-      setIdeas(prevIdeas => 
-        prevIdeas.map(idea => 
-          idea.id === ideaId 
-            ? { ...idea, is_favorite: isFavorite }
-            : idea
-        )
-      );
-    };
-
-    const handleTagsUpdate = (event: CustomEvent) => {
-      console.log("useIdeasData: Tags update event received", event.detail);
-      const { ideaId, tags } = event.detail;
-      
-      setIdeas(prevIdeas => 
-        prevIdeas.map(idea => 
-          idea.id === ideaId 
-            ? { ...idea, tags }
-            : idea
-        )
-      );
-    };
-
-    // Add event listeners
-    window.addEventListener('analysis-updated', handleAnalysisUpdate);
-    window.addEventListener('favorite-updated', handleFavoriteUpdate as EventListener);
-    window.addEventListener('tags-updated', handleTagsUpdate as EventListener);
-
-    return () => {
-      console.log("useIdeasData: Cleaning up event listeners");
-      window.removeEventListener('analysis-updated', handleAnalysisUpdate);
-      window.removeEventListener('favorite-updated', handleFavoriteUpdate as EventListener);
-      window.removeEventListener('tags-updated', handleTagsUpdate as EventListener);
-    };
-  }, [authState.user?.id, fetchIdeas]);
-
-  // Compute derived data
-  const favoriteIdeas = useMemo(() => {
-    return ideas.filter(idea => idea.is_favorite);
-  }, [ideas]);
-
-  const filteredIdeas = useMemo(() => {
-    if (selectedTags.length === 0) return ideas;
-    
-    return ideas.filter(idea => 
-      selectedTags.some(selectedTag => 
-        idea.tags?.includes(selectedTag.name)
-      )
-    );
-  }, [ideas, selectedTags]);
-
-  const handleTagsChange = useCallback((tags: TagType[]) => {
+      fetchTags();
+    }
+  }, [userId]);
+  
+  const handleTagsChange = (tags: TagType[]) => {
     setSelectedTags(tags);
-  }, []);
-
+  };
+  
+  const filteredIdeas = selectedTags.length > 0
+    ? ideas.filter(idea => 
+        selectedTags.every(tag => 
+          idea.tags?.includes(tag.name)
+        )
+      )
+    : ideas;
+    
   return {
     ideas,
     favoriteIdeas,
@@ -227,7 +135,6 @@ export const useIdeasData = (userId?: string) => {
     allTags,
     selectedTags,
     handleTagsChange,
-    fetchIdeas,
-    refetch: fetchIdeas
+    fetchIdeas
   };
 };

@@ -7,6 +7,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "react-i18next";
 import { IdeasTabs, useIdeasData } from "@/components/ideas";
 import { useRefreshAnalyses } from "@/hooks/use-refresh-analyses";
+import { IdeaForm } from "@/components/IdeaForm";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const IdeasPage = () => {
   const { t } = useTranslation();
@@ -27,6 +29,8 @@ const IdeasPage = () => {
   // Use the refresh hook to update ideas when analysis is updated
   useRefreshAnalyses(fetchIdeas, []);
 
+  const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -42,7 +46,7 @@ const IdeasPage = () => {
             <FileText className="h-4 w-4" />
             {t('ideas.viewDrafts', "Ver Rascunhos")}
           </Button>
-          <Button onClick={() => navigate("/dashboard/analise")} className="bg-brand-purple hover:bg-brand-purple/90">
+          <Button onClick={() => setIsAnalysisDialogOpen(true)} className="bg-brand-purple hover:bg-brand-purple/90">
             <Plus className="mr-2 h-4 w-4" />
             {t('ideas.newIdea', "Nova Ideia")}
           </Button>
@@ -59,6 +63,17 @@ const IdeasPage = () => {
         onTagsChange={handleTagsChange}
         fetchIdeas={fetchIdeas}
       />
+      <Dialog open={isAnalysisDialogOpen} onOpenChange={setIsAnalysisDialogOpen}>
+        <DialogContent className="sm:max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>{t('ideaForm.title')}</DialogTitle>
+            <DialogDescription>{t('ideaForm.subtitle')}</DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <IdeaForm onAnalysisComplete={() => setIsAnalysisDialogOpen(false)} />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

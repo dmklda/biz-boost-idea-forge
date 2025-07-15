@@ -35,6 +35,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRefreshAnalyses } from "@/hooks/use-refresh-analyses";
 import { InsightsCard } from "@/components/dashboard/InsightsCard";
+import { toast } from "sonner";
 
 const DashboardHome = () => {
   const { t } = useTranslation();
@@ -189,6 +190,7 @@ const DashboardHome = () => {
     // For demo purposes, we'll just add credits directly
     if (user) {
       updateUserCredits(user.credits + 5);
+      toast.success("Créditos adicionados com sucesso!");
     }
   };
   
@@ -288,7 +290,7 @@ const DashboardHome = () => {
               {user?.plan === "free" ? t('dashboard.statistics.free') : t('dashboard.statistics.premium')}
             </div>
             {user?.plan === "free" && (
-              <Link to="/planos">
+              <Link to="/planos" onClick={() => toast.info("Faça upgrade para o plano premium e desbloqueie todos os recursos!")}> 
                 <Button variant="link" size="sm" className="p-0 h-auto text-xs text-brand-purple">
                   {t('dashboard.statistics.upgrade')}
                 </Button>

@@ -25,18 +25,18 @@ const IdeaDetailPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [showAdvancedAnalysis, setShowAdvancedAnalysis] = useState(false);
   const isMobile = useIsMobile();
-
+  
   useEffect(() => {
     const fetchIdeaDetails = async () => {
       if (!authState.isAuthenticated || !id) {
         navigate("/dashboard");
         return;
       }
-
+      
       try {
         setLoading(true);
         setError(null);
-
+        
         // Fetch idea details
         const { data: ideaData, error: ideaError } = await supabase
           .from('ideas')
@@ -44,7 +44,7 @@ const IdeaDetailPage = () => {
           .eq('id', id)
           .eq('user_id', authState.user?.id)
           .single();
-
+          
         if (ideaError) {
           console.error("Error fetching idea:", ideaError);
           if (ideaError.code === 'PGRST116') {
@@ -55,7 +55,7 @@ const IdeaDetailPage = () => {
           navigate("/dashboard");
           return;
         }
-
+        
         // Fetch analysis details
         const { data: analysisData, error: analysisError } = await supabase
           .from('idea_analyses')
@@ -64,7 +64,7 @@ const IdeaDetailPage = () => {
           .eq('user_id', authState.user?.id)
           .order('created_at', { ascending: false })
           .limit(1);
-
+          
         if (analysisError) {
           console.error("Error fetching analysis:", analysisError);
         }
@@ -81,10 +81,10 @@ const IdeaDetailPage = () => {
         setLoading(false);
       }
     };
-
+    
     fetchIdeaDetails();
   }, [id, authState.isAuthenticated, authState.user?.id, navigate]);
-
+  
   // Safe data parsing functions
   const safeParseJSON = (data: any, fallback: any = {}) => {
     if (typeof data === 'object' && data !== null) {
@@ -113,11 +113,11 @@ const IdeaDetailPage = () => {
     }
     return fallback;
   };
-
+  
   const handleEdit = () => {
     navigate(`/dashboard/ideias/${id}/edit`);
   };
-
+  
   const handleDelete = async () => {
     if (!confirm("Tem certeza que deseja excluir esta ideia?")) return;
 
@@ -145,14 +145,14 @@ const IdeaDetailPage = () => {
       navigate(`/dashboard/ideias/${id}/analyze`);
     }
   };
-
+  
   const handleTagsUpdate = (newTags: string[]) => {
     // Emit event to update tags
     window.dispatchEvent(new CustomEvent('tags-updated', {
       detail: { ideaId: id, tags: newTags }
     }));
   };
-
+  
   if (loading) {
     return (
       <div className="p-4 space-y-6">
@@ -172,7 +172,7 @@ const IdeaDetailPage = () => {
       </div>
     );
   }
-
+  
   if (error || !idea) {
     return (
       <div className="p-4">
@@ -184,7 +184,7 @@ const IdeaDetailPage = () => {
             </p>
             <Button onClick={() => navigate("/dashboard")}>
               Voltar ao Dashboard
-            </Button>
+        </Button>
           </CardContent>
         </Card>
       </div>
@@ -225,91 +225,79 @@ const IdeaDetailPage = () => {
     potential_challenges: [],
     suggested_resources: []
   });
-
+  
   return (
     <div className="pb-16 md:pb-8">
       <div className="flex items-center gap-4 mb-6">
         <Button 
           variant="ghost" 
           size="sm"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate("/dashboard/ideias")}
           className="flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
           <span className="hidden sm:inline">Voltar</span>
         </Button>
-        <h1 className="text-xl md:text-2xl font-bold truncate">
-          Detalhes da Ideia
-        </h1>
       </div>
-
+      
       <div className="space-y-6">
         <Card>
-          <CardHeader>
-            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
-              <div className="flex-1 min-w-0 space-y-3">
-                <CardTitle className="text-lg md:text-xl leading-tight break-words hyphens-auto">
-                  {idea.title}
-                </CardTitle>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Badge variant="outline" className="text-xs">
-                    <Calendar className="h-3 w-3 mr-1" />
-                    {new Date(idea.created_at).toLocaleDateString('pt-BR')}
-                  </Badge>
-                  {analysis && (
-                    <Badge variant="outline" className="text-xs">
-                      {analysis.score}% viabilidade
-                    </Badge>
-                  )}
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-2 shrink-0 flex-wrap">
-                <FavoriteButton
-                  ideaId={idea.id}
-                  isFavorite={false}
-                  size="default"
-                />
+          <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <h2
+                className="text-xl md:text-2xl font-bold truncate break-words max-h-16 md:max-h-24 overflow-hidden"
+                title={idea.title}
+              >
+                {idea.title}
+              </h2>
+              {/* Badges e datas aqui, se houver */}
+            </div>
+            {/* Botões de ação */}
+            <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
+              <FavoriteButton
+                ideaId={idea.id}
+                isFavorite={idea.is_favorite}
+                size="default"
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleEdit}
+                className="flex items-center gap-2"
+              >
+                <Edit className="h-4 w-4" />
+                <span className="hidden sm:inline">Editar</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleAnalyze}
+                className="flex items-center gap-2"
+              >
+                <BarChart3 className="h-4 w-4" />
+                <span className="hidden sm:inline">
+                  {analysis ? "Ver Análise" : "Analisar"}
+                </span>
+              </Button>
+              {analysis && (
                 <Button
-                  variant="outline"
+                  onClick={() => setShowAdvancedAnalysis(true)}
+                  className="bg-gradient-to-r from-brand-blue to-brand-purple hover:opacity-90 transition-all flex items-center gap-2"
                   size="sm"
-                  onClick={handleEdit}
-                  className="flex items-center gap-2"
                 >
-                  <Edit className="h-4 w-4" />
-                  <span className="hidden sm:inline">Editar</span>
+                  <TrendingUp className="h-4 w-4" />
+                  <span className="hidden sm:inline">Análise Avançada</span>
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAnalyze}
-                  className="flex items-center gap-2"
-                >
-                  <BarChart3 className="h-4 w-4" />
-                  <span className="hidden sm:inline">
-                    {analysis ? "Ver Análise" : "Analisar"}
-                  </span>
-                </Button>
-                {analysis && (
-                  <Button
-                    onClick={() => setShowAdvancedAnalysis(true)}
-                    className="bg-gradient-to-r from-brand-blue to-brand-purple hover:opacity-90 transition-all flex items-center gap-2"
-                    size="sm"
-                  >
-                    <TrendingUp className="h-4 w-4" />
-                    <span className="hidden sm:inline">Análise Avançada</span>
-                  </Button>
-                )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDelete}
-                  className="flex items-center gap-2 text-red-600 hover:text-red-700"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  <span className="hidden sm:inline">Excluir</span>
-                </Button>
-              </div>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDelete}
+                className="flex items-center gap-2 text-red-600 hover:text-red-700"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="hidden sm:inline">Excluir</span>
+              </Button>
             </div>
           </CardHeader>
           <CardContent>
@@ -323,8 +311,8 @@ const IdeaDetailPage = () => {
                 ideaId={idea.id}
                 onTagsChange={(tags) => handleTagsUpdate(tags.map(t => t.name))}
               />
-            </div>
-
+              </div>
+              
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {idea.audience && (
                 <div className="flex items-center gap-2">
@@ -333,9 +321,9 @@ const IdeaDetailPage = () => {
                     <p className="text-sm font-medium">Público-alvo</p>
                     <p className="text-sm text-muted-foreground break-words">{idea.audience}</p>
                   </div>
-                </div>
-              )}
-              
+                  </div>
+                )}
+                
               {idea.budget && (
                 <div className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -343,9 +331,9 @@ const IdeaDetailPage = () => {
                     <p className="text-sm font-medium">Orçamento</p>
                     <p className="text-sm text-muted-foreground">R$ {idea.budget}</p>
                   </div>
-                </div>
-              )}
-              
+                  </div>
+                )}
+                
               {idea.location && (
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -353,12 +341,12 @@ const IdeaDetailPage = () => {
                     <p className="text-sm font-medium">Localização</p>
                     <p className="text-sm text-muted-foreground break-words">{idea.location}</p>
                   </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+          
         {analysis && (
           <Tabs defaultValue="summary" className="w-full">
             <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 mb-6 overflow-x-auto">
@@ -386,7 +374,7 @@ const IdeaDetailPage = () => {
                           <p className="text-sm text-muted-foreground">Status da análise</p>
                         </div>
                       </div>
-                    </div>
+                  </div>
                     <div>
                       <h4 className="font-medium mb-2">Principais Pontos Fortes</h4>
                       <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
@@ -396,13 +384,13 @@ const IdeaDetailPage = () => {
                         {safeGetArray(swotAnalysis, 'strengths').length === 0 && (
                           <li>Nenhum ponto forte identificado</li>
                         )}
-                      </ul>
-                    </div>
+                    </ul>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
+                </div>
+              </CardContent>
+            </Card>
+        </TabsContent>
+        
             <TabsContent value="swot">
               <Card>
                 <CardContent className="p-6">
@@ -516,8 +504,8 @@ const IdeaDetailPage = () => {
                     ) : (
                       <p className="text-sm text-muted-foreground">Nenhum concorrente específico identificado</p>
                     )}
-                  </div>
-                  
+                    </div>
+                    
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <h4 className="font-medium mb-2">Vantagem Competitiva</h4>
@@ -537,9 +525,9 @@ const IdeaDetailPage = () => {
                         )}
                       </ul>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                    </div>
+                  </CardContent>
+                </Card>
             </TabsContent>
 
             <TabsContent value="financial">
@@ -575,11 +563,11 @@ const IdeaDetailPage = () => {
                         )}
                       </ul>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
+                </div>
+              </CardContent>
+            </Card>
+        </TabsContent>
+        
             <TabsContent value="recommendations">
               <Card>
                 <CardContent className="p-6">
@@ -594,9 +582,9 @@ const IdeaDetailPage = () => {
                       {safeGetArray(recommendations, 'action_items').length === 0 && (
                         <li>Nenhuma ação recomendada</li>
                       )}
-                    </ul>
-                  </div>
-                  
+                  </ul>
+                </div>
+                
                   <h4 className="font-medium mb-2">Próximos Passos</h4>
                   <div className="mb-6">
                     <ul className="list-disc list-inside text-sm text-muted-foreground">
@@ -606,11 +594,11 @@ const IdeaDetailPage = () => {
                       {safeGetArray(recommendations, 'next_steps').length === 0 && (
                         <li>Nenhum próximo passo identificado</li>
                       )}
-                    </ul>
-                  </div>
-                  
+                  </ul>
+                </div>
+                
                   <div className="grid md:grid-cols-2 gap-6">
-                    <div>
+                <div>
                       <h4 className="font-medium mb-2">Desafios Potenciais</h4>
                       <ul className="list-disc list-inside text-sm text-muted-foreground">
                         {safeGetArray(recommendations, 'potential_challenges').map((challenge: string, i: number) => (
@@ -619,10 +607,10 @@ const IdeaDetailPage = () => {
                         {safeGetArray(recommendations, 'potential_challenges').length === 0 && (
                           <li>Nenhum desafio identificado</li>
                         )}
-                      </ul>
-                    </div>
-                    
-                    <div>
+                  </ul>
+                </div>
+                
+                <div>
                       <h4 className="font-medium mb-2">Recursos Sugeridos</h4>
                       <ul className="list-disc list-inside text-sm text-muted-foreground">
                         {safeGetArray(recommendations, 'suggested_resources').map((resource: string, i: number) => (
@@ -631,15 +619,15 @@ const IdeaDetailPage = () => {
                         {safeGetArray(recommendations, 'suggested_resources').length === 0 && (
                           <li>Nenhum recurso sugerido</li>
                         )}
-                      </ul>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                  </ul>
+                </div>
+                </div>
+              </CardContent>
+            </Card>
+        </TabsContent>
+      </Tabs>
         )}
-      </div>
+          </div>
 
       <AdvancedAnalysisModal
         open={showAdvancedAnalysis}

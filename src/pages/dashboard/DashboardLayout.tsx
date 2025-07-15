@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useIdeasData } from "@/components/ideas";
 
 const DashboardLayout = () => {
   // Extract both authState and logout function
@@ -29,6 +30,32 @@ const DashboardLayout = () => {
   const [pageTitle, setPageTitle] = useState("");
   const [hasNotifications, setHasNotifications] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { ideas, loading: ideasLoading } = useIdeasData(authState.user?.id);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (searchQuery.trim().length === 0) {
+      setSearchResults([]);
+      return;
+    }
+    const q = searchQuery.toLowerCase();
+    setSearchResults(
+      ideas.filter(
+        (idea) =>
+          idea.title.toLowerCase().includes(q) ||
+          idea.description.toLowerCase().includes(q)
+      )
+    );
+  }, [searchQuery, ideas]);
+
+  const handleSearchSelect = (id: string) => {
+    setIsSearchOpen(false);
+    setSearchQuery("");
+    setSearchResults([]);
+    window.scrollTo(0, 0);
+    window.location.href = `/dashboard/ideias/${id}`;
+  };
 
   // Set page title based on route
   useEffect(() => {
@@ -81,9 +108,15 @@ const DashboardLayout = () => {
             
             <div className="ml-auto flex items-center gap-3">
               {/* Search button - Mobile only */}
-              {isMobile && <Button variant="ghost" size="icon" onClick={toggleSearch}>
-                  <Search className="h-5 w-5" />
-                </Button>}
+
+              {isMobile && (
+                <>
+                  <Button variant="ghost" size="icon" onClick={toggleSearch}>
+                    <Search className="h-5 w-5" />
+                  </Button>
+                  <ThemeToggle />
+                </>
+              )}
 
               {/* Notifications button - For mobile */}
               {isMobile && <DropdownMenu>
@@ -110,16 +143,46 @@ const DashboardLayout = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>}
 
-              {/* Search input - Only show when search is open on mobile */}
-              {isSearchOpen && isMobile && <div className="absolute inset-x-0 top-0 bg-background z-50 p-4">
+              {isSearchOpen && isMobile && (
+                <div className="absolute inset-x-0 top-0 bg-background z-50 p-4">
                   <div className="flex gap-2">
-                    <Input placeholder={t('search.placeholder')} autoFocus className="flex-1" />
+                    <Input
+                      placeholder={t('search.placeholder')}
+                      autoFocus
+                      className="flex-1"
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                    />
                     <Button variant="ghost" size="icon" onClick={toggleSearch}>
                       <span className="sr-only">Close</span>
                       <span aria-hidden="true">&times;</span>
                     </Button>
                   </div>
-                </div>}
+                  <div className="mt-2 bg-white dark:bg-zinc-900 rounded shadow max-h-72 overflow-y-auto border">
+                    {ideasLoading ? (
+                      <div className="p-4 text-center text-muted-foreground text-sm">Carregando ideias...</div>
+                    ) : searchQuery.trim().length === 0 ? (
+                      <div className="p-4 text-center text-muted-foreground text-sm">Digite para buscar suas ideias</div>
+                    ) : searchResults.length === 0 ? (
+                      <div className="p-4 text-center text-muted-foreground text-sm">Nenhuma ideia encontrada</div>
+                    ) : (
+                      <ul>
+                        {searchResults.map((idea) => (
+                          <li key={idea.id}>
+                            <button
+                              className="w-full text-left px-4 py-2 hover:bg-brand-purple/10 focus:bg-brand-purple/20 transition rounded"
+                              onClick={() => handleSearchSelect(idea.id)}
+                            >
+                              <div className="font-medium truncate">{idea.title}</div>
+                              <div className="text-xs text-muted-foreground truncate">{idea.description}</div>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              )}
               
               {/* Notifications - Desktop */}
               {!isMobile && <DropdownMenu>

@@ -36,10 +36,9 @@ export interface TagType {
 interface TagsSelectorProps {
   ideaId: string;
   onTagsChange?: (tags: TagType[]) => void;
-  onTagsUpdate?: (newTags: string[]) => void;
 }
 
-export const TagsSelector = ({ ideaId, onTagsChange, onTagsUpdate }: TagsSelectorProps) => {
+export const TagsSelector = ({ ideaId, onTagsChange }: TagsSelectorProps) => {
   const { t } = useTranslation();
   const { authState } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -62,6 +61,19 @@ export const TagsSelector = ({ ideaId, onTagsChange, onTagsUpdate }: TagsSelecto
     "#a78bfa", // Purple
     "#f472b6"  // Pink
   ];
+
+  // Map hex color to Tailwind class
+  const colorClassMap: Record<string, string> = {
+    "#94a3b8": "bg-gray-400",
+    "#f87171": "bg-red-400",
+    "#fb923c": "bg-orange-400",
+    "#facc15": "bg-yellow-400",
+    "#4ade80": "bg-green-400",
+    "#2dd4bf": "bg-teal-400",
+    "#60a5fa": "bg-blue-400",
+    "#a78bfa": "bg-purple-400",
+    "#f472b6": "bg-pink-400",
+  };
 
   // Fetch all user tags
   const fetchTags = async () => {
@@ -107,11 +119,6 @@ export const TagsSelector = ({ ideaId, onTagsChange, onTagsUpdate }: TagsSelecto
       if (onTagsChange) {
         onTagsChange(selectedTagsData);
       }
-      
-      // Also call onTagsUpdate if provided (for string array format)
-      if (onTagsUpdate) {
-        onTagsUpdate(selectedTagsData.map(tag => tag.name));
-      }
     } catch (error) {
       console.error("Error fetching idea tags:", error);
     } finally {
@@ -155,6 +162,21 @@ export const TagsSelector = ({ ideaId, onTagsChange, onTagsUpdate }: TagsSelecto
       
       // Refresh tags list
       fetchTags();
+
+      // Atribuir a nova tag à ideia automaticamente
+      if (data && data.id && ideaId) {
+        await supabase.from('idea_tags').insert({
+          idea_id: ideaId,
+          tag_id: data.id,
+          user_id: authState.user?.id
+        });
+        // Atualizar selectedTags localmente
+        setSelectedTags(prev => [...prev, { id: data.id, name: data.name, color: data.color }]);
+        // Notificar parent se necessário
+        if (onTagsChange) {
+          onTagsChange([...selectedTags, { id: data.id, name: data.name, color: data.color }]);
+        }
+      }
     } catch (error) {
       console.error("Error creating tag:", error);
     } finally {
@@ -179,16 +201,7 @@ export const TagsSelector = ({ ideaId, onTagsChange, onTagsUpdate }: TagsSelecto
         if (error) throw error;
         
         // Update local state
-        const updatedTags = selectedTags.filter(t => t.id !== tag.id);
-        setSelectedTags(updatedTags);
-        
-        // Notify parent components
-        if (onTagsChange) {
-          onTagsChange(updatedTags);
-        }
-        if (onTagsUpdate) {
-          onTagsUpdate(updatedTags.map(t => t.name));
-        }
+        setSelectedTags(prev => prev.filter(t => t.id !== tag.id));
       } else {
         // Add tag to idea
         const { error } = await supabase
@@ -202,16 +215,15 @@ export const TagsSelector = ({ ideaId, onTagsChange, onTagsUpdate }: TagsSelecto
         if (error) throw error;
         
         // Update local state
-        const updatedTags = [...selectedTags, tag];
-        setSelectedTags(updatedTags);
-        
-        // Notify parent components
-        if (onTagsChange) {
-          onTagsChange(updatedTags);
-        }
-        if (onTagsUpdate) {
-          onTagsUpdate(updatedTags.map(t => t.name));
-        }
+        setSelectedTags(prev => [...prev, tag]);
+      }
+      
+      // Notify parent component if needed
+      if (onTagsChange) {
+        const updatedTags = isTagSelected 
+          ? selectedTags.filter(t => t.id !== tag.id)
+          : [...selectedTags, tag];
+        onTagsChange(updatedTags);
       }
     } catch (error) {
       console.error("Error toggling tag:", error);
@@ -335,10 +347,10 @@ export const TagsSelector = ({ ideaId, onTagsChange, onTagsUpdate }: TagsSelecto
                   <button
                     key={color}
                     type="button"
-                    className={`w-6 h-6 rounded-full transition-all ${
+                    aria-label={`Selecionar cor ${color}`}
+                    className={`w-6 h-6 rounded-full transition-all ${colorClassMap[color] || ''} ${
                       newTagColor === color ? "ring-2 ring-offset-2 ring-brand-purple" : ""
                     }`}
-                    style={{ backgroundColor: color }}
                     onClick={() => setNewTagColor(color)}
                   />
                 ))}

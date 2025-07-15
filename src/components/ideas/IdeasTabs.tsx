@@ -56,6 +56,7 @@ export const IdeasTabs = ({
         <IdeasGrid 
           ideas={ideas} 
           loading={loading} 
+          onUpdate={fetchIdeas}
         />
       </TabsContent>
       
@@ -63,6 +64,7 @@ export const IdeasTabs = ({
         <IdeasGrid 
           ideas={favoriteIdeas} 
           loading={loading} 
+          onUpdate={fetchIdeas}
         />
       </TabsContent>
       
@@ -79,6 +81,7 @@ export const IdeasTabs = ({
         <IdeasGrid 
           ideas={filteredIdeas} 
           loading={loading} 
+          onUpdate={fetchIdeas}
         />
       </TabsContent>
       

@@ -13,6 +13,7 @@ import {
 import { useState } from "react";
 import { LogoGeneratorModal } from "@/components/tools/LogoGeneratorModal";
 import { PRDMVPGeneratorModal } from "@/components/tools/PRDMVPGeneratorModal";
+import { toast } from "sonner";
 
 const ToolsPage = () => {
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
@@ -345,9 +346,15 @@ const ToolsPage = () => {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (tool.status === "available") {
-              handleToolClick(tool.title, tool.action);
+            if (tool.status === "coming-soon") {
+              toast.info("Funcionalidade em breve!");
+              return;
             }
+            if (tool.credits > (user?.credits || 0)) {
+              toast.error("Você não possui créditos suficientes para usar esta ferramenta.");
+              return;
+            }
+            handleToolClick(tool.title, tool.action);
           }}
           className="w-full relative z-10" 
           disabled={tool.status === "coming-soon"}

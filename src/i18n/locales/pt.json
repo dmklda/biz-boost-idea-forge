@@ -162,5 +162,26 @@
       "name": "Campanhas de Email",
       "description": "Crie campanhas de email marketing eficazes"
     }
+  },
+  "results": {
+    "download": "Baixar PDF",
+    "exportCsv": "Exportar CSV",
+    "premiumOnly": "Apenas para premium",
+    "share": "Compartilhar",
+    "exportNotion": "Exportar para Notion",
+    "exportExcel": "Exportar Excel",
+    "exportPdf": "Exportar PDF",
+    "notion": "Notion",
+    "csv": "CSV",
+    "pdf": "PDF",
+    "excel": "Excel",
+    "notionExport": "Exportar para Notion",
+    "csvExport": "Exportar CSV",
+    "pdfExport": "Exportar PDF",
+    "excelExport": "Exportar Excel",
+    "notionExportInfo": "Exportação para Notion em breve",
+    "csvExportInfo": "Exportação para CSV em breve",
+    "pdfExportInfo": "Exportação para PDF em breve",
+    "excelExportInfo": "Exportação para Excel em breve"
   }
 }

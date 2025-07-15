@@ -7,6 +7,7 @@ import { useIdeaFormContext } from "@/contexts/IdeaFormContext";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { getCurrentLanguage } from "@/i18n/config";
+import { useGamification } from '@/hooks/useGamification';
 
 export const useFormSubmission = (isReanalyzing?: boolean) => {
   const { t } = useTranslation();
@@ -20,6 +21,8 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
     setIsAnalyzing,
     resetForm 
   } = useIdeaFormContext();
+
+  const { addPoints, checkAndAwardAchievements } = useGamification();
 
   // State to track when the analysis is complete
   const [isAnalysisComplete, setIsAnalysisComplete] = useState(false);
@@ -151,7 +154,24 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
         
         // Success! Navigate to results page
         toast.success(t('ideaForm.analysisSuccess', "Análise concluída com sucesso!"));
-        
+
+        // Gamificação: Pontuação por ação
+        if (isReanalyzing) {
+          addPoints(25, 'Reanálise de ideia');
+        } else {
+          addPoints(10, 'Criar ideia e análise');
+        }
+
+        // Checagem de conquistas automáticas (badges)
+        try {
+          // Buscar total de ideias do usuário
+          const { count: totalIdeas } = await supabase
+            .from('ideas')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', authState.user.id);
+          await checkAndAwardAchievements('create_idea', { totalIdeas });
+        } catch {}
+
         // Mark the analysis as complete before resetting the form and navigating
         setIsAnalysisComplete(true);
         
@@ -185,7 +205,7 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
             });
             window.dispatchEvent(analysisUpdateEvent);
             
-            navigate(`/dashboard/resultados?id=${analysisData.ideaId}`);
+            navigate(`/dashboard/resultados/${analysisData.ideaId}`);
           } else {
             console.error("Missing ideaId in response:", analysisData);
             toast.error(t('ideaForm.missingData', "Dados da análise incompletos. Entre em contato com o suporte."));

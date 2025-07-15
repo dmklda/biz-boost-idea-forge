@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,19 +10,29 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { AdvancedAnalysisButton } from "@/components/advanced-analysis";
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, BarChart, Bar, Legend } from "recharts";
+import { Tooltip as UITooltip, TooltipTrigger as UITooltipTrigger, TooltipContent as UITooltipContent } from "@/components/ui/tooltip";
+import { Card as UICard } from "@/components/ui/card";
+import { useMemo } from "react";
+
+// Adicionar o ícone do Notion inline
+const NotionIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 268"><path fill="#FFF" d="M16.092 11.538 164.09.608c18.179-1.56 22.85-.508 34.28 7.801l47.243 33.282C253.406 47.414 256 48.975 256 55.207v182.527c0 11.439-4.155 18.205-18.696 19.24L65.44 267.378c-10.913.517-16.11-1.043-21.825-8.327L8.826 213.814C2.586 205.487 0 199.254 0 191.97V29.726c0-9.352 4.155-17.153 16.092-18.188Z"/><path d="M164.09.608 16.092 11.538C4.155 12.573 0 20.374 0 29.726v162.245c0 7.284 2.585 13.516 8.826 21.843l34.789 45.237c5.715 7.284 10.912 8.844 21.825 8.327l171.864-10.404c14.532-1.035 18.696-7.801 18.696-19.24V55.207c0-5.911-2.336-7.614-9.21-12.66l-1.185-.856L198.37 8.409C186.94.1 182.27-.952 164.09.608ZM69.327 52.22c-14.033.945-17.216 1.159-25.186-5.323L23.876 30.778c-2.06-2.086-1.026-4.69 4.163-5.207l142.274-10.395c11.947-1.043 18.17 3.12 22.842 6.758l24.401 17.68c1.043.525 3.638 3.637.517 3.637L71.146 52.095l-1.819.125Zm-16.36 183.954V81.222c0-6.767 2.077-9.887 8.3-10.413L230.02 60.93c5.724-.517 8.31 3.12 8.31 9.879v153.917c0 6.767-1.044 12.49-10.387 13.008l-161.487 9.361c-9.343.517-13.489-2.594-13.489-10.921ZM212.377 89.53c1.034 4.681 0 9.362-4.681 9.897l-7.783 1.542v114.404c-6.758 3.637-12.981 5.715-18.18 5.715-8.308 0-10.386-2.604-16.609-10.396l-50.898-80.079v77.476l16.1 3.646s0 9.362-12.989 9.362l-35.814 2.077c-1.043-2.086 0-7.284 3.63-8.318l9.351-2.595V109.823l-12.98-1.052c-1.044-4.68 1.55-11.439 8.826-11.965l38.426-2.585 52.958 81.113v-71.76l-13.498-1.552c-1.043-5.733 3.111-9.896 8.3-10.404l35.84-2.087Z"/></svg>
+);
 
 const ResultsPage = () => {
   const { t } = useTranslation();
   const { authState } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const ideaId = searchParams.get('id');
+  const { id: ideaId } = useParams();
   const [loading, setLoading] = useState(true);
   const [idea, setIdea] = useState<any>(null);
   const [analysis, setAnalysis] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [history, setHistory] = useState<any[]>([]);
+  const [selectedHistory, setSelectedHistory] = useState<any[]>([]);
   const isMobile = useIsMobile();
 
   // Safe data parsing functions
@@ -104,8 +114,7 @@ const ResultsPage = () => {
           .select('*')
           .eq('idea_id', ideaId)
           .eq('user_id', authState.user?.id)
-          .order('created_at', { ascending: false })
-          .limit(1);
+          .order('created_at', { ascending: false });
 
         if (analysisError) {
           console.error("ResultsPage: Error fetching analysis:", analysisError);
@@ -116,13 +125,14 @@ const ResultsPage = () => {
           toast.error(t('results.noAnalysis', "Nenhuma análise encontrada para esta ideia"));
           setError("Nenhuma análise encontrada");
         } else {
-          console.log("ResultsPage: Analysis data fetched successfully:", analysisData[0]);
           setAnalysis(analysisData[0]);
+          setHistory(analysisData); // Salva todo o histórico
         }
 
         setIdea(ideaData);
       } catch (error) {
         console.error("ResultsPage: Unexpected error:", error);
+        toast.error("Erro ao carregar dados. Tente novamente.");
         toast.error(t('results.generalError', "Ocorreu um erro inesperado"));
         setError("Erro inesperado");
       } finally {
@@ -135,6 +145,105 @@ const ResultsPage = () => {
       fetchIdeaAndAnalysis();
     }
   }, [ideaId, authState.isAuthenticated, authState.user?.id, navigate, t]);
+
+  // Função para compartilhar análise
+  const handleShare = async () => {
+    try {
+      const shareUrl = `${window.location.origin}/dashboard/resultados/${ideaId}`;
+      if (navigator.share) {
+        await navigator.share({
+          title: idea?.title || t('results.title'),
+          text: t('results.shareText', 'Confira minha análise de ideia!'),
+          url: shareUrl
+        });
+        toast.success(t('results.shared', 'Link compartilhado!'));
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success(t('results.copied', 'Link copiado para área de transferência!'));
+      }
+    } catch (error) {
+      toast.error(t('results.shareError', 'Erro ao compartilhar.'));
+    }
+  };
+
+  // Função para exportar para Notion (apenas visual, sem integração real)
+  const handleExportNotion = () => {
+    toast.info("Exportação para Notion é um recurso premium. Assine para liberar!");
+  };
+
+  // Funções premium (PDF, CSV)
+  const handlePremiumExport = () => {
+    toast.info("Exportação disponível apenas para usuários premium.");
+  };
+
+  // Exemplo para ação que demanda crédito:
+  const handleCreditFeature = () => {
+    toast.error("Você precisa de créditos para acessar esta funcionalidade. Adquira créditos ou faça upgrade!");
+  };
+
+  // Safe parsing of analysis data with fallbacks
+  const score = analysis?.score || 0;
+  const status = analysis?.status || "Moderate";
+  const swotAnalysis = safeParseJSON(analysis?.swot_analysis, {
+    strengths: [],
+    weaknesses: [],
+    opportunities: [],
+    threats: []
+  });
+  const marketAnalysis = safeParseJSON(analysis?.market_analysis, {
+    market_size: "",
+    target_audience: "",
+    growth_potential: "",
+    barriers_to_entry: []
+  });
+  const competitorAnalysis = safeParseJSON(analysis?.competitor_analysis, {
+    key_competitors: [],
+    competitive_advantage: "",
+    market_gaps: []
+  });
+  const financialAnalysis = safeParseJSON(analysis?.financial_analysis, {
+    revenue_potential: "",
+    initial_investment: "",
+    break_even_estimate: "",
+    funding_suggestions: []
+  });
+  const recommendations = safeParseJSON(analysis?.recommendations, {
+    action_items: [],
+    next_steps: [],
+    potential_challenges: [],
+    suggested_resources: []
+  });
+
+  // Dados para gráfico de barras SWOT (mover para depois de swotAnalysis)
+  const swotBarData = useMemo(() => [
+    { name: t('results.swot.strengths', 'Forças'), value: safeGetArray(swotAnalysis, 'strengths').length },
+    { name: t('results.swot.weaknesses', 'Fraquezas'), value: safeGetArray(swotAnalysis, 'weaknesses').length },
+    { name: t('results.swot.opportunities', 'Oportunidades'), value: safeGetArray(swotAnalysis, 'opportunities').length },
+    { name: t('results.swot.threats', 'Ameaças'), value: safeGetArray(swotAnalysis, 'threats').length },
+  ], [swotAnalysis, t]);
+
+  // Dados para gráfico de evolução do score
+  const scoreHistoryData = useMemo(() =>
+    history.map((item) => ({
+      date: new Date(item.created_at).toLocaleDateString(),
+      score: item.score || 0,
+      status: item.status || '',
+    })),
+    [history]
+  );
+
+  // Dados para comparação de histórico
+  const handleSelectHistory = (item: any) => {
+    setSelectedHistory((prev) => {
+      if (prev.find((h) => h.id === item.id)) {
+        return prev.filter((h) => h.id !== item.id);
+      }
+      if (prev.length === 2) {
+        return [prev[1], item];
+      }
+      return [...prev, item];
+    });
+  };
 
   // Loading state
   if (loading) {
@@ -196,39 +305,6 @@ const ResultsPage = () => {
     );
   }
 
-  // Safe parsing of analysis data with fallbacks
-  const score = analysis?.score || 0;
-  const status = analysis?.status || "Moderate";
-  const swotAnalysis = safeParseJSON(analysis?.swot_analysis, {
-    strengths: [],
-    weaknesses: [],
-    opportunities: [],
-    threats: []
-  });
-  const marketAnalysis = safeParseJSON(analysis?.market_analysis, {
-    market_size: "",
-    target_audience: "",
-    growth_potential: "",
-    barriers_to_entry: []
-  });
-  const competitorAnalysis = safeParseJSON(analysis?.competitor_analysis, {
-    key_competitors: [],
-    competitive_advantage: "",
-    market_gaps: []
-  });
-  const financialAnalysis = safeParseJSON(analysis?.financial_analysis, {
-    revenue_potential: "",
-    initial_investment: "",
-    break_even_estimate: "",
-    funding_suggestions: []
-  });
-  const recommendations = safeParseJSON(analysis?.recommendations, {
-    action_items: [],
-    next_steps: [],
-    potential_challenges: [],
-    suggested_resources: []
-  });
-
   // Safe status translation with fallback
   const getStatusTranslation = (status: string) => {
     try {
@@ -247,7 +323,7 @@ const ResultsPage = () => {
           <Button 
             variant="ghost" 
             size="sm"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/dashboard/ideias")}
             className="flex items-center gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -258,23 +334,66 @@ const ResultsPage = () => {
           </h1>
         </div>
         
-        <div className="flex gap-2 flex-wrap">
-          {!isMobile && (
-            <>
-              <Button variant="outline" size={isMobile ? "sm" : "default"} className="flex items-center gap-2">
-                <Share2 className="h-4 w-4" />
-                <span className="hidden md:inline">{t('results.share', "Compartilhar")}</span>
+        <div className="flex gap-2 flex-wrap mb-4">
+          {/* Compartilhar - sempre ativo */}
+          <UITooltip>
+            <UITooltipTrigger asChild>
+              <span>
+                <Button variant="outline" size={isMobile ? "sm" : "default"} className="flex items-center gap-2" onClick={handleShare}>
+                  <Share2 className="h-4 w-4" />
+                </Button>
+              </span>
+            </UITooltipTrigger>
+            <UITooltipContent>Compartilhar análise</UITooltipContent>
+          </UITooltip>
+
+          {/* Exportar CSV - premium */}
+          {isMobile ? (
+            <span
+              onClick={() => toast.info("Exportação disponível apenas para usuários premium.")}
+              style={{ display: 'inline-flex' }}
+            >
+              <Button variant="outline" size="sm" className="flex items-center gap-2" disabled tabIndex={0}>
+                <FileText className="h-4 w-4" />
+                <span className="sr-only">Exportar CSV</span>
               </Button>
-              <Button variant="outline" size={isMobile ? "sm" : "default"} className="flex items-center gap-2">
-                <Download className="h-4 w-4" />
-                <span className="hidden md:inline">{t('results.download', "Baixar PDF")}</span>
-              </Button>
-            </>
+            </span>
+          ) : (
+            <UITooltip>
+              <UITooltipTrigger asChild>
+                <span>
+                  <Button variant="outline" size="default" className="flex items-center gap-2" disabled>
+                    <FileText className="h-4 w-4" />
+                  </Button>
+                </span>
+              </UITooltipTrigger>
+              <UITooltipContent>Exportar CSV (premium)</UITooltipContent>
+            </UITooltip>
           )}
-          <Button variant="outline" size={isMobile ? "sm" : "default"} className="flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            <span className="hidden md:inline">{t('results.export', "Exportar")}</span>
-          </Button>
+
+          {/* Exportar para Notion - em breve */}
+          {isMobile ? (
+            <span
+              onClick={() => toast.info("Exportação para Notion em breve!")}
+              style={{ display: 'inline-flex' }}
+            >
+              <Button variant="outline" size="sm" className="flex items-center gap-2" disabled tabIndex={0}>
+                <NotionIcon />
+                <span className="sr-only">Exportar para Notion</span>
+              </Button>
+            </span>
+          ) : (
+            <UITooltip>
+              <UITooltipTrigger asChild>
+                <span>
+                  <Button variant="outline" size="default" className="flex items-center gap-2" disabled>
+                    <NotionIcon />
+                  </Button>
+                </span>
+              </UITooltipTrigger>
+              <UITooltipContent>Exportar para Notion (em breve!)</UITooltipContent>
+            </UITooltip>
+          )}
         </div>
       </div>
       
@@ -442,6 +561,22 @@ const ResultsPage = () => {
                     )}
                   </ul>
                 </div>
+              </div>
+              <h2 className="text-xl font-bold mb-4">{t('results.swotRadar', 'Radar SWOT')}</h2>
+              <div className="w-full h-72 mb-8">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart cx="50%" cy="50%" outerRadius="80%" data={[
+                    { category: t('results.swot.strengths', 'Forças'), value: safeGetArray(swotAnalysis, 'strengths').length },
+                    { category: t('results.swot.weaknesses', 'Fraquezas'), value: safeGetArray(swotAnalysis, 'weaknesses').length },
+                    { category: t('results.swot.opportunities', 'Oportunidades'), value: safeGetArray(swotAnalysis, 'opportunities').length },
+                    { category: t('results.swot.threats', 'Ameaças'), value: safeGetArray(swotAnalysis, 'threats').length },
+                  ]}>
+                    <PolarGrid />
+                    <PolarAngleAxis dataKey="category" />
+                    <PolarRadiusAxis angle={30} domain={[0, 10]} />
+                    <Radar name="SWOT" dataKey="value" stroke="#7E69AB" fill="#9b87f5" fillOpacity={0.6} />
+                  </RadarChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
@@ -612,27 +747,126 @@ const ResultsPage = () => {
         </TabsContent>
       </Tabs>
       
-      {/* Mobile floating buttons */}
-      {isMobile && (
-        <div className="fixed bottom-20 right-4 z-40">
-          <div className="flex flex-col gap-2">
-            <Button 
-              size="icon" 
-              className="rounded-full shadow-lg bg-brand-purple hover:bg-brand-purple/90 h-12 w-12"
-              onClick={() => {}} 
-            >
-              <Share2 className="h-5 w-5" />
-            </Button>
-            <Button 
-              size="icon" 
-              className="rounded-full shadow-lg bg-brand-purple hover:bg-brand-purple/90 h-12 w-12"
-              onClick={() => {}} 
-            >
-              <Download className="h-5 w-5" />
-            </Button>
+      {/* Gráfico de evolução do score */}
+      {scoreHistoryData.length > 1 && (
+        <UICard className="mb-6 p-4">
+          <h2 className="text-lg font-semibold mb-2">{t('results.scoreEvolution', 'Evolução do Score')}</h2>
+          <div className="w-full h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={scoreHistoryData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis domain={[0, 100]} />
+                <RechartsTooltip />
+                <Legend />
+                <Line type="monotone" dataKey="score" stroke="#7E69AB" strokeWidth={2} dot={{ r: 4 }} />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
-        </div>
+        </UICard>
       )}
+
+      {/* Gráfico de barras SWOT */}
+      <UICard className="mb-6 p-4">
+        <h2 className="text-lg font-semibold mb-2">{t('results.swotBar', 'Resumo SWOT')}</h2>
+        <div className="w-full h-48">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={swotBarData} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" domain={[0, 10]} />
+              <YAxis type="category" dataKey="name" />
+              <RechartsTooltip />
+              <Bar dataKey="value" fill="#9b87f5" barSize={24} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </UICard>
+
+      {/* Cards de recomendações */}
+      {safeGetArray(recommendations, 'action_items').length > 0 && (
+        <UICard className="mb-6 p-4">
+          <h2 className="text-lg font-semibold mb-2">{t('results.recommendations', 'Recomendações Principais')}</h2>
+          <div className="grid gap-2 md:grid-cols-2">
+            {safeGetArray(recommendations, 'action_items').map((item: string, idx: number) => (
+              <div key={idx} className="bg-brand-blue/10 border-l-4 border-brand-blue rounded p-3 text-brand-blue font-medium">
+                {item}
+              </div>
+            ))}
+          </div>
+        </UICard>
+      )}
+
+      {/* Checklist de próximos passos */}
+      {safeGetArray(recommendations, 'next_steps').length > 0 && (
+        <UICard className="mb-6 p-4">
+          <h2 className="text-lg font-semibold mb-2">{t('results.nextSteps', 'Próximos Passos')}</h2>
+          <ul className="space-y-2">
+            {safeGetArray(recommendations, 'next_steps').map((step: string, idx: number) => (
+              <li key={idx} className="flex items-center gap-2">
+                <input type="checkbox" disabled className="accent-brand-blue" aria-label={t('results.nextStepCheckbox', 'Marcar próximo passo como concluído')} />
+                <span>{step}</span>
+              </li>
+            ))}
+          </ul>
+        </UICard>
+      )}
+
+      {/* Comparação de histórico */}
+      {history.length > 1 && (
+        <UICard className="mb-6 p-4">
+          <h2 className="text-lg font-semibold mb-2">{t('results.compareHistory', 'Comparar Análises')}</h2>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {history.map((item) => (
+              <Button key={item.id} size="sm" variant={selectedHistory.find((h) => h.id === item.id) ? "default" : "outline"} onClick={() => handleSelectHistory(item)}>
+                {new Date(item.created_at).toLocaleDateString()} - {item.score}%
+              </Button>
+            ))}
+          </div>
+          {selectedHistory.length === 2 && (
+            <div className="grid md:grid-cols-2 gap-4">
+              {selectedHistory.map((item, idx) => {
+                const swot = safeParseJSON(item.swot_analysis, { strengths: [], weaknesses: [], opportunities: [], threats: [] });
+                return (
+                  <UICard key={item.id} className="p-4 border shadow-sm">
+                    <div className="font-bold mb-2">{t('results.analysis', 'Análise')} {idx + 1}</div>
+                    <div className="mb-2">Score: <span className={item.score >= 70 ? 'text-green-600' : item.score >= 40 ? 'text-yellow-600' : 'text-red-600'}>{item.score}</span></div>
+                    <div className="mb-2">Status: {item.status}</div>
+                    <div className="mb-2">Forças: {safeGetArray(swot, 'strengths').length}</div>
+                    <div className="mb-2">Fraquezas: {safeGetArray(swot, 'weaknesses').length}</div>
+                    <div className="mb-2">Oportunidades: {safeGetArray(swot, 'opportunities').length}</div>
+                    <div className="mb-2">Ameaças: {safeGetArray(swot, 'threats').length}</div>
+                  </UICard>
+                );
+              })}
+            </div>
+          )}
+        </UICard>
+      )}
+
+      {/* Adiciona a seção de histórico de análises */}
+      <div className="my-8">
+        <h2 className="text-lg font-semibold mb-4">Histórico de Análises</h2>
+        {history.length > 1 ? (
+          <div className="space-y-2">
+            {history.map((item, idx) => (
+              <Card key={item.id} className="border shadow-sm">
+                <CardContent className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 p-4">
+                  <div>
+                    <div className="text-sm text-muted-foreground">{new Date(item.created_at).toLocaleString()}</div>
+                    <div className="font-medium">Score: <span className={item.score >= 70 ? 'text-green-600' : item.score >= 40 ? 'text-yellow-600' : 'text-red-600'}>{item.score}</span></div>
+                    <div className="text-xs text-muted-foreground">Status: {item.status}</div>
+                  </div>
+                  <Button size="sm" variant="outline" onClick={() => setAnalysis(item)}>
+                    Ver detalhes
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-muted-foreground text-sm">Nenhum histórico anterior encontrado.</div>
+        )}
+      </div>
     </div>
   );
 };

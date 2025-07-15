@@ -22,36 +22,41 @@ import GamificationPage from './pages/dashboard/GamificationPage';
 import { MyContentPage } from "@/pages/dashboard/MyContentPage";
 import { CompareIdeasModalProvider } from './components/ideas/CompareIdeasModal';
 import { AuthProvider } from './hooks/useAuth';
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "sonner";
 
 function App() {
   return (
     <AuthProvider>
       <CompareIdeasModalProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/planos" element={<PlansPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/registro" element={<RegisterPage />} />
+        <TooltipProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/planos" element={<PlansPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/registro" element={<RegisterPage />} />
 
-            {/* Dashboard Routes */}
-            <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route index element={<DashboardHome />} />
-              <Route path="ideias" element={<IdeasPage />} />
-              <Route path="ideias/:id" element={<IdeaDetailPage />} />
-              <Route path="ideias/:id/edit" element={<EditIdeaPage />} />
-              <Route path="rascunhos" element={<DraftsPage />} />
-              <Route path="ferramentas" element={<ToolsPage />} />
-              <Route path="conteudos" element={<MyContentPage />} />
-              <Route path="gamificacao" element={<GamificationPage />} />
-              <Route path="configuracoes" element={<UserSettingsPage />} />
-              <Route path="analise-avancada" element={<AdvancedAnalysisPage />} />
-              <Route path="metricas-avancadas" element={<AdvancedMetricsPage />} />
-              <Route path="central-recursos" element={<ResourceCenterPage />} />
-              <Route path="resultados/:id" element={<ResultsPage />} />
-            </Route>
-          </Routes>
-        </Router>
+              {/* Dashboard Routes */}
+              <Route path="/dashboard" element={<DashboardLayout />}>
+                <Route index element={<DashboardHome />} />
+                <Route path="ideias" element={<IdeasPage />} />
+                <Route path="ideias/:id" element={<IdeaDetailPage />} />
+                <Route path="ideias/:id/edit" element={<EditIdeaPage />} />
+                <Route path="rascunhos" element={<DraftsPage />} />
+                <Route path="ferramentas" element={<ToolsPage />} />
+                <Route path="conteudos" element={<MyContentPage />} />
+                <Route path="gamificacao" element={<GamificationPage />} />
+                <Route path="configuracoes" element={<UserSettingsPage />} />
+                <Route path="analise-avancada" element={<AdvancedAnalysisPage />} />
+                <Route path="metricas-avancadas" element={<AdvancedMetricsPage />} />
+                <Route path="central-recursos" element={<ResourceCenterPage />} />
+                <Route path="resultados/:id" element={<ResultsPage />} />
+              </Route>
+            </Routes>
+          </Router>
+          <Toaster />
+        </TooltipProvider>
       </CompareIdeasModalProvider>
     </AuthProvider>
   );
