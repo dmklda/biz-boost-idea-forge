@@ -39,9 +39,25 @@ interface Profile {
 // Função para upload de foto para Supabase Storage
 const uploadProfilePhoto = async (file: File, userId: string) => {
   const fileExt = file.name.split('.').pop();
-  const filePath = `${userId}.${fileExt}`;
-  const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true });
+  const filePath = `${userId}/${userId}.${fileExt}`;
+  
+  // Primeiro, deletar avatar existente se houver
+  const { data: existingFiles } = await supabase.storage
+    .from('avatars')
+    .list(userId);
+    
+  if (existingFiles && existingFiles.length > 0) {
+    await supabase.storage
+      .from('avatars')
+      .remove([`${userId}/${existingFiles[0].name}`]);
+  }
+  
+  const { error: uploadError } = await supabase.storage
+    .from('avatars')
+    .upload(filePath, file, { upsert: true });
+    
   if (uploadError) throw uploadError;
+  
   const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
   return data.publicUrl;
 };
