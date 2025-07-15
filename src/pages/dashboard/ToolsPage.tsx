@@ -14,8 +14,10 @@ import { useState } from "react";
 import { LogoGeneratorModal } from "@/components/tools/LogoGeneratorModal";
 import { PRDMVPGeneratorModal } from "@/components/tools/PRDMVPGeneratorModal";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 const ToolsPage = () => {
+  const { authState } = useAuth();
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
   const [isPRDModalOpen, setIsPRDModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -350,7 +352,7 @@ const ToolsPage = () => {
               toast.info("Funcionalidade em breve!");
               return;
             }
-            if (tool.credits > (user?.credits || 0)) {
+            if (tool.credits > (authState.user?.credits || 0)) {
               toast.error("Você não possui créditos suficientes para usar esta ferramenta.");
               return;
             }

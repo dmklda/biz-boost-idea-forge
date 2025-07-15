@@ -58,15 +58,15 @@ const UserSettingsPage = () => {
     email: authState.user?.email || "",
     plan: authState.user?.plan || "free",
     credits: authState.user?.credits || 0,
-    photo_url: authState.user?.photo_url || "",
-    bio: authState.user?.bio || "",
-    linkedin: authState.user?.linkedin || "",
-    phone: authState.user?.phone || "",
-    city: authState.user?.city || "",
-    area: authState.user?.area || "",
-    company: authState.user?.company || "",
-    birthdate: authState.user?.birthdate || "",
-    contact_pref: authState.user?.contact_pref || ""
+    photo_url: "",
+    bio: "",
+    linkedin: "",
+    phone: "",
+    city: "",
+    area: "",
+    company: "",
+    birthdate: "",
+    contact_pref: ""
   });
   
   // Form states
@@ -169,7 +169,6 @@ const UserSettingsPage = () => {
       const { error } = await supabase
         .auth
         .updateUser({
-          password: newPassword,
           password: newPassword,
         });
       if (error) throw error;
@@ -331,14 +330,22 @@ const UserSettingsPage = () => {
                       id="photo"
                       type="file"
                       accept="image/*"
+                      disabled={loading}
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file && authState.user) {
+                          setLoading(true);
                           try {
+                            console.log('Iniciando upload de avatar:', file.name);
                             const url = await uploadProfilePhoto(file, authState.user.id);
+                            console.log('Upload concluído, URL:', url);
                             setProfile({ ...profile, photo_url: url });
+                            toast.success('Foto de perfil atualizada com sucesso!');
                           } catch (err) {
-                            toast.error('Erro ao fazer upload da foto de perfil');
+                            console.error('Erro no upload:', err);
+                            toast.error('Erro ao fazer upload da foto de perfil: ' + (err as Error).message);
+                          } finally {
+                            setLoading(false);
                           }
                         }
                       }}
