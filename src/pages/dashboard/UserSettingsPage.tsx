@@ -64,7 +64,7 @@ const uploadProfilePhoto = async (file: File, userId: string) => {
 
 const UserSettingsPage = () => {
   const { t, i18n } = useTranslation();
-  const { authState, logout } = useAuth();
+  const { authState, logout, updateUserPhoto } = useAuth();
   const isMobile = useIsMobile();
   const { addPoints, checkAndAwardAchievements } = useGamification();
   
@@ -355,7 +355,11 @@ const UserSettingsPage = () => {
                             console.log('Iniciando upload de avatar:', file.name);
                             const url = await uploadProfilePhoto(file, authState.user.id);
                             console.log('Upload concluído, URL:', url);
+                            
+                            // Atualizar tanto o estado local quanto o contexto de autenticação
                             setProfile({ ...profile, photo_url: url });
+                            updateUserPhoto(url);
+                            
                             toast.success('Foto de perfil atualizada com sucesso!');
                           } catch (err) {
                             console.error('Erro no upload:', err);

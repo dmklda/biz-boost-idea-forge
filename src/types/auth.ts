@@ -6,6 +6,7 @@ export interface User {
   credits: number;
   createdAt: string;
   first_analysis_done?: boolean;
+  photo_url?: string;
 }
 
 export interface AuthState {

@@ -17,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -95,6 +95,9 @@ const Header = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2 hover:bg-accent">
                   <Avatar className="h-8 w-8">
+                    {authState.user?.photo_url && (
+                      <AvatarImage src={authState.user.photo_url} alt={authState.user.name} />
+                    )}
                     <AvatarFallback className="bg-gradient-to-br from-[#00BFFF] to-[#8F00FF] text-white">
                       {authState.user?.name.charAt(0)}
                     </AvatarFallback>
@@ -174,6 +177,9 @@ const Header = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="p-0 h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8">
+                    {authState.user?.photo_url && (
+                      <AvatarImage src={authState.user.photo_url} alt={authState.user.name} />
+                    )}
                     <AvatarFallback className="bg-gradient-to-br from-[#00BFFF] to-[#8F00FF] text-white">
                       {authState.user?.name.charAt(0)}
                     </AvatarFallback>

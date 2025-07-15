@@ -17,13 +17,15 @@ const AuthContext = createContext<{
   logout: () => Promise<void>;
   updateUserCredits: (newCredits: number) => void;
   updateUserPlan: (newPlan: User['plan']) => void;
+  updateUserPhoto: (photoUrl: string) => void;
 }>({
   authState: initialAuthState,
   login: () => Promise.reject("AuthProvider not initialized"),
   register: () => Promise.reject("AuthProvider not initialized"),
   logout: () => Promise.reject("AuthProvider not initialized"),
   updateUserCredits: () => {},
-  updateUserPlan: () => {}
+  updateUserPlan: () => {},
+  updateUserPhoto: () => {}
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -50,7 +52,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                   plan: profile.plan as User['plan'],
                   credits: profile.credits,
                   createdAt: profile.created_at,
-                  first_analysis_done: profile.first_analysis_done ?? false
+                  first_analysis_done: profile.first_analysis_done ?? false,
+                  photo_url: profile.photo_url
                 },
                 isAuthenticated: true
               });
@@ -84,7 +87,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     plan: profile.plan as User['plan'],
                     credits: profile.credits,
                     createdAt: profile.created_at,
-                    first_analysis_done: profile.first_analysis_done ?? false
+                    first_analysis_done: profile.first_analysis_done ?? false,
+                    photo_url: profile.photo_url
                   },
                   isAuthenticated: true
                 });
@@ -136,7 +140,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         plan: profile.plan as User['plan'],
         credits: profile.credits,
         createdAt: profile.created_at,
-        first_analysis_done: profile.first_analysis_done ?? false
+        first_analysis_done: profile.first_analysis_done ?? false,
+        photo_url: profile.photo_url
       };
       
       // Update auth state immediately for faster response
@@ -268,6 +273,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
   };
 
+  const updateUserPhoto = (photoUrl: string) => {
+    if (!authState.user) return;
+
+    // Atualizar estado local imediatamente para melhor UX
+    setAuthState(prev => ({
+      ...prev,
+      user: {
+        ...prev.user!,
+        photo_url: photoUrl
+      }
+    }));
+  };
+
   return (
     <AuthContext.Provider value={{ 
       authState, 
@@ -275,7 +293,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       register, 
       logout,
       updateUserCredits,
-      updateUserPlan
+      updateUserPlan,
+      updateUserPhoto
     }}>
       {children}
     </AuthContext.Provider>
