@@ -185,7 +185,21 @@
     },
     "location": {
       "title": "Where will this business operate?",
-      "placeholder": "Select a location..."
+      "placeholder": "Select a location...",
+      "options": {
+        "brazil": "Brazil",
+        "usa": "United States",
+        "eu": "European Union",
+        "uk": "United Kingdom",
+        "canada": "Canada",
+        "australia": "Australia",
+        "newzealand": "New Zealand",
+        "japan": "Japan",
+        "china": "China",
+        "india": "India",
+        "global": "Global",
+        "other": "Other"
+      }
     },
     "submit": "Submit for Analysis",
     "submitting": "Analyzing...",
@@ -1071,5 +1085,40 @@
       "name": "Email Campaigns",
       "description": "Create effective email marketing campaigns"
     }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated: {{date}}",
+    "section1Title": "1. Acceptance of Terms",
+    "section1Content": "By accessing or using our service, you agree to these Terms of Service.",
+    "section2Title": "2. Use of Service",
+    "section2Content": "You must use the service in accordance with all applicable laws and may not use it for unlawful purposes.",
+    "section3Title": "3. Modifications",
+    "section3Content": "We reserve the right to modify these terms at any time. Changes will be communicated on this page.",
+    "privacyLink": "See also our Privacy Policy."
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: {{date}}",
+    "section1Title": "1. Data Collection",
+    "section1Content": "We collect personal information provided by you when using our service.",
+    "section2Title": "2. Use of Information",
+    "section2Content": "We use your information to provide and improve our services.",
+    "section3Title": "3. Data Sharing",
+    "section3Content": "We do not share your personal information with third parties except as required by law.",
+    "termsLink": "See also our Terms of Service."
+  },
+  "exampleResult": {
+    "title": "Idea Analysis Example",
+    "ideaName": "Pet Delivery",
+    "ideaSummary": "A specialized transportation service to take pets with comfort and safety.",
+    "marketPotential": "Market potential:",
+    "innovation": "Innovation:",
+    "viability": "Viability:",
+    "insightsTitle": "Insights & Recommendations",
+    "insight1": "Growing market with increasingly demanding pet owners.",
+    "insight2": "Differential: focus on animal well-being and personalized logistics.",
+    "loginToAnalyze": "Login to analyze your idea",
+    "registerFree": "Register for free"
   }
 }

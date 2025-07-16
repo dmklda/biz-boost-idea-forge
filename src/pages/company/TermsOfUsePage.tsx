@@ -1,84 +1,62 @@
 
-import { useTranslation } from "react-i18next";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+import { useTranslation } from 'react-i18next';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 const TermsOfUsePage = () => {
   const { t } = useTranslation();
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-background/95 relative overflow-hidden">
-      {/* Background element */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-purple/5 via-transparent to-transparent pointer-events-none"></div>
-      <div className="absolute inset-0 bg-mesh-pattern opacity-10 pointer-events-none"></div>
-      
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 pt-32 pb-16">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="inline-flex h-6 items-center rounded-full bg-brand-purple/20 px-3 text-sm text-brand-purple">
-              {t("termsOfUse.tagline")}
-            </div>
-          </div>
-          
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">{t("termsOfUse.title")}</h1>
-          <p className="text-lg text-muted-foreground mb-8">{t("termsOfUse.lastUpdated")}: May 1, 2025</p>
-          
-          <div className="prose prose-lg max-w-none dark:prose-invert">
-            <p>{t("termsOfUse.introduction")}</p>
-            
-            <h2>{t("termsOfUse.sections.acceptance.title")}</h2>
-            <p>{t("termsOfUse.sections.acceptance.content")}</p>
-            
-            <h2>{t("termsOfUse.sections.accountRegistration.title")}</h2>
-            <p>{t("termsOfUse.sections.accountRegistration.content1")}</p>
-            <p>{t("termsOfUse.sections.accountRegistration.content2")}</p>
-            
-            <h2>{t("termsOfUse.sections.services.title")}</h2>
-            <p>{t("termsOfUse.sections.services.content1")}</p>
-            <p>{t("termsOfUse.sections.services.content2")}</p>
-            
-            <h2>{t("termsOfUse.sections.payment.title")}</h2>
-            <p>{t("termsOfUse.sections.payment.content1")}</p>
-            <p>{t("termsOfUse.sections.payment.content2")}</p>
-            
-            <h2>{t("termsOfUse.sections.intellectualProperty.title")}</h2>
-            <p>{t("termsOfUse.sections.intellectualProperty.content1")}</p>
-            <p>{t("termsOfUse.sections.intellectualProperty.content2")}</p>
-            
-            <h2>{t("termsOfUse.sections.userContent.title")}</h2>
-            <p>{t("termsOfUse.sections.userContent.content1")}</p>
-            <p>{t("termsOfUse.sections.userContent.content2")}</p>
-            
-            <h2>{t("termsOfUse.sections.prohibited.title")}</h2>
-            <p>{t("termsOfUse.sections.prohibited.content")}</p>
-            <ul>
-              <li>{t("termsOfUse.sections.prohibited.items.item1")}</li>
-              <li>{t("termsOfUse.sections.prohibited.items.item2")}</li>
-              <li>{t("termsOfUse.sections.prohibited.items.item3")}</li>
-              <li>{t("termsOfUse.sections.prohibited.items.item4")}</li>
-              <li>{t("termsOfUse.sections.prohibited.items.item5")}</li>
-              <li>{t("termsOfUse.sections.prohibited.items.item6")}</li>
-            </ul>
-            
-            <h2>{t("termsOfUse.sections.termination.title")}</h2>
-            <p>{t("termsOfUse.sections.termination.content")}</p>
-            
-            <h2>{t("termsOfUse.sections.disclaimer.title")}</h2>
-            <p>{t("termsOfUse.sections.disclaimer.content")}</p>
-            
-            <h2>{t("termsOfUse.sections.limitation.title")}</h2>
-            <p>{t("termsOfUse.sections.limitation.content")}</p>
-            
-            <h2>{t("termsOfUse.sections.changes.title")}</h2>
-            <p>{t("termsOfUse.sections.changes.content")}</p>
-            
-            <h2>{t("termsOfUse.sections.governingLaw.title")}</h2>
-            <p>{t("termsOfUse.sections.governingLaw.content")}</p>
-            
-            <h2>{t("termsOfUse.sections.contact.title")}</h2>
-            <p>{t("termsOfUse.sections.contact.content")}</p>
-          </div>
+      <main className="flex-1 container mx-auto px-4 py-12 max-w-3xl pt-20">
+        <h1 className="text-3xl font-bold mb-4">{t('terms.title')}</h1>
+        <p className="text-muted-foreground mb-2 text-sm">{t('terms.lastUpdated', { date: '2024-05-20' })}</p>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('terms.acceptanceTitle')}</h2>
+          <p>{t('terms.acceptanceContent')}</p>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('terms.usageTitle')}</h2>
+          <ul className="list-disc ml-6 text-muted-foreground">
+            <li>{t('terms.usageItem1')}</li>
+            <li>{t('terms.usageItem2')}</li>
+            <li>{t('terms.usageItem3')}</li>
+          </ul>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('terms.intellectualPropertyTitle')}</h2>
+          <p>{t('terms.intellectualPropertyContent')}</p>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('terms.userObligationsTitle')}</h2>
+          <ul className="list-disc ml-6 text-muted-foreground">
+            <li>{t('terms.userObligationsItem1')}</li>
+            <li>{t('terms.userObligationsItem2')}</li>
+            <li>{t('terms.userObligationsItem3')}</li>
+          </ul>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('terms.paymentsTitle')}</h2>
+          <p>{t('terms.paymentsContent')}</p>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('terms.cancellationTitle')}</h2>
+          <p>{t('terms.cancellationContent')}</p>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('terms.limitationTitle')}</h2>
+          <p>{t('terms.limitationContent')}</p>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('terms.changesTitle')}</h2>
+          <p>{t('terms.changesContent')}</p>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('terms.contactTitle')}</h2>
+          <p>{t('terms.contactContent')}</p>
+        </section>
+        <div className="mt-8">
+          <a href="/company/PrivacyPolicyPage" className="text-brand-purple underline">{t('terms.privacyLink')}</a>
         </div>
       </main>
       <Footer />

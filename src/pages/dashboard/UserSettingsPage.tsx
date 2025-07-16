@@ -14,14 +14,17 @@ import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Bell, CreditCard, Globe, Lock, ShieldAlert, User } from "lucide-react";
+import { Bell, CreditCard, Globe, Lock, ShieldAlert, User, Camera } from "lucide-react";
 import { AvailableCreditsCard } from "@/components/dashboard/AvailableCreditsCard";
 import { BuyCreditsCard } from "@/components/dashboard/BuyCreditsCard";
 import { TransactionsCard } from "@/components/dashboard/TransactionsCard";
 import { useGamification } from '@/hooks/useGamification';
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface Profile {
   name: string;
+  surname?: string; // Novo campo
+  display_name?: string; // Novo campo para nome curto
   email: string;
   plan: string;
   credits: number;
@@ -36,30 +39,20 @@ interface Profile {
   contact_pref?: string;
 }
 
-// Função para upload de foto para Supabase Storage
-const uploadProfilePhoto = async (file: File, userId: string) => {
+// Função utilitária para upload de avatar padronizado
+const uploadAvatar = async (file: File, userId: string) => {
   const fileExt = file.name.split('.').pop();
-  const filePath = `${userId}/${userId}.${fileExt}`;
-  
-  // Primeiro, deletar avatar existente se houver
-  const { data: existingFiles } = await supabase.storage
-    .from('avatars')
-    .list(userId);
-    
+  const filePath = `${userId}/avatar.${fileExt}`;
+  // Remove avatar antigo se houver
+  const { data: existingFiles } = await supabase.storage.from('avatars').list(userId);
   if (existingFiles && existingFiles.length > 0) {
-    await supabase.storage
-      .from('avatars')
-      .remove([`${userId}/${existingFiles[0].name}`]);
+    await supabase.storage.from('avatars').remove([`${userId}/${existingFiles[0].name}`]);
   }
-  
-  const { error: uploadError } = await supabase.storage
-    .from('avatars')
-    .upload(filePath, file, { upsert: true });
-    
+  const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true });
   if (uploadError) throw uploadError;
-  
-  const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
-  return data.publicUrl;
+  const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
+  if (!urlData?.publicUrl) throw new Error('URL pública não encontrada');
+  return urlData.publicUrl;
 };
 
 const UserSettingsPage = () => {
@@ -71,6 +64,8 @@ const UserSettingsPage = () => {
   // User profile state
   const [profile, setProfile] = useState<Profile>({
     name: authState.user?.name || "",
+    surname: authState.user?.surname || "",
+    display_name: authState.user?.display_name || "",
     email: authState.user?.email || "",
     plan: authState.user?.plan || "free",
     credits: authState.user?.credits || 0,
@@ -109,6 +104,7 @@ const UserSettingsPage = () => {
   const checkProfileComplete = async () => {
     if (!authState.user) return false;
     const hasName = !!profile.name;
+    const hasSurname = !!profile.surname;
     const hasLanguage = !!language;
     const hasPassword = passwordChanged;
     const hasNotifications = notificationsSaved;
@@ -122,7 +118,7 @@ const UserSettingsPage = () => {
     const hasBirthdate = !!profile.birthdate;
     const hasContactPref = !!profile.contact_pref;
     return (
-      hasName && hasLanguage && hasPassword && hasNotifications &&
+      hasName && hasSurname && hasLanguage && hasPassword && hasNotifications &&
       hasPhoto && hasBio && hasLinkedin && hasPhone && hasCity &&
       hasArea && hasCompany && hasBirthdate && hasContactPref
     );
@@ -135,33 +131,43 @@ const UserSettingsPage = () => {
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!authState.user) return;
+    if (!profile.name.trim() || !profile.surname.trim()) {
+      toast.error('Nome e sobrenome são obrigatórios.');
+      return;
+    }
     setLoading(true);
     try {
       const wasIncomplete = !authState.user.name;
-      // Upload foto se houver
       let photo_url = profile.photo_url;
       if (profile.photo_url && profile.photo_url.startsWith('data:')) {
-        // Simulação de upload: normalmente usaria Supabase Storage
-        // Aqui, apenas salva a string base64 para simplificação
         photo_url = profile.photo_url;
       }
+      // Corrigir payload para não enviar string vazia em campos do tipo date
+      const payload = {
+        name: profile.name,
+        surname: profile.surname,
+        display_name: profile.display_name,
+        photo_url,
+        bio: profile.bio || null,
+        linkedin: profile.linkedin || null,
+        phone: profile.phone || null,
+        city: profile.city || null,
+        area: profile.area || null,
+        company: profile.company || null,
+        birthdate: profile.birthdate ? profile.birthdate : null,
+        contact_pref: profile.contact_pref || null
+      };
       const { error } = await supabase
         .from('profiles')
-        .update({
-          name: profile.name,
-          photo_url,
-          bio: profile.bio,
-          linkedin: profile.linkedin,
-          phone: profile.phone,
-          city: profile.city,
-          area: profile.area,
-          company: profile.company,
-          birthdate: profile.birthdate,
-          contact_pref: profile.contact_pref
-        })
+        .update(payload)
         .eq('id', authState.user.id);
       if (error) throw error;
+      // Atualizar contexto global
       authState.user.name = profile.name;
+      authState.user.surname = profile.surname;
+      authState.user.display_name = profile.display_name;
+      authState.user.photo_url = profile.photo_url;
+      updateUserPhoto(profile.photo_url || "");
       toast.success(t('settings.profileUpdated'));
       if (wasIncomplete && profile.name) {
         addPoints(50, 'Completar perfil');
@@ -259,23 +265,56 @@ const UserSettingsPage = () => {
     }
   };
 
+  // Adicionar estados para upload/preview
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setAvatarFile(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setAvatarPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setAvatarPreview(null);
+    }
+  };
+
   useEffect(() => {
+    if (!authState.user?.id) return;
     const fetchProfile = async () => {
-      if (authState.user) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', authState.user.id)
-          .single();
-        if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
-          throw error;
-        } else if (data) {
-          setProfile(data);
-        }
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', authState.user.id)
+        .single();
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      } else if (data) {
+        setProfile({
+          name: data.name || '',
+          surname: (data as any).surname || '',
+          display_name: (data as any).display_name || '',
+          email: data.email || '',
+          plan: data.plan || 'free',
+          credits: data.credits || 0,
+          photo_url: data.photo_url || '',
+          bio: data.bio || '',
+          linkedin: data.linkedin || '',
+          phone: data.phone || '',
+          city: data.city || '',
+          area: data.area || '',
+          company: data.company || '',
+          birthdate: data.birthdate || '',
+          contact_pref: data.contact_pref || ''
+        } as Profile);
+        // Não atualize o contexto global aqui!
       }
     };
     fetchProfile();
-  }, [authState.user]);
+    // Só rode quando o id do usuário mudar
+  }, [authState.user?.id]);
 
   return (
     <div className="space-y-6">
@@ -320,11 +359,66 @@ const UserSettingsPage = () => {
           {/* Profile Tab */}
           <TabsContent value="profile" className="space-y-4">
             <Card className="shadow-sm">
-              <CardHeader>
+              <CardHeader className="flex flex-col items-center">
+                {/* Avatar no topo do Card */}
+                <label htmlFor="avatar-upload" className="relative cursor-pointer group mb-2">
+                  <Avatar className="w-20 h-20 md:w-24 md:h-24 shadow-md border-4 border-white bg-gradient-to-br from-[#00BFFF] to-[#8F00FF]">
+                    {avatarPreview ? (
+                      <AvatarImage src={avatarPreview} alt="Preview do avatar" />
+                    ) : profile.photo_url ? (
+                      <AvatarImage src={profile.photo_url} alt="Foto de perfil" />
+                    ) : null}
+                    <AvatarFallback className="text-3xl text-white font-bold">
+                      {(profile.display_name || profile.name || "").charAt(0) || "?"}
+                    </AvatarFallback>
+                    <span className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow group-hover:bg-gray-100 transition">
+                      <Camera className="w-5 h-5 text-brand-purple" />
+                    </span>
+                  </Avatar>
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    title="Selecione uma imagem para seu avatar"
+                    className="hidden"
+                    tabIndex={0}
+                    disabled={loading}
+                  />
+                </label>
+                <span className="text-xs text-muted-foreground mb-2">Foto de perfil (clique para alterar)</span>
                 <CardTitle>{t('settings.personalInfo')}</CardTitle>
-                <CardDescription>
-                  {t('settings.personalInfoDesc')}
-                </CardDescription>
+                <CardDescription>{t('settings.personalInfoDesc')}</CardDescription>
+                {avatarFile && (
+                  <Button
+                    size="sm"
+                    className="mt-2"
+                    disabled={loading}
+                    onClick={async () => {
+                      if (avatarFile && authState.user) {
+                        setLoading(true);
+                        try {
+                          // Upload padronizado para o bucket avatars
+                          const publicUrl = await uploadAvatar(avatarFile, authState.user.id);
+                          // Atualizar no banco
+                          const { error: dbError } = await supabase.from('profiles').update({ photo_url: publicUrl }).eq('id', authState.user.id);
+                          if (dbError) throw dbError;
+                          // Atualizar estado local e contexto global
+                          setProfile({ ...profile, photo_url: publicUrl });
+                          updateUserPhoto(publicUrl);
+                          setAvatarFile(null);
+                          setAvatarPreview(null);
+                          toast.success('Foto de perfil atualizada com sucesso!');
+                        } catch (err) {
+                          console.error('Erro ao fazer upload da foto de perfil:', err);
+                          toast.error('Erro ao fazer upload da foto de perfil: ' + (err instanceof Error ? err.message : String(err)));
+                        } finally {
+                          setLoading(false);
+                        }
+                      }
+                    }}
+                  >Salvar nova foto</Button>
+                )}
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleProfileUpdate} className="space-y-4">
@@ -333,53 +427,42 @@ const UserSettingsPage = () => {
                     <Label htmlFor="name">Nome</Label>
                     <Input
                       id="name"
-                      value={profile.name}
+                      value={profile.name || ''}
                       onChange={(e) => setProfile({ ...profile, name: e.target.value })}
                       required
-                      placeholder="Seu nome completo"
+                      placeholder="Seu nome"
+                      maxLength={30}
                     />
                   </div>
-                  {/* Foto de perfil */}
+                  {/* Sobrenome */}
                   <div className="space-y-2">
-                    <Label htmlFor="photo">Foto de perfil</Label>
+                    <Label htmlFor="surname">Sobrenome</Label>
                     <Input
-                      id="photo"
-                      type="file"
-                      accept="image/*"
-                      disabled={loading}
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (file && authState.user) {
-                          setLoading(true);
-                          try {
-                            console.log('Iniciando upload de avatar:', file.name);
-                            const url = await uploadProfilePhoto(file, authState.user.id);
-                            console.log('Upload concluído, URL:', url);
-                            
-                            // Atualizar tanto o estado local quanto o contexto de autenticação
-                            setProfile({ ...profile, photo_url: url });
-                            updateUserPhoto(url);
-                            
-                            toast.success('Foto de perfil atualizada com sucesso!');
-                          } catch (err) {
-                            console.error('Erro no upload:', err);
-                            toast.error('Erro ao fazer upload da foto de perfil: ' + (err as Error).message);
-                          } finally {
-                            setLoading(false);
-                          }
-                        }
-                      }}
+                      id="surname"
+                      value={profile.surname || ''}
+                      onChange={(e) => setProfile({ ...profile, surname: e.target.value })}
+                      required
+                      placeholder="Seu sobrenome"
+                      maxLength={40}
                     />
-                    {profile.photo_url && (
-                      <img src={profile.photo_url} alt="Foto de perfil" className="w-20 h-20 rounded-full object-cover mt-2" />
-                    )}
+                  </div>
+                  {/* Nome de usuário */}
+                  <div className="space-y-2">
+                    <Label htmlFor="display_name">Nome de usuário</Label>
+                    <Input
+                      id="display_name"
+                      value={profile.display_name || ''}
+                      onChange={(e) => setProfile({ ...profile, display_name: e.target.value })}
+                      placeholder="Ex: joaosilva, maria123, ana.p"
+                      maxLength={18}
+                    />
                   </div>
                   {/* Bio */}
                   <div className="space-y-2">
                     <Label htmlFor="bio">Bio</Label>
                     <Input
                       id="bio"
-                      value={profile.bio}
+                      value={profile.bio || ''}
                       onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
                       maxLength={160}
                       placeholder="Conte um pouco sobre você..."
@@ -390,7 +473,7 @@ const UserSettingsPage = () => {
                     <Label htmlFor="linkedin">LinkedIn</Label>
                     <Input
                       id="linkedin"
-                      value={profile.linkedin}
+                      value={profile.linkedin || ''}
                       onChange={(e) => setProfile({ ...profile, linkedin: e.target.value })}
                       placeholder="https://linkedin.com/in/seuusuario"
                     />
@@ -401,7 +484,7 @@ const UserSettingsPage = () => {
                     <Input
                       id="phone"
                       type="tel"
-                      value={profile.phone}
+                      value={profile.phone || ''}
                       onChange={(e) => {
                         // Permitir apenas +, números, espaço, parênteses, hífen
                         const val = e.target.value.replace(/[^\d+\-() ]/g, '');
@@ -416,7 +499,7 @@ const UserSettingsPage = () => {
                     <Label htmlFor="city">Cidade</Label>
                     <Input
                       id="city"
-                      value={profile.city}
+                      value={profile.city || ''}
                       onChange={(e) => setProfile({ ...profile, city: e.target.value })}
                       placeholder="Sua cidade"
                     />
@@ -426,7 +509,7 @@ const UserSettingsPage = () => {
                     <Label htmlFor="area">Área de atuação</Label>
                     <Input
                       id="area"
-                      value={profile.area}
+                      value={profile.area || ''}
                       onChange={(e) => setProfile({ ...profile, area: e.target.value })}
                       placeholder="Ex: Tecnologia, Saúde, Educação..."
                     />
@@ -436,7 +519,7 @@ const UserSettingsPage = () => {
                     <Label htmlFor="company">Empresa</Label>
                     <Input
                       id="company"
-                      value={profile.company}
+                      value={profile.company || ''}
                       onChange={(e) => setProfile({ ...profile, company: e.target.value })}
                       placeholder="Onde trabalha atualmente"
                     />
@@ -447,7 +530,7 @@ const UserSettingsPage = () => {
                     <Input
                       id="birthdate"
                       type="date"
-                      value={profile.birthdate}
+                      value={profile.birthdate || ''}
                       onChange={(e) => setProfile({ ...profile, birthdate: e.target.value })}
                     />
                   </div>
@@ -455,7 +538,7 @@ const UserSettingsPage = () => {
                   <div className="space-y-2">
                     <Label htmlFor="contact_pref">Preferência de contato</Label>
                     <Select
-                      value={profile.contact_pref}
+                      value={profile.contact_pref || ''}
                       onValueChange={(val) => setProfile({ ...profile, contact_pref: val })}
                     >
                       <SelectTrigger>

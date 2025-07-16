@@ -81,7 +81,10 @@
     "share": "Compartilhar",
     "info": "Informação",
     "details": "Detalhes",
-    "summary": "Resumo"
+    "summary": "Resumo",
+    "confirm": "Confirmar",
+    "max": "Máximo",
+    "characters": "caracteres"
   },
   "nav": {
     "home": "Início",
@@ -164,24 +167,406 @@
     }
   },
   "results": {
-    "download": "Baixar PDF",
-    "exportCsv": "Exportar CSV",
-    "premiumOnly": "Apenas para premium",
-    "share": "Compartilhar",
-    "exportNotion": "Exportar para Notion",
-    "exportExcel": "Exportar Excel",
-    "exportPdf": "Exportar PDF",
-    "notion": "Notion",
-    "csv": "CSV",
-    "pdf": "PDF",
-    "excel": "Excel",
-    "notionExport": "Exportar para Notion",
-    "csvExport": "Exportar CSV",
-    "pdfExport": "Exportar PDF",
-    "excelExport": "Exportar Excel",
-    "notionExportInfo": "Exportação para Notion em breve",
-    "csvExportInfo": "Exportação para CSV em breve",
-    "pdfExportInfo": "Exportação para PDF em breve",
-    "excelExportInfo": "Exportação para Excel em breve"
+    "exampleAnalysisTitle": "Exemplo de Análise de Ideia",
+    "viability": "Viabilidade",
+    "status": {
+      "label": "Status"
+    },
+    "strengths": "Pontos Fortes",
+    "weaknesses": "Pontos Fracos",
+    "tabs": {
+      "summary": "Resumo",
+      "market": "Mercado",
+      "competitors": "Concorrentes",
+      "financial": "Financeiro",
+      "recommendations": "Recomendações"
+    },
+    "summaryTitle": "Resumo da Ideia",
+    "ideaDescription": "Descrição da Ideia",
+    "targetAudience": "Público-alvo",
+    "problemSolved": "Problema Resolvido",
+    "overallScore": "Pontuação Geral",
+    "scoreExplanation": "Explicação da Pontuação",
+    "keyStrengths": "Principais Pontos Fortes",
+    "keyWeaknesses": "Principais Pontos Fracos",
+    "swotAnalysis": "Análise SWOT",
+    "swot": {
+      "strengths": "Forças",
+      "weaknesses": "Fraquezas",
+      "opportunities": "Oportunidades",
+      "threats": "Ameaças"
+    },
+    "marketAnalysis": "Análise de Mercado",
+    "market": {
+      "size": "Tamanho do Mercado",
+      "audience": "Público-alvo",
+      "growth": "Crescimento"
+    },
+    "competitorAnalysis": "Análise de Concorrentes",
+    "competitors": "Concorrentes",
+    "differentials": "Diferenciais",
+    "financialAnalysis": "Análise Financeira",
+    "financial": {
+      "revenue": "Receita Estimada",
+      "investment": "Investimento Inicial",
+      "breakEven": "Ponto de Equilíbrio"
+    },
+    "recommendations": "Recomendações",
+    "nextSteps": "Próximos Passos",
+    "challenges": "Desafios",
+    "resources": "Recursos",
+    "wantAdvanced": "Quer uma análise mais detalhada?",
+    "tryAdvanced": "Experimente nossa Análise Avançada!"
+  },
+  "settings": {
+    "personalInfoDesc": "Personalize suas informações de perfil",
+    "avatarUpload": "Foto de perfil (clique para alterar)",
+    "saveAvatar": "Salvar nova foto",
+    "avatarUploadDesc": "Selecione uma imagem para seu avatar",
+    "avatarUploadTitle": "Selecione uma imagem para seu avatar",
+    "avatarUploadButton": "Salvar nova foto",
+    "avatarUploadError": "Erro ao fazer upload da foto de perfil",
+    "avatarUploadSuccess": "Foto de perfil atualizada com sucesso!",
+    "personalInfo": "Informações Pessoais",
+    "personalInfoTitle": "Informações Pessoais"
+  },
+  "terms": {
+    "title": "Termos de Serviço",
+    "lastUpdated": "Última atualização: {{date}}",
+    "acceptanceTitle": "1. Aceitação dos Termos",
+    "acceptanceContent": "Ao acessar ou usar nosso serviço, você concorda com estes Termos de Serviço. Caso não concorde, por favor, não utilize a plataforma.",
+    "usageTitle": "2. Uso do Serviço",
+    "usageItem1": "Utilize o serviço apenas para fins legais e de acordo com todas as leis aplicáveis.",
+    "usageItem2": "Não utilize o serviço para enviar conteúdo ofensivo, discriminatório ou ilegal.",
+    "usageItem3": "Exemplo: Não é permitido usar a plataforma para enviar spam ou coletar dados de outros usuários sem consentimento.",
+    "intellectualPropertyTitle": "3. Propriedade Intelectual",
+    "intellectualPropertyContent": "Todo o conteúdo, marcas e tecnologia pertencem à empresa ou seus licenciadores. É proibida a reprodução sem autorização.",
+    "userObligationsTitle": "4. Obrigações do Usuário",
+    "userObligationsItem1": "Fornecer informações verdadeiras e atualizadas.",
+    "userObligationsItem2": "Manter a confidencialidade de suas credenciais.",
+    "userObligationsItem3": "Exemplo: Caso identifique uso não autorizado de sua conta, notifique imediatamente o suporte.",
+    "paymentsTitle": "5. Pagamentos e Assinaturas",
+    "paymentsContent": "Os valores, formas de pagamento e política de reembolso estão detalhados na página de planos. Exemplo: Caso o pagamento não seja identificado, o acesso premium será suspenso.",
+    "cancellationTitle": "6. Cancelamento e Encerramento",
+    "cancellationContent": "Você pode cancelar sua conta a qualquer momento. Dados pessoais serão tratados conforme a Política de Privacidade.",
+    "limitationTitle": "7. Limitação de Responsabilidade",
+    "limitationContent": "Não nos responsabilizamos por danos indiretos, lucros cessantes ou perda de dados decorrentes do uso do serviço.",
+    "changesTitle": "8. Alterações nos Termos",
+    "changesContent": "Reservamo-nos o direito de modificar estes termos a qualquer momento. As alterações serão comunicadas nesta página.",
+    "contactTitle": "9. Contato e Solicitações de Dados",
+    "contactContent": "Para dúvidas, solicitações de acesso, retificação ou exclusão de dados, envie um e-mail para dpo@startupideia.com. Exemplo: Para solicitar uma cópia dos seus dados, envie seu nome completo e e-mail cadastrado.",
+    "privacyLink": "Veja também nossa Política de Privacidade."
+  },
+  "privacy": {
+    "title": "Política de Privacidade",
+    "lastUpdated": "Última atualização: {{date}}",
+    "section1Title": "1. Introdução",
+    "section1Content": "Esta política explica como coletamos, usamos, armazenamos e protegemos seus dados pessoais, em conformidade com a LGPD e GDPR.",
+    "dataCollectionTitle": "2. Coleta de Dados Pessoais",
+    "dataCollectionItem1": "Informações fornecidas por você: nome, e-mail, dados de pagamento.",
+    "dataCollectionItem2": "Dados coletados automaticamente: endereço IP, navegador, cookies.",
+    "dataCollectionItem3": "Exemplo: Ao criar uma conta, coletamos seu nome e e-mail para autenticação.",
+    "dataUsageTitle": "3. Uso das Informações",
+    "dataUsageContent": "Utilizamos seus dados para: (a) fornecer e melhorar nossos serviços; (b) enviar comunicações; (c) cumprir obrigações legais. Exemplo: Usamos seu e-mail para enviar notificações sobre sua conta.",
+    "dataSharingTitle": "4. Compartilhamento de Dados",
+    "dataSharingContent": "Não compartilhamos seus dados com terceiros, exceto: (a) para cumprimento legal; (b) com fornecedores essenciais (ex: processadores de pagamento). Exemplo: Dados de pagamento são compartilhados apenas com o provedor de pagamentos.",
+    "cookiesTitle": "5. Cookies e Tecnologias de Rastreamento",
+    "cookiesContent": "Utilizamos cookies para melhorar sua experiência. Você pode gerenciar suas preferências no navegador. Exemplo: Cookies de autenticação mantêm você logado.",
+    "userRightsTitle": "6. Direitos do Usuário",
+    "userRightsItem1": "Acesso: Você pode solicitar uma cópia dos seus dados.",
+    "userRightsItem2": "Exclusão: Você pode solicitar a exclusão dos seus dados pessoais.",
+    "userRightsItem3": "Portabilidade: Você pode solicitar a transferência dos seus dados para outro serviço.",
+    "securityTitle": "7. Segurança da Informação",
+    "securityContent": "Adotamos medidas técnicas e organizacionais para proteger seus dados. Exemplo: Dados sensíveis são criptografados em trânsito e repouso.",
+    "changesTitle": "8. Alterações nesta Política",
+    "changesContent": "Podemos atualizar esta política periodicamente. Notificaremos sobre mudanças relevantes.",
+    "contactTitle": "9. Contato do DPO",
+    "contactContent": "Para exercer seus direitos ou tirar dúvidas, envie e-mail para dpo@startupideia.com. Exemplo: Para solicitar exclusão de dados, envie seu nome e e-mail cadastrado.",
+    "termsLink": "Veja também nossos Termos de Serviço."
+  },
+  "aboutUs": {
+    "tagline": "Sobre a Startup Ideia",
+    "title": "Nossa missão é impulsionar ideias inovadoras",
+    "subtitle": "Ajudamos empreendedores a transformar ideias em negócios de sucesso, com tecnologia, criatividade e ética.",
+    "mission": {
+      "title": "Missão",
+      "description1": "Capacitar pessoas a validarem e lançarem ideias de negócio de forma ágil e segura.",
+      "description2": "Exemplo real: Já ajudamos mais de 500 startups a validar suas ideias com nossa plataforma."
+    },
+    "values": {
+      "title": "Nossos Valores",
+      "subtitle": "O que nos move todos os dias:",
+      "value1": {
+        "title": "Inovação",
+        "description": "Buscamos soluções criativas para desafios reais."
+      },
+      "value2": {
+        "title": "Colaboração",
+        "description": "Trabalhamos juntos com nossos clientes e parceiros."
+      },
+      "value3": {
+        "title": "Ética e Privacidade",
+        "description": "Respeitamos a privacidade e os dados dos usuários, seguindo LGPD/GDPR."
+      }
+    },
+    "team": {
+      "title": "Nosso Time",
+      "subtitle": "Conheça quem faz acontecer:",
+      "member1": {
+        "name": "Ana Silva",
+        "role": "CEO & Fundadora",
+        "bio": "Especialista em inovação e negócios digitais."
+      },
+      "member2": {
+        "name": "Carlos Souza",
+        "role": "CTO & Co-fundador",
+        "bio": "Apaixonado por tecnologia e segurança da informação."
+      }
+    }
+  },
+  "contact": {
+    "tagline": "Fale Conosco",
+    "title": "Entre em contato",
+    "subtitle": "Dúvidas, sugestões ou solicitações de dados? Estamos prontos para ajudar.",
+    "cards": {
+      "support": {
+        "title": "Suporte",
+        "description": "Atendimento para dúvidas técnicas e uso da plataforma."
+      },
+      "sales": {
+        "title": "Comercial",
+        "description": "Solicite uma demonstração ou proposta personalizada."
+      },
+      "office": {
+        "title": "Escritório",
+        "description": "Visite nossa sede ou envie correspondências."
+      }
+    },
+    "form": {
+      "title": "Envie sua mensagem",
+      "name": "Nome",
+      "namePlaceholder": "Seu nome completo",
+      "email": "E-mail",
+      "emailPlaceholder": "seu@email.com",
+      "subject": "Assunto",
+      "subjectPlaceholder": "Selecione o assunto",
+      "subjectOptions": {
+        "general": "Geral",
+        "support": "Suporte",
+        "sales": "Comercial",
+        "partnership": "Parcerias"
+      },
+      "message": "Mensagem",
+      "messagePlaceholder": "Descreva sua dúvida, sugestão ou solicitação de dados pessoais (ex: acesso, exclusão, portabilidade).",
+      "send": "Enviar mensagem",
+      "sending": "Enviando...",
+      "success": {
+        "title": "Mensagem enviada!",
+        "message": "Recebemos sua solicitação e responderemos em breve. Para solicitações de dados, responderemos em até 15 dias úteis, conforme LGPD."
+      },
+      "validation": {
+        "name": "Informe seu nome completo.",
+        "email": "Informe um e-mail válido.",
+        "subject": "Selecione um assunto.",
+        "message": "A mensagem deve ter pelo menos 10 caracteres."
+      }
+    }
+  },
+  "exampleResult": {
+    "title": "Exemplo de Análise de Ideia",
+    "ideaName": "Delivery de Pets",
+    "ideaSummary": "Um serviço de transporte especializado para levar animais de estimação com conforto e segurança.",
+    "marketPotential": "Potencial de mercado:",
+    "innovation": "Inovação:",
+    "viability": "Viabilidade:",
+    "insightsTitle": "Insights e Recomendações",
+    "insight1": "Mercado em crescimento com donos de pets cada vez mais exigentes.",
+    "insight2": "Diferencial: foco em bem-estar animal e logística personalizada.",
+    "loginToAnalyze": "Faça login para analisar sua ideia",
+    "registerFree": "Cadastre-se grátis",
+    
+    "advancedAnalysis": {
+      "title": "Análise Avançada",
+      "subtitle": "Receba uma análise gratuita, personalizada e descubra o potencial do seu negócio!",
+      "button": "Análise Avançada",
+      "lockedTitle": "Análise Avançada disponível apenas para ideias próprias!",
+      "lockedDesc": "Para acessar a análise avançada, analise sua própria ideia. É rápido, gratuito e você terá acesso a recomendações personalizadas!",
+      "analyzeMyIdea": "Analisar minha ideia",
+      "wantAdvanced": "Quer uma análise mais detalhada?",
+      "tryAdvanced": "Experimente nossa nova Análise Avançada, que inclui sugestão de nome, logotipo, análise de mercado detalhada e muito mais.",
+      "advancedAnalysisTitle": "Análise Avançada",
+      "advancedAnalysisDescription": "Experimente nossa nova Análise Avançada, que inclui sugestão de nome, logotipo, análise de mercado detalhada e muito mais.",
+      "advancedAnalysisButton": "Análise Avançada",
+      "advancedAnalysisLockedTitle": "Análise Avançada disponível apenas para ideias próprias!",
+      "advancedAnalysisLockedDesc": "Para acessar a análise avançada, analise sua própria ideia. É rápido, gratuito e você terá acesso a recomendações personalizadas!",
+      "advancedAnalysisAnalyzeMyIdea": "Analisar minha ideia",
+      "advancedAnalysisWantAdvanced": "Quer uma análise mais detalhada?",
+      "advancedAnalysisTryAdvanced": "Experimente nossa nova Análise Avançada, que inclui sugestão de nome, logotipo, análise de mercado detalhada e muito mais.",
+      "lockModalTitle": "Análise Avançada disponível apenas para ideias próprias!",
+      "lockModalDescription": "Para acessar a análise avançada, analise sua própria ideia. É rápido, gratuito e você terá acesso a recomendações personalizadas!",
+      "lockModalButton": "Analisar minha ideia"
+    },
+    "ideaForm": {
+      "ctaTitle": "Analise sua ideia agora!",
+      "ctaDesc": "Receba uma análise gratuita, personalizada e descubra o potencial do seu negócio!"
+    }
+  },
+  "header": {
+    "howItWorks": "Como funciona",
+    "benefits": "Benefícios",
+    "plans": "Planos",
+    "startNow": "Comece agora"
+  },
+  "credits": {
+    "confirmTitle": "Confirme o uso de créditos",
+    "confirmReanalyze": "Esta ação irá deduzir 1 crédito da sua conta. Deseja continuar?",
+    "confirmBasicAnalysis": "Esta ação irá deduzir 1 crédito da sua conta (exceto se for sua primeira análise gratuita). Deseja continuar?",
+    "confirmCompareIdeas": "Deseja usar créditos para comparar ideias?"
+  },
+  "footer": {
+    "platform": "Plataforma",
+    "howItWorks": "Como funciona",
+    "benefits": "Benefícios",
+    "plans": "Planos",
+    "api": "API",
+    "resources": "Recursos",
+    "blog": "Blog",
+    "guides": "Guias",
+    "successCases": "Casos de Sucesso",
+    "webinars": "Webinars",
+    "company": "Empresa",
+    "aboutUs": "Sobre nós",
+    "contact": "Contato",
+    "privacyPolicy": "Política de Privacidade",
+    "termsOfUse": "Termos de Uso",
+    "copyright": "© {{year}} Startup Ideia. Todos os direitos reservados.",
+    "description": "A Startup Ideia é a plataforma completa para validar, analisar e impulsionar negócios inovadores."
+  },
+  "ideas": {
+    "compare": {
+      "title": "Comparar Ideias",
+      "noIdeasSelected": "Nenhuma ideia selecionada para comparação.",
+      "addMoreIdeas": "Adicione mais ideias para comparar.",
+      "selectIdea": "Selecione uma ideia",
+      "button": "Comparar"
+    }
+  },
+  "advancedAnalysis": {
+    "button": "Análise Avançada",
+    "lockedTitle": "Desbloqueie a Análise Avançada",
+    "lockedDesc": "Faça upgrade para o plano Pro e acesse insights detalhados.",
+    "analyzeMyIdea": "Analisar Minha Ideia"
+  },
+  "ideaForm": {
+    "ctaTitle": "Pronto para explorar sua ideia?",
+    "ctaDesc": "Descreva sua ideia e receba uma análise completa.",
+    "title": "Análise de Negócio",
+    "subtitle": "Vamos analisar sua ideia de negócio",
+    "reanalyzeTitle": "Reanálise de Ideia",
+    "reanalyzeSubtitle": "Refine sua ideia para uma nova análise",
+    "step": {
+      "idea": "Descreva sua ideia",
+      "audience": "Público-alvo e mercado",
+      "competitors": "Concorrentes e diferenciais",
+      "budgetLocation": "Orçamento e localização"
+    },
+    "idea": {
+      "title": "Sua ideia",
+      "placeholder": "Descreva sua ideia aqui...",
+      "max": "Máximo",
+      "characters": "caracteres"
+    },
+    "audience": {
+      "title": "Quem seria seu público-alvo?",
+      "placeholder": "Descreva os clientes ideais para seu negócio..."
+    },
+    "problem": {
+      "title": "Qual problema essa ideia resolve?",
+      "placeholder": "Descreva o problema que seu negócio solucionaria..."
+    },
+    "location": {
+      "title": "Onde este negócio irá operar?",
+      "placeholder": "Selecione uma localização...",
+      "options": {
+        "brazil": "Brasil",
+        "usa": "Estados Unidos",
+        "eu": "União Europeia",
+        "uk": "Reino Unido",
+        "canada": "Canadá",
+        "australia": "Austrália",
+        "newzealand": "Nova Zelândia",
+        "japan": "Japão",
+        "china": "China",
+        "india": "Índia",
+        "global": "Global",
+        "other": "Outro"
+      }
+    },
+    "savingDraft": "Salvando...",
+    "saveAsDraft": "Salvar como rascunho",
+    "insufficientCredits": "Créditos insuficientes para análise",
+    "analysisError": "Erro ao analisar sua ideia. Tente novamente.",
+    "analysisSuccess": "Análise concluída com sucesso!",
+    "securityError": "Erro de segurança ao processar sua ideia",
+    "missingData": "Dados da análise incompletos. Entre em contato com o suporte.",
+    "loginRequired": "É necessário fazer login para analisar ideias",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "submit": "Enviar"
+  },
+  "hero": {
+    "title": "Valide sua <span>ideia</span> em <gradientSpan>negócio</gradientSpan>",
+    "trustedBy": "Confiado por inovadores, sonhadores e empreendedores",
+    "trustedByFallback": "Utilizado por +5.000 empreendedores",
+    "dashboard": {
+      "title": "Valide sua ideia em segundos",
+      "status": "Painel de ideias inteligente",
+      "marketAnalysis": "Análise de Mercado",
+      "inProgress": "Em progresso",
+      "financialViability": "Viabilidade Financeira",
+      "underReview": "Em análise",
+      "competitiveAnalysis": "Análise Competitiva",
+      "completed": "Concluída",
+      "accuracy": "Precisão",
+      "analyses": "Análises",
+      "average": "Média",
+      "aiPowered": "Com IA",
+      "verified": "Verificado"
+    },
+    "badges": {
+      "validation": "Validação instantânea",
+      "analysis": "Análise inteligente",
+      "insights": "Insights personalizados",
+      "planning": "Planejamento fácil",
+      "mobile": {
+        "validation": "Validação",
+        "analysis": "Análise",
+        "insights": "Insights",
+        "planning": "Planejamento"
+      }
+    },
+    "titleFallback": "Transforme sua <span>ideia</span> em um <gradientSpan>negócio validado</gradientSpan>",
+    "subtitle": "Nossa plataforma utiliza IA para analisar e validar sua ideia de negócio, fornecendo insights valiosos para o seu sucesso.",
+    "validateIdea": "Validar minha ideia",
+    "learnMore": "Saiba mais"
+  },
+  "howItWorks": {
+    "tagline": "Como funciona",
+    "step1": {
+      "title": "Descreva sua ideia",
+      "description": "Conte-nos o que você está pensando e o que deseja construir."
+    },
+    "step2": {
+      "title": "Nossa IA analisa",
+      "description": "A IA avalia a viabilidade, o mercado e pontos fortes e fracos."
+    },
+    "step3": {
+      "title": "Receba insights valiosos",
+      "description": "Veja os resultados da análise e sugestões para melhorar sua ideia."
+    },
+    "step4": {
+      "title": "Aprimore e compartilhe",
+      "description": "Ajuste com base no feedback e compartilhe com o mundo."
+    }
   }
 }

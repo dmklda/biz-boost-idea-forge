@@ -10,10 +10,21 @@ import CTA from "../components/CTA";
 import Footer from "../components/Footer";
 import { IntelligentRedirect } from "../components/onboarding/IntelligentRedirect";
 import { useMobileRouteProtection } from "../hooks/useMobileRouteProtection";
+import { useEffect } from "react";
 
 const Index = () => {
   // Protect mobile users from accessing landing page
   useMobileRouteProtection();
+
+  useEffect(() => {
+    const section = localStorage.getItem("scrollToSection");
+    if (section) {
+      setTimeout(() => {
+        document.getElementById(section)?.scrollIntoView({ behavior: "smooth" });
+        localStorage.removeItem("scrollToSection");
+      }, 400);
+    }
+  }, []);
 
   return (
     <IntelligentRedirect>

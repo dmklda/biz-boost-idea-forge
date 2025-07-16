@@ -23,6 +23,7 @@ export const AudienceStep = ({ formData, updateFormData, onNext, onPrev }: Audie
         </Label>
         <Textarea 
           id="audience"
+          aria-label={t('ideaForm.audience.title', 'Quem seria seu público-alvo?')}
           placeholder={t('ideaForm.audience.placeholder', 'Descreva os clientes ideais para seu negócio...')}
           className="mt-2 resize-none"
           rows={3}
@@ -37,6 +38,7 @@ export const AudienceStep = ({ formData, updateFormData, onNext, onPrev }: Audie
         </Label>
         <Textarea 
           id="problem"
+          aria-label={t('ideaForm.problem.title', 'Qual problema essa ideia resolve?')}
           placeholder={t('ideaForm.problem.placeholder', 'Descreva o problema que seu negócio solucionaria...')}
           className="mt-2 resize-none"
           rows={3}
@@ -53,7 +55,7 @@ export const AudienceStep = ({ formData, updateFormData, onNext, onPrev }: Audie
           type="button" 
           onClick={onNext}
           disabled={formData.audience.trim().length < 5 || formData.problem.trim().length < 5}
-          className="bg-brand-blue hover:bg-brand-blue/90"
+          className="bg-brand-blue hover:bg-brand-blue/90 text-white"
         >
           {t('common.next', 'Próximo')}
         </Button>

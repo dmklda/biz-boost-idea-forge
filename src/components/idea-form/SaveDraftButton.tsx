@@ -23,6 +23,7 @@ export const SaveDraftButton: React.FC = () => {
         onClick={saveAsDraft}
         disabled={isSavingDraft || !formData.idea.trim() || isAnalyzing}
         className="flex items-center gap-2"
+        aria-label={isSavingDraft ? t('ideaForm.savingDraft', 'Salvando...') : t('ideaForm.saveAsDraft', 'Salvar como rascunho')}
       >
         <SaveIcon className="w-4 h-4" />
         {isSavingDraft

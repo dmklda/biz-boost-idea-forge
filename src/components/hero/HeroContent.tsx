@@ -11,7 +11,7 @@ const HeroContent = () => {
   const titleWithSpans = t('hero.title')
     ?.replace('<span>', '<span class="text-gradient-premium font-bold">')
     ?.replace('<gradientSpan>', '<span class="bg-gradient-to-r from-brand-blue via-brand-purple to-indigo-400 bg-clip-text text-transparent">') || 
-    'Transforme sua <span>ideia</span> em um <gradientSpan>negócio validado</gradientSpan>';
+    t('hero.titleFallback', 'Transforme sua <span>ideia</span> em um <gradientSpan>negócio validado</gradientSpan>');
 
   return (
     <div className="animate-blur-in">
@@ -23,7 +23,7 @@ const HeroContent = () => {
       />
       
       <p className="text-lg text-gray-700 dark:text-gray-300 mb-8 font-inter max-w-xl">
-        {t('hero.subtitle') || "Nossa plataforma utiliza IA para analisar e validar sua ideia de negócio, fornecendo insights valiosos para o seu sucesso."}
+        {t('hero.subtitle', 'Nossa plataforma utiliza IA para analisar e validar sua ideia de negócio, fornecendo insights valiosos para o seu sucesso.')}
       </p>
       
       <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -35,7 +35,7 @@ const HeroContent = () => {
             if (formElement) formElement.scrollIntoView({ behavior: 'smooth' });
           }}
         >
-          {t('hero.validateIdea') || "Validar minha ideia"} <ArrowRight className="ml-2 h-5 w-5" />
+          {t('hero.validateIdea', 'Validar minha ideia')} <ArrowRight className="ml-2 h-5 w-5" />
         </Button>
         <Button 
           size="lg" 
@@ -46,7 +46,7 @@ const HeroContent = () => {
             if (howItWorksElement) howItWorksElement.scrollIntoView({ behavior: 'smooth' });
           }}
         >
-          {t('hero.learnMore') || "Saiba mais"}
+          {t('hero.learnMore', 'Saiba mais')}
         </Button>
       </div>
 

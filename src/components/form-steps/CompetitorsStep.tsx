@@ -26,6 +26,7 @@ export const CompetitorsStep = ({ formData, updateFormData, onNext, onPrev }: Co
           value={formData.hasCompetitors}
           onValueChange={(value) => updateFormData("hasCompetitors", value)}
           className="flex flex-col space-y-2"
+          aria-label={t('ideaForm.competitors.title')}
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="sim" id="competitors-yes" />
@@ -48,6 +49,7 @@ export const CompetitorsStep = ({ formData, updateFormData, onNext, onPrev }: Co
         </Label>
         <Textarea 
           id="monetization"
+          aria-label={t('ideaForm.monetization.title')}
           placeholder={t('ideaForm.monetization.placeholder')}
           className="mt-2 resize-none"
           rows={3}
@@ -65,7 +67,7 @@ export const CompetitorsStep = ({ formData, updateFormData, onNext, onPrev }: Co
           type="button"
           onClick={onNext}
           disabled={!formData.hasCompetitors || formData.monetization.trim().length < 5}
-          className="bg-brand-green hover:bg-brand-green/90"
+          className="bg-brand-green hover:bg-brand-green/90 text-white"
         >
           {t('common.next')}
         </Button>

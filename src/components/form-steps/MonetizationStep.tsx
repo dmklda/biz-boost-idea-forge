@@ -23,6 +23,7 @@ export const MonetizationStep = ({ formData, updateFormData, onNext, onPrev }: M
         </Label>
         <Textarea 
           id="monetization"
+          aria-label={t('ideaForm.monetization.title')}
           placeholder={t('ideaForm.monetization.placeholder')}
           className="mt-2 resize-none"
           rows={3}
@@ -39,7 +40,7 @@ export const MonetizationStep = ({ formData, updateFormData, onNext, onPrev }: M
           type="button" 
           onClick={onNext}
           disabled={formData.monetization.trim().length < 5}
-          className="bg-brand-blue hover:bg-brand-blue/90"
+          className="bg-brand-blue hover:bg-brand-blue/90 text-white"
         >
           {t('common.next')}
         </Button>

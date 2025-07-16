@@ -17,22 +17,24 @@ export const IdeaStep = ({ formData, updateFormData, onNext }: IdeaStepProps) =>
   return (
     <div className="space-y-4">
       <div>
-        <Label htmlFor="idea" className="text-base font-medium">
-          {t('ideaForm.idea.title')} ({t('common.max')} 300 {t('common.characters')})
+        <Label htmlFor="idea" className="font-semibold">
+          {t('ideaForm.idea.title', 'Sua ideia')}
         </Label>
-        <Textarea 
+        <Textarea
           id="idea"
-          placeholder={t('ideaForm.idea.placeholder')}
-          className="mt-2 resize-none border-gray-200 dark:border-gray-700 focus:border-brand-blue focus:ring-brand-blue/20"
-          rows={4}
-          maxLength={300}
+          aria-label={t('ideaForm.idea.title', 'Sua ideia')}
           value={formData.idea}
           onChange={(e) => updateFormData("idea", e.target.value)}
-          required
+          placeholder={t('ideaForm.idea.placeholder', 'Descreva sua ideia aqui...')}
+          className="resize-none min-h-[100px]"
+          maxLength={300}
         />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          {formData.idea.length}/300 {t('common.characters')}
-        </p>
+        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+          <span>
+            {t('ideaForm.idea.max', 'Máximo')} 300 {t('ideaForm.idea.characters', 'caracteres')}
+          </span>
+          <span>{formData.idea.length}/300</span>
+        </div>
       </div>
       <div className="flex justify-end">
         <Button 
@@ -41,7 +43,7 @@ export const IdeaStep = ({ formData, updateFormData, onNext }: IdeaStepProps) =>
           disabled={formData.idea.trim().length < 10}
           className="bg-brand-blue hover:bg-brand-blue/90 text-white"
         >
-          {t('common.next')}
+          {t('common.next', 'Próximo')}
         </Button>
       </div>
     </div>

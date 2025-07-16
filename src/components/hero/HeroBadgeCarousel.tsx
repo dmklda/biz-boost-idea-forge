@@ -10,18 +10,18 @@ const HeroBadgeCarousel = () => {
   const isMobile = useIsMobile();
   
   const badges = [
-    t('hero.badges.validation'),
-    t('hero.badges.analysis'),
-    t('hero.badges.insights'),
-    t('hero.badges.planning')
+    t('hero.badges.validation', 'Validação instantânea'),
+    t('hero.badges.analysis', 'Análise inteligente'),
+    t('hero.badges.insights', 'Insights personalizados'),
+    t('hero.badges.planning', 'Planejamento fácil')
   ];
 
   // Versões mais curtas para mobile
   const mobilesBadges = [
-    t('hero.badges.mobile.validation'),
-    t('hero.badges.mobile.analysis'),
-    t('hero.badges.mobile.insights'),
-    t('hero.badges.mobile.planning')
+    t('hero.badges.mobile.validation', 'Validação'),
+    t('hero.badges.mobile.analysis', 'Análise'),
+    t('hero.badges.mobile.insights', 'Insights'),
+    t('hero.badges.mobile.planning', 'Planejamento')
   ];
   
   useEffect(() => {

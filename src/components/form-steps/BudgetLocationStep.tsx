@@ -25,19 +25,19 @@ export const BudgetLocationStep = ({
   const { t } = useTranslation();
   const [error, setError] = useState("");
   
-  const locations = [
-    "Brasil",
-    "Estados Unidos",
-    "União Europeia",
-    "Reino Unido",
-    "Canadá",
-    "Austrália",
-    "Nova Zelândia",
-    "Japão",
-    "China",
-    "Índia",
-    "Global",
-    "Outro"
+  const locationOptions = [
+    { key: "brazil", value: "Brasil" },
+    { key: "usa", value: "Estados Unidos" },
+    { key: "eu", value: "União Europeia" },
+    { key: "uk", value: "Reino Unido" },
+    { key: "canada", value: "Canadá" },
+    { key: "australia", value: "Austrália" },
+    { key: "newzealand", value: "Nova Zelândia" },
+    { key: "japan", value: "Japão" },
+    { key: "china", value: "China" },
+    { key: "india", value: "Índia" },
+    { key: "global", value: "Global" },
+    { key: "other", value: "Outro" },
   ];
   
   const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,9 +97,9 @@ export const BudgetLocationStep = ({
             <SelectValue placeholder={t('ideaForm.location.placeholder')} />
           </SelectTrigger>
           <SelectContent>
-            {locations.map((location) => (
-              <SelectItem key={location} value={location}>
-                {location}
+            {locationOptions.map((opt) => (
+              <SelectItem key={opt.key} value={t(`ideaForm.location.options.${opt.key}`, opt.value)}>
+                {t(`ideaForm.location.options.${opt.key}`, opt.value)}
               </SelectItem>
             ))}
           </SelectContent>

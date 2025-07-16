@@ -94,16 +94,16 @@ const Header = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2 hover:bg-accent">
-                  <Avatar className="h-8 w-8">
+                  <Avatar className="h-8 w-8 md:h-10 md:w-10 flex items-center justify-center">
                     {authState.user?.photo_url && (
-                      <AvatarImage src={authState.user.photo_url} alt={authState.user.name} />
+                      <AvatarImage src={authState.user.photo_url} alt={authState.user.display_name || authState.user.name} />
                     )}
                     <AvatarFallback className="bg-gradient-to-br from-[#00BFFF] to-[#8F00FF] text-white">
-                      {authState.user?.name.charAt(0)}
+                      {(authState.user?.display_name || authState.user?.name)?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="hidden md:flex flex-col items-start">
-                    <span className="text-sm">{authState.user?.name}</span>
+                    <span className="text-sm">{authState.user?.display_name || authState.user?.name}</span>
                     <div className="text-xs text-muted-foreground">
                       {authState.user?.plan === "free" ? "Plano Free" : "Plano Premium"} • Nível {userLevel?.current_level || 1}
                     </div>
@@ -113,7 +113,7 @@ const Header = () => {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
                   <div className="flex flex-col">
-                    <span>{authState.user?.name}</span>
+                    <span>{authState.user?.display_name || authState.user?.name}</span>
                     <span className="text-xs text-muted-foreground font-normal">
                       {authState.user?.plan === "free" ? "Plano Free" : "Plano Premium"} • Nível {userLevel?.current_level || 1}
                     </span>
@@ -176,12 +176,12 @@ const Header = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="p-0 h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
+                  <Avatar className="h-8 w-8 md:h-10 md:w-10 flex items-center justify-center">
                     {authState.user?.photo_url && (
-                      <AvatarImage src={authState.user.photo_url} alt={authState.user.name} />
+                      <AvatarImage src={authState.user.photo_url} alt={authState.user.display_name || authState.user.name} />
                     )}
                     <AvatarFallback className="bg-gradient-to-br from-[#00BFFF] to-[#8F00FF] text-white">
-                      {authState.user?.name.charAt(0)}
+                      {(authState.user?.display_name || authState.user?.name)?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -189,7 +189,7 @@ const Header = () => {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
                   <div className="flex flex-col">
-                    <span>{authState.user?.name}</span>
+                    <span>{authState.user?.display_name || authState.user?.name}</span>
                     <span className="text-xs text-muted-foreground font-normal">
                       {authState.user?.plan === "free" ? "Plano Free" : "Plano Premium"} • Nível {userLevel?.current_level || 1}
                     </span>

@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useIdeasData } from "@/components/ideas";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const DashboardLayout = () => {
   // Extract both authState and logout function
@@ -218,25 +219,31 @@ const DashboardLayout = () => {
               {!isMobile && <ThemeToggle />}
               
               <div className="flex items-center gap-2">
+                {/* Nome e plano (mantém o layout do dashboard) */}
                 {!isMobile && <div className="text-sm hidden md:block">
-                    <span className="font-medium">{authState.user?.name}</span>
+                    <span className="font-medium">{authState.user?.display_name || authState.user?.name}</span>
                     <div className="text-xs text-muted-foreground">
                       {authState.user?.plan === "free" ? "Plano Free" : "Plano Premium"} • Nível {userLevel?.current_level || 1}
                     </div>
                   </div>}
-                
+                {/* Avatar consistente com landing */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="p-0 h-8 w-8 rounded-full">
-                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#00BFFF] to-[#8F00FF] flex items-center justify-center text-white font-bold">
-                        {authState.user?.name.charAt(0)}
-                      </div>
+                    <Button variant="ghost" size="icon" className="p-0 h-8 w-8 md:h-10 md:w-10 rounded-full">
+                      <Avatar className="h-8 w-8 md:h-10 md:w-10 flex items-center justify-center">
+                        {authState.user?.photo_url && (
+                          <AvatarImage src={authState.user.photo_url} alt={authState.user.display_name || authState.user.name} />
+                        )}
+                        <AvatarFallback className="bg-gradient-to-br from-[#00BFFF] to-[#8F00FF] text-white">
+                          {(authState.user?.display_name || authState.user?.name)?.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel>
                       <div className="flex flex-col">
-                        <span>{authState.user?.name || ""}</span>
+                        <span>{authState.user?.display_name || authState.user?.name}</span>
                         <span className="text-xs text-muted-foreground font-normal">
                           {authState.user?.plan === "free" ? "Plano Free" : "Plano Premium"} • Nível {userLevel?.current_level || 1}
                         </span>

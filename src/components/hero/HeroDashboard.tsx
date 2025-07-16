@@ -33,8 +33,8 @@ const HeroDashboard = () => {
                     <div className="h-4 w-4 bg-gradient-to-br from-brand-purple to-indigo-500 rounded-full"></div>
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium">Análise de Mercado</h4>
-                    <p className="text-xs text-muted-foreground">Em progresso</p>
+                    <h4 className="text-sm font-medium">{t('hero.dashboard.marketAnalysis', 'Análise de Mercado')}</h4>
+                    <p className="text-xs text-muted-foreground">{t('hero.dashboard.inProgress', 'Em progresso')}</p>
                   </div>
                 </div>
                 <span className="text-sm font-medium">85%</span>
@@ -51,8 +51,8 @@ const HeroDashboard = () => {
                     <div className="h-4 w-4 bg-gradient-to-br from-brand-blue to-blue-500 rounded-full"></div>
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium">Viabilidade Financeira</h4>
-                    <p className="text-xs text-muted-foreground">Em análise</p>
+                    <h4 className="text-sm font-medium">{t('hero.dashboard.financialViability', 'Viabilidade Financeira')}</h4>
+                    <p className="text-xs text-muted-foreground">{t('hero.dashboard.underReview', 'Em análise')}</p>
                   </div>
                 </div>
                 <span className="text-sm font-medium">62%</span>
@@ -69,8 +69,8 @@ const HeroDashboard = () => {
                     <div className="h-4 w-4 bg-gradient-to-br from-purple-500 to-fuchsia-500 rounded-full"></div>
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium">Análise Competitiva</h4>
-                    <p className="text-xs text-muted-foreground">Concluída</p>
+                    <h4 className="text-sm font-medium">{t('hero.dashboard.competitiveAnalysis', 'Análise Competitiva')}</h4>
+                    <p className="text-xs text-muted-foreground">{t('hero.dashboard.completed', 'Concluída')}</p>
                   </div>
                 </div>
                 <span className="text-sm font-medium">100%</span>
@@ -84,15 +84,15 @@ const HeroDashboard = () => {
           <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-100/10 dark:border-gray-700/30">
             <div className="text-center">
               <div className="text-2xl font-semibold text-gradient-premium mb-1">92%</div>
-              <div className="text-xs text-muted-foreground">Precisão</div>
+              <div className="text-xs text-muted-foreground">{t('hero.dashboard.accuracy', 'Precisão')}</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-semibold text-gradient-premium mb-1">15k+</div>
-              <div className="text-xs text-muted-foreground">Análises</div>
+              <div className="text-xs text-muted-foreground">{t('hero.dashboard.analyses', 'Análises')}</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-semibold text-gradient-premium mb-1">24h</div>
-              <div className="text-xs text-muted-foreground">Média</div>
+              <div className="text-xs text-muted-foreground">{t('hero.dashboard.average', 'Média')}</div>
             </div>
           </div>
         </div>

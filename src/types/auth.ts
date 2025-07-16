@@ -2,6 +2,8 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  surname?: string; // Novo campo
+  display_name?: string; // Novo campo
   plan: 'free' | 'basic' | 'pro' | 'enterprise';
   credits: number;
   createdAt: string;

@@ -24,15 +24,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between mb-16">
             <div className="md:w-1/3 mb-10 md:mb-0 pr-4">
               <div className="flex items-center mb-6">
-                <div className="relative mr-3">
-                  <div className="absolute inset-0 bg-brand-purple/20 blur-md rounded-full"></div>
-                  <div className="bg-gradient-to-br from-brand-purple to-indigo-600 w-10 h-10 rounded-full flex items-center justify-center relative">
-                    <Rocket className="text-white h-5 w-5" />
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold bg-gradient-to-r from-brand-blue via-brand-purple to-indigo-400 bg-clip-text text-transparent">
-                  Startupideia
-                </h3>
+                <img src="/lovable-uploads/c2fc1a69-35f0-445f-9e1b-fef53f0f8c8d.png" alt="Startup Ideia Logo" className="h-8 md:h-8 w-auto mr-3" />
               </div>
               <p className="text-gray-400 mb-6 leading-relaxed">
                 {t('footer.description')}
@@ -58,14 +50,38 @@ const Footer = () => {
                 <h4 className="font-semibold text-lg mb-6 text-white/90">{t('footer.platform')}</h4>
                 <ul className="space-y-4">
                   <li>
-                    <Link to="/como-funciona" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <a
+                      href="#como-funciona"
+                      className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex"
+                      onClick={e => {
+                        e.preventDefault();
+                        if (window.location.pathname === "/") {
+                          document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" });
+                        } else {
+                          localStorage.setItem("scrollToSection", "como-funciona");
+                          window.location.href = "/";
+                        }
+                      }}
+                    >
                       {t('footer.howItWorks')}
-                    </Link>
+                    </a>
                   </li>
                   <li>
-                    <Link to="/beneficios" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <a
+                      href="#beneficios"
+                      className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex"
+                      onClick={e => {
+                        e.preventDefault();
+                        if (window.location.pathname === "/") {
+                          document.getElementById("beneficios")?.scrollIntoView({ behavior: "smooth" });
+                        } else {
+                          localStorage.setItem("scrollToSection", "beneficios");
+                          window.location.href = "/";
+                        }
+                      }}
+                    >
                       {t('footer.benefits')}
-                    </Link>
+                    </a>
                   </li>
                   <li>
                     <Link to="/planos" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
@@ -110,22 +126,22 @@ const Footer = () => {
                 <h4 className="font-semibold text-lg mb-6 text-white/90">{t('footer.company')}</h4>
                 <ul className="space-y-4">
                   <li>
-                    <Link to="/empresa/sobre-nos" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/company/AboutUsPage" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.aboutUs')}
                     </Link>
                   </li>
                   <li>
-                    <Link to="/empresa/contato" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/company/ContactPage" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.contact')}
                     </Link>
                   </li>
                   <li>
-                    <Link to="/empresa/politica-de-privacidade" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/company/PrivacyPolicyPage" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.privacyPolicy')}
                     </Link>
                   </li>
                   <li>
-                    <Link to="/empresa/termos-de-uso" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
+                    <Link to="/company/TermsOfUsePage" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-flex">
                       {t('footer.termsOfUse')}
                     </Link>
                   </li>
@@ -138,9 +154,9 @@ const Footer = () => {
             <div className="flex flex-col md:flex-row justify-between items-center">
               <p>&copy; {currentYear} Startupideia. {t('footer.copyright')}</p>
               <div className="mt-4 md:mt-0 flex gap-6">
-                <Link to="/empresa/politica-de-privacidade" className="hover:text-white transition-colors">{t('footer.privacyPolicy')}</Link>
+                <Link to="/company/PrivacyPolicyPage" className="hover:text-white transition-colors">{t('footer.privacyPolicy')}</Link>
                 <span className="hidden md:inline">|</span>
-                <Link to="/empresa/termos-de-uso" className="hover:text-white transition-colors">{t('footer.termsOfUse')}</Link>
+                <Link to="/company/TermsOfUsePage" className="hover:text-white transition-colors">{t('footer.termsOfUse')}</Link>
               </div>
             </div>
           </div>

@@ -1,81 +1,61 @@
-
 import { useTranslation } from "react-i18next";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const PrivacyPolicyPage = () => {
   const { t } = useTranslation();
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-background/95 relative overflow-hidden">
-      {/* Background element */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-purple/5 via-transparent to-transparent pointer-events-none"></div>
-      <div className="absolute inset-0 bg-mesh-pattern opacity-10 pointer-events-none"></div>
-      
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 pt-32 pb-16">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="inline-flex h-6 items-center rounded-full bg-brand-purple/20 px-3 text-sm text-brand-purple">
-              {t("privacyPolicy.tagline")}
-            </div>
-          </div>
-          
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">{t("privacyPolicy.title")}</h1>
-          <p className="text-lg text-muted-foreground mb-8">{t("privacyPolicy.lastUpdated")}: May 1, 2025</p>
-          
-          <div className="prose prose-lg max-w-none dark:prose-invert">
-            <p>{t("privacyPolicy.introduction")}</p>
-            
-            <h2>{t("privacyPolicy.sections.dataCollection.title")}</h2>
-            <p>{t("privacyPolicy.sections.dataCollection.content1")}</p>
-            <p>{t("privacyPolicy.sections.dataCollection.content2")}</p>
-            <ul>
-              <li>{t("privacyPolicy.sections.dataCollection.items.item1")}</li>
-              <li>{t("privacyPolicy.sections.dataCollection.items.item2")}</li>
-              <li>{t("privacyPolicy.sections.dataCollection.items.item3")}</li>
-              <li>{t("privacyPolicy.sections.dataCollection.items.item4")}</li>
-              <li>{t("privacyPolicy.sections.dataCollection.items.item5")}</li>
-            </ul>
-            
-            <h2>{t("privacyPolicy.sections.useOfData.title")}</h2>
-            <p>{t("privacyPolicy.sections.useOfData.content1")}</p>
-            <ul>
-              <li>{t("privacyPolicy.sections.useOfData.items.item1")}</li>
-              <li>{t("privacyPolicy.sections.useOfData.items.item2")}</li>
-              <li>{t("privacyPolicy.sections.useOfData.items.item3")}</li>
-              <li>{t("privacyPolicy.sections.useOfData.items.item4")}</li>
-              <li>{t("privacyPolicy.sections.useOfData.items.item5")}</li>
-            </ul>
-            
-            <h2>{t("privacyPolicy.sections.dataSecurity.title")}</h2>
-            <p>{t("privacyPolicy.sections.dataSecurity.content1")}</p>
-            <p>{t("privacyPolicy.sections.dataSecurity.content2")}</p>
-            
-            <h2>{t("privacyPolicy.sections.thirdPartyServices.title")}</h2>
-            <p>{t("privacyPolicy.sections.thirdPartyServices.content1")}</p>
-            <p>{t("privacyPolicy.sections.thirdPartyServices.content2")}</p>
-            
-            <h2>{t("privacyPolicy.sections.cookies.title")}</h2>
-            <p>{t("privacyPolicy.sections.cookies.content1")}</p>
-            <p>{t("privacyPolicy.sections.cookies.content2")}</p>
-            
-            <h2>{t("privacyPolicy.sections.userRights.title")}</h2>
-            <p>{t("privacyPolicy.sections.userRights.content")}</p>
-            <ul>
-              <li>{t("privacyPolicy.sections.userRights.items.item1")}</li>
-              <li>{t("privacyPolicy.sections.userRights.items.item2")}</li>
-              <li>{t("privacyPolicy.sections.userRights.items.item3")}</li>
-              <li>{t("privacyPolicy.sections.userRights.items.item4")}</li>
-              <li>{t("privacyPolicy.sections.userRights.items.item5")}</li>
-            </ul>
-            
-            <h2>{t("privacyPolicy.sections.changes.title")}</h2>
-            <p>{t("privacyPolicy.sections.changes.content")}</p>
-            
-            <h2>{t("privacyPolicy.sections.contact.title")}</h2>
-            <p>{t("privacyPolicy.sections.contact.content")}</p>
-          </div>
+      <main className="flex-1 container mx-auto px-4 py-12 max-w-3xl pt-20">
+        <h1 className="text-3xl font-bold mb-4">{t('privacy.title')}</h1>
+        <p className="text-muted-foreground mb-2 text-sm">{t('privacy.lastUpdated', { date: '2024-05-20' })}</p>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('privacy.section1Title')}</h2>
+          <p>{t('privacy.section1Content')}</p>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('privacy.dataCollectionTitle')}</h2>
+          <ul className="list-disc ml-6 text-muted-foreground">
+            <li>{t('privacy.dataCollectionItem1')}</li>
+            <li>{t('privacy.dataCollectionItem2')}</li>
+            <li>{t('privacy.dataCollectionItem3')}</li>
+          </ul>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('privacy.dataUsageTitle')}</h2>
+          <p>{t('privacy.dataUsageContent')}</p>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('privacy.dataSharingTitle')}</h2>
+          <p>{t('privacy.dataSharingContent')}</p>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('privacy.cookiesTitle')}</h2>
+          <p>{t('privacy.cookiesContent')}</p>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('privacy.userRightsTitle')}</h2>
+          <ul className="list-disc ml-6 text-muted-foreground">
+            <li>{t('privacy.userRightsItem1')}</li>
+            <li>{t('privacy.userRightsItem2')}</li>
+            <li>{t('privacy.userRightsItem3')}</li>
+          </ul>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('privacy.securityTitle')}</h2>
+          <p>{t('privacy.securityContent')}</p>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('privacy.changesTitle')}</h2>
+          <p>{t('privacy.changesContent')}</p>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">{t('privacy.contactTitle')}</h2>
+          <p>{t('privacy.contactContent')}</p>
+        </section>
+        <div className="mt-8">
+          <a href="/company/TermsOfUsePage" className="text-brand-purple underline">{t('privacy.termsLink')}</a>
         </div>
       </main>
       <Footer />

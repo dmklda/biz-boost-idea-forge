@@ -49,6 +49,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                   id: session.user.id,
                   email: session.user.email || '',
                   name: profile.name,
+                  surname: profile.surname, // novo campo
+                  display_name: profile.display_name, // novo campo
                   plan: profile.plan as User['plan'],
                   credits: profile.credits,
                   createdAt: profile.created_at,
@@ -84,6 +86,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     id: session.user.id,
                     email: session.user.email || '',
                     name: profile.name,
+                    surname: profile.surname, // novo campo
+                    display_name: profile.display_name, // novo campo
                     plan: profile.plan as User['plan'],
                     credits: profile.credits,
                     createdAt: profile.created_at,
@@ -137,6 +141,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         id: data.user.id,
         email: data.user.email || '',
         name: profile.name,
+        surname: profile.surname, // novo campo
+        display_name: profile.display_name, // novo campo
         plan: profile.plan as User['plan'],
         credits: profile.credits,
         createdAt: profile.created_at,
@@ -170,24 +176,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (error) throw new Error(error.message);
-      
       if (!data.session || !data.user) {
         throw new Error("Registro falhou. Tente novamente.");
       }
-      
-      // O trigger no Supabase criará automaticamente o perfil do usuário
-      
+
+      // Atualizar o perfil com os campos extras
+      await supabase.from('profiles').update({
+        name: credentials.name,
+        surname: credentials.surname,
+        display_name: credentials.display_name
+      }).eq('id', data.user.id);
+
       // Criar objeto de usuário para retornar
       const user: User = {
         id: data.user.id,
         email: data.user.email || '',
         name: credentials.name,
+        surname: credentials.surname,
+        display_name: credentials.display_name,
         plan: 'free',
         credits: 3, // Os créditos iniciais definidos no perfil
         createdAt: new Date().toISOString(),
         first_analysis_done: false
       };
-      
+
       return user;
     } catch (error) {
       console.error("Register error:", error);

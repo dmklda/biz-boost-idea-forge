@@ -19,7 +19,7 @@ const HeroAvatars = () => {
         {trustAvatars.map((avatar, index) => (
           <Avatar 
             key={index} 
-            className="border-2 border-background dark:border-gray-900 w-8 h-8 transition-transform hover:translate-y-[-2px] hover:scale-110"
+            className="border-2 border-background dark:border-gray-900 w-8 h-8 md:w-10 md:h-10 transition-transform hover:translate-y-[-2px] hover:scale-110"
           >
             <AvatarImage src={avatar.src} alt={avatar.name} />
             <AvatarFallback>{avatar.name[0]}</AvatarFallback>
@@ -32,7 +32,7 @@ const HeroAvatars = () => {
             <Star key={star} className="w-4 h-4 fill-brand-purple text-brand-purple" />
           ))}
         </div>
-        <span className="ml-2 text-sm text-muted-foreground">{t('hero.trustedBy') || "Utilizado por +5.000 empreendedores"}</span>
+        <span className="ml-2 text-sm text-muted-foreground">{t('hero.trustedBy', t('hero.trustedByFallback', 'Utilizado por +5.000 empreendedores'))}</span>
       </div>
     </div>
   );

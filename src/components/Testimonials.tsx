@@ -78,7 +78,7 @@ const Testimonials = () => {
                   <p className="text-foreground mb-8 flex-grow text-lg">{testimonial.quote}</p>
                   
                   <div className="flex items-center mt-auto">
-                    <Avatar className="h-12 w-12 mr-4 border-2 border-brand-purple/30">
+                    <Avatar className="h-12 w-12 md:h-14 md:w-14 mr-4 border-2 border-brand-purple/30">
                       <AvatarImage src={testimonial.avatar} alt={testimonial.author} />
                       <AvatarFallback className="bg-brand-purple/20 text-brand-purple">
                         {testimonial.author.charAt(0)}
