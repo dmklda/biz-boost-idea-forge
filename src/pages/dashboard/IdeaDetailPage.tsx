@@ -13,6 +13,17 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "@/components/ui/sonner";
 import { FavoriteButton, TagsSelector } from "@/components/ideas";
 import { AdvancedAnalysisModal } from "@/components/advanced-analysis";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel
+} from "@/components/ui/alert-dialog";
 
 const IdeaDetailPage = () => {
   const { t } = useTranslation();
@@ -25,6 +36,8 @@ const IdeaDetailPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [showAdvancedAnalysis, setShowAdvancedAnalysis] = useState(false);
   const isMobile = useIsMobile();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   
   useEffect(() => {
     const fetchIdeaDetails = async () => {
@@ -119,8 +132,11 @@ const IdeaDetailPage = () => {
   };
   
   const handleDelete = async () => {
-    if (!confirm("Tem certeza que deseja excluir esta ideia?")) return;
+    setShowDeleteDialog(true);
+  };
 
+  const confirmDelete = async () => {
+    setDeleting(true);
     try {
       const { error } = await supabase
         .from('ideas')
@@ -130,11 +146,14 @@ const IdeaDetailPage = () => {
 
       if (error) throw error;
 
-      toast.success("Ideia excluída com sucesso");
-      navigate("/dashboard");
+      toast.success(t('ideas.deleted', 'Ideia excluída com sucesso'));
+      navigate("/dashboard/ideias");
     } catch (error) {
       console.error("Error deleting idea:", error);
-      toast.error("Erro ao excluir ideia");
+      toast.error(t('ideas.deleteError', 'Erro ao excluir ideia'));
+    } finally {
+      setDeleting(false);
+      setShowDeleteDialog(false);
     }
   };
 
@@ -634,6 +653,24 @@ const IdeaDetailPage = () => {
         onOpenChange={setShowAdvancedAnalysis}
         ideaId={id!}
       />
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('ideas.deleteTitle', 'Excluir Ideia')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('ideas.deleteConfirm', 'Tem certeza que deseja excluir esta ideia? Esta ação não pode ser desfeita.')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>
+              {t('common.cancel', 'Cancelar')}
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} disabled={deleting}>
+              {deleting ? t('common.deleting', 'Excluindo...') : t('common.confirm', 'Confirmar')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
