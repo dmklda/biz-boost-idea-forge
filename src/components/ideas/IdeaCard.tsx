@@ -40,6 +40,11 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
     setIsCompareModalOpen(true);
   };
 
+  const handleViewDetailsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/dashboard/ideias/${idea.id}`);
+  };
+
   return (
     <>
       <Card className="border shadow-sm hover:shadow-md transition-shadow cursor-pointer h-full flex flex-col">
@@ -79,36 +84,33 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
             </div>
           )}
         </CardContent>
-        <CardFooter className="pt-0 pb-4 px-4 flex flex-wrap gap-2 justify-end">
+        <CardFooter className="pt-0 pb-4 px-4 flex flex-row flex-wrap items-center justify-center gap-1 sm:gap-2">
           <Button 
             variant="ghost" 
             size="sm" 
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground flex items-center"
             onClick={handleEditClick}
           >
             <Edit className="h-4 w-4 mr-1" />
-            {t('common.edit', "Editar")}
+            <span className="hidden md:inline">{t('common.edit', "Editar")}</span>
           </Button>
           <Button 
             variant="ghost" 
             size="sm" 
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground flex items-center"
             onClick={handleCompareClick}
           >
             <FileText className="h-4 w-4 mr-1" />
-            {t('ideas.compare.button', "Comparar")}
+            <span className="hidden md:inline">{t('ideas.compare.button', "Comparar")}</span>
           </Button>
           <Button 
             variant="ghost" 
             size="sm" 
-            className="text-muted-foreground hover:text-foreground ml-auto"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/dashboard/ideias/${idea.id}`);
-            }}
+            className="text-muted-foreground hover:text-foreground flex items-center"
+            onClick={handleViewDetailsClick}
           >
             <ExternalLink className="h-4 w-4 mr-1" />
-            {t('ideas.viewDetails', "Ver detalhes")}
+            <span className="hidden md:inline">{t('ideas.viewDetails', "Ver detalhes")}</span>
           </Button>
         </CardFooter>
       </Card>

@@ -1,4 +1,3 @@
-
 {
   "loading": {
     "wait": "Isso pode levar alguns segundos. Por favor, aguarde...",
@@ -99,7 +98,7 @@
   "nav": {
     "home": "Início",
     "dashboard": "Dashboard",
-    "settings": "Configurações", 
+    "settings": "Configurações",
     "profile": "Perfil",
     "logout": "Sair",
     "login": "Entrar",
@@ -110,7 +109,9 @@
     "resources": "Recursos",
     "history": "Histórico",
     "drafts": "Rascunhos",
-    "tools": "Ferramentas"
+    "tools": "Ferramentas",
+    "backToHome": "Voltar para o início",
+    "backToDashboard": "Voltar para o Dashboard"
   },
   "tools": {
     "title": "Ferramentas",
@@ -257,7 +258,43 @@
     "avatarUploadError": "Erro ao fazer upload da foto de perfil",
     "avatarUploadSuccess": "Foto de perfil atualizada com sucesso!",
     "personalInfo": "Informações Pessoais",
-    "personalInfoTitle": "Informações Pessoais"
+    "personalInfoTitle": "Informações Pessoais",
+    "title": "Configurações",
+    "subtitle": "Gerencie as preferências da sua conta",
+    "profile": "Perfil",
+    "account": "Conta",
+    "notifications": "Notificações",
+    "plan": "Plano de Assinatura",
+    "credits": "Créditos",
+    "security": "Segurança",
+    "securityDesc": "Gerencie sua senha e configurações de segurança",
+    "currentPassword": "Senha Atual",
+    "newPassword": "Nova Senha",
+    "confirmPassword": "Confirmar Nova Senha",
+    "changePassword": "Alterar Senha",
+    "dangerZone": "Zona de Perigo",
+    "dangerZoneDesc": "Ações que podem afetar permanentemente sua conta",
+    "deleteAccount": "Excluir Conta",
+    "deleteAccountDesc": "Excluir permanentemente sua conta e dados",
+    "notificationPreferences": "Preferências de Notificação",
+    "notificationPreferencesDesc": "Escolha como deseja ser notificado",
+    "emailNotifications": "Notificações por Email",
+    "emailNotificationsDesc": "Receba atualizações e alertas por email",
+    "accountAlerts": "Alertas da Conta",
+    "accountAlertsDesc": "Seja notificado sobre tentativas de login e alterações",
+    "marketingEmails": "Emails de Marketing",
+    "marketingEmailsDesc": "Receba atualizações e promoções de produtos",
+    "newFeatures": "Novos Recursos",
+    "newFeaturesDesc": "Seja o primeiro a experimentar nossas novas ferramentas",
+    "tips": "Dicas e Sugestões",
+    "tipsDesc": "Receba dicas para aproveitar melhor o aplicativo",
+    "currentPlan": "Seu Plano Atual",
+    "currentPlanDesc": "Você está atualmente no plano gratuito",
+    "proPlan": "Plano Pro",
+    "proPlanDesc": "Desbloqueie mais recursos com o plano Pro",
+    "premium": "Plano Premium",
+    "currentCredits": "Créditos Atuais",
+    "managePlan": "Gerenciar Plano"
   },
   "terms": {
     "title": "Termos de Serviço",
@@ -413,7 +450,6 @@
     "insight2": "Diferencial: foco em bem-estar animal e logística personalizada.",
     "loginToAnalyze": "Faça login para analisar sua ideia",
     "registerFree": "Cadastre-se grátis",
-    
     "advancedAnalysis": {
       "title": "Análise Avançada",
       "subtitle": "Receba uma análise gratuita, personalizada e descubra o potencial do seu negócio!",
@@ -447,10 +483,33 @@
     "startNow": "Comece agora"
   },
   "credits": {
+    "availableCredits": {
+    "title": "Créditos Disponíveis",
+    "description": "Você pode usar créditos para gerar ideias, análises e mais recursos dentro da plataforma.",
+    "proPlan": "O plano Pro oferece mais créditos e funcionalidades ilimitadas."
+  },
     "confirmTitle": "Confirme o uso de créditos",
     "confirmReanalyze": "Esta ação irá deduzir 1 crédito da sua conta. Deseja continuar?",
     "confirmBasicAnalysis": "Esta ação irá deduzir 1 crédito da sua conta (exceto se for sua primeira análise gratuita). Deseja continuar?",
-    "confirmCompareIdeas": "Deseja usar créditos para comparar ideias?"
+    "confirmCompareIdeas": "Deseja usar créditos para comparar ideias?",
+    "title": "Créditos",
+    "subtitle": "Gerencie seus créditos e transações",
+    "buyCredits": {
+      "title": "Comprar Créditos",
+      "description": "Adquira créditos para usar recursos premium.",
+    "credits": "Créditos",
+    "buy": "Comprar Créditos"
+    },
+    "transactions": {
+    "title": "Histórico de Transações",
+    "description": "Veja todas as suas transações de créditos aqui.",
+    "date": "Data",
+    "type": "Tipo",
+    "details": "Detalhes",
+    "amount": "Quantidade",
+    "loading": "Carregando transações...",
+    "usage": "Uso de Créditos"
+  }
   },
   "footer": {
     "platform": "Plataforma",
@@ -472,19 +531,41 @@
     "description": "A Startup Ideia é a plataforma completa para validar, analisar e impulsionar negócios inovadores."
   },
   "ideas": {
+    "title": "Ideias",
+    "tabs": {
+    "all": "Todas",
+    "favorites": "Favoritas",
+    "tags": "Etiquetas",
+    "analyses": "Análises Avançadas"
+    },
     "compare": {
       "title": "Comparar Ideias",
       "noIdeasSelected": "Nenhuma ideia selecionada para comparação.",
       "addMoreIdeas": "Adicione mais ideias para comparar.",
       "selectIdea": "Selecione uma ideia",
       "button": "Comparar"
-    }
+    },
+    "viewIdea": "Visualizar ideia",
+    "viewDrafts": "Ver Rascunhos",
+    "newIdea": "Nova Ideia",
+    "viewDetails": "Ver detalhes",
+    "score": "Pontuação",
+    "deleteTitle": "Excluir Ideia",
+    "deleteConfirm": "Tem certeza que deseja excluir esta ideia? Esta ação não pode ser desfeita.",
+    "emptyState": {
+      "title": "Você ainda não tem ideias analisadas",
+      "button": "Criar minha primeira ideia"
+    },
+    "filterByTags": "Filtrar por etiquetas"
   },
   "advancedAnalysis": {
     "button": "Análise Avançada",
     "lockedTitle": "Desbloqueie a Análise Avançada",
     "lockedDesc": "Faça upgrade para o plano Pro e acesse insights detalhados.",
     "analyzeMyIdea": "Analisar Minha Ideia"
+  },
+  "analysis": {
+    "viewAnalysis": "Visualizar análise"
   },
   "ideaForm": {
     "ctaTitle": "Pronto para explorar sua ideia?",
@@ -620,6 +701,353 @@
     "noNotifications": "Nenhuma notificação no momento"
   },
   "dashboard": {
-    "newAnalysis": "Nova Análise"
-  }
+    "insights": {
+      "title": "Insights das Ideias",
+      "description": "Veja os principais pontos fortes, fracos e oportunidades das suas ideias."
+    },
+    "newAnalysis": "Nova Análise",
+    "title": "Dashboard",
+    "statistics": {
+      "totalAnalyses": "Total de Análises",
+      "totalAnalysesDescription": "Ideias analisadas até o momento",
+      "viabilityRate": "Taxa de Viabilidade",
+      "compared": "comparado ao mês anterior",
+      "availableCredits": "Créditos Disponíveis",
+      "addCredits": "Adicionar créditos",
+      "yourPlan": "Seu Plano",
+      "free": "Gratuito",
+      "premium": "Premium",
+      "upgrade": "Fazer upgrade"
+    },
+    "tabs": {
+      "overview": "Visão Geral",
+      "analytics": "Análises"
+    },
+    "charts": {
+      "performanceTitle": "Desempenho",
+      "performanceDescription": "Análises e consultas nos últimos meses",
+      "progressTitle": "Progresso",
+      "progressDescription": "Evolução das suas análises ao longo do tempo"
+    },
+    "recentIdeas": {
+      "title": "Ideias Recentes",
+      "description": "Suas últimas análises",
+      "viewAll": "Ver todas"
+    }
+  },
+  "gamification": {
+    "title": "Sistema de Gamificação",
+    "subtitle": "Acompanhe seu progresso e conquistas",
+    "currentLevel": {
+      "title": "Nível Atual",
+      "level": "Nível",
+      "points": "pontos totais",
+      "progress": "Progresso para o próximo nível",
+      "pointsRemaining": "pontos restantes"
+    },
+    "earnPoints": {
+      "title": "Como Ganhar Pontos",
+      "subtitle": "Realize essas ações para subir de nível",
+      "createIdea": {
+        "title": "Criar uma ideia",
+        "points": "+10 pontos"
+      },
+      "completeAnalysis": {
+        "title": "Fazer análise completa",
+        "points": "+25 pontos"
+      },
+      "useTools": {
+        "title": "Usar ferramentas",
+        "points": "+15 pontos"
+      },
+      "completeProfile": {
+        "title": "Completar perfil",
+        "points": "+50 pontos"
+      }
+    },
+    "achievements": {
+      "title": "Conquistas",
+      "subtitle": "Suas conquistas e badges desbloqueadas",
+      "empty": {
+        "title": "Nenhuma conquista ainda",
+        "subtitle": "Comece criando sua primeira ideia!"
+      },
+      "earnedAt": "Conquistado em"
+    },
+    "loading": "Carregando seu progresso..."
+  },
+  "successCases": {
+    "tagline": "Casos de Sucesso",
+    "title": "Histórias de sucesso inspiradoras",
+    "subtitle": "Conheça empreendedores que transformaram suas ideias em negócios de sucesso com nossa plataforma",
+    "readFullCase": "Ler caso completo",
+    "cta": {
+      "title": "Tem uma história de sucesso para compartilhar?",
+      "subtitle": "Conte-nos como nossa plataforma ajudou no seu negócio",
+      "button": "Enviar meu caso"
+    },
+    "cases": {
+      "case1": {
+        "company": "PetDelivery",
+        "description": "Serviço de transporte especializado para animais de estimação",
+        "result": "Crescimento de 300% em 6 meses"
+      },
+      "case2": {
+        "company": "EcoEmbalagens",
+        "description": "Embalagens sustentáveis para e-commerce",
+        "result": "Redução de 70% no impacto ambiental"
+      },
+      "case3": {
+        "company": "TechLearn",
+        "description": "Plataforma de ensino de programação para iniciantes",
+        "result": "Mais de 10.000 alunos em 3 meses"
+      }
+    }
+  },
+  "webinars": {
+    "tagline": "Webinars",
+    "title": "Aprenda com especialistas",
+    "subtitle": "Webinars gratuitos sobre empreendedorismo, inovação e gestão de negócios",
+    "pastWebinars": "Webinars anteriores",
+    "upcomingWebinars": "Próximos webinars",
+    "presenter": "Apresentador",
+    "watchNow": "Assistir agora",
+    "registerNow": "Inscrever-se",
+    "cta": {
+      "title": "Quer sugerir um tema para webinar?",
+      "subtitle": "Envie sua sugestão e podemos criar conteúdo específico para suas necessidades",
+      "button": "Sugerir tema"
+    },
+    "items": {
+      "webinar1": {
+        "title": "Como validar sua ideia de negócio em 7 dias",
+        "description": "Aprenda técnicas práticas para testar a viabilidade da sua ideia rapidamente e com baixo investimento",
+        "date": "10/06/2023",
+        "speaker": "Ana Silva",
+        "category": "Validação"
+      },
+      "webinar2": {
+        "title": "Estratégias de precificação para startups",
+        "description": "Descubra como definir preços que maximizam seu lucro sem afastar clientes",
+        "date": "25/05/2023",
+        "speaker": "Carlos Mendes",
+        "category": "Finanças"
+      },
+      "webinar3": {
+        "title": "Marketing digital para pequenos negócios",
+        "description": "Estratégias eficientes e de baixo custo para atrair clientes online",
+        "date": "12/04/2023",
+        "speaker": "Juliana Costa",
+        "category": "Marketing"
+      }
+    },
+    "upcoming": {
+      "webinar1": {
+        "title": "Captação de investimentos para startups",
+        "date": "15/08/2023",
+        "speaker": "Ricardo Almeida",
+        "time": "19:00"
+      },
+      "webinar2": {
+        "title": "Inteligência Artificial aplicada a negócios",
+        "date": "22/08/2023",
+        "speaker": "Fernanda Lima",
+        "time": "18:30"
+      }
+    }
+  },
+  "guides": {
+    "tagline": "Guias Práticos",
+    "title": "Recursos para empreendedores",
+    "subtitle": "Guias detalhados para ajudar em cada etapa do seu negócio",
+    "readGuide": "Ler guia completo",
+    "exploreAll": "Explorar todos os guias",
+    "items": {
+      "guide1": {
+        "title": "Guia completo para validação de ideias",
+        "description": "Um passo a passo detalhado para testar e validar sua ideia de negócio",
+        "category": "Validação",
+        "level": "Iniciante",
+        "content": "Conteúdo detalhado do guia de validação de ideias"
+      },
+      "guide2": {
+        "title": "Como criar um MVP eficiente",
+        "description": "Aprenda a construir um produto mínimo viável que realmente valide seu negócio",
+        "category": "Desenvolvimento",
+        "level": "Intermediário",
+        "content": "Conteúdo detalhado do guia de criação de MVP"
+      },
+      "guide3": {
+        "title": "Análise de mercado para startups",
+        "description": "Técnicas e ferramentas para entender seu mercado e concorrentes",
+        "category": "Estratégia",
+        "level": "Avançado",
+        "content": "Conteúdo detalhado do guia de análise de mercado"
+      },
+      "guide4": {
+        "title": "Pitch perfeito para investidores",
+        "description": "Como estruturar e apresentar sua ideia para atrair investimentos",
+        "category": "Captação",
+        "level": "Intermediário",
+        "content": "Conteúdo detalhado do guia de pitch para investidores"
+      }
+    }
+  },
+  "blog": {
+    "tagline": "Blog",
+    "title": "Insights para empreendedores",
+    "subtitle": "Artigos, dicas e tendências sobre inovação e empreendedorismo",
+    "loadMore": "Carregar mais artigos",
+    "postNotFound": "Artigo não encontrado",
+    "backToBlog": "Voltar para o blog",
+    "submitCasePromo": "Tem uma história de sucesso para compartilhar?",
+    "submitCaseLink": "Envie seu caso de sucesso",
+    "posts": {
+      "post1": {
+        "title": "5 erros comuns ao validar uma ideia de negócio",
+        "excerpt": "Descubra os principais equívocos que empreendedores cometem ao testar suas ideias",
+        "content": "Conteúdo detalhado sobre erros comuns na validação de ideias",
+        "date": "12/07/2023",
+        "category": "Validação"
+      },
+      "post2": {
+        "title": "Como fazer uma análise de concorrentes eficiente",
+        "excerpt": "Aprenda técnicas para mapear e analisar seus concorrentes de forma estratégica",
+        "content": "Conteúdo detalhado sobre análise de concorrentes",
+        "date": "28/06/2023",
+        "category": "Estratégia"
+      },
+      "post3": {
+        "title": "Bootstrapping: crescendo sem investimento externo",
+        "excerpt": "Estratégias para desenvolver seu negócio com recursos próprios",
+        "content": "Conteúdo detalhado sobre bootstrapping",
+        "date": "15/06/2023",
+        "category": "Finanças"
+      },
+      "post4": {
+        "title": "Inteligência Artificial para pequenos negócios",
+        "excerpt": "Como implementar IA em sua empresa mesmo com orçamento limitado",
+        "content": "Conteúdo detalhado sobre IA para pequenos negócios",
+        "date": "02/06/2023",
+        "category": "Tecnologia"
+      },
+      "post5": {
+        "title": "Estratégias de precificação para startups",
+        "excerpt": "Métodos para definir preços que maximizam seu lucro e valor percebido",
+        "content": "Conteúdo detalhado sobre estratégias de precificação",
+        "date": "20/05/2023",
+        "category": "Finanças"
+      },
+      "post6": {
+        "title": "Como construir uma cultura de inovação",
+        "excerpt": "Práticas para fomentar a criatividade e inovação em sua equipe",
+        "content": "Conteúdo detalhado sobre cultura de inovação",
+        "date": "05/05/2023",
+        "category": "Gestão"
+      }
+    }
+  },
+  "api": {
+    "tagline": "API",
+    "title": "Integre nossa plataforma ao seu negócio",
+    "subtitle": "Acesse nossas APIs para automatizar análises e integrar com seus sistemas",
+    "restApi": {
+      "title": "REST API",
+      "description": "Integração simples via endpoints RESTful para análise de ideias e geração de relatórios"
+    },
+    "websockets": {
+      "title": "WebSockets",
+      "description": "Conexão em tempo real para atualizações instantâneas de análises e resultados"
+    },
+    "documentation": {
+      "title": "Documentação",
+      "description": "Nossa API é totalmente documentada e fácil de implementar. Você encontrará exemplos de código em várias linguagens de programação, além de tutoriais passo a passo para as integrações mais comuns."
+    },
+    "authentication": {
+      "title": "Autenticação",
+      "description": "Utilizamos autenticação OAuth 2.0 para garantir segurança nas integrações. Gere suas credenciais no painel de desenvolvedor e comece a usar nossa API em minutos."
+    },
+    "endpoints": {
+      "title": "Endpoints",
+      "description": "Nossa API oferece diversos endpoints para análise de ideias, geração de relatórios e gestão de dados:",
+      "getIdeas": "Recupera todas as ideias analisadas pelo usuário",
+      "analyzeIdea": "Envia uma nova ideia para análise",
+      "getIdeaById": "Recupera detalhes de uma ideia específica",
+      "getReports": "Lista todos os relatórios disponíveis"
+    },
+    "sdks": {
+      "title": "SDKs",
+      "description": "Para facilitar a integração, disponibilizamos SDKs em diversas linguagens de programação:"
+    },
+    "pricing": {
+      "title": "Preços",
+      "description": "Nossa API tem planos específicos para diferentes volumes de uso:",
+      "entrepreneur": "Plano Empreendedor: 1.000 requisições/mês por R$99",
+      "business": "Plano Empresarial: Requisições ilimitadas por R$499/mês"
+    },
+    "support": {
+      "title": "Suporte",
+      "description": "Precisa de ajuda com a integração? Nossa equipe está pronta para auxiliar:",
+      "email": "Suporte por email: api@startupideia.com",
+      "docs": "Documentação completa em docs.startupideia.com",
+      "community": "Comunidade de desenvolvedores no Discord"
+    }
+  },
+  "plans": {
+    "title": "Planos",
+    "subtitle": "Escolha o plano ideal para seu negócio",
+    "free": {
+      "name": "Gratuito",
+      "description": "Perfeito para começar",
+      "features": [
+        "3 análises de ideias por mês",
+        "Relatório básico",
+        "Acesso à comunidade"
+      ],
+      "button": "Começar Grátis"
+    },
+    "pro": {
+      "name": "Pro",
+      "description": "Para empreendedores sérios",
+      "features": [
+        "Análises ilimitadas",
+        "Relatórios detalhados",
+        "Suporte prioritário",
+        "Ferramentas avançadas",
+        "Acesso a webinars exclusivos"
+      ],
+      "button": "Assinar Agora"
+    },
+    "recommended": "Recomendado",
+    "monthly": "/mês",
+    "yearly": "/ano",
+    "billedMonthly": "Cobrado mensalmente",
+    "billedYearly": "Cobrado anualmente",
+    "savePercent": "Economize {{percent}}%",
+    "currentPlan": "Seu plano atual",
+    "upgrade": "Fazer upgrade",
+    "downgrade": "Fazer downgrade",
+    "cancel": "Cancelar assinatura",
+    "confirmCancel": "Tem certeza que deseja cancelar sua assinatura?",
+    "confirmCancelDesc": "Você perderá acesso aos recursos premium ao final do período atual."
+  },
+  "auth": {
+    "login": "Entrar",
+    "loginSubtitle": "Acesse sua conta para continuar",
+    "noAccount": "Não tem uma conta?",
+    "register": "Cadastre-se",
+    "email": "E-mail",
+    "password": "Senha",
+    "errors": {
+      "invalidEmail": "E-mail inválido",
+      "passwordLength": "A senha deve ter no mínimo 8 caracteres"
+    }
+  },
+  "drafts": {
+  "title": "Rascunhos",
+  "newDraft": "Novo Rascunho",
+  "empty": "Nenhum rascunho encontrado",
+  "emptyDesc": "Você ainda não criou nenhum rascunho.",
+  "create": "Criar Rascunho"
+}
 }
