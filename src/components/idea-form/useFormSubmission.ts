@@ -193,25 +193,26 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
           }
         }
         
+        // Stop analyzing state BEFORE navigation to prevent loading screen from persisting
+        setIsAnalyzing(false);
+        setIsSubmitting(false);
+        
         // Reset the form to close it
         resetForm();
         
-        // Small delay to ensure the modal is closed before navigation
-        setTimeout(() => {
-          // Always navigate to the results page in the dashboard
-          if (analysisData && analysisData.ideaId) {
-            // Dispatch custom event to notify dashboard of data change
-            const analysisUpdateEvent = new CustomEvent('analysis-updated', { 
-              detail: { ideaId: analysisData.ideaId }
-            });
-            window.dispatchEvent(analysisUpdateEvent);
-            
-            navigate(`/dashboard/resultados/${analysisData.ideaId}`);
-          } else {
-            console.error("Missing ideaId in response:", analysisData);
-            toast.error(t('ideaForm.missingData', "Dados da análise incompletos. Entre em contato com o suporte."));
-          }
-        }, 100); // 100ms delay should be sufficient
+        // Navigate immediately - no timeout needed for mobile compatibility
+        if (analysisData && analysisData.ideaId) {
+          // Dispatch custom event to notify dashboard of data change
+          const analysisUpdateEvent = new CustomEvent('analysis-updated', { 
+            detail: { ideaId: analysisData.ideaId }
+          });
+          window.dispatchEvent(analysisUpdateEvent);
+          
+          navigate(`/dashboard/resultados/${analysisData.ideaId}`);
+        } else {
+          console.error("Missing ideaId in response:", analysisData);
+          toast.error(t('ideaForm.missingData', "Dados da análise incompletos. Entre em contato com o suporte."));
+        }
       } else {
         // Not authenticated, redirect to login
         toast.info(t('ideaForm.loginRequired', "É necessário fazer login para analisar ideias"));
@@ -220,7 +221,7 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
     } catch (error) {
       console.error("Form submission error:", error);
       toast.error(t('ideaForm.analysisError', "Erro ao analisar sua ideia. Tente novamente."));
-    } finally {
+      // Only set states on error since success case handles them before navigation
       setIsSubmitting(false);
       setIsAnalyzing(false);
     }

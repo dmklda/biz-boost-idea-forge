@@ -425,6 +425,7 @@ export type Database = {
           contact_pref: string | null
           created_at: string
           credits: number
+          display_name: string | null
           email: string
           email_notifications: boolean | null
           first_analysis_done: boolean | null
@@ -436,6 +437,7 @@ export type Database = {
           phone: string | null
           photo_url: string | null
           plan: string
+          surname: string | null
           tips: boolean | null
         }
         Insert: {
@@ -448,6 +450,7 @@ export type Database = {
           contact_pref?: string | null
           created_at?: string
           credits?: number
+          display_name?: string | null
           email: string
           email_notifications?: boolean | null
           first_analysis_done?: boolean | null
@@ -459,6 +462,7 @@ export type Database = {
           phone?: string | null
           photo_url?: string | null
           plan?: string
+          surname?: string | null
           tips?: boolean | null
         }
         Update: {
@@ -471,6 +475,7 @@ export type Database = {
           contact_pref?: string | null
           created_at?: string
           credits?: number
+          display_name?: string | null
           email?: string
           email_notifications?: boolean | null
           first_analysis_done?: boolean | null
@@ -482,6 +487,7 @@ export type Database = {
           phone?: string | null
           photo_url?: string | null
           plan?: string
+          surname?: string | null
           tips?: boolean | null
         }
         Relationships: []

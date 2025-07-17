@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MessageLoading } from "@/components/ui/message-loading";
 import { motion } from "framer-motion";
+import { useLocation } from "react-router-dom";
 
 function SpiralLoader() {
   const dots = 8;
@@ -64,6 +65,8 @@ interface LoadingScreenProps {
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ message, subMessage, tips }) => {
   const { t } = useTranslation();
+  const location = useLocation();
+  const [isVisible, setIsVisible] = useState(true);
   const tipsArray = tips && tips.length > 0
     ? tips
     : [
@@ -76,15 +79,37 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ message, subMessage, tips
       ];
   const [tipIndex, setTipIndex] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       setTipIndex((prev) => (prev + 1) % tipsArray.length);
     }, 3000);
+    
+    // Safety timeout for mobile - automatically hide after 30 seconds
+    timeoutRef.current = setTimeout(() => {
+      console.warn("LoadingScreen: Safety timeout reached, hiding loading screen");
+      setIsVisible(false);
+    }, 30000);
+    
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, [tipsArray.length]);
+
+  // Hide loading screen when navigation happens (especially important for mobile)
+  useEffect(() => {
+    if (location.pathname.includes('/resultados/')) {
+      console.log("LoadingScreen: Navigation to results detected, hiding loading screen");
+      setIsVisible(false);
+    }
+  }, [location.pathname]);
+
+  // Don't render if not visible
+  if (!isVisible) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-brand-purple/10 via-background to-brand-blue/10 p-4 pt-20">
