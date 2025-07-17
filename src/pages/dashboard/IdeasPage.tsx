@@ -77,8 +77,6 @@ const IdeasPage = () => {
           <Dialog 
             open={isAnalysisDialogOpen} 
             onOpenChange={handleDialogOpenChange}
-            onInteractOutside={isAnalyzing ? (e) => e.preventDefault() : undefined}
-            onEscapeKeyDown={isAnalyzing ? (e) => e.preventDefault() : undefined}
           >
             <DialogContent className="sm:max-w-4xl">
               <DialogHeader>

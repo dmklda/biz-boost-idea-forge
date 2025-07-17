@@ -48,7 +48,7 @@ const RegisterPage = () => {
       email: '',
       password: '',
       confirmPassword: '',
-      terms: false
+      terms: true
     }
   });
 
@@ -263,7 +263,15 @@ const RegisterPage = () => {
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center gap-2">
-                          <input type="checkbox" id="terms" {...field} checked={field.value} />
+                          <input 
+                            type="checkbox" 
+                            id="terms" 
+                            name={field.name}
+                            checked={field.value}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            ref={field.ref}
+                          />
                           <FormLabel htmlFor="terms" className="mb-0 cursor-pointer text-xs">
                             Eu li e aceito os <a href="/company/TermsOfUsePage" target="_blank" rel="noopener noreferrer" className="underline text-brand-purple">Termos de Uso</a> e a <a href="/company/PrivacyPolicyPage" target="_blank" rel="noopener noreferrer" className="underline text-brand-purple">Política de Privacidade</a>.
                           </FormLabel>

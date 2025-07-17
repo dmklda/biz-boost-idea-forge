@@ -113,10 +113,7 @@ export const MobileBottomNav = () => {
       {isAnalyzing ? (
         <LoadingScreen />
       ) : (
-        <Dialog open={isAnalysisDialogOpen} onOpenChange={handleDialogOpenChange}
-          onInteractOutside={isAnalyzing ? (e) => e.preventDefault() : undefined}
-          onEscapeKeyDown={isAnalyzing ? (e) => e.preventDefault() : undefined}
-        >
+        <Dialog open={isAnalysisDialogOpen} onOpenChange={handleDialogOpenChange}>
           <DialogContent className="sm:max-w-4xl">
             <DialogHeader>
               <DialogTitle>{t('ideaForm.title')}</DialogTitle>

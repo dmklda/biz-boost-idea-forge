@@ -211,10 +211,7 @@ const DashboardHome = () => {
           <div className="flex items-center justify-between">
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{t('dashboard.title')}</h1>
             {!isMobile && (
-              <Dialog open={isAnalysisDialogOpen} onOpenChange={handleDialogOpenChange}
-                onInteractOutside={isAnalyzing ? (e) => e.preventDefault() : undefined}
-                onEscapeKeyDown={isAnalyzing ? (e) => e.preventDefault() : undefined}
-              >
+              <Dialog open={isAnalysisDialogOpen} onOpenChange={handleDialogOpenChange}>
                 <DialogTrigger asChild>
                   <Button className="bg-brand-purple hover:bg-brand-purple/90">
                     <PlusCircle className="h-4 w-4 mr-2" />

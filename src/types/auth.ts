@@ -23,6 +23,8 @@ export type LoginCredentials = {
 
 export type RegisterCredentials = {
   name: string;
+  surname?: string;
+  display_name?: string;
   email: string;
   password: string;
 };
