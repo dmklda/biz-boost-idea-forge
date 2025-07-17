@@ -8,14 +8,16 @@ import { SaveDraftButton } from "./idea-form/SaveDraftButton";
 import { useFormSubmission } from "./idea-form/useFormSubmission";
 import { CreditConfirmModal } from "./idea-form/CreditConfirmModal";
 import { useLocation } from "react-router-dom";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 interface IdeaFormProps {
   ideaId?: string;
   isReanalyzing?: boolean;
+  onAnalysisStateChange?: (isAnalyzing: boolean) => void;
   onAnalysisComplete?: () => void;
 }
 
-export const IdeaForm = ({ ideaId, isReanalyzing, onAnalysisComplete }: IdeaFormProps) => {
+export const IdeaForm = ({ ideaId, isReanalyzing, onAnalysisStateChange, onAnalysisComplete }: IdeaFormProps) => {
   const location = useLocation();
   
   // Check if we're in the dashboard
@@ -27,7 +29,8 @@ export const IdeaForm = ({ ideaId, isReanalyzing, onAnalysisComplete }: IdeaForm
       <FormContainer 
         wrapInCard={wrapInCard} 
         isReanalyzing={isReanalyzing} 
-        onAnalysisComplete={onAnalysisComplete} 
+        onAnalysisComplete={onAnalysisComplete}
+        onAnalysisStateChange={onAnalysisStateChange}
       />
     </IdeaFormProvider>
   );
@@ -38,13 +41,15 @@ const FormContainer: React.FC<{
   wrapInCard: boolean;
   isReanalyzing?: boolean;
   onAnalysisComplete?: () => void;
-}> = ({ wrapInCard, isReanalyzing, onAnalysisComplete }) => {
+  onAnalysisStateChange?: (isAnalyzing: boolean) => void;
+}> = ({ wrapInCard, isReanalyzing, onAnalysisComplete, onAnalysisStateChange }) => {
   const { 
     handleSubmit, 
     isAnalysisComplete, 
     showCreditConfirm, 
     setShowCreditConfirm, 
-    handleCreditConfirm 
+    handleCreditConfirm,
+    isAnalyzing
   } = useFormSubmission(isReanalyzing);
   
   // Use useEffect para chamar onAnalysisComplete quando a análise for concluída
@@ -53,7 +58,18 @@ const FormContainer: React.FC<{
       onAnalysisComplete();
     }
   }, [isAnalysisComplete, onAnalysisComplete]);
-  
+
+  useEffect(() => {
+    if (onAnalysisStateChange) {
+      onAnalysisStateChange(isAnalyzing);
+    }
+  }, [isAnalyzing, onAnalysisStateChange]);
+
+  // Se estiver analisando, mostra o loading
+  if (isAnalyzing) {
+    return <LoadingScreen />;
+  }
+
   // Se a análise foi completada, não renderizar o formulário
   if (isAnalysisComplete) {
     return null;

@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
 import { Loader2, Sparkles } from "lucide-react";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 interface ReanalyzeModalProps {
   isOpen: boolean;
@@ -32,6 +33,10 @@ export const ReanalyzeModal = ({
   const [title, setTitle] = useState(currentTitle);
   const [description, setDescription] = useState(currentDescription);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  if (isAnalyzing) {
+    return <LoadingScreen />;
+  }
 
   const handleReanalyze = async () => {
     if (!authState.user?.id || !title.trim() || !description.trim()) {

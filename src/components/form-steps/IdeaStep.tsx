@@ -26,7 +26,7 @@ export const IdeaStep = ({ formData, updateFormData, onNext }: IdeaStepProps) =>
           value={formData.idea}
           onChange={(e) => updateFormData("idea", e.target.value)}
           placeholder={t('ideaForm.idea.placeholder', 'Descreva sua ideia aqui...')}
-          className="resize-none min-h-[100px]"
+          className="resize-none min-h-[100px] transition-all duration-200 focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue"
           maxLength={300}
         />
         <div className="flex justify-between text-xs text-muted-foreground mt-1">
@@ -41,7 +41,7 @@ export const IdeaStep = ({ formData, updateFormData, onNext }: IdeaStepProps) =>
           type="button" 
           onClick={onNext}
           disabled={formData.idea.trim().length < 10}
-          className="bg-brand-blue hover:bg-brand-blue/90 text-white"
+          className="bg-brand-blue hover:bg-brand-blue/90 text-white transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue"
         >
           {t('common.next', 'Próximo')}
         </Button>

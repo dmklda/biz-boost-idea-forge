@@ -20,38 +20,38 @@ export const CompetitorsStep = ({ formData, updateFormData, onNext, onPrev }: Co
     <div className="space-y-4">
       <div>
         <Label className="text-base font-medium block mb-3">
-          {t('ideaForm.competitors.title')}
+          {t('ideaForm.competitors.title', 'Existem concorrentes no mercado?')}
         </Label>
         <RadioGroup 
           value={formData.hasCompetitors}
           onValueChange={(value) => updateFormData("hasCompetitors", value)}
-          className="flex flex-col space-y-2"
-          aria-label={t('ideaForm.competitors.title')}
+          className="flex flex-col space-y-2 transition-all duration-200 focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue"
+          aria-label={t('ideaForm.competitors.title', 'Existem concorrentes no mercado?')}
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="sim" id="competitors-yes" />
-            <Label htmlFor="competitors-yes">{t('ideaForm.competitors.yes')}</Label>
+            <Label htmlFor="competitors-yes">{t('ideaForm.competitors.yes', 'Sim, existem soluções similares')}</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="nao" id="competitors-no" />
-            <Label htmlFor="competitors-no">{t('ideaForm.competitors.no')}</Label>
+            <Label htmlFor="competitors-no">{t('ideaForm.competitors.no', 'Não, é uma solução inovadora')}</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="nao-sei" id="competitors-unknown" />
-            <Label htmlFor="competitors-unknown">{t('common.dontKnow')}</Label>
+            <Label htmlFor="competitors-unknown">{t('common.dontKnow', 'Não sei')}</Label>
           </div>
         </RadioGroup>
       </div>
 
       <div>
         <Label htmlFor="monetization" className="text-base font-medium">
-          {t('ideaForm.monetization.title')}
+          {t('ideaForm.monetization.title', 'Como pretende monetizar?')}
         </Label>
         <Textarea 
           id="monetization"
-          aria-label={t('ideaForm.monetization.title')}
-          placeholder={t('ideaForm.monetization.placeholder')}
-          className="mt-2 resize-none"
+          aria-label={t('ideaForm.monetization.title', 'Como pretende monetizar?')}
+          placeholder={t('ideaForm.monetization.placeholder', 'Descreva como seu negócio irá gerar receita...')}
+          className="mt-2 resize-none transition-all duration-200 focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue"
           rows={3}
           value={formData.monetization}
           onChange={(e) => updateFormData("monetization", e.target.value)}
@@ -60,14 +60,14 @@ export const CompetitorsStep = ({ formData, updateFormData, onNext, onPrev }: Co
       </div>
 
       <div className="flex justify-between">
-        <Button type="button" variant="outline" onClick={onPrev}>
+        <Button type="button" variant="outline" onClick={onPrev} className="transition-all duration-200 hover:scale-105">
           {t('common.back')}
         </Button>
         <Button 
           type="button"
           onClick={onNext}
           disabled={!formData.hasCompetitors || formData.monetization.trim().length < 5}
-          className="bg-brand-green hover:bg-brand-green/90 text-white"
+          className="bg-brand-green hover:bg-brand-green/90 text-white transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-brand-green/40 focus:border-brand-green"
         >
           {t('common.next')}
         </Button>

@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -9,13 +9,21 @@ import { IdeaForm } from "@/components/IdeaForm";
 import { useAuth } from "@/hooks/useAuth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export const MobileBottomNav = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const { authState } = useAuth();
-  const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = React.useState(false);
-  const [hasNotifications, setHasNotifications] = React.useState(false);
+  const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [hasNotifications, setHasNotifications] = useState(false);
+
+  // Handler para impedir fechar o modal durante análise
+  const handleDialogOpenChange = (open: boolean) => {
+    if (isAnalyzing && !open) return;
+    setIsAnalysisDialogOpen(open);
+  };
 
   // Check if user has low credits to show notification badge
   React.useEffect(() => {
@@ -102,20 +110,29 @@ export const MobileBottomNav = () => {
         <Plus className="h-6 w-6 text-white" />
       </Button>
 
-      {/* New Analysis Dialog */}
-      <Dialog open={isAnalysisDialogOpen} onOpenChange={setIsAnalysisDialogOpen}>
-        <DialogContent className="sm:max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>{t('ideaForm.title')}</DialogTitle>
-            <DialogDescription>
-              {t('ideaForm.subtitle')}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <IdeaForm onAnalysisComplete={() => setIsAnalysisDialogOpen(false)} />
-          </div>
-        </DialogContent>
-      </Dialog>
+      {isAnalyzing ? (
+        <LoadingScreen />
+      ) : (
+        <Dialog open={isAnalysisDialogOpen} onOpenChange={handleDialogOpenChange}
+          onInteractOutside={isAnalyzing ? (e) => e.preventDefault() : undefined}
+          onEscapeKeyDown={isAnalyzing ? (e) => e.preventDefault() : undefined}
+        >
+          <DialogContent className="sm:max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>{t('ideaForm.title')}</DialogTitle>
+              <DialogDescription>
+                {t('ideaForm.subtitle')}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <IdeaForm 
+                onAnalysisComplete={() => setIsAnalysisDialogOpen(false)}
+                onAnalysisStateChange={setIsAnalyzing}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 };

@@ -8,12 +8,16 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { User } from "@/types/auth";
+import { supabase } from "@/integrations/supabase/client";
+import LoadingScreen from "@/components/ui/LoadingScreen";
+import { useState } from "react";
 
 const PlansPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { authState, updateUserPlan } = useAuth();
   const { getSavedIdeaData } = useIdeaForm();
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   
   const plans = [
     {
@@ -48,10 +52,8 @@ const PlansPage = () => {
     }
   ];
   
-  const handleSelectPlan = (planId: string) => {
-    // In a real app, this would redirect to a payment gateway
-    // For demo purposes, we'll just update the user's plan
-    
+  const handleSelectPlan = async (planId: string) => {
+    if (isAnalyzing) return;
     if (planId === "free") {
       updateUserPlan("free");
       toast.success("Plano gratuito ativado!");
@@ -59,18 +61,43 @@ const PlansPage = () => {
       updateUserPlan("pro");
       toast.success("Plano Pro ativado!");
     }
-    
-    // Check if there's a saved idea to analyze
     const savedData = getSavedIdeaData();
-    
     if (savedData) {
-      // Redirect to results if there's saved data
-      navigate("/resultados");
+      setIsAnalyzing(true);
+      try {
+        const { data: analysisData, error: analysisError } = await supabase.functions.invoke('analyze-idea', {
+          body: JSON.stringify({
+            ideaData: savedData,
+            userId: authState.user?.id,
+            language: navigator.language?.slice(0, 2) || 'pt'
+          })
+        });
+        setIsAnalyzing(false);
+        if (analysisError) {
+          toast.error(t('ideaForm.analysisError', 'Erro ao analisar sua ideia. Tente novamente.'));
+          navigate('/dashboard');
+          return;
+        }
+        toast.success(t('ideaForm.analysisSuccess', 'Análise concluída com sucesso!'));
+        localStorage.removeItem('savedIdeaFormData');
+        if (analysisData && analysisData.ideaId) {
+          navigate(`/dashboard/resultados/${analysisData.ideaId}`);
+        } else {
+          navigate('/dashboard');
+        }
+      } catch (err) {
+        setIsAnalyzing(false);
+        toast.error(t('ideaForm.analysisError', 'Erro ao analisar sua ideia. Tente novamente.'));
+        navigate('/dashboard');
+      }
     } else {
-      // Otherwise go to dashboard
       navigate("/dashboard");
     }
   };
+  
+  if (isAnalyzing) {
+    return <LoadingScreen />;
+  }
   
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-background/95">

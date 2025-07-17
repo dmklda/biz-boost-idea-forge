@@ -1,8 +1,17 @@
 
 {
+  "loading": {
+    "wait": "Isso pode levar alguns segundos. Por favor, aguarde...",
+    "tip1": "Dica: Foque no problema real do seu cliente!",
+    "tip2": "Motivação: Grandes negócios começam com pequenas ideias.",
+    "tip3": "Dica: Valide sua ideia com pessoas reais.",
+    "tip4": "Motivação: Persistência é o segredo do sucesso!",
+    "tip5": "Dica: Analise seus concorrentes para se diferenciar.",
+    "tip6": "Motivação: Cada passo é um avanço rumo ao seu sonho!"
+  },
   "common": {
-    "welcome": "Bem-vindo",
     "loading": "Carregando...",
+    "welcome": "Bem-vindo",
     "error": "Erro",
     "success": "Sucesso",
     "save": "Salvar",
@@ -84,7 +93,8 @@
     "summary": "Resumo",
     "confirm": "Confirmar",
     "max": "Máximo",
-    "characters": "caracteres"
+    "characters": "caracteres",
+    "dontKnow": "Não sei"
   },
   "nav": {
     "home": "Início",
@@ -167,6 +177,7 @@
     }
   },
   "results": {
+    "swotBar": "Resumo SWOT",
     "exampleAnalysisTitle": "Exemplo de Análise de Ideia",
     "viability": "Viabilidade",
     "status": {
@@ -179,7 +190,8 @@
       "market": "Mercado",
       "competitors": "Concorrentes",
       "financial": "Financeiro",
-      "recommendations": "Recomendações"
+      "recommendations": "Recomendações",
+      "swot": "SWOT"
     },
     "summaryTitle": "Resumo da Ideia",
     "ideaDescription": "Descrição da Ideia",
@@ -200,7 +212,17 @@
     "market": {
       "size": "Tamanho do Mercado",
       "audience": "Público-alvo",
-      "growth": "Crescimento"
+      "growth": "Crescimento",
+      "trends": "Tendências",
+      "competitors": "Concorrentes",
+      "differentials": "Diferenciais",
+      "financial": "Financeiro",
+      "recommendations": "Recomendações",
+      "nextSteps": "Próximos Passos",
+      "challenges": "Desafios",
+      "resources": "Recursos",
+      "insights": "Insights",
+      "barriers": "Barreiras"
     },
     "competitorAnalysis": "Análise de Concorrentes",
     "competitors": "Concorrentes",
@@ -212,6 +234,13 @@
       "breakEven": "Ponto de Equilíbrio"
     },
     "recommendations": "Recomendações",
+    "recommendationsTitle": "Recomendações",
+    "recommendationsContent": "Recomendações para o seu negócio",
+    "actionItems": "Itens de Ação",
+    "actionItemsTitle": "Itens de Ação",
+    "actionItemsContent": "Itens de Ação para o seu negócio",
+    "nextStepsTitle": "Próximos Passos",
+    "nextStepsContent": "Próximos Passos para o seu negócio",
     "nextSteps": "Próximos Passos",
     "challenges": "Desafios",
     "resources": "Recursos",
@@ -502,6 +531,11 @@
         "other": "Outro"
       }
     },
+    "budget": {
+      "title": "Qual o orçamento inicial de investimento?",
+      "placeholder": "Digite o valor..."
+    },
+    "analyze": "Analisar",
     "savingDraft": "Salvando...",
     "saveAsDraft": "Salvar como rascunho",
     "insufficientCredits": "Créditos insuficientes para análise",
@@ -512,7 +546,19 @@
     "loginRequired": "É necessário fazer login para analisar ideias",
     "next": "Próximo",
     "previous": "Anterior",
-    "submit": "Enviar"
+    "submit": "Enviar",
+    "analyzing": "Analisando sua ideia",
+    "competitors": {
+      "title": "Existem concorrentes no mercado?",
+      "yes": "Sim, existem soluções similares",
+      "no": "Não, é uma solução inovadora"
+    },
+    "monetization": {
+      "title": "Como pretende monetizar?",
+      "placeholder": "Descreva como seu negócio irá gerar receita..."
+    },
+    "editTitle": "Editar Ideia",
+    "editDescription": "Altere os detalhes da sua ideia abaixo."
   },
   "hero": {
     "title": "Valide sua <span>ideia</span> em <gradientSpan>negócio</gradientSpan>",
@@ -568,5 +614,12 @@
       "title": "Aprimore e compartilhe",
       "description": "Ajuste com base no feedback e compartilhe com o mundo."
     }
+  },
+  "notifications": {
+    "title": "Notificações",
+    "noNotifications": "Nenhuma notificação no momento"
+  },
+  "dashboard": {
+    "newAnalysis": "Nova Análise"
   }
 }

@@ -36,6 +36,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useRefreshAnalyses } from "@/hooks/use-refresh-analyses";
 import { InsightsCard } from "@/components/dashboard/InsightsCard";
 import { toast } from "sonner";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 const DashboardHome = () => {
   const { t } = useTranslation();
@@ -45,6 +46,7 @@ const DashboardHome = () => {
   const [ideaCount, setIdeaCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [performanceData, setPerformanceData] = useState<any[]>([]);
   const [viabilityRate, setViabilityRate] = useState(0);
   const [viabilityTrend, setViabilityTrend] = useState(0);
@@ -58,6 +60,12 @@ const DashboardHome = () => {
     date.setMonth(monthNumber - 1);
     return date.toLocaleString('default', { month: 'short' });
   };
+
+  // Handler para impedir fechar o modal durante análise
+  const handleDialogOpenChange = useCallback((open: boolean) => {
+    if (isAnalyzing && !open) return;
+    setIsAnalysisDialogOpen(open);
+  }, [isAnalyzing]);
 
   // Refactor fetchUserData into a function that can be called multiple times
   const fetchUserData = useCallback(async () => {
@@ -196,266 +204,277 @@ const DashboardHome = () => {
   
   return (
     <div className="space-y-4 md:space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{t('dashboard.title')}</h1>
-        {!isMobile && (
-          <Dialog open={isAnalysisDialogOpen} onOpenChange={setIsAnalysisDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-brand-purple hover:bg-brand-purple/90">
-                <PlusCircle className="h-4 w-4 mr-2" />
-                {t('dashboard.newAnalysis')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-4xl">
-              <DialogHeader>
-                <DialogTitle>{t('ideaForm.title')}</DialogTitle>
-                <DialogDescription>
-                  {t('ideaForm.subtitle')}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="py-4">
-                <IdeaForm onAnalysisComplete={() => setIsAnalysisDialogOpen(false)} />
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-      </div>
-      
-      {/* Cards with Stats */}
-      <div className="grid gap-3 grid-cols-2 sm:grid-cols-2 md:grid-cols-4">
-        <Card className="shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 md:pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">
-              {t('dashboard.statistics.totalAnalyses')}
-            </CardTitle>
-            <BarChartIcon className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl md:text-2xl font-bold">{ideaCount}</div>
-            {ideaCount > 0 && (
-              <p className="text-xs text-muted-foreground line-clamp-2">
-                {t('dashboard.statistics.totalAnalysesDescription')}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-        
-        <Card className="shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 md:pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">
-              {t('dashboard.statistics.viabilityRate')}
-            </CardTitle>
-            {viabilityTrend > 0 ? (
-              <ArrowUp className="h-4 w-4 text-green-500" />
-            ) : viabilityTrend < 0 ? (
-              <ArrowDown className="h-4 w-4 text-red-500" />
-            ) : (
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            )}
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl md:text-2xl font-bold">{viabilityRate}%</div>
-            <p className="text-xs text-muted-foreground">
-              {viabilityTrend > 0 ? `+${viabilityTrend}%` : viabilityTrend < 0 ? `${viabilityTrend}%` : "0%"} {t('dashboard.statistics.compared')}
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card className="shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 md:pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">
-              {t('dashboard.statistics.availableCredits')}
-            </CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl md:text-2xl font-bold">{user?.credits || 0}</div>
-            <Button variant="link" size="sm" className="p-0 h-auto text-xs text-brand-purple" onClick={addCredits}>
-              {t('dashboard.statistics.addCredits')}
-            </Button>
-          </CardContent>
-        </Card>
-        
-        <Card className="shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 md:pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">
-              {t('dashboard.statistics.yourPlan')}
-            </CardTitle>
-            <Badge variant={user?.plan === "free" ? "outline" : "default"} className={user?.plan === "free" ? "" : "bg-brand-purple"}>
-              {user?.plan === "free" ? t('dashboard.statistics.free') : t('dashboard.statistics.premium')}
-            </Badge>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl md:text-2xl font-bold">
-              {user?.plan === "free" ? t('dashboard.statistics.free') : t('dashboard.statistics.premium')}
-            </div>
-            {user?.plan === "free" && (
-              <Link to="/planos" onClick={() => toast.info("Faça upgrade para o plano premium e desbloqueie todos os recursos!")}> 
-                <Button variant="link" size="sm" className="p-0 h-auto text-xs text-brand-purple">
-                  {t('dashboard.statistics.upgrade')}
-                </Button>
-              </Link>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-      
-      {/* AI-Generated Insights Card */}
-      <InsightsCard />
-      
-      {/* Charts */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="w-full grid grid-cols-2">
-          <TabsTrigger value="overview">{t('dashboard.tabs.overview')}</TabsTrigger>
-          <TabsTrigger value="analytics">{t('dashboard.tabs.analytics')}</TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-7">
-            <Card className="col-span-1 md:col-span-4 shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg md:text-xl">{t('dashboard.charts.performanceTitle')}</CardTitle>
-                <CardDescription>
-                  {t('dashboard.charts.performanceDescription')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent 
-                className="px-0 md:pl-2 overflow-x-auto" 
-                ref={chartContainerRef}
+      {isAnalyzing ? (
+        <LoadingScreen />
+      ) : (
+        <>
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{t('dashboard.title')}</h1>
+            {!isMobile && (
+              <Dialog open={isAnalysisDialogOpen} onOpenChange={handleDialogOpenChange}
+                onInteractOutside={isAnalyzing ? (e) => e.preventDefault() : undefined}
+                onEscapeKeyDown={isAnalyzing ? (e) => e.preventDefault() : undefined}
               >
-                <div className="min-w-[400px] sm:min-w-full">
-                  <ChartContainer 
-                    config={{
-                      análises: {
-                        label: "Análises",
-                        theme: {
-                          light: "#9b87f5",
-                          dark: "#a48bff"
-                        }
-                      },
-                      consultas: {
-                        label: "Consultas",
-                        theme: {
-                          light: "#7E69AB",
-                          dark: "#9182C2"
-                        }
-                      }
-                    }}
-                    className="aspect-[4/3]"
-                  >
-                    <BarChart data={performanceData} barGap={4}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip content={<ChartTooltipContent />} />
-                      <Legend content={<ChartLegendContent />} />
-                      <Bar dataKey="análises" fill="var(--color-análises, #9b87f5)" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="consultas" fill="var(--color-consultas, #7E69AB)" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ChartContainer>
-                </div>
+                <DialogTrigger asChild>
+                  <Button className="bg-brand-purple hover:bg-brand-purple/90">
+                    <PlusCircle className="h-4 w-4 mr-2" />
+                    {t('dashboard.newAnalysis')}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-4xl">
+                  <DialogHeader>
+                    <DialogTitle>{t('ideaForm.title')}</DialogTitle>
+                    <DialogDescription>
+                      {t('ideaForm.subtitle')}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="py-4">
+                    <IdeaForm 
+                      onAnalysisComplete={() => setIsAnalysisDialogOpen(false)}
+                      onAnalysisStateChange={setIsAnalyzing}
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
+          {/* Cards with Stats */}
+          <div className="grid gap-3 grid-cols-2 sm:grid-cols-2 md:grid-cols-4">
+            <Card className="shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 md:pb-2">
+                <CardTitle className="text-xs sm:text-sm font-medium">
+                  {t('dashboard.statistics.totalAnalyses')}
+                </CardTitle>
+                <BarChartIcon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl md:text-2xl font-bold">{ideaCount}</div>
+                {ideaCount > 0 && (
+                  <p className="text-xs text-muted-foreground line-clamp-2">
+                    {t('dashboard.statistics.totalAnalysesDescription')}
+                  </p>
+                )}
               </CardContent>
             </Card>
             
-            <Card className="col-span-1 md:col-span-3 shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg md:text-xl">{t('dashboard.recentIdeas.title')}</CardTitle>
-                <CardDescription>
-                  {t('dashboard.recentIdeas.description')}
-                </CardDescription>
+            <Card className="shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 md:pb-2">
+                <CardTitle className="text-xs sm:text-sm font-medium">
+                  {t('dashboard.statistics.viabilityRate')}
+                </CardTitle>
+                {viabilityTrend > 0 ? (
+                  <ArrowUp className="h-4 w-4 text-green-500" />
+                ) : viabilityTrend < 0 ? (
+                  <ArrowDown className="h-4 w-4 text-red-500" />
+                ) : (
+                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                )}
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {isLoading ? (
-                    <div className="flex items-center justify-center py-4">
-                      <div className="h-4 w-4 rounded-full border-2 border-brand-purple border-t-transparent animate-spin"></div>
-                    </div>
-                  ) : recentIdeas.length > 0 ? (
-                    recentIdeas.map((idea) => (
-                      <div key={idea.id} className="flex items-center">
-                        <div className="space-y-1">
-                          <p className="text-sm font-medium leading-none">
-                            {idea.title}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="secondary" className="text-xs">
-                              {new Date(idea.created_at).toLocaleDateString()}
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-4 text-muted-foreground">
-                      <p>{t('ideas.emptyState.title')}</p>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button variant="link" className="mt-2">
-                            {t('ideas.emptyState.button')}
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-4xl">
-                          <DialogHeader>
-                            <DialogTitle>{t('ideaForm.title')}</DialogTitle>
-                            <DialogDescription>
-                              {t('ideaForm.subtitle')}
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="py-4">
-                            <IdeaForm />
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                  )}
-                </div>
+                <div className="text-xl md:text-2xl font-bold">{viabilityRate}%</div>
+                <p className="text-xs text-muted-foreground">
+                  {viabilityTrend > 0 ? `+${viabilityTrend}%` : viabilityTrend < 0 ? `${viabilityTrend}%` : "0%"} {t('dashboard.statistics.compared')}
+                </p>
               </CardContent>
-              <CardFooter>
-                <Link to="/dashboard/ideias">
-                  <Button variant="outline" size="sm">
-                    {t('dashboard.recentIdeas.viewAll')}
-                  </Button>
-                </Link>
-              </CardFooter>
+            </Card>
+            
+            <Card className="shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 md:pb-2">
+                <CardTitle className="text-xs sm:text-sm font-medium">
+                  {t('dashboard.statistics.availableCredits')}
+                </CardTitle>
+                <CreditCard className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl md:text-2xl font-bold">{user?.credits || 0}</div>
+                <Button variant="link" size="sm" className="p-0 h-auto text-xs text-brand-purple" onClick={addCredits}>
+                  {t('dashboard.statistics.addCredits')}
+                </Button>
+              </CardContent>
+            </Card>
+            
+            <Card className="shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 md:pb-2">
+                <CardTitle className="text-xs sm:text-sm font-medium">
+                  {t('dashboard.statistics.yourPlan')}
+                </CardTitle>
+                <Badge variant={user?.plan === "free" ? "outline" : "default"} className={user?.plan === "free" ? "" : "bg-brand-purple"}>
+                  {user?.plan === "free" ? t('dashboard.statistics.free') : t('dashboard.statistics.premium')}
+                </Badge>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl md:text-2xl font-bold">
+                  {user?.plan === "free" ? t('dashboard.statistics.free') : t('dashboard.statistics.premium')}
+                </div>
+                {user?.plan === "free" && (
+                  <Link to="/planos" onClick={() => toast.info("Faça upgrade para o plano premium e desbloqueie todos os recursos!")}> 
+                    <Button variant="link" size="sm" className="p-0 h-auto text-xs text-brand-purple">
+                      {t('dashboard.statistics.upgrade')}
+                    </Button>
+                  </Link>
+                )}
+              </CardContent>
             </Card>
           </div>
-        </TabsContent>
-        
-        <TabsContent value="analytics" className="space-y-4">
-          <Card className="shadow-sm">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg md:text-xl">{t('dashboard.charts.progressTitle')}</CardTitle>
-              <CardDescription>
-                {t('dashboard.charts.progressDescription')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="px-0 md:pl-2 overflow-x-auto">
-              <div className="min-w-[400px] sm:min-w-full">
-                <ChartContainer 
-                  config={{
-                    análises: {
-                      label: "Análises",
-                      theme: {
-                        light: "#9b87f5",
-                        dark: "#a48bff"
-                      }
-                    }
-                  }}
-                  className="aspect-[4/3]"
-                >
-                  <LineChart data={performanceData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip content={<ChartTooltipContent />} />
-                    <Legend content={<ChartLegendContent />} />
-                    <Line type="monotone" dataKey="análises" stroke="var(--color-análises, #9b87f5)" strokeWidth={2} dot={{ r: 4 }} />
-                  </LineChart>
-                </ChartContainer>
+          
+          {/* AI-Generated Insights Card */}
+          <InsightsCard />
+          
+          {/* Charts */}
+          <Tabs defaultValue="overview" className="space-y-4">
+            <TabsList className="w-full grid grid-cols-2">
+              <TabsTrigger value="overview">{t('dashboard.tabs.overview')}</TabsTrigger>
+              <TabsTrigger value="analytics">{t('dashboard.tabs.analytics')}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview" className="space-y-4">
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-7">
+                <Card className="col-span-1 md:col-span-4 shadow-sm">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg md:text-xl">{t('dashboard.charts.performanceTitle')}</CardTitle>
+                    <CardDescription>
+                      {t('dashboard.charts.performanceDescription')}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent 
+                    className="px-0 md:pl-2 overflow-x-auto" 
+                    ref={chartContainerRef}
+                  >
+                    <div className="min-w-[400px] sm:min-w-full">
+                      <ChartContainer 
+                        config={{
+                          análises: {
+                            label: "Análises",
+                            theme: {
+                              light: "#9b87f5",
+                              dark: "#a48bff"
+                            }
+                          },
+                          consultas: {
+                            label: "Consultas",
+                            theme: {
+                              light: "#7E69AB",
+                              dark: "#9182C2"
+                            }
+                          }
+                        }}
+                        className="aspect-[4/3]"
+                      >
+                        <BarChart data={performanceData} barGap={4}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip content={<ChartTooltipContent />} />
+                          <Legend content={<ChartLegendContent />} />
+                          <Bar dataKey="análises" fill="var(--color-análises, #9b87f5)" radius={[4, 4, 0, 0]} />
+                          <Bar dataKey="consultas" fill="var(--color-consultas, #7E69AB)" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      </ChartContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="col-span-1 md:col-span-3 shadow-sm">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg md:text-xl">{t('dashboard.recentIdeas.title')}</CardTitle>
+                    <CardDescription>
+                      {t('dashboard.recentIdeas.description')}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {isLoading ? (
+                        <div className="flex items-center justify-center py-4">
+                          <div className="h-4 w-4 rounded-full border-2 border-brand-purple border-t-transparent animate-spin"></div>
+                        </div>
+                      ) : recentIdeas.length > 0 ? (
+                        recentIdeas.map((idea) => (
+                          <div key={idea.id} className="flex items-center">
+                            <div className="space-y-1">
+                              <p className="text-sm font-medium leading-none">
+                                {idea.title}
+                              </p>
+                              <div className="flex items-center gap-2">
+                                <Badge variant="secondary" className="text-xs">
+                                  {new Date(idea.created_at).toLocaleDateString()}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center py-4 text-muted-foreground">
+                          <p>{t('ideas.emptyState.title')}</p>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="link" className="mt-2">
+                                {t('ideas.emptyState.button')}
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-4xl">
+                              <DialogHeader>
+                                <DialogTitle>{t('ideaForm.title')}</DialogTitle>
+                                <DialogDescription>
+                                  {t('ideaForm.subtitle')}
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="py-4">
+                                <IdeaForm />
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Link to="/dashboard/ideias">
+                      <Button variant="outline" size="sm">
+                        {t('dashboard.recentIdeas.viewAll')}
+                      </Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            </TabsContent>
+            
+            <TabsContent value="analytics" className="space-y-4">
+              <Card className="shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg md:text-xl">{t('dashboard.charts.progressTitle')}</CardTitle>
+                  <CardDescription>
+                    {t('dashboard.charts.progressDescription')}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="px-0 md:pl-2 overflow-x-auto">
+                  <div className="min-w-[400px] sm:min-w-full">
+                    <ChartContainer 
+                      config={{
+                        análises: {
+                          label: "Análises",
+                          theme: {
+                            light: "#9b87f5",
+                            dark: "#a48bff"
+                          }
+                        }
+                      }}
+                      className="aspect-[4/3]"
+                    >
+                      <LineChart data={performanceData}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip content={<ChartTooltipContent />} />
+                        <Legend content={<ChartLegendContent />} />
+                        <Line type="monotone" dataKey="análises" stroke="var(--color-análises, #9b87f5)" strokeWidth={2} dot={{ r: 4 }} />
+                      </LineChart>
+                    </ChartContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </>
+      )}
     </div>
   );
 };

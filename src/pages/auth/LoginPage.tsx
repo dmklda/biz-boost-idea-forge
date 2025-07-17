@@ -14,6 +14,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginCredentials } from "@/types/auth";
 import Header from "@/components/Header";
+import { supabase } from "@/integrations/supabase/client";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -22,6 +24,7 @@ const LoginPage = () => {
   const { getSavedIdeaData } = useIdeaForm();
   const [isLoading, setIsLoading] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Form validation schema
   const formSchema = z.object({
@@ -40,13 +43,46 @@ const LoginPage = () => {
   // Check authentication status and redirect if needed
   useEffect(() => {
     if (authState.isAuthenticated && !isRedirecting) {
-      console.log("User is authenticated, redirecting to dashboard");
-      setIsRedirecting(true);
-      
-      // Immediate redirect instead of checking saved data
-      navigate("/dashboard");
+      const savedData = getSavedIdeaData();
+      if (savedData && savedData.idea && savedData.idea.trim().length > 0) {
+        setIsRedirecting(true);
+        localStorage.removeItem('savedIdeaFormData');
+        setIsAnalyzing(true);
+        (async () => {
+          try {
+            const { data: analysisData, error: analysisError } = await supabase.functions.invoke('analyze-idea', {
+              body: JSON.stringify({
+                ideaData: savedData,
+                userId: authState.user?.id,
+                language: navigator.language?.slice(0, 2) || 'pt'
+              })
+            });
+            setIsAnalyzing(false);
+            setIsRedirecting(false);
+            if (analysisError) {
+              toast.error(t('ideaForm.analysisError', 'Erro ao analisar sua ideia. Tente novamente.'));
+              navigate('/dashboard');
+              return;
+            }
+            toast.success(t('ideaForm.analysisSuccess', 'Análise concluída com sucesso!'));
+            if (analysisData && analysisData.ideaId) {
+              navigate(`/dashboard/resultados/${analysisData.ideaId}`);
+            } else {
+              navigate('/dashboard');
+            }
+          } catch (err) {
+            setIsAnalyzing(false);
+            setIsRedirecting(false);
+            toast.error(t('ideaForm.analysisError', 'Erro ao analisar sua ideia. Tente novamente.'));
+            navigate('/dashboard');
+          }
+        })();
+      } else {
+        setIsRedirecting(true);
+        navigate('/dashboard');
+      }
     }
-  }, [authState.isAuthenticated, navigate, isRedirecting]);
+  }, [authState.isAuthenticated, navigate, isRedirecting, getSavedIdeaData, t]);
 
   const onSubmit = async (data: LoginCredentials) => {
     if (isLoading || isRedirecting) return; // Prevent multiple submissions
@@ -60,9 +96,7 @@ const LoginPage = () => {
       
       console.log("Login successful");
       toast.success(t('auth.loginSuccess'));
-      
-      // Immediate redirect instead of waiting for auth state change
-      navigate("/dashboard");
+      // Removido: navigate('/dashboard');
     } catch (error) {
       console.error("Login error:", error);
       toast.error(error instanceof Error ? error.message : t('auth.loginFailed'));
@@ -70,16 +104,15 @@ const LoginPage = () => {
     }
   };
 
-  // If already redirecting, show loading state
-  if (isRedirecting) {
+  // If already redirecting or analisando, show loading state
+  if (isRedirecting || isAnalyzing) {
     return (
       <>
         <Header />
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-background to-background/95 p-4 pt-20">
-          <div className="text-center">
-            <p className="text-lg">{t('auth.redirecting')}</p>
-          </div>
-        </div>
+        <LoadingScreen 
+          message={isAnalyzing ? t('ideaForm.analyzing', 'Analisando sua ideia...') : t('auth.redirecting', 'Redirecionando...')}
+          subMessage={t('loading.wait', 'Isso pode levar alguns segundos. Por favor, aguarde...')}
+        />
       </>
     );
   }

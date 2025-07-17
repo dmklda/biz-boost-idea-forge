@@ -19,6 +19,7 @@ const EditIdeaPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasCredits, setHasCredits] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   useEffect(() => {
     const checkPermissions = async () => {
@@ -140,18 +141,21 @@ const EditIdeaPage = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">
-        {isReanalyzing 
-          ? t('ideaForm.reanalyzeTitle', "Reanalisar Ideia") 
-          : t('ideaForm.editTitle', "Editar Rascunho")}
-      </h1>
-      <p className="text-muted-foreground">
-        {isReanalyzing 
-          ? t('ideaForm.reanalyzeDescription', "Refine sua ideia para obter uma nova análise") 
-          : t('ideaForm.editDescription', "Continue o preenchimento do seu rascunho")}
-      </p>
-      
-      <IdeaForm ideaId={ideaId || undefined} isReanalyzing={isReanalyzing} />
+      {!isAnalyzing && (
+        <>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {isReanalyzing 
+              ? t('ideaForm.reanalyzeTitle', "Reanalisar Ideia") 
+              : t('ideaForm.editTitle', "Editar Rascunho")}
+          </h1>
+          <p className="text-muted-foreground">
+            {isReanalyzing 
+              ? t('ideaForm.reanalyzeDescription', "Refine sua ideia para obter uma nova análise") 
+              : t('ideaForm.editDescription', "Continue o preenchimento do seu rascunho")}
+          </p>
+        </>
+      )}
+      <IdeaForm ideaId={ideaId || undefined} isReanalyzing={isReanalyzing} onAnalysisStateChange={setIsAnalyzing} />
     </div>
   );
 };

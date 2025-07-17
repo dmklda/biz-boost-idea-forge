@@ -26,18 +26,18 @@ export const BudgetLocationStep = ({
   const [error, setError] = useState("");
   
   const locationOptions = [
-    { key: "brazil", value: "Brasil" },
-    { key: "usa", value: "Estados Unidos" },
-    { key: "eu", value: "União Europeia" },
-    { key: "uk", value: "Reino Unido" },
-    { key: "canada", value: "Canadá" },
-    { key: "australia", value: "Austrália" },
-    { key: "newzealand", value: "Nova Zelândia" },
-    { key: "japan", value: "Japão" },
-    { key: "china", value: "China" },
-    { key: "india", value: "Índia" },
-    { key: "global", value: "Global" },
-    { key: "other", value: "Outro" },
+    { key: "brazil" },
+    { key: "usa" },
+    { key: "eu" },
+    { key: "uk" },
+    { key: "canada" },
+    { key: "australia" },
+    { key: "newzealand" },
+    { key: "japan" },
+    { key: "china" },
+    { key: "india" },
+    { key: "global" },
+    { key: "other" },
   ];
   
   const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,8 +75,8 @@ export const BudgetLocationStep = ({
             <Input 
               id="budget"
               type="text"
-              placeholder="0,00"
-              className="pl-10"
+              placeholder={t('ideaForm.budget.placeholder', '0,00')}
+              className="pl-10 transition-all duration-200 focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue"
               value={formData.budget > 0 ? formData.budget : ""}
               onChange={handleBudgetChange}
             />
@@ -87,19 +87,19 @@ export const BudgetLocationStep = ({
       
       <div>
         <Label htmlFor="location" className="text-base font-medium">
-          {t('ideaForm.location.title')}
+          {t('ideaForm.location.title', 'Onde este negócio irá operar?')}
         </Label>
         <Select 
           value={formData.location} 
           onValueChange={(value) => updateFormData("location", value)}
         >
-          <SelectTrigger id="location" className="mt-2">
-            <SelectValue placeholder={t('ideaForm.location.placeholder')} />
+          <SelectTrigger id="location" className="mt-2 transition-all duration-200 focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue">
+            <SelectValue placeholder={t('ideaForm.location.placeholder', 'Selecione uma localização...')} />
           </SelectTrigger>
           <SelectContent>
             {locationOptions.map((opt) => (
-              <SelectItem key={opt.key} value={t(`ideaForm.location.options.${opt.key}`, opt.value)}>
-                {t(`ideaForm.location.options.${opt.key}`, opt.value)}
+              <SelectItem key={opt.key} value={t(`ideaForm.location.options.${opt.key}`)}>
+                {t(`ideaForm.location.options.${opt.key}`)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -107,22 +107,22 @@ export const BudgetLocationStep = ({
       </div>
       
       <div className="flex justify-between pt-4">
-        <Button type="button" variant="outline" onClick={onPrev} disabled={isSubmitting}>
-          {t('common.back', "Voltar")}
+        <Button type="button" variant="outline" onClick={onPrev} disabled={isSubmitting} className="transition-all duration-200 hover:scale-105">
+          {t('common.back', 'Voltar')}
         </Button>
         
         <Button 
           type="submit"
           disabled={isSubmitting}
-          className="bg-brand-blue hover:bg-brand-blue/90 text-white flex items-center gap-2"
+          className="bg-brand-blue hover:bg-brand-blue/90 text-white flex items-center gap-2 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue"
         >
           {isAnalyzing ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              {t('ideaForm.analyzing', "Analisando...")}
+              {t('ideaForm.analyzing', 'Analisando...')}
             </>
           ) : (
-            isSubmitting ? t('common.submitting', "Enviando...") : t('ideaForm.analyze', "Analisar")
+            isSubmitting ? t('common.submitting', 'Enviando...') : t('ideaForm.analyze', 'Analisar')
           )}
         </Button>
       </div>

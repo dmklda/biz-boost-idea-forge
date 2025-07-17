@@ -19,6 +19,7 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
     editingIdeaId, 
     setIsSubmitting, 
     setIsAnalyzing,
+    isAnalyzing,
     resetForm 
   } = useIdeaFormContext();
 
@@ -239,6 +240,7 @@ export const useFormSubmission = (isReanalyzing?: boolean) => {
     showCreditConfirm,
     setShowCreditConfirm,
     handleCreditConfirm,
-    isReanalyzing
+    isReanalyzing,
+    isAnalyzing
   };
 };

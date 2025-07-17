@@ -25,7 +25,7 @@ export const AudienceStep = ({ formData, updateFormData, onNext, onPrev }: Audie
           id="audience"
           aria-label={t('ideaForm.audience.title', 'Quem seria seu público-alvo?')}
           placeholder={t('ideaForm.audience.placeholder', 'Descreva os clientes ideais para seu negócio...')}
-          className="mt-2 resize-none"
+          className="mt-2 resize-none transition-all duration-200 focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue"
           rows={3}
           value={formData.audience}
           onChange={(e) => updateFormData("audience", e.target.value)}
@@ -40,7 +40,7 @@ export const AudienceStep = ({ formData, updateFormData, onNext, onPrev }: Audie
           id="problem"
           aria-label={t('ideaForm.problem.title', 'Qual problema essa ideia resolve?')}
           placeholder={t('ideaForm.problem.placeholder', 'Descreva o problema que seu negócio solucionaria...')}
-          className="mt-2 resize-none"
+          className="mt-2 resize-none transition-all duration-200 focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue"
           rows={3}
           value={formData.problem}
           onChange={(e) => updateFormData("problem", e.target.value)}
@@ -48,14 +48,14 @@ export const AudienceStep = ({ formData, updateFormData, onNext, onPrev }: Audie
         />
       </div>
       <div className="flex justify-between">
-        <Button type="button" variant="outline" onClick={onPrev}>
+        <Button type="button" variant="outline" onClick={onPrev} className="transition-all duration-200 hover:scale-105">
           {t('common.back', 'Voltar')}
         </Button>
         <Button 
           type="button" 
           onClick={onNext}
           disabled={formData.audience.trim().length < 5 || formData.problem.trim().length < 5}
-          className="bg-brand-blue hover:bg-brand-blue/90 text-white"
+          className="bg-brand-blue hover:bg-brand-blue/90 text-white transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue"
         >
           {t('common.next', 'Próximo')}
         </Button>

@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { IdeaForm } from "@/components/IdeaForm";
 import { useState } from "react";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export const DashboardSidebar = ({
   collapsed = false
@@ -18,6 +19,13 @@ export const DashboardSidebar = ({
   const location = useLocation();
   const { logout } = useAuth();
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  // Handler para impedir fechar o modal durante análise
+  const handleDialogOpenChange = (open: boolean) => {
+    if (isAnalyzing && !open) return;
+    setIsAnalysisDialogOpen(open);
+  };
 
   const handleNewAnalysis = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -141,20 +149,32 @@ export const DashboardSidebar = ({
         </Button>
       </div>
 
-      {/* New Analysis Dialog */}
-      <Dialog open={isAnalysisDialogOpen} onOpenChange={setIsAnalysisDialogOpen}>
-        <DialogContent className="sm:max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>{t('ideaForm.title')}</DialogTitle>
-            <DialogDescription>
-              {t('ideaForm.subtitle')}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <IdeaForm onAnalysisComplete={() => setIsAnalysisDialogOpen(false)} />
-          </div>
-        </DialogContent>
-      </Dialog>
+      {isAnalyzing ? (
+        <LoadingScreen />
+      ) : (
+        <>
+          {/* New Analysis Dialog */}
+          <Dialog open={isAnalysisDialogOpen} onOpenChange={handleDialogOpenChange}
+            onInteractOutside={isAnalyzing ? (e) => e.preventDefault() : undefined}
+            onEscapeKeyDown={isAnalyzing ? (e) => e.preventDefault() : undefined}
+          >
+            <DialogContent className="sm:max-w-4xl">
+              <DialogHeader>
+                <DialogTitle>{t('ideaForm.title')}</DialogTitle>
+                <DialogDescription>
+                  {t('ideaForm.subtitle')}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4">
+                <IdeaForm 
+                  onAnalysisComplete={() => setIsAnalysisDialogOpen(false)}
+                  onAnalysisStateChange={setIsAnalyzing}
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
+        </>
+      )}
     </div>
   );
 };

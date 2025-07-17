@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Pencil, Trash2, AlertCircle } from "lucide-react";
 import { IdeaForm } from "@/components/IdeaForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 const DraftsPage = () => {
   const { t } = useTranslation();
@@ -22,6 +23,13 @@ const DraftsPage = () => {
   const [searchParams] = useSearchParams();
   const analyzedIdeaId = searchParams.get('analyzed');
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  // Handler para impedir fechar o modal durante análise
+  const handleDialogOpenChange = useCallback((open: boolean) => {
+    if (isAnalyzing && !open) return;
+    setIsAnalysisDialogOpen(open);
+  }, [isAnalyzing]);
 
   useEffect(() => {
     const fetchDrafts = async () => {
@@ -176,17 +184,27 @@ const DraftsPage = () => {
           ))}
         </div>
       )}
-      <Dialog open={isAnalysisDialogOpen} onOpenChange={setIsAnalysisDialogOpen}>
-        <DialogContent className="sm:max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>{t('ideaForm.title')}</DialogTitle>
-            <DialogDescription>{t('ideaForm.subtitle')}</DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <IdeaForm onAnalysisComplete={() => setIsAnalysisDialogOpen(false)} />
-          </div>
-        </DialogContent>
-      </Dialog>
+      {isAnalyzing ? (
+        <LoadingScreen />
+      ) : (
+        <Dialog open={isAnalysisDialogOpen} onOpenChange={handleDialogOpenChange}
+          onInteractOutside={isAnalyzing ? (e) => e.preventDefault() : undefined}
+          onEscapeKeyDown={isAnalyzing ? (e) => e.preventDefault() : undefined}
+        >
+          <DialogContent className="sm:max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>{t('ideaForm.title')}</DialogTitle>
+              <DialogDescription>{t('ideaForm.subtitle')}</DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <IdeaForm 
+                onAnalysisComplete={() => setIsAnalysisDialogOpen(false)}
+                onAnalysisStateChange={setIsAnalyzing}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
