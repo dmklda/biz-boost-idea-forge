@@ -231,13 +231,76 @@ const IdeaDetailPage = () => {
   const confirmDelete = async () => {
     setDeleting(true);
     try {
-      const { error } = await supabase
+      // First, delete all related data to avoid foreign key constraint violations
+      
+      // Delete generated content
+      const { error: contentError } = await supabase
+        .from('generated_content')
+        .delete()
+        .eq('idea_id', id)
+        .eq('user_id', authState.user?.id);
+
+      if (contentError) {
+        console.error("Error deleting generated content:", contentError);
+        // Continue with deletion even if this fails
+      }
+
+      // Delete advanced analyses
+      const { error: advancedError } = await supabase
+        .from('advanced_analyses')
+        .delete()
+        .eq('idea_id', id)
+        .eq('user_id', authState.user?.id);
+
+      if (advancedError) {
+        console.error("Error deleting advanced analyses:", advancedError);
+        // Continue with deletion even if this fails
+      }
+
+      // Delete idea analyses
+      const { error: analysisError } = await supabase
+        .from('idea_analyses')
+        .delete()
+        .eq('idea_id', id)
+        .eq('user_id', authState.user?.id);
+
+      if (analysisError) {
+        console.error("Error deleting idea analyses:", analysisError);
+        // Continue with deletion even if this fails
+      }
+
+      // Delete idea tags
+      const { error: tagsError } = await supabase
+        .from('idea_tags')
+        .delete()
+        .eq('idea_id', id)
+        .eq('user_id', authState.user?.id);
+
+      if (tagsError) {
+        console.error("Error deleting idea tags:", tagsError);
+        // Continue with deletion even if this fails
+      }
+
+      // Delete idea favorites
+      const { error: favoritesError } = await supabase
+        .from('idea_favorites')
+        .delete()
+        .eq('idea_id', id)
+        .eq('user_id', authState.user?.id);
+
+      if (favoritesError) {
+        console.error("Error deleting idea favorites:", favoritesError);
+        // Continue with deletion even if this fails
+      }
+
+      // Finally, delete the idea itself
+      const { error: ideaError } = await supabase
         .from('ideas')
         .delete()
         .eq('id', id)
         .eq('user_id', authState.user?.id);
 
-      if (error) throw error;
+      if (ideaError) throw ideaError;
 
       toast.success(t('ideas.deleted', 'Ideia excluída com sucesso'));
       navigate("/dashboard/ideias");
