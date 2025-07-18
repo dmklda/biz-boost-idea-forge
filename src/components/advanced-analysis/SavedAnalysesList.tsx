@@ -11,6 +11,8 @@ import { Calendar, FileText, Users, Brain, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import { AdvancedAnalysisModal } from "./AdvancedAnalysisModal";
 
 interface SavedAnalysis {
   id: string;
@@ -27,8 +29,11 @@ export function SavedAnalysesList() {
   const { t } = useTranslation();
   const { authState } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [analyses, setAnalyses] = useState<SavedAnalysis[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedAnalysis, setSelectedAnalysis] = useState<SavedAnalysis | null>(null);
+  const [showAnalysisModal, setShowAnalysisModal] = useState(false);
 
   useEffect(() => {
     if (authState.isAuthenticated) {
@@ -131,82 +136,109 @@ export function SavedAnalysesList() {
 
   if (analyses.length === 0) {
     return (
-      <EmptyState
-        icon={<Brain className="h-10 w-10 text-muted-foreground" />}
-        title={t('analysis.noSavedAnalyses', "Nenhuma análise salva")}
-        description={t('analysis.saveAnalysisDescription', "Salve análises avançadas para consultá-las posteriormente")}
-        action={
-          <Button 
-            variant="outline" 
-            onClick={() => window.open('/dashboard/ideias', '_blank')}
-          >
-            {t('ideas.viewIdeas', "Ver minhas ideias")}
-          </Button>
-        }
-      />
+      <>
+        <EmptyState
+          icon={<Brain className="h-10 w-10 text-muted-foreground" />}
+          title={t('analysis.noSavedAnalyses', "Nenhuma análise salva")}
+          description={t('analysis.saveAnalysisDescription', "Salve análises avançadas para consultá-las posteriormente")}
+          action={
+            <Button 
+              variant="outline" 
+              onClick={() => window.open('/dashboard/ideias', '_blank')}
+            >
+              {t('ideas.viewIdeas', "Ver minhas ideias")}
+            </Button>
+          }
+        />
+        
+        {/* Modal para visualizar análise salva */}
+        {selectedAnalysis && (
+          <AdvancedAnalysisModal
+            ideaId={selectedAnalysis.idea_id}
+            open={showAnalysisModal}
+            onOpenChange={setShowAnalysisModal}
+            savedAnalysisData={selectedAnalysis.analysis_data}
+          />
+        )}
+      </>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {analyses.map(analysis => (
-        <Card key={analysis.id} className="border shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="pb-2">
-            <div className="flex justify-between items-start">
-              <div>
-                <CardTitle className="text-lg">{analysis.idea_title}</CardTitle>
-                <CardDescription className="flex items-center mt-1">
-                  <Calendar className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
-                  <span>
-                    {new Date(analysis.updated_at).toLocaleDateString()} 
-                    {new Date(analysis.created_at).toDateString() !== new Date(analysis.updated_at).toDateString() && 
-                      ` (${t('common.updated', "Atualizado")})`
-                    }
-                  </span>
-                </CardDescription>
+    <>
+      <div className="space-y-6">
+        {analyses.map(analysis => (
+          <Card key={analysis.id} className="border shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="pb-2">
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle className="text-lg">{analysis.idea_title}</CardTitle>
+                  <CardDescription className="flex items-center mt-1">
+                    <Calendar className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+                    <span>
+                      {new Date(analysis.updated_at).toLocaleDateString()} 
+                      {new Date(analysis.created_at).toDateString() !== new Date(analysis.updated_at).toDateString() && 
+                        ` (${t('common.updated', "Atualizado")})`
+                      }
+                    </span>
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-destructive"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    handleDelete(analysis.id);
+                  }}
+                  title={t('common.delete', "Excluir")}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
+            </CardHeader>
+            <CardContent className="pb-4">
+              <p className="text-sm text-muted-foreground line-clamp-3">
+                {getAnalysisPreview(analysis.analysis_data)}
+              </p>
+            </CardContent>
+            <CardFooter className="pt-0 pb-4 flex justify-between">
               <Button
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-destructive"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  handleDelete(analysis.id);
-                }}
-                title={t('common.delete', "Excluir")}
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate(`/dashboard/ideias/${analysis.idea_id}`)}
+                className="text-muted-foreground hover:text-foreground"
               >
-                <Trash2 className="h-4 w-4" />
+                <FileText className="h-4 w-4 mr-1.5" />
+                {t('ideas.viewIdea', "Ver ideia")}
               </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="pb-4">
-            <p className="text-sm text-muted-foreground line-clamp-3">
-              {getAnalysisPreview(analysis.analysis_data)}
-            </p>
-          </CardContent>
-          <CardFooter className="pt-0 pb-4 flex justify-between">
-            <Button
-              variant="ghost" 
-              size="sm"
-              onClick={() => window.open(`/dashboard/ideias/${analysis.idea_id}`, '_blank')}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <FileText className="h-4 w-4 mr-1.5" />
-              {t('ideas.viewIdea', "Ver ideia")}
-            </Button>
-            <Button
-              variant="default"
-              size="sm"
-              className="bg-brand-purple hover:bg-brand-purple/90"
-              onClick={() => window.open(`/dashboard/analises-avancadas/${analysis.id}`, '_blank')}
-            >
-              <Brain className="h-4 w-4 mr-1.5" />
-              {t('analysis.viewAnalysis', "Ver análise")}
-            </Button>
-          </CardFooter>
-        </Card>
-      ))}
-    </div>
+              <Button
+                variant="default"
+                size="sm"
+                className="bg-brand-purple hover:bg-brand-purple/90"
+                onClick={() => {
+                  setSelectedAnalysis(analysis);
+                  setShowAnalysisModal(true);
+                }}
+              >
+                <Brain className="h-4 w-4 mr-1.5" />
+                {t('analysis.viewAnalysis', "Ver análise")}
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+      
+      {/* Modal para visualizar análise salva */}
+      {selectedAnalysis && (
+        <AdvancedAnalysisModal
+          ideaId={selectedAnalysis.idea_id}
+          open={showAnalysisModal}
+          onOpenChange={setShowAnalysisModal}
+          savedAnalysisData={selectedAnalysis.analysis_data}
+        />
+      )}
+    </>
   );
 }

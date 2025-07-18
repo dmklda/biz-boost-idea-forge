@@ -785,7 +785,7 @@ const ResultsPage = () => {
       {/* Cards de recomendações */}
       {safeGetArray(recommendations, 'action_items').length > 0 && (
         <UICard className="mb-6 p-4">
-          <h2 className="text-lg font-semibold mb-2">{t('results.recommendations', 'Recomendações Principais')}</h2>
+          <h2 className="text-lg font-semibold mb-2">{t('results.recommendationsTitle', 'Recomendações Principais')}</h2>
           <div className="grid gap-2 md:grid-cols-2">
             {safeGetArray(recommendations, 'action_items').map((item: string, idx: number) => (
               <div key={idx} className="bg-brand-blue/10 border-l-4 border-brand-blue rounded p-3 text-brand-blue font-medium">

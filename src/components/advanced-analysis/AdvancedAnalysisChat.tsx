@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface AdvancedAnalysisChatProps {
   ideaId: string;
@@ -21,6 +23,27 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   error?: boolean;
+}
+
+// Componente para renderizar markdown
+function MarkdownRenderer({ content }: { content: string }) {
+  return (
+    <div className="prose prose-sm max-w-none prose-gray">
+      <ReactMarkdown 
+        remarkPlugins={[remarkGfm]}
+        components={{
+          p: ({ children }) => <p className="mb-2 leading-relaxed">{children}</p>,
+          strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+          em: ({ children }) => <em className="italic">{children}</em>,
+          ul: ({ children }) => <ul className="list-disc list-inside space-y-1 mb-2">{children}</ul>,
+          ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 mb-2">{children}</ol>,
+          li: ({ children }) => <li className="ml-2">{children}</li>,
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    </div>
+  );
 }
 
 export function AdvancedAnalysisChat({
@@ -59,8 +82,8 @@ export function AdvancedAnalysisChat({
           console.error("Error loading saved messages:", error);
           toast({
             variant: "destructive",
-            title: t("errors.loadingError", "Erro ao carregar mensagens"),
-            description: t("errors.tryAgainLater", "Tente novamente mais tarde."),
+            title: t("errors.loadingError"),
+            description: t("errors.tryAgainLater"),
           });
         } else if (chatMessages && chatMessages.length > 0) {
           // Format saved messages
@@ -72,7 +95,7 @@ export function AdvancedAnalysisChat({
           setMessages(formattedMessages);
           
           // Check if there's already a welcome message
-          const hasWelcome = chatMessages.some(msg => msg.role === "assistant" && msg.content.includes(t("advancedAnalysis.chatWelcome", "Olá!")));
+          const hasWelcome = chatMessages.some(msg => msg.role === "assistant" && msg.content.includes(t("advancedAnalysis.chatWelcome")));
           setHasWelcomeMessage(hasWelcome);
         } 
       } catch (err) {
@@ -92,10 +115,7 @@ export function AdvancedAnalysisChat({
         {
           id: "initial",
           role: "assistant",
-          content: t(
-            "advancedAnalysis.chatWelcome",
-            "Olá! Como posso te ajudar a entender melhor sua análise avançada?"
-          ),
+          content: t("advancedAnalysis.chatWelcome"),
         },
       ]);
       setHasWelcomeMessage(true);
@@ -168,14 +188,14 @@ export function AdvancedAnalysisChat({
       const errorResponse: Message = {
         id: Date.now().toString() + "-error",
         role: "assistant",
-        content: t("errors.chatError", "Desculpe, ocorreu um erro ao conectar com a IA. Tente novamente."),
+        content: t("errors.chatError"),
         error: true,
       };
       setMessages((prevMessages) => [...prevMessages, errorResponse]);
       toast({
         variant: "destructive",
-        title: t("common.errorOccurred", "Ocorreu um erro"),
-        description: t("errors.chatErrorDetail", "Não foi possível obter uma resposta da IA."),
+        title: t("common.errorOccurred"),
+        description: t("errors.chatErrorDetail"),
       });
     } finally {
       setIsSending(false);
@@ -215,7 +235,7 @@ export function AdvancedAnalysisChat({
             }`}
           >
             {message.error && <AlertTriangle className="inline-block h-4 w-4 mr-2 text-red-500" />}
-            {message.content}
+            <MarkdownRenderer content={message.content} />
           </div>
         </div>
       </div>
@@ -224,11 +244,6 @@ export function AdvancedAnalysisChat({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-6 py-4 border-b">
-        <Button variant="ghost" size="sm" onClick={onBack}>
-          {t("common.back", "Voltar")}
-        </Button>
-      </div>
 
       <div className="flex-1 overflow-hidden">
         <ScrollArea className="h-full px-6 pt-6">
@@ -236,7 +251,7 @@ export function AdvancedAnalysisChat({
             {isLoading ? (
               <div className="flex justify-center p-4">
                 <div className="animate-pulse text-muted-foreground">
-                  {t("common.loading", "Carregando...")}
+                  {t("common.loading")}
                 </div>
               </div>
             ) : (
@@ -252,7 +267,7 @@ export function AdvancedAnalysisChat({
       <div className="px-6 py-4 border-t bg-white sticky bottom-0 z-10">
         <div className="flex items-center space-x-2">
           <Input
-            placeholder={t("advancedAnalysis.chatPlaceholder", "Digite sua mensagem...")}
+            placeholder={t("advancedAnalysis.chatPlaceholder")}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
@@ -265,11 +280,11 @@ export function AdvancedAnalysisChat({
           />
           <Button onClick={handleSend} disabled={isSending}>
             {isSending ? (
-              <>{t("common.sending", "Enviando...")}</>
+              <>{t("advancedAnalysis.sending")}</>
             ) : (
               <>
                 <Send className="h-4 w-4 mr-2" />
-                {t("common.send", "Enviar")}
+                {t("advancedAnalysis.send")}
               </>
             )}
           </Button>
