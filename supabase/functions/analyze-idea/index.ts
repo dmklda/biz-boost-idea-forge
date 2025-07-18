@@ -105,8 +105,11 @@ Deno.serve(async (req) => {
       }
     }
     
-    // Generate analysis with OpenAI, passing in the language
-    const analysis = await generateAnalysis(ideaData, userLanguage);
+    // Generate analysis and business name with OpenAI, passing in the language
+    const [analysis, generatedName] = await Promise.all([
+      generateAnalysis(ideaData, userLanguage),
+      generateBusinessName(ideaData, userLanguage)
+    ]);
     
     // Create or update the idea in the database using the admin client
     let finalIdeaId = ideaId;
@@ -125,6 +128,7 @@ Deno.serve(async (req) => {
           monetization: ideaData.monetization,
           budget: ideaData.budget,
           location: ideaData.location,
+          generated_name: generatedName,
           is_draft: false,
           status: 'analyzed'
         })
@@ -151,6 +155,7 @@ Deno.serve(async (req) => {
           monetization: ideaData.monetization,
           budget: ideaData.budget,
           location: ideaData.location,
+          generated_name: generatedName,
           is_draft: false, // Ensure draft is set to false when analyzed
           status: 'analyzed'
         })
@@ -277,6 +282,80 @@ async function generateAnalysis(ideaData, preferredLanguage = 'pt') {
   } catch (error) {
     console.error("Error generating analysis:", error);
     throw new Error(`Failed to generate analysis: ${error.message}`);
+  }
+}
+
+// Function to generate business name using OpenAI
+async function generateBusinessName(ideaData, preferredLanguage = 'pt') {
+  try {
+    console.log("Generating business name for idea:", ideaData.idea);
+    
+    // Determine the language for the prompt
+    let systemPrompt = "You are a creative naming expert. Generate a professional, memorable, and catchy business name based on the provided business idea. Return only the name, without any additional explanations.";
+    let userPrompt = `Based on this business idea, suggest 1 creative and professional name for the business/product:
+
+Title: ${ideaData.idea}
+Description: ${ideaData.idea}
+${ideaData.audience ? `Target Audience: ${ideaData.audience}` : ''}
+${ideaData.problem ? `Problem it solves: ${ideaData.problem}` : ''}
+
+Return only the name, without additional explanations.`;
+
+    if (preferredLanguage === 'pt') {
+      systemPrompt = "Você é um especialista em naming e branding. Gere nomes profissionais, memoráveis e criativos para empresas/produtos baseados na descrição fornecida. Retorne apenas o nome, sem explicações adicionais.";
+      userPrompt = `Baseado nesta ideia de negócio, sugira 1 nome criativo e profissional para a empresa/produto:
+
+Título: ${ideaData.idea}
+Descrição: ${ideaData.idea}
+${ideaData.audience ? `Público-alvo: ${ideaData.audience}` : ''}
+${ideaData.problem ? `Problema que resolve: ${ideaData.problem}` : ''}
+
+Retorne apenas o nome, sem explicações adicionais.`;
+    } else if (preferredLanguage === 'es') {
+      systemPrompt = "Eres un experto en naming y branding. Genera nombres profesionales, memorables y creativos para empresas/productos basados en la descripción proporcionada. Devuelve solo el nombre, sin explicaciones adicionales.";
+      userPrompt = `Basado en esta idea de negocio, sugiere 1 nombre creativo y profesional para la empresa/producto:
+
+Título: ${ideaData.idea}
+Descripción: ${ideaData.idea}
+${ideaData.audience ? `Público objetivo: ${ideaData.audience}` : ''}
+${ideaData.problem ? `Problema que resuelve: ${ideaData.problem}` : ''}
+
+Devuelve solo el nombre, sin explicaciones adicionales.`;
+    }
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user", 
+          content: userPrompt
+        }
+      ],
+      temperature: 0.8,
+      max_tokens: 50
+    });
+
+    if (!response.choices || response.choices.length === 0) {
+      throw new Error("OpenAI returned an empty response for business name");
+    }
+
+    const generatedName = response.choices[0].message.content?.trim();
+    
+    if (!generatedName) {
+      throw new Error("OpenAI returned empty business name");
+    }
+
+    console.log("Business name generated successfully:", generatedName);
+    return generatedName;
+
+  } catch (error) {
+    console.error("Error generating business name:", error);
+    // Return a fallback name if generation fails
+    return ideaData.idea || "Nova Empresa";
   }
 }
 

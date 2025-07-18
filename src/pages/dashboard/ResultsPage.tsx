@@ -400,7 +400,9 @@ const ResultsPage = () => {
       <Card className="mb-6 border shadow overflow-hidden">
         <CardContent className="p-0">
           <div className="bg-gradient-to-r from-brand-blue to-brand-purple p-4 md:p-6 text-white">
-            <h1 className="text-lg md:text-2xl font-bold mb-2 break-words">{idea.title}</h1>
+            <h1 className="text-lg md:text-2xl font-bold mb-2 break-words">
+              {idea.generated_name || idea.title}
+            </h1>
             <p className="text-white/80 text-sm md:text-base break-words">{idea.description}</p>
           </div>
           

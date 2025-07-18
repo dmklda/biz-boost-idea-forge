@@ -377,10 +377,15 @@ const IdeaDetailPage = () => {
               </div>
               <h2
                 className="text-xl md:text-3xl font-bold truncate break-words max-h-16 md:max-h-24 overflow-hidden bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 dark:from-white dark:via-blue-100 dark:to-purple-100 bg-clip-text text-transparent"
-                title={idea.title}
+                title={idea.generated_name || idea.title}
               >
-                {idea.title}
+                {idea.generated_name || idea.title}
               </h2>
+              {idea.generated_name && (
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  Ideia: {idea.title}
+                </p>
+              )}
             </div>
             
             {/* Action Buttons */}

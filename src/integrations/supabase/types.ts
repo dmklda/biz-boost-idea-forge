@@ -361,6 +361,7 @@ export type Database = {
           budget: number | null
           created_at: string
           description: string
+          generated_name: string | null
           has_competitors: string | null
           id: string
           is_draft: boolean
@@ -377,6 +378,7 @@ export type Database = {
           budget?: number | null
           created_at?: string
           description: string
+          generated_name?: string | null
           has_competitors?: string | null
           id?: string
           is_draft?: boolean
@@ -393,6 +395,7 @@ export type Database = {
           budget?: number | null
           created_at?: string
           description?: string
+          generated_name?: string | null
           has_competitors?: string | null
           id?: string
           is_draft?: boolean
