@@ -20,6 +20,7 @@ interface Idea {
   description: string;
   audience?: string;
   problem?: string;
+  generated_name?: string;
 }
 
 interface LogoGeneratorModalProps {
@@ -38,6 +39,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
   const [customPrompt, setCustomPrompt] = useState("");
   const [customName, setCustomName] = useState("");
   const [useCustomName, setUseCustomName] = useState(false);
+  const [nameSource, setNameSource] = useState<"original" | "generated" | "custom">("original");
   
   // New gpt-image-1 specific options
   const [transparentBackground, setTransparentBackground] = useState(true);
@@ -62,7 +64,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
     try {
       const { data, error } = await supabase
         .from('ideas')
-        .select('id, title, description, audience, problem')
+        .select('id, title, description, audience, problem, generated_name')
         .eq('user_id', authState.user.id)
         .eq('is_draft', false)
         .order('created_at', { ascending: false })
@@ -96,7 +98,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
 
       const generatedName = data.name;
       setCustomName(generatedName);
-      setUseCustomName(true);
+      setNameSource("custom");
       toast.success('Nome gerado com sucesso!');
     } catch (error) {
       console.error('Error generating name:', error);
@@ -122,16 +124,24 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
           p_amount: 3,
           p_feature: 'logo_generation',
           p_item_id: selectedIdea.id,
-          p_description: `Geração de logo para: ${useCustomName && customName ? customName : selectedIdea.title}`
+          p_description: `Geração de logo para: ${nameSource === "generated" && selectedIdea.generated_name ? selectedIdea.generated_name : nameSource === "custom" && customName ? customName : selectedIdea.title}`
         }
       );
 
       if (creditsError) throw creditsError;
 
-      // Prepare idea with custom name if provided
+      // Determine the name to use based on user selection
+      let nameToUse = selectedIdea.title;
+      if (nameSource === "generated" && selectedIdea.generated_name) {
+        nameToUse = selectedIdea.generated_name;
+      } else if (nameSource === "custom" && customName) {
+        nameToUse = customName;
+      }
+
+      // Prepare idea with selected name
       const ideaForLogo = {
         ...selectedIdea,
-        title: useCustomName && customName ? customName : selectedIdea.title
+        title: nameToUse
       };
 
       // Generate logo with new gpt-image-1 options
@@ -163,7 +173,13 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
   const downloadLogo = () => {
     if (!generatedLogo) return;
     
-    const fileName = useCustomName && customName ? customName : ideas.find(i => i.id === selectedIdeaId)?.title || 'logo';
+    const selectedIdea = ideas.find(i => i.id === selectedIdeaId);
+    let fileName = selectedIdea?.title || 'logo';
+    if (nameSource === "generated" && selectedIdea?.generated_name) {
+      fileName = selectedIdea.generated_name;
+    } else if (nameSource === "custom" && customName) {
+      fileName = customName;
+    }
     const fileExtension = outputFormat === 'jpeg' ? 'jpg' : outputFormat;
     const link = document.createElement('a');
     link.href = generatedLogo;
@@ -292,7 +308,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
               )}
             </div>
 
-            {/* Custom Name Section */}
+            {/* Name Selection Section */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Label>Nome para o Logo</Label>
@@ -313,26 +329,74 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                 </Button>
               </div>
               
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="use-custom-name"
-                  checked={useCustomName}
-                  onChange={(e) => setUseCustomName(e.target.checked)}
-                  className="rounded border-gray-300"
-                />
-                <Label htmlFor="use-custom-name" className="text-sm">
-                  Usar nome personalizado
-                </Label>
-              </div>
+              <div className="space-y-3">
+                {/* Original name option */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id="name-original"
+                    name="nameSource"
+                    value="original"
+                    checked={nameSource === "original"}
+                    onChange={(e) => setNameSource(e.target.value as "original")}
+                    className="rounded border-gray-300"
+                  />
+                  <Label htmlFor="name-original" className="text-sm flex-1">
+                    Usar nome original da ideia
+                    {selectedIdeaId && (
+                      <span className="block text-xs text-muted-foreground mt-1">
+                        "{ideas.find(i => i.id === selectedIdeaId)?.title}"
+                      </span>
+                    )}
+                  </Label>
+                </div>
 
-              {useCustomName && (
-                <Input
-                  placeholder="Digite o nome para aparecer no logo"
-                  value={customName}
-                  onChange={(e) => setCustomName(e.target.value)}
-                />
-              )}
+                {/* Generated name option */}
+                {selectedIdeaId && ideas.find(i => i.id === selectedIdeaId)?.generated_name && (
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      id="name-generated"
+                      name="nameSource"
+                      value="generated"
+                      checked={nameSource === "generated"}
+                      onChange={(e) => setNameSource(e.target.value as "generated")}
+                      className="rounded border-gray-300"
+                    />
+                    <Label htmlFor="name-generated" className="text-sm flex-1">
+                      Usar nome gerado automaticamente
+                      <span className="block text-xs text-muted-foreground mt-1">
+                        "{ideas.find(i => i.id === selectedIdeaId)?.generated_name}"
+                      </span>
+                    </Label>
+                  </div>
+                )}
+
+                {/* Custom name option */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id="name-custom"
+                    name="nameSource"
+                    value="custom"
+                    checked={nameSource === "custom"}
+                    onChange={(e) => setNameSource(e.target.value as "custom")}
+                    className="rounded border-gray-300"
+                  />
+                  <Label htmlFor="name-custom" className="text-sm">
+                    Usar nome personalizado
+                  </Label>
+                </div>
+
+                {nameSource === "custom" && (
+                  <Input
+                    placeholder="Digite o nome para aparecer no logo"
+                    value={customName}
+                    onChange={(e) => setCustomName(e.target.value)}
+                    className="ml-6"
+                  />
+                )}
+              </div>
             </div>
 
             {/* Logo Type */}
