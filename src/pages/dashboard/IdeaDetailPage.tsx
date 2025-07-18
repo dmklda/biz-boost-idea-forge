@@ -4,7 +4,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ArrowLeft, BarChart3, Edit, Trash2, Star, Calendar, Target, DollarSign, MapPin, Users, TrendingUp, Sparkles, Zap, Lightbulb, Shield, AlertTriangle } from "lucide-react";
 import ProgressRing from "@/components/ui/progress-ring";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,6 +24,99 @@ import {
   AlertDialogAction,
   AlertDialogCancel
 } from "@/components/ui/alert-dialog";
+
+const TargetAudienceIcon = () => (
+  <div className="relative w-10 h-10 group">
+    {/* Background gradient circle */}
+    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 shadow-lg group-hover:shadow-xl transition-all duration-300" />
+    
+    {/* Animated glow effect */}
+    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-400/30 via-indigo-400/30 to-purple-500/30 animate-pulse" />
+    
+    {/* Outer ring animation */}
+    <div className="absolute inset-0 rounded-full border-2 border-white/20 group-hover:border-white/40 transition-all duration-300" />
+    
+    {/* Main icon content */}
+    <div className="relative w-full h-full flex items-center justify-center">
+      <Users className="w-5 h-5 text-white group-hover:scale-110 transition-transform duration-300" />
+    </div>
+
+    {/* Sparkles */}
+    <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-white/80 rounded-full animate-ping" />
+    <div className="absolute -bottom-0.5 -left-0.5 w-1.5 h-1.5 bg-white/60 rounded-full animate-ping delay-300" />
+    <div className="absolute top-1 -left-1 w-1 h-1 bg-white/40 rounded-full animate-ping delay-500" />
+  </div>
+);
+
+
+
+const BudgetIcon = () => (
+  <div className="relative w-10 h-10 group">
+    {/* Background gradient circle */}
+    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 shadow-lg group-hover:shadow-xl transition-all duration-300" />
+
+    {/* Animated glow effect */}
+    <div className="absolute inset-0 rounded-full bg-emerald-400/30 animate-pulse" />
+
+    {/* Outer ring animation */}
+    <div className="absolute inset-0 rounded-full border-2 border-white/10 group-hover:border-white/30 transition-all duration-300" />
+
+    {/* Main icon content */}
+    <div className="relative w-full h-full flex items-center justify-center">
+      <DollarSign className="w-5 h-5 text-white group-hover:scale-110 transition-transform duration-300" />
+    </div>
+
+    {/* Subtle sparkles */}
+    <div className="absolute -top-1 -right-1 w-2 h-2 bg-white/70 rounded-full animate-ping" />
+    <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-white/50 rounded-full animate-ping delay-200" />
+  </div>
+);
+
+// Modern Location Icon Component
+const LocationIcon = () => (
+  <div className="relative w-10 h-10 group">
+    {/* Background gradient circle */}
+    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-rose-600 shadow-lg group-hover:shadow-xl transition-all duration-300" />
+    
+    {/* Animated glow effect */}
+    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400/30 via-pink-400/30 to-rose-500/30 animate-pulse" />
+    
+    {/* Outer ring animation */}
+    <div className="absolute inset-0 rounded-full border-2 border-white/20 group-hover:border-white/40 transition-all duration-300" />
+    
+    {/* Main icon content */}
+    <div className="relative w-full h-full flex items-center justify-center">
+      {/* Location pin */}
+      <div className="relative group-hover:scale-110 transition-transform duration-300">
+        {/* Pin body */}
+        <div className="w-3 h-4 bg-white rounded-t-full shadow-sm relative">
+          {/* Pin highlight */}
+          <div className="absolute top-0.5 left-0.5 w-1 h-1 bg-white/60 rounded-full" />
+        </div>
+        
+        {/* Pin point */}
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2">
+          <div className="w-2 h-2 bg-white transform rotate-45 shadow-sm" />
+        </div>
+        
+        {/* Pin dot */}
+        <div className="absolute top-1 left-1/2 transform -translate-x-1/2">
+          <div className="w-1 h-1 bg-purple-600 rounded-full shadow-sm" />
+        </div>
+        
+        {/* Pin shadow */}
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1">
+          <div className="w-2 h-0.5 bg-black/10 rounded-full" />
+        </div>
+      </div>
+    </div>
+    
+    {/* Multiple sparkle effects */}
+    <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-white/80 rounded-full animate-ping" />
+    <div className="absolute -bottom-0.5 -left-0.5 w-1.5 h-1.5 bg-white/60 rounded-full animate-ping delay-300" />
+    <div className="absolute top-1 -left-1 w-1 h-1 bg-white/40 rounded-full animate-ping delay-500" />
+  </div>
+);
 
 const IdeaDetailPage = () => {
   const { t } = useTranslation();
@@ -202,7 +294,7 @@ const IdeaDetailPage = () => {
               <AlertTriangle className="h-8 w-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-              Erro ao carregar ideia
+              {t('results.summary.errorLoadingIdea', 'Erro ao carregar ideia')}
             </h2>
             <p className="text-muted-foreground mb-6">
               {error || "A ideia solicitada não foi encontrada."}
@@ -211,8 +303,8 @@ const IdeaDetailPage = () => {
               onClick={() => navigate("/dashboard")}
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              Voltar ao Dashboard
-            </Button>
+              {t('common.backToDashboard', 'Voltar ao Dashboard')}
+        </Button>
           </CardContent>
         </Card>
       </div>
@@ -259,15 +351,15 @@ const IdeaDetailPage = () => {
       {/* Header with Back Button */}
       <div className="sticky top-0 z-10 backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-center gap-4 p-4 max-w-7xl mx-auto">
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => navigate("/dashboard/ideias")}
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={() => navigate("/dashboard/ideias")}
             className="flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-300"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline font-medium">Voltar</span>
-          </Button>
+        >
+          <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline font-medium">{t('common.back', 'Voltar')}</span>
+        </Button>
         </div>
       </div>
       
@@ -305,7 +397,7 @@ const IdeaDetailPage = () => {
                 className="flex items-center gap-2 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
               >
                 <Edit className="h-4 w-4" />
-                <span className="hidden sm:inline">Editar</span>
+                <span className="hidden sm:inline">{t('common.edit', 'Editar')}</span>
               </Button>
               <Button
                 variant="outline"
@@ -315,7 +407,7 @@ const IdeaDetailPage = () => {
               >
                 <BarChart3 className="h-4 w-4" />
                 <span className="hidden sm:inline">
-                  {analysis ? "Ver Análise" : "Analisar"}
+                  {analysis ? t('analysis.viewAnalysis', 'Ver Análise') : t('ideas.analyze', 'Analisar')}
                 </span>
               </Button>
               {analysis && (
@@ -325,7 +417,7 @@ const IdeaDetailPage = () => {
                   size="sm"
                 >
                   <Sparkles className="h-4 w-4" />
-                  <span className="hidden sm:inline">Análise Avançada</span>
+                  <span className="hidden sm:inline">{t('advancedAnalysis.button', 'Análise Avançada')}</span>
                 </Button>
               )}
               <Button
@@ -335,7 +427,7 @@ const IdeaDetailPage = () => {
                 className="flex items-center gap-2 text-red-600 hover:text-red-700 border-red-200 hover:border-red-300 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/20 transition-all duration-300"
               >
                 <Trash2 className="h-4 w-4" />
-                <span className="hidden sm:inline">Excluir</span>
+                <span className="hidden sm:inline">{t('common.delete', 'Excluir')}</span>
               </Button>
             </div>
           </CardHeader>
@@ -355,88 +447,66 @@ const IdeaDetailPage = () => {
                 ideaId={idea.id}
                 onTagsChange={(tags) => handleTagsUpdate(tags.map(t => t.name))}
               />
-            </div>
+              </div>
               
             {/* Idea Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {idea.audience && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-100 dark:border-blue-800">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
-                    <Users className="h-5 w-5 text-white" />
-                  </div>
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-100 dark:border-blue-800 hover:shadow-lg transition-all duration-300 group">
+                  <TargetAudienceIcon />
                   <div>
-                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Público-alvo</p>
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">{t('results.targetAudience', 'Público-alvo')}</p>
                     <p className="text-sm text-slate-600 dark:text-slate-400 break-words">{idea.audience}</p>
                   </div>
-                </div>
-              )}
+                  </div>
+                )}
                 
               {idea.budget && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-100 dark:border-green-800">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center">
-                    <DollarSign className="h-5 w-5 text-white" />
-                  </div>
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-100 dark:border-green-800 hover:shadow-lg transition-all duration-300 group">
+                  <BudgetIcon />
                   <div>
-                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Orçamento</p>
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-green-700 dark:group-hover:text-green-300 transition-colors">{t('results.summary.investment', 'Orçamento')}</p>
                     <p className="text-sm text-slate-600 dark:text-slate-400">R$ {idea.budget}</p>
                   </div>
-                </div>
-              )}
+                  </div>
+                )}
                 
               {idea.location && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-100 dark:border-purple-800">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                    <MapPin className="h-5 w-5 text-white" />
-                  </div>
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-100 dark:border-purple-800 hover:shadow-lg transition-all duration-300 group">
+                  <LocationIcon />
                   <div>
-                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Localização</p>
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors">{t('results.summary.location', 'Localização')}</p>
                     <p className="text-sm text-slate-600 dark:text-slate-400 break-words">{idea.location}</p>
                   </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
           
-        {/* Analysis Tabs */}
+        {/* Analysis Summary - Only show if analysis exists */}
         {analysis && (
           <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/5 via-purple-600/5 to-pink-600/5 pointer-events-none" />
-            <Tabs defaultValue="summary" className="w-full relative">
-              <div className="p-6 pb-0">
-                <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 mb-6 overflow-x-auto bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
-                  <TabsTrigger value="summary" className="text-xs sm:text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm rounded-lg transition-all duration-300">
-                    <Lightbulb className="h-4 w-4 mr-2" />
-                    Resumo
-                  </TabsTrigger>
-                  <TabsTrigger value="swot" className="text-xs sm:text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm rounded-lg transition-all duration-300">
-                    <Shield className="h-4 w-4 mr-2" />
-                    SWOT
-                  </TabsTrigger>
-                  <TabsTrigger value="market" className="text-xs sm:text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm rounded-lg transition-all duration-300">
-                    <Target className="h-4 w-4 mr-2" />
-                    Mercado
-                  </TabsTrigger>
-                  <TabsTrigger value="competitors" className="text-xs sm:text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm rounded-lg transition-all duration-300">
-                    <Users className="h-4 w-4 mr-2" />
-                    Concorrentes
-                  </TabsTrigger>
-                  <TabsTrigger value="financial" className="text-xs sm:text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm rounded-lg transition-all duration-300">
-                    <DollarSign className="h-4 w-4 mr-2" />
-                    Financeiro
-                  </TabsTrigger>
-                  <TabsTrigger value="recommendations" className="text-xs sm:text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm rounded-lg transition-all duration-300">
-                    <TrendingUp className="h-4 w-4 mr-2" />
-                    Recomendações
-                  </TabsTrigger>
-                </TabsList>
+            <CardHeader className="relative p-6">
+              <div className="flex items-center gap-3">
+                <Lightbulb className="h-6 w-6 text-yellow-500" />
+                <h3 className="text-xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 dark:from-white dark:via-blue-100 dark:to-purple-100 bg-clip-text text-transparent">
+                  {t('results.summary.title', 'Resumo da Análise')}
+                </h3>
               </div>
-              
-              <TabsContent value="summary" className="p-6">
-                <div className="grid md:grid-cols-2 gap-6">
+            </CardHeader>
+            
+            <CardContent className="relative p-6">
+              <div className="space-y-8">
+                {/* Score and Status Section */}
+                <div className="grid md:grid-cols-3 gap-6">
                   <div className="space-y-4">
-                    <h4 className="font-semibold text-lg text-slate-700 dark:text-slate-300">Pontuação Geral</h4>
-                    <div className="flex items-center mb-4">
+                    <h4 className="font-semibold text-lg text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                      <BarChart3 className="h-5 w-5 text-blue-500" />
+                      {t('results.summary.generalScore', 'Pontuação Geral')}
+                    </h4>
+                    <div className="flex items-center">
                       <div className="mr-6">
                         <ProgressRing 
                           progress={analysis.score} 
@@ -446,306 +516,177 @@ const IdeaDetailPage = () => {
                           animated={true}
                           showValue={true}
                         />
-                      </div>
-                      <div>
+                        </div>
+                        <div>
                         <p className="font-semibold text-slate-700 dark:text-slate-300">{analysis.status}</p>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">Status da análise</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">{t('results.status.label', 'Status da análise')}</p>
                       </div>
                     </div>
                   </div>
+                  
                   <div className="space-y-4">
-                    <h4 className="font-semibold text-lg text-slate-700 dark:text-slate-300">Principais Pontos Fortes</h4>
-                    <ul className="space-y-2">
-                      {safeGetArray(swotAnalysis, 'strengths').slice(0, 3).map((strength: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400">
-                          <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2 flex-shrink-0" />
-                          <span className="break-words">{strength}</span>
-                        </li>
-                      ))}
-                      {safeGetArray(swotAnalysis, 'strengths').length === 0 && (
-                        <li className="text-sm text-slate-500 dark:text-slate-400 italic">Nenhum ponto forte identificado</li>
-                      )}
-                    </ul>
-                  </div>
-                </div>
-              </TabsContent>
-        
-              <TabsContent value="swot" className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="p-6 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800">
-                    <h4 className="font-semibold text-green-800 dark:text-green-300 mb-4 flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-green-500" />
-                      Forças
+                    <h4 className="font-semibold text-lg text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                      <Target className="h-5 w-5 text-green-500" />
+                      {t('results.summary.viability', 'Viabilidade')}
                     </h4>
-                    <ul className="space-y-2">
-                      {safeGetArray(swotAnalysis, 'strengths').map((item: string, i: number) => (
-                        <li key={i} className="text-sm text-slate-600 dark:text-slate-400 break-words flex items-start gap-2">
-                          <div className="w-1 h-1 rounded-full bg-green-500 mt-2 flex-shrink-0" />
-                          {item}
-                        </li>
-                      ))}
-                      {safeGetArray(swotAnalysis, 'strengths').length === 0 && (
-                        <li className="text-sm text-slate-500 dark:text-slate-400 italic">Nenhum item identificado</li>
-                      )}
-                    </ul>
+                    <div className="p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-green-700 dark:text-green-300">{t('results.summary.marketPotential', 'Potencial de Mercado')}</span>
+                        <span className="text-sm text-green-600 dark:text-green-400">
+                          {analysis.score >= 80 ? t('results.summary.high', 'Alto') : analysis.score >= 60 ? t('results.summary.medium', 'Médio') : t('results.summary.low', 'Baixo')}
+                        </span>
+                      </div>
+                      <div className="w-full bg-green-200 dark:bg-green-800 rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all duration-1000"
+                          style={{ width: `${analysis.score}%` }}
+                        />
+                    </div>
+                    </div>
                   </div>
+                  
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-lg text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5 text-purple-500" />
+                      {t('results.summary.growth', 'Crescimento')}
+                    </h4>
+                    <div className="p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-purple-700 dark:text-purple-300">{t('results.summary.trend', 'Tendência')}</span>
+                        <span className="text-sm text-purple-600 dark:text-purple-400">
+                          {analysis.score >= 75 ? t('results.summary.growing', 'Crescente') : analysis.score >= 50 ? t('results.summary.stable', 'Estável') : t('results.summary.uncertain', 'Incerta')}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <TrendingUp className="h-4 w-4 text-purple-500" />
+                        <span className="text-sm text-purple-600 dark:text-purple-400">
+                          {analysis.score >= 75 ? t('results.summary.expandingMarket', 'Mercado em expansão') : analysis.score >= 50 ? t('results.summary.matureMarket', 'Mercado maduro') : t('results.summary.emergingMarket', 'Mercado emergente')}
+                        </span>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
                     
-                  <div className="p-6 rounded-xl bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border border-red-200 dark:border-red-800">
-                    <h4 className="font-semibold text-red-800 dark:text-red-300 mb-4 flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-red-500" />
-                      Fraquezas
+                {/* Quick Overview Section */}
+                <div className="space-y-4">
+                  <h4 className="font-semibold text-lg text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                    <Lightbulb className="h-5 w-5 text-yellow-500" />
+                    {t('results.summary.ideaOverview', 'Visão Geral da Ideia')}
+                  </h4>
+                  <div className="p-6 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800">
+                    <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
+                      {idea.description}
+                    </p>
+                    </div>
+                </div>
+
+                {/* Key Insights Grid */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-lg text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                      <Shield className="h-5 w-5 text-green-500" />
+                      {t('results.summary.mainStrengths', 'Principais Pontos Fortes')}
                     </h4>
-                    <ul className="space-y-2">
-                      {safeGetArray(swotAnalysis, 'weaknesses').map((item: string, i: number) => (
-                        <li key={i} className="text-sm text-slate-600 dark:text-slate-400 break-words flex items-start gap-2">
-                          <div className="w-1 h-1 rounded-full bg-red-500 mt-2 flex-shrink-0" />
-                          {item}
+                    <ul className="space-y-3">
+                      {safeGetArray(swotAnalysis, 'strengths').slice(0, 4).map((strength: string, i: number) => (
+                        <li key={i} className="flex items-start gap-3 p-3 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800">
+                          <div className="w-2 h-2 rounded-full bg-green-500 mt-2 flex-shrink-0" />
+                          <span className="text-sm text-slate-700 dark:text-slate-300 break-words">{strength}</span>
+                        </li>
+                      ))}
+                      {safeGetArray(swotAnalysis, 'strengths').length === 0 && (
+                        <li className="text-sm text-slate-500 dark:text-slate-400 italic p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
+                          {t('results.summary.noStrengthsIdentified', 'Nenhum ponto forte identificado')}
+                        </li>
+                      )}
+                  </ul>
+                </div>
+                
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-lg text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                      <AlertTriangle className="h-5 w-5 text-amber-500" />
+                      {t('results.summary.mainChallenges', 'Principais Desafios')}
+                    </h4>
+                    <ul className="space-y-3">
+                      {safeGetArray(swotAnalysis, 'weaknesses').slice(0, 4).map((weakness: string, i: number) => (
+                        <li key={i} className="flex items-start gap-3 p-3 rounded-lg bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800">
+                          <div className="w-2 h-2 rounded-full bg-amber-500 mt-2 flex-shrink-0" />
+                          <span className="text-sm text-slate-700 dark:text-slate-300 break-words">{weakness}</span>
                         </li>
                       ))}
                       {safeGetArray(swotAnalysis, 'weaknesses').length === 0 && (
-                        <li className="text-sm text-slate-500 dark:text-slate-400 italic">Nenhum item identificado</li>
-                      )}
-                    </ul>
-                  </div>
-                    
-                  <div className="p-6 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800">
-                    <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-4 flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-blue-500" />
-                      Oportunidades
-                    </h4>
-                    <ul className="space-y-2">
-                      {safeGetArray(swotAnalysis, 'opportunities').map((item: string, i: number) => (
-                        <li key={i} className="text-sm text-slate-600 dark:text-slate-400 break-words flex items-start gap-2">
-                          <div className="w-1 h-1 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
-                          {item}
+                        <li className="text-sm text-slate-500 dark:text-slate-400 italic p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
+                          {t('results.summary.noChallengesIdentified', 'Nenhum desafio identificado')}
                         </li>
-                      ))}
-                      {safeGetArray(swotAnalysis, 'opportunities').length === 0 && (
-                        <li className="text-sm text-slate-500 dark:text-slate-400 italic">Nenhum item identificado</li>
                       )}
-                    </ul>
-                  </div>
-                    
-                  <div className="p-6 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800">
-                    <h4 className="font-semibold text-amber-800 dark:text-amber-300 mb-4 flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-amber-500" />
-                      Ameaças
-                    </h4>
-                    <ul className="space-y-2">
-                      {safeGetArray(swotAnalysis, 'threats').map((item: string, i: number) => (
-                        <li key={i} className="text-sm text-slate-600 dark:text-slate-400 break-words flex items-start gap-2">
-                          <div className="w-1 h-1 rounded-full bg-amber-500 mt-2 flex-shrink-0" />
-                          {item}
-                        </li>
-                      ))}
-                      {safeGetArray(swotAnalysis, 'threats').length === 0 && (
-                        <li className="text-sm text-slate-500 dark:text-slate-400 italic">Nenhuma ameaça identificada</li>
-                      )}
-                    </ul>
+                  </ul>
                   </div>
                 </div>
-              </TabsContent>
-
-              <TabsContent value="market" className="p-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">Tamanho do Mercado</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 break-words p-4 rounded-lg bg-slate-50 dark:bg-slate-800">
-                        {marketAnalysis.market_size || "Não especificado"}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">Perfil do Público-Alvo</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 break-words p-4 rounded-lg bg-slate-50 dark:bg-slate-800">
-                        {marketAnalysis.target_audience || "Não especificado"}
-                      </p>
-                    </div>
+                
+                {/* Market & Financial Quick Stats */}
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="p-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800">
+                    <h5 className="font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2">
+                      <Users className="h-4 w-4" />
+                      {t('results.summary.targetAudience', 'Público-Alvo')}
+                    </h5>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 break-words">
+                      {idea.audience || t('common.notSpecified', 'Não especificado')}
+                    </p>
                   </div>
-                    
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">Potencial de Crescimento</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 break-words p-4 rounded-lg bg-slate-50 dark:bg-slate-800">
-                        {marketAnalysis.growth_potential || "Não especificado"}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">Barreiras de Entrada</h4>
-                      <ul className="space-y-2">
-                        {safeGetArray(marketAnalysis, 'barriers_to_entry').map((item: string, i: number) => (
-                          <li key={i} className="text-sm text-slate-600 dark:text-slate-400 break-words flex items-start gap-2 p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
-                            <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-2 flex-shrink-0" />
-                            {item}
-                          </li>
-                        ))}
-                        {safeGetArray(marketAnalysis, 'barriers_to_entry').length === 0 && (
-                          <li className="text-sm text-slate-500 dark:text-slate-400 italic">Nenhum item identificado</li>
-                        )}
-                      </ul>
-                    </div>
+                  
+                  <div className="p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800">
+                    <h5 className="font-semibold text-green-700 dark:text-green-300 mb-2 flex items-center gap-2">
+                      <DollarSign className="h-4 w-4" />
+                      {t('results.summary.investment', 'Investimento')}
+                    </h5>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      {idea.budget ? `R$ ${idea.budget}` : t('common.notSpecified', 'Não especificado')}
+                    </p>
+                  </div>
+                  
+                  <div className="p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800">
+                    <h5 className="font-semibold text-purple-700 dark:text-purple-300 mb-2 flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      {t('results.summary.location', 'Localização')}
+                    </h5>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 break-words">
+                      {idea.location || t('common.notSpecified', 'Não especificado')}
+                    </p>
                   </div>
                 </div>
-              </TabsContent>
-
-              <TabsContent value="competitors" className="p-6">
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="font-semibold mb-4 text-slate-700 dark:text-slate-300">Principais Concorrentes</h4>
-                    {safeGetArray(competitorAnalysis, 'key_competitors').length > 0 ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {safeGetArray(competitorAnalysis, 'key_competitors').map((competitor: string, i: number) => (
-                          <div key={i} className="p-4 rounded-xl bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-800 dark:to-gray-800 border border-slate-200 dark:border-slate-700">
-                            <p className="font-medium break-words text-slate-700 dark:text-slate-300">{competitor}</p>
+                
+                {/* Next Steps */}
+                <div className="space-y-4">
+                  <h4 className="font-semibold text-lg text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-blue-500" />
+                    {t('results.summary.recommendedNextSteps', 'Próximos Passos Recomendados')}
+                  </h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {safeGetArray(recommendations, 'next_steps').slice(0, 4).map((step: string, i: number) => (
+                      <div key={i} className="p-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800">
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center font-bold flex-shrink-0 mt-0.5">
+                            {i + 1}
                           </div>
-                        ))}
+                          <span className="text-sm text-slate-700 dark:text-slate-300 break-words">{step}</span>
+                        </div>
                       </div>
-                    ) : (
-                      <p className="text-sm text-slate-500 dark:text-slate-400 italic">Nenhum concorrente específico identificado</p>
+                    ))}
+                    {safeGetArray(recommendations, 'next_steps').length === 0 && (
+                      <div className="col-span-2 p-4 rounded-xl bg-slate-50 dark:bg-slate-800">
+                        <p className="text-sm text-slate-500 dark:text-slate-400 italic">
+                          {t('results.summary.noNextStepsIdentified', 'Nenhum próximo passo identificado')}
+                        </p>
+                      </div>
                     )}
                   </div>
-                    
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">Vantagem Competitiva</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 break-words p-4 rounded-lg bg-slate-50 dark:bg-slate-800">
-                        {competitorAnalysis.competitive_advantage || "Não especificado"}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">Lacunas de Mercado</h4>
-                      <ul className="space-y-2">
-                        {safeGetArray(competitorAnalysis, 'market_gaps').map((gap: string, i: number) => (
-                          <li key={i} className="text-sm text-slate-600 dark:text-slate-400 break-words flex items-start gap-2 p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
-                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
-                            {gap}
-                          </li>
-                        ))}
-                        {safeGetArray(competitorAnalysis, 'market_gaps').length === 0 && (
-                          <li className="text-sm text-slate-500 dark:text-slate-400 italic">Nenhuma lacuna identificada</li>
-                        )}
-                      </ul>
-                    </div>
-                  </div>
                 </div>
-              </TabsContent>
-
-              <TabsContent value="financial" className="p-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">Potencial de Receita</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 break-words p-4 rounded-lg bg-slate-50 dark:bg-slate-800">
-                        {financialAnalysis.revenue_potential || "Não especificado"}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">Investimento Inicial</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 break-words p-4 rounded-lg bg-slate-50 dark:bg-slate-800">
-                        {financialAnalysis.initial_investment || "Não especificado"}
-                      </p>
-                    </div>
-                  </div>
-                    
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">Estimativa de Break-Even</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 break-words p-4 rounded-lg bg-slate-50 dark:bg-slate-800">
-                        {financialAnalysis.break_even_estimate || "Não especificado"}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">Sugestões de Financiamento</h4>
-                      <ul className="space-y-2">
-                        {safeGetArray(financialAnalysis, 'funding_suggestions').map((suggestion: string, i: number) => (
-                          <li key={i} className="text-sm text-slate-600 dark:text-slate-400 break-words flex items-start gap-2 p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
-                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2 flex-shrink-0" />
-                            {suggestion}
-                          </li>
-                        ))}
-                        {safeGetArray(financialAnalysis, 'funding_suggestions').length === 0 && (
-                          <li className="text-sm text-slate-500 dark:text-slate-400 italic">Nenhuma sugestão identificada</li>
-                        )}
-                      </ul>
-                    </div>
-                  </div>
                 </div>
-              </TabsContent>
-        
-              <TabsContent value="recommendations" className="p-6">
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="font-semibold mb-4 text-slate-700 dark:text-slate-300">Ações Recomendadas</h4>
-                    <ul className="space-y-2">
-                      {safeGetArray(recommendations, 'action_items').map((item: string, i: number) => (
-                        <li key={i} className="text-sm text-slate-600 dark:text-slate-400 break-words flex items-start gap-2 p-3 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800">
-                          <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
-                          {item}
-                        </li>
-                      ))}
-                      {safeGetArray(recommendations, 'action_items').length === 0 && (
-                        <li className="text-sm text-slate-500 dark:text-slate-400 italic">Nenhuma ação recomendada</li>
-                      )}
-                    </ul>
-                  </div>
-                
-                  <div>
-                    <h4 className="font-semibold mb-4 text-slate-700 dark:text-slate-300">Próximos Passos</h4>
-                    <ul className="space-y-2">
-                      {safeGetArray(recommendations, 'next_steps').map((step: string, i: number) => (
-                        <li key={i} className="text-sm text-slate-600 dark:text-slate-400 break-words flex items-start gap-2 p-3 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800">
-                          <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2 flex-shrink-0" />
-                          {step}
-                        </li>
-                      ))}
-                      {safeGetArray(recommendations, 'next_steps').length === 0 && (
-                        <li className="text-sm text-slate-500 dark:text-slate-400 italic">Nenhum próximo passo identificado</li>
-                      )}
-                    </ul>
-                  </div>
-                
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">Desafios Potenciais</h4>
-                      <ul className="space-y-2">
-                        {safeGetArray(recommendations, 'potential_challenges').map((challenge: string, i: number) => (
-                          <li key={i} className="text-sm text-slate-600 dark:text-slate-400 break-words flex items-start gap-2 p-3 rounded-lg bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border border-red-200 dark:border-red-800">
-                            <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-2 flex-shrink-0" />
-                            {challenge}
-                          </li>
-                        ))}
-                        {safeGetArray(recommendations, 'potential_challenges').length === 0 && (
-                          <li className="text-sm text-slate-500 dark:text-slate-400 italic">Nenhum desafio identificado</li>
-                        )}
-                      </ul>
-                    </div>
-                
-                    <div>
-                      <h4 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">Recursos Sugeridos</h4>
-                      <ul className="space-y-2">
-                        {safeGetArray(recommendations, 'suggested_resources').map((resource: string, i: number) => (
-                          <li key={i} className="text-sm text-slate-600 dark:text-slate-400 break-words flex items-start gap-2 p-3 rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800">
-                            <div className="w-1.5 h-1.5 rounded-full bg-purple-500 mt-2 flex-shrink-0" />
-                            {resource}
-                          </li>
-                        ))}
-                        {safeGetArray(recommendations, 'suggested_resources').length === 0 && (
-                          <li className="text-sm text-slate-500 dark:text-slate-400 italic">Nenhum recurso sugerido</li>
-                        )}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </Card>
+              </CardContent>
+            </Card>
         )}
-      </div>
+          </div>
 
       <AdvancedAnalysisModal
         open={showAdvancedAnalysis}

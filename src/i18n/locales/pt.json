@@ -333,7 +333,33 @@
     "tryAdvanced": "Experimente nossa Análise Avançada!",
     "noNextSteps": "Nenhum próximo passo identificado",
     "noChallenges": "Nenhum desafio identificado",
-    "noResources": "Nenhum recurso identificado"
+    "noResources": "Nenhum recurso identificado",
+    "summary": {
+      "generalScore": "Pontuação Geral",
+      "viability": "Viabilidade",
+      "growth": "Crescimento",
+      "marketPotential": "Potencial de Mercado",
+      "trend": "Tendência",
+      "high": "Alto",
+      "medium": "Médio",
+      "low": "Baixo",
+      "growing": "Crescente",
+      "stable": "Estável",
+      "uncertain": "Incerta",
+      "expandingMarket": "Mercado em expansão",
+      "matureMarket": "Mercado maduro",
+      "emergingMarket": "Mercado emergente",
+      "ideaOverview": "Visão Geral da Ideia",
+      "mainStrengths": "Principais Pontos Fortes",
+      "mainChallenges": "Principais Desafios",
+      "targetAudience": "Público-Alvo",
+      "investment": "Investimento",
+      "location": "Localização",
+      "recommendedNextSteps": "Próximos Passos Recomendados",
+      "noStrengthsIdentified": "Nenhum ponto forte identificado",
+      "noChallengesIdentified": "Nenhum desafio identificado",
+      "noNextStepsIdentified": "Nenhum próximo passo identificado"
+    }
   },
   "settings": {
     "personalInfoDesc": "Personalize suas informações de perfil",
@@ -766,7 +792,7 @@
     "title": "Mapa Mental"
   },
   "analysis": {
-    "viewAnalysis": "Visualizar análise",
+    "viewAnalysis": "Visualizar Resultado",
     "market": "Mercado",
     "audience": "Audiência",
     "monetization": "Monetização",
