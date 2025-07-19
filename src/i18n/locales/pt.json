@@ -835,21 +835,10 @@
     "success": "Sucesso",
     "analyzed": "Analisada",
     "pending": "Pendente",
-    "advanced": "Avançada",
+    "advanced": "Análise Avançada",
     "detailed": "Detalhada",
     "deleteTitle": "Excluir Análise",
-    "deleteConfirm": "Tem certeza que deseja excluir esta análise? Esta ação não pode ser desfeita.",
-    "deleteSuccess": "Análise excluída com sucesso",
-    "noPreview": "Clique para visualizar a análise completa",
-    "noSavedAnalyses": "Nenhuma análise salva",
-    "saveAnalysisDescription": "Salve análises avançadas para consultá-las posteriormente",
-    "viewAnalysis": "Ver Análise",
-    "savedAnalyses": "Análises Avançadas Salvas",
-    "savedAnalysesDescription": "Veja e gerencie suas análises avançadas salvas",
-    "market": "Mercado",
-    "audience": "Audiência",
-    "monetization": "Monetização",
-    "growth": "Crescimento"
+    "deleteConfirm": "Tem certeza que deseja excluir esta análise? Esta ação não pode ser desfeita."
   },
   "ideaForm": {
     "ctaTitle": "Pronto para explorar sua ideia?",
