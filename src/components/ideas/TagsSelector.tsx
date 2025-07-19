@@ -247,6 +247,8 @@ export const TagsSelector = ({ ideaId, onTagsChange }: TagsSelectorProps) => {
             key={tag.id} 
             name={tag.name} 
             color={tag.color}
+            ideaId={ideaId}
+            onRemove={fetchIdeaTags}
           />
         ))}
         
