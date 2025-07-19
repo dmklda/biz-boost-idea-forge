@@ -24,6 +24,13 @@ import {
   AlertDialogAction,
   AlertDialogCancel
 } from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 
 const TargetAudienceIcon = () => (
   <div className="relative w-10 h-10 group">
@@ -360,7 +367,7 @@ const IdeaDetailPage = () => {
               {t('results.summary.errorLoadingIdea', 'Erro ao carregar ideia')}
             </h2>
             <p className="text-muted-foreground mb-6">
-              {error || "A ideia solicitada não foi encontrada."}
+              {error || t('ideas.notFound', 'A ideia solicitada não foi encontrada.')}
             </p>
             <Button 
               onClick={() => navigate("/dashboard")}
@@ -430,73 +437,164 @@ const IdeaDetailPage = () => {
         {/* Main Idea Card */}
         <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 pointer-events-none" />
-          <CardHeader className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 animate-pulse" />
-                <Badge variant="secondary" className="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 dark:from-blue-900 dark:to-purple-900 dark:text-blue-300">
-                  {analysis ? "Analisada" : "Pendente"}
-                </Badge>
-              </div>
-              <h2
-                className="text-xl md:text-3xl font-bold truncate break-words max-h-16 md:max-h-24 overflow-hidden bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 dark:from-white dark:via-blue-100 dark:to-purple-100 bg-clip-text text-transparent"
-                title={idea.generated_name || idea.title}
-              >
-                {idea.generated_name || idea.title}
-              </h2>
-              {idea.generated_name && (
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                  Ideia: {idea.title}
-                </p>
-              )}
+          <CardHeader className="relative p-6">
+            {/* Status and Title Section */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-2 h-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 animate-pulse" />
+              <Badge variant="secondary" className="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 dark:from-blue-900 dark:to-purple-900 dark:text-blue-300">
+                {analysis ? t('analysis.analyzed', 'Analisada') : t('analysis.pending', 'Pendente')}
+              </Badge>
             </div>
             
-            {/* Action Buttons */}
-            <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
-              <FavoriteButton
-                ideaId={idea.id}
-                isFavorite={idea.is_favorite}
-                size="default"
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleEdit}
-                className="flex items-center gap-2 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
-              >
-                <Edit className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('common.edit', 'Editar')}</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleAnalyze}
-                className="flex items-center gap-2 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
-              >
-                <BarChart3 className="h-4 w-4" />
-                <span className="hidden sm:inline">
-                  {analysis ? t('analysis.viewAnalysis', 'Ver Análise') : t('ideas.analyze', 'Analisar')}
-                </span>
-              </Button>
-              {analysis && (
-                <Button
-                  onClick={() => setShowAdvancedAnalysis(true)}
-                  className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
-                  size="sm"
-                >
-                  <Sparkles className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('advancedAnalysis.button', 'Análise Avançada')}</span>
-                </Button>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleDelete}
-                className="flex items-center gap-2 text-red-600 hover:text-red-700 border-red-200 hover:border-red-300 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/20 transition-all duration-300"
-              >
-                <Trash2 className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('common.delete', 'Excluir')}</span>
-              </Button>
+            {/* Title Section with All Action Buttons */}
+            <div className="mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-start gap-3 min-w-0">
+                {/* Title and Favorite Button Row */}
+                <div className="flex items-start gap-3 min-w-0 flex-1">
+                  <h2
+                    className="text-lg sm:text-xl md:text-3xl font-bold break-words bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 dark:from-white dark:via-blue-100 dark:to-purple-100 bg-clip-text text-transparent leading-tight flex-1 min-w-0"
+                    title={idea.generated_name || idea.title}
+                  >
+                    {idea.generated_name || idea.title}
+                  </h2>
+                  
+                  {/* Favorite Button - Mobile only */}
+                  <div className="flex md:hidden">
+                    <FavoriteButton
+                      ideaId={idea.id}
+                      isFavorite={idea.is_favorite}
+                      size="sm"
+                    />
+                  </div>
+                </div>
+                
+                {/* Action Buttons - Desktop with Text */}
+                <div className="hidden md:flex items-center gap-2 flex-shrink-0 overflow-hidden">
+                  <FavoriteButton
+                    ideaId={idea.id}
+                    isFavorite={idea.is_favorite}
+                    size="sm"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleEdit}
+                    className="flex items-center gap-2 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
+                  >
+                    <Edit className="h-4 w-4" />
+                    <span>{t('common.edit', 'Editar')}</span>
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAnalyze}
+                    className="flex items-center gap-2 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
+                  >
+                    <BarChart3 className="h-4 w-4" />
+                    <span>
+                      {analysis ? t('analysis.viewAnalysis', 'Ver Análise') : t('ideas.analyze', 'Analisar')}
+                    </span>
+                  </Button>
+                  
+                  {analysis && (
+                    <Button
+                      onClick={() => setShowAdvancedAnalysis(true)}
+                      className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+                      size="sm"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      <span>{t('advancedAnalysis.button', 'Análise Avançada')}</span>
+                    </Button>
+                  )}
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDelete}
+                    className="flex items-center gap-2 text-red-600 hover:text-red-700 border-red-200 hover:border-red-300 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/20 transition-all duration-300"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span>{t('common.delete', 'Excluir')}</span>
+                  </Button>
+                </div>
+                
+                {/* Action Buttons - Compact (Icons Only) */}
+                <div className="flex md:hidden items-center justify-center sm:justify-start gap-3 sm:gap-2 flex-shrink-0 overflow-hidden w-full sm:w-auto">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleEdit}
+                          className="flex items-center gap-1 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300 px-3 py-2"
+                        >
+                          <Edit className="h-5 w-5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{t('common.edit', 'Editar')}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleAnalyze}
+                          className="flex items-center gap-1 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300 px-3 py-2"
+                        >
+                          <BarChart3 className="h-5 w-5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{t('analysis.viewAnalysis', 'Ver Análise')}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  {analysis && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            onClick={() => setShowAdvancedAnalysis(true)}
+                            className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-1 px-3 py-2"
+                            size="sm"
+                          >
+                            <Sparkles className="h-5 w-5" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{t('advancedAnalysis.button', 'Análise Avançada')}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                  
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleDelete}
+                          className="flex items-center gap-1 text-red-600 hover:text-red-700 border-red-200 hover:border-red-300 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/20 transition-all duration-300 px-3 py-2"
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{t('common.delete', 'Excluir')}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </div>
             </div>
           </CardHeader>
           

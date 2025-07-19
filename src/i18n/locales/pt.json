@@ -220,6 +220,7 @@
       "viable": "Viável",
       "unviable": "Inviável",
       "moderate": "Moderado",
+      "moderado": "Moderado",
       "viável": "Viável",
       "inviável": "Inviável",
       "desafiador": "Desafiador",
@@ -334,7 +335,10 @@
     "noNextSteps": "Nenhum próximo passo identificado",
     "noChallenges": "Nenhum desafio identificado",
     "noResources": "Nenhum recurso identificado",
+    "scoreEvolution": "Evolução da Pontuação",
+    "compareHistory": "Comparar Histórico",
     "summary": {
+      "title": "Resumo da Análise",
       "generalScore": "Pontuação Geral",
       "viability": "Viabilidade",
       "growth": "Crescimento",
