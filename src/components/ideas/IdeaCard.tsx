@@ -220,7 +220,7 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
           {idea.tags && idea.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
               {idea.tags.slice(0, 3).map((tag, index) => (
-                <TagBadge key={index} tag={tag} />
+                <TagBadge key={index} tag={tag} ideaId={idea.id} onRemove={onUpdate} />
               ))}
               {idea.tags.length > 3 && (
                 <Badge variant="outline" className="text-xs">
