@@ -7,12 +7,23 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, FileText, Users, Brain, Trash2 } from "lucide-react";
+import { Calendar, FileText, Users, Brain, Trash2, Sparkles, BarChart3, Lightbulb, Clock, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { AdvancedAnalysisModal } from "./AdvancedAnalysisModal";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel
+} from "@/components/ui/alert-dialog";
 
 interface SavedAnalysis {
   id: string;
@@ -34,6 +45,9 @@ export function SavedAnalysesList() {
   const [loading, setLoading] = useState(true);
   const [selectedAnalysis, setSelectedAnalysis] = useState<SavedAnalysis | null>(null);
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deletingAnalysisId, setDeletingAnalysisId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (authState.isAuthenticated) {
@@ -63,17 +77,25 @@ export function SavedAnalysesList() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDeleteClick = (analysisId: string) => {
+    setDeletingAnalysisId(analysisId);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingAnalysisId) return;
+    
+    setDeleting(true);
     try {
       const { error } = await supabase
         .from('saved_analyses')
         .delete()
-        .eq('id', id);
+        .eq('id', deletingAnalysisId);
         
       if (error) throw error;
       
       // Update the UI after successful deletion
-      setAnalyses(analyses.filter(analysis => analysis.id !== id));
+      setAnalyses(analyses.filter(analysis => analysis.id !== deletingAnalysisId));
       
       toast.success(t('common.deleted', "Excluído!") + ". " + 
         t('analysis.deleteSuccess', "Análise excluída com sucesso"));
@@ -81,6 +103,10 @@ export function SavedAnalysesList() {
       console.error("Error deleting analysis:", error);
       toast.error(t('errors.deleteError', "Erro ao excluir análise") + ". " + 
         t('errors.tryAgainLater', "Tente novamente mais tarde"));
+    } finally {
+      setDeleting(false);
+      setShowDeleteDialog(false);
+      setDeletingAnalysisId(null);
     }
   };
 
@@ -113,20 +139,63 @@ export function SavedAnalysesList() {
     return String(analysisData).substring(0, 120) + "...";
   };
 
+  // Get analysis score from data
+  const getAnalysisScore = (analysisData: any) => {
+    if (!analysisData) return null;
+    
+    if (typeof analysisData === 'object') {
+      // Try to find score in various possible locations
+      if (analysisData.score) return analysisData.score;
+      if (analysisData.summary?.score) return analysisData.summary.score;
+      if (analysisData.viability_score) return analysisData.viability_score;
+      if (analysisData.analysis?.score) return analysisData.analysis.score;
+    }
+    
+    return null;
+  };
+
+  // Get status color based on score
+  const getStatusColor = (score: number) => {
+    if (score >= 70) return "from-green-500 to-emerald-500";
+    if (score >= 40) return "from-yellow-500 to-orange-500";
+    return "from-red-500 to-pink-500";
+  };
+
+  const getStatusText = (score: number) => {
+    if (score >= 70) return t('ideas.status.viable', 'Viável');
+    if (score >= 40) return t('ideas.status.moderate', 'Moderado');
+    return t('ideas.status.unviable', 'Inviável');
+  };
+
   if (loading) {
     return (
-      <div className="space-y-6">
-        {[1, 2].map(i => (
-          <Card key={i} className="border shadow-sm">
-            <CardHeader>
-              <Skeleton className="h-6 w-2/3" />
-              <Skeleton className="h-4 w-1/3" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2, 3, 4, 5, 6].map(i => (
+          <Card key={i} className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl overflow-hidden h-full flex flex-col">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-pink-600/5 to-rose-600/5 pointer-events-none" />
+            <CardHeader className="relative pb-4">
+              <div className="flex justify-between items-start">
+                <div className="space-y-2 flex-1">
+                  <Skeleton className="h-6 w-2/3" />
+                  <Skeleton className="h-4 w-1/3" />
+                </div>
+                <Skeleton className="h-8 w-8 rounded-full" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <Skeleton className="h-24 w-full" />
+            <CardContent className="relative pb-4 flex-grow">
+              <Skeleton className="h-20 w-full mb-4" />
+              <div className="flex gap-2 mb-4">
+                <Skeleton className="h-6 w-20" />
+                <Skeleton className="h-6 w-24" />
+              </div>
+              <div className="flex gap-4">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-20" />
+              </div>
             </CardContent>
-            <CardFooter>
-              <Skeleton className="h-9 w-20" />
+            <CardFooter className="relative pt-0 pb-6 flex justify-between mt-auto">
+              <Skeleton className="h-9 w-24" />
+              <Skeleton className="h-9 w-28" />
             </CardFooter>
           </Card>
         ))}
@@ -137,19 +206,27 @@ export function SavedAnalysesList() {
   if (analyses.length === 0) {
     return (
       <>
-        <EmptyState
-          icon={<Brain className="h-10 w-10 text-muted-foreground" />}
-          title={t('analysis.noSavedAnalyses', "Nenhuma análise salva")}
-          description={t('analysis.saveAnalysisDescription', "Salve análises avançadas para consultá-las posteriormente")}
-          action={
+        <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-pink-600/5 to-rose-600/5 pointer-events-none" />
+          <CardContent className="relative p-12 text-center">
+            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+              <Brain className="h-8 w-8 text-white" />
+            </div>
+            <h3 className="text-xl font-bold mb-2 bg-gradient-to-r from-slate-900 via-purple-900 to-pink-900 dark:from-white dark:via-purple-100 dark:to-pink-100 bg-clip-text text-transparent">
+              {t('analysis.noSavedAnalyses', "Nenhuma análise salva")}
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-md mx-auto">
+              {t('analysis.saveAnalysisDescription', "Salve análises avançadas para consultá-las posteriormente")}
+            </p>
             <Button 
-              variant="outline" 
-              onClick={() => window.open('/dashboard/ideias', '_blank')}
+              onClick={() => navigate('/dashboard/ideias')}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
             >
+              <Lightbulb className="h-4 w-4 mr-2" />
               {t('ideas.viewIdeas', "Ver minhas ideias")}
             </Button>
-          }
-        />
+          </CardContent>
+        </Card>
         
         {/* Modal para visualizar análise salva */}
         {selectedAnalysis && (
@@ -166,68 +243,117 @@ export function SavedAnalysesList() {
 
   return (
     <>
-      <div className="space-y-6">
-        {analyses.map(analysis => (
-          <Card key={analysis.id} className="border shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-lg">{analysis.idea_title}</CardTitle>
-                  <CardDescription className="flex items-center mt-1">
-                    <Calendar className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
-                    <span>
-                      {new Date(analysis.updated_at).toLocaleDateString()} 
-                      {new Date(analysis.created_at).toDateString() !== new Date(analysis.updated_at).toDateString() && 
-                        ` (${t('common.updated', "Atualizado")})`
-                      }
-                    </span>
-                  </CardDescription>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {analyses.map(analysis => {
+          const score = getAnalysisScore(analysis.analysis_data);
+          const isUpdated = new Date(analysis.created_at).toDateString() !== new Date(analysis.updated_at).toDateString();
+          
+          return (
+            <Card key={analysis.id} className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group overflow-hidden h-full flex flex-col">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-pink-600/5 to-rose-600/5 group-hover:opacity-100 opacity-0 transition-opacity duration-300 pointer-events-none" />
+              
+              <CardHeader className="relative pb-4">
+                <div className="flex justify-between items-start">
+                  <div className="flex items-start gap-3 flex-1 min-w-0">
+                    <div className="p-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <Sparkles className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-bold text-lg line-clamp-2 text-slate-900 dark:text-slate-100 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                        {analysis.idea_title}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Calendar className="h-3.5 w-3.5 text-slate-500" />
+                        <span className="text-sm text-slate-600 dark:text-slate-400">
+                          {new Date(analysis.updated_at).toLocaleDateString()}
+                        </span>
+                        {isUpdated && (
+                          <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800">
+                            <Clock className="h-3 w-3 mr-1" />
+                            {t('common.updated', "Atualizado")}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-all duration-300"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick(analysis.id);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:text-destructive"
+              </CardHeader>
+              
+              <CardContent className="relative pb-4 flex-grow">
+                <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed mb-4">
+                  {getAnalysisPreview(analysis.analysis_data)}
+                </p>
+                
+                {/* Score Badge */}
+                {score !== null && (
+                  <div className="mb-4">
+                    <Badge 
+                      className={cn(
+                        "text-xs font-semibold px-3 py-1 bg-gradient-to-r shadow-lg",
+                        getStatusColor(score)
+                      )}
+                    >
+                      <BarChart3 className="h-3 w-3 mr-1" />
+                      {getStatusText(score)} ({score})
+                    </Badge>
+                  </div>
+                )}
+                
+                {/* Analysis Stats */}
+                <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-500">
+                  <div className="flex items-center gap-1">
+                    <Brain className="h-4 w-4" />
+                    <span>{t('analysis.advanced', 'Análise Avançada')}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <TrendingUp className="h-4 w-4" />
+                    <span>{t('analysis.detailed', 'Detalhada')}</span>
+                  </div>
+                </div>
+              </CardContent>
+              
+              <CardFooter className="relative pt-0 pb-6 flex flex-row flex-wrap items-center justify-center gap-2 mt-auto">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-2 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300 group/btn"
                   onClick={(e) => {
                     e.stopPropagation();
-                    e.preventDefault();
-                    handleDelete(analysis.id);
+                    navigate(`/dashboard/ideias/${analysis.idea_id}`);
                   }}
-                  title={t('common.delete', "Excluir")}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <FileText className="h-4 w-4 group-hover/btn:scale-110 transition-transform duration-300" />
+                  <span className="hidden md:inline text-sm font-medium">{t('ideas.viewIdea', "Ver ideia")}</span>
                 </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="pb-4">
-              <p className="text-sm text-muted-foreground line-clamp-3">
-                {getAnalysisPreview(analysis.analysis_data)}
-              </p>
-            </CardContent>
-            <CardFooter className="pt-0 pb-4 flex justify-between">
-              <Button
-                variant="ghost" 
-                size="sm"
-                onClick={() => navigate(`/dashboard/ideias/${analysis.idea_id}`)}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <FileText className="h-4 w-4 mr-1.5" />
-                {t('ideas.viewIdea', "Ver ideia")}
-              </Button>
-              <Button
-                variant="default"
-                size="sm"
-                className="bg-brand-purple hover:bg-brand-purple/90"
-                onClick={() => {
-                  setSelectedAnalysis(analysis);
-                  setShowAnalysisModal(true);
-                }}
-              >
-                <Brain className="h-4 w-4 mr-1.5" />
-                {t('analysis.viewAnalysis', "Ver análise")}
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+                
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-2 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300 group/btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedAnalysis(analysis);
+                    setShowAnalysisModal(true);
+                  }}
+                >
+                  <Brain className="h-4 w-4 group-hover/btn:scale-110 transition-transform duration-300" />
+                  <span className="hidden md:inline text-sm font-medium">{t('advancedAnalysis.viewAnalysis1', "Analise Avançada")}</span>
+                </Button>
+              </CardFooter>
+            </Card>
+          );
+        })}
       </div>
       
       {/* Modal para visualizar análise salva */}
@@ -239,6 +365,32 @@ export function SavedAnalysesList() {
           savedAnalysisData={selectedAnalysis.analysis_data}
         />
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent className="backdrop-blur-sm bg-white/95 dark:bg-slate-900/95 border-0 shadow-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-slate-900 dark:text-slate-100">
+              {t('analysis.deleteTitle', 'Excluir Análise')}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600 dark:text-slate-400">
+              {t('analysis.deleteConfirm', 'Tem certeza que deseja excluir esta análise? Esta ação não pode ser desfeita.')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting} className="border-slate-200 dark:border-slate-700">
+              {t('common.cancel', 'Cancelar')}
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete} 
+              disabled={deleting}
+              className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              {deleting ? t('common.deleting', 'Excluindo...') : t('common.confirm', 'Confirmar')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

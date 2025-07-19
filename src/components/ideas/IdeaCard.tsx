@@ -9,6 +9,19 @@ import { cn } from "@/lib/utils";
 import { TagBadge } from "./TagBadge";
 import { FavoriteButton } from "./FavoriteButton";
 import { CompareIdeasModal } from "./CompareIdeasModal";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/sonner";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel
+} from "@/components/ui/alert-dialog";
 
 interface Idea {
   id: string;
@@ -25,6 +38,8 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [isCompareModalOpen, setIsCompareModalOpen] = React.useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+  const [deleting, setDeleting] = React.useState(false);
 
   const handleCardClick = () => {
     navigate(`/dashboard/ideias/${idea.id}`);
@@ -43,6 +58,90 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
   const handleViewDetailsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigate(`/dashboard/ideias/${idea.id}`);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    setDeleting(true);
+    try {
+      // First, delete all related data to avoid foreign key constraint violations
+      
+      // Delete generated content
+      const { error: contentError } = await supabase
+        .from('generated_content')
+        .delete()
+        .eq('idea_id', idea.id);
+
+      if (contentError) {
+        console.error("Error deleting generated content:", contentError);
+        // Continue with deletion even if this fails
+      }
+
+      // Delete advanced analyses
+      const { error: advancedError } = await supabase
+        .from('advanced_analyses')
+        .delete()
+        .eq('idea_id', idea.id);
+
+      if (advancedError) {
+        console.error("Error deleting advanced analyses:", advancedError);
+        // Continue with deletion even if this fails
+      }
+
+      // Delete idea analyses
+      const { error: analysisError } = await supabase
+        .from('idea_analyses')
+        .delete()
+        .eq('idea_id', idea.id);
+
+      if (analysisError) {
+        console.error("Error deleting idea analyses:", analysisError);
+        // Continue with deletion even if this fails
+      }
+
+      // Delete idea tags
+      const { error: tagsError } = await supabase
+        .from('idea_tags')
+        .delete()
+        .eq('idea_id', idea.id);
+
+      if (tagsError) {
+        console.error("Error deleting idea tags:", tagsError);
+        // Continue with deletion even if this fails
+      }
+
+      // Delete idea favorites
+      const { error: favoritesError } = await supabase
+        .from('idea_favorites')
+        .delete()
+        .eq('idea_id', idea.id);
+
+      if (favoritesError) {
+        console.error("Error deleting idea favorites:", favoritesError);
+        // Continue with deletion even if this fails
+      }
+
+      // Finally, delete the idea itself
+      const { error: ideaError } = await supabase
+        .from('ideas')
+        .delete()
+        .eq('id', idea.id);
+
+      if (ideaError) throw ideaError;
+
+      toast.success(t('ideas.deleted', 'Ideia excluída com sucesso'));
+      onUpdate(); // Refresh the ideas list
+    } catch (error) {
+      console.error("Error deleting idea:", error);
+      toast.error(t('ideas.deleteError', 'Erro ao excluir ideia'));
+    } finally {
+      setDeleting(false);
+      setShowDeleteDialog(false);
+    }
   };
 
   // Get status color based on score
@@ -64,7 +163,7 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 group-hover:opacity-100 opacity-0 transition-opacity duration-300 pointer-events-none" />
         
         <CardContent className="relative p-6 flex-grow" onClick={handleCardClick}>
-          {/* Header with Favorite Button */}
+          {/* Header with Favorite and Delete Buttons */}
           <div className="flex justify-between items-start mb-4">
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <div className="p-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -74,11 +173,21 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
                 {idea.title}
               </h3>
             </div>
-            <FavoriteButton 
-              ideaId={idea.id} 
-              isFavorite={idea.is_favorite || false} 
-              onUpdate={onUpdate}
-            />
+            <div className="flex items-center gap-2">
+              <FavoriteButton 
+                ideaId={idea.id} 
+                isFavorite={idea.is_favorite || false} 
+                onUpdate={onUpdate}
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-all duration-300"
+                onClick={handleDeleteClick}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           {/* Description */}
@@ -161,6 +270,31 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
         onClose={() => setIsCompareModalOpen(false)}
         ideaIds={[idea.id]}
       />
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent className="backdrop-blur-sm bg-white/95 dark:bg-slate-900/95 border-0 shadow-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-slate-900 dark:text-slate-100">
+              {t('ideas.deleteTitle', 'Excluir Ideia')}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600 dark:text-slate-400">
+              {t('ideas.deleteConfirm', 'Tem certeza que deseja excluir esta ideia? Esta ação não pode ser desfeita.')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting} className="border-slate-200 dark:border-slate-700">
+              {t('common.cancel', 'Cancelar')}
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete} 
+              disabled={deleting}
+              className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              {deleting ? t('common.deleting', 'Excluindo...') : t('common.confirm', 'Confirmar')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

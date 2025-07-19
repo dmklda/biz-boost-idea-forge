@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
@@ -124,6 +124,9 @@ export const CompareIdeasModalProvider = ({ children }: { children: React.ReactN
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>{t('ideas.compare.title', "Comparar Ideias")}</DialogTitle>
+            <DialogDescription>
+              {t('ideas.compare.description', "Selecione as ideias que deseja comparar para receber insights detalhados sobre suas diferenças e potencial.")}
+            </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
@@ -206,10 +209,10 @@ export const CompareIdeasModalProvider = ({ children }: { children: React.ReactN
         <ConfirmDialogContent>
           <ConfirmDialogHeader>
             <ConfirmDialogTitle>{t('credits.confirmTitle', 'Confirmar uso de créditos')}</ConfirmDialogTitle>
+            <DialogDescription className="py-4">
+              {t('credits.confirmCompareIdeas', 'Esta ação irá deduzir 1 crédito da sua conta. Deseja continuar?')}
+            </DialogDescription>
           </ConfirmDialogHeader>
-          <div className="py-4">
-            {t('credits.confirmCompareIdeas', 'Esta ação irá deduzir 1 crédito da sua conta. Deseja continuar?')}
-          </div>
           <ConfirmDialogFooter>
             <Button variant="outline" onClick={() => setShowCreditConfirm(false)}>{t('common.cancel')}</Button>
             <Button onClick={() => { setShowCreditConfirm(false); pendingAction && pendingAction(); }}>{t('common.confirm', 'Confirmar')}</Button>
@@ -353,6 +356,9 @@ export const CompareIdeasModal = ({
         <DialogContent className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>{t('ideas.compare.title', "Comparar Ideias")}</DialogTitle>
+            <DialogDescription>
+              {t('ideas.compare.description', "Selecione as ideias que deseja comparar para receber insights detalhados sobre suas diferenças e potencial.")}
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2 max-h-[70vh] overflow-y-auto">
             {selectedIdeasData.length > 0 ? (

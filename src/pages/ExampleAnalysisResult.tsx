@@ -8,7 +8,7 @@ import Footer from '@/components/Footer';
 import IdeaForm from '@/components/IdeaForm';
 import AdvancedAnalysisButton from '@/components/advanced-analysis/AdvancedAnalysisButton';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Lock } from 'lucide-react';
 import { useState } from 'react';
 
@@ -288,10 +288,10 @@ const ExampleAnalysisResult = () => {
                     <Lock className="h-10 w-10 sm:h-12 sm:w-12 text-brand-purple mb-2" />
                     {t('advancedAnalysis.lockedTitle', 'Análise Avançada disponível apenas para ideias próprias!')}
                   </DialogTitle>
+                  <DialogDescription className="text-muted-foreground mb-6 text-sm sm:text-base">
+                    {t('advancedAnalysis.lockedDesc', 'Para acessar a análise avançada, analise sua própria ideia. É rápido, gratuito e você terá acesso a recomendações personalizadas!')}
+                  </DialogDescription>
                 </DialogHeader>
-                <p className="text-muted-foreground mb-6 text-sm sm:text-base">
-                  {t('advancedAnalysis.lockedDesc', 'Para acessar a análise avançada, analise sua própria ideia. É rápido, gratuito e você terá acesso a recomendações personalizadas!')}
-                </p>
                 <Button onClick={handleGoToIdeaForm} className="w-full" size="lg">
                   {t('advancedAnalysis.analyzeMyIdea', 'Analisar minha ideia')}
                 </Button>
