@@ -51,16 +51,19 @@ export const TagBadge = ({ tag, name, color, className, ideaId, onRemove }: TagB
   return (
     <Badge 
       variant="outline" 
-      className={cn("text-xs font-normal group relative", ideaId && "cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20", className)}
+      className={cn("text-xs font-normal group relative pr-8", ideaId && "cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20", className)}
       style={color ? { borderColor: color, backgroundColor: `${color}20` } : undefined}
     >
       <Tag className="h-3 w-3 mr-1" />
       {displayText}
       {ideaId && (
-        <X 
-          className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 transition-opacity"
+        <button
+          className="absolute right-1 top-1/2 -translate-y-1/2 p-1 opacity-70 md:opacity-0 md:group-hover:opacity-100 text-red-500 hover:text-red-700 transition-opacity rounded-full hover:bg-red-100 dark:hover:bg-red-900/30"
           onClick={handleRemoveTag}
-        />
+          aria-label="Remover tag"
+        >
+          <X className="h-3 w-3" />
+        </button>
       )}
     </Badge>
   );
