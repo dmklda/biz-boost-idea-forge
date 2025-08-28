@@ -32,9 +32,11 @@ const MarketplacePage = () => {
   const [activeTab, setActiveTab] = useState("browse");
   const { 
     validationRequests, 
-    earlyAdopters, 
+    earlyAdopters,
+    myRequests,
     isLoading,
     fetchValidationRequests,
+    fetchMyRequests,
     joinValidation
   } = useMarketplace();
   const [searchTerm, setSearchTerm] = useState("");
@@ -258,19 +260,90 @@ const MarketplacePage = () => {
 
             {/* My Requests Tab */}
             <TabsContent value="my-requests" className="mt-6">
-              <div className="text-center py-12">
-                <Target className="h-16 w-16 text-slate-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Nenhuma solicitação ainda</h3>
-                <p className="text-slate-600 dark:text-slate-400 mb-6">
-                  Crie sua primeira solicitação de validação para conectar-se com early adopters.
-                </p>
-                <Button 
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                >
-                  Criar Solicitação
-                </Button>
-              </div>
+              {isLoading ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                  <p className="mt-4 text-slate-600">Carregando suas solicitações...</p>
+                </div>
+              ) : myRequests.length === 0 ? (
+                <div className="text-center py-12">
+                  <Target className="h-16 w-16 text-slate-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Nenhuma solicitação ainda</h3>
+                  <p className="text-slate-600 dark:text-slate-400 mb-6">
+                    Crie sua primeira solicitação de validação para conectar-se com early adopters.
+                  </p>
+                  <Button 
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                  >
+                    Criar Solicitação
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold">Minhas Solicitações</h3>
+                    <Button 
+                      onClick={() => setIsCreateModalOpen(true)}
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                    >
+                      Nova Solicitação
+                    </Button>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {myRequests.map((request) => (
+                      <Card key={request.id} className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <CardHeader>
+                          <div className="flex items-center justify-between">
+                            <Badge 
+                              variant={request.status === 'active' ? 'default' : 'secondary'}
+                              className="text-xs"
+                            >
+                              {request.status === 'active' ? 'Ativa' : 'Pausada'}
+                            </Badge>
+                            <span className="text-xs text-slate-500">
+                              {new Date(request.created_at).toLocaleDateString('pt-BR')}
+                            </span>
+                          </div>
+                          <CardTitle className="text-lg line-clamp-2">{request.title}</CardTitle>
+                          <CardDescription className="line-clamp-3">
+                            {request.description}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="text-xs">
+                                {getCategoryLabel(request.category)}
+                              </Badge>
+                              <Badge variant="secondary" className="text-xs">
+                                {getValidationTypeLabel(request.validation_type)}
+                              </Badge>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <span className="text-slate-600 dark:text-slate-400">Respostas:</span>
+                                <span className="ml-1 font-medium">{request.responses_count || 0}/{request.max_responses}</span>
+                              </div>
+                              <div>
+                                <span className="text-slate-600 dark:text-slate-400">Pontos:</span>
+                                <span className="ml-1 font-medium text-yellow-600">{request.reward_points}</span>
+                              </div>
+                            </div>
+                            
+                            <div className="pt-2">
+                              <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">Público-alvo:</p>
+                              <p className="text-sm line-clamp-2">{request.target_audience}</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>

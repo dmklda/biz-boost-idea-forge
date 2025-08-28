@@ -163,7 +163,7 @@ export const CreateValidationModal = ({ open, onOpenChange, ideaId }: CreateVali
         deadline: formData.deadline?.toISOString()
       });
 
-      toast.success('Solicitação de validação criada com sucesso!');
+      toast.success('Solicitação criada! Será exibida na aba "Minhas Solicitações".');
       onOpenChange(false);
       
       // Reset form
