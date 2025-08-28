@@ -45,7 +45,7 @@ import WebinarsPage from './pages/resources/WebinarsPage';
 import ApiPage from './pages/platform/ApiPage';
 import ResultsPageStandalone from './pages/ResultsPage';
 import ExampleAnalysisResult from './pages/ExampleAnalysisResult';
-import AdminPanel from './pages/admin/AdminPanel';
+import AdminLayout from './pages/admin/AdminLayout';
 import EarlyAdopterDashboard from './pages/dashboard/EarlyAdopterDashboard';
 
 function App() {
@@ -109,7 +109,7 @@ function App() {
               </Route>
 
               {/* Admin Routes */}
-              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/admin" element={<AdminLayout />} />
 
               {/* Fallback para 404 */}
               <Route path="*" element={<NotFound />} />

@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_announcements: {
+        Row: {
+          active: boolean | null
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          message: string
+          target_audience: string | null
+          title: string
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          message: string
+          target_audience?: string | null
+          title: string
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          message?: string
+          target_audience?: string | null
+          title?: string
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_announcements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       advanced_analyses: {
         Row: {
           analysis_data: Json
@@ -42,6 +89,68 @@ export type Database = {
             columns: ["idea_id"]
             isOneToOne: false
             referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_posts: {
+        Row: {
+          author_id: string | null
+          content: string
+          created_at: string
+          excerpt: string | null
+          featured: boolean | null
+          featured_image_url: string | null
+          id: string
+          published_at: string | null
+          reading_time: number | null
+          slug: string
+          status: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          views_count: number | null
+        }
+        Insert: {
+          author_id?: string | null
+          content: string
+          created_at?: string
+          excerpt?: string | null
+          featured?: boolean | null
+          featured_image_url?: string | null
+          id?: string
+          published_at?: string | null
+          reading_time?: number | null
+          slug: string
+          status?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          views_count?: number | null
+        }
+        Update: {
+          author_id?: string | null
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          featured?: boolean | null
+          featured_image_url?: string | null
+          id?: string
+          published_at?: string | null
+          reading_time?: number | null
+          slug?: string
+          status?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          views_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -201,6 +310,51 @@ export type Database = {
           total_points?: number | null
           updated_at?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      financial_data: {
+        Row: {
+          active_users: number | null
+          arr: number | null
+          churn_rate: number | null
+          created_at: string
+          customer_lifetime_value: number | null
+          date: string
+          expenses: number | null
+          id: string
+          mrr: number | null
+          new_subscribers: number | null
+          revenue: number | null
+          updated_at: string
+        }
+        Insert: {
+          active_users?: number | null
+          arr?: number | null
+          churn_rate?: number | null
+          created_at?: string
+          customer_lifetime_value?: number | null
+          date: string
+          expenses?: number | null
+          id?: string
+          mrr?: number | null
+          new_subscribers?: number | null
+          revenue?: number | null
+          updated_at?: string
+        }
+        Update: {
+          active_users?: number | null
+          arr?: number | null
+          churn_rate?: number | null
+          created_at?: string
+          customer_lifetime_value?: number | null
+          date?: string
+          expenses?: number | null
+          id?: string
+          mrr?: number | null
+          new_subscribers?: number | null
+          revenue?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -664,6 +818,77 @@ export type Database = {
         }
         Relationships: []
       }
+      success_cases: {
+        Row: {
+          author_id: string | null
+          challenge: string
+          company_logo_url: string | null
+          company_name: string
+          created_at: string
+          description: string
+          featured: boolean | null
+          founder_name: string | null
+          founder_photo_url: string | null
+          id: string
+          industry: string
+          metrics: Json | null
+          results: string
+          slug: string
+          solution: string
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          challenge: string
+          company_logo_url?: string | null
+          company_name: string
+          created_at?: string
+          description: string
+          featured?: boolean | null
+          founder_name?: string | null
+          founder_photo_url?: string | null
+          id?: string
+          industry: string
+          metrics?: Json | null
+          results: string
+          slug: string
+          solution: string
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          challenge?: string
+          company_logo_url?: string | null
+          company_name?: string
+          created_at?: string
+          description?: string
+          featured?: boolean | null
+          founder_name?: string | null
+          founder_photo_url?: string | null
+          id?: string
+          industry?: string
+          metrics?: Json | null
+          results?: string
+          slug?: string
+          solution?: string
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "success_cases_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tags: {
         Row: {
           color: string | null
@@ -723,6 +948,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_analytics: {
+        Row: {
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          session_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_analytics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_levels: {
         Row: {
@@ -933,6 +1199,10 @@ export type Database = {
           p_user_id: string
         }
         Returns: number
+      }
+      get_admin_dashboard_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       get_marketplace_stats: {
         Args: Record<PropertyKey, never>
