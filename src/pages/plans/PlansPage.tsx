@@ -100,12 +100,12 @@ const PlansPage = () => {
     if (planId === "free") {
       // Downgrade to free plan
       try {
-        const updatedUser: User = {
+        const updatedUser = {
           ...authState.user!,
-          plan: "free"
+          plan: "free" as const
         };
         
-        updateUserPlan(updatedUser);
+        updateUserPlan("free");
         toast.success("Plano alterado para Gratuito!");
       } catch (error) {
         console.error("Error downgrading plan:", error);
@@ -124,12 +124,12 @@ const PlansPage = () => {
         await new Promise(resolve => setTimeout(resolve, 2000));
         
         // Update user plan
-        const updatedUser: User = {
+        const updatedUser = {
           ...authState.user!,
-          plan: "premium"
+          plan: "pro" as const
         };
         
-        updateUserPlan(updatedUser);
+        updateUserPlan("pro");
         toast.success(`Plano ${plans.find(p => p.id === planId)?.name} ativado com sucesso!`);
         
         // Navigate to results page
@@ -143,12 +143,12 @@ const PlansPage = () => {
     } else {
       // No saved data, just upgrade plan
       try {
-        const updatedUser: User = {
+        const updatedUser = {
           ...authState.user!,
-          plan: "premium"
+          plan: "pro" as const
         };
         
-        updateUserPlan(updatedUser);
+        updateUserPlan("pro");
         toast.success(`Plano ${plans.find(p => p.id === planId)?.name} ativado com sucesso!`);
         navigate("/dashboard");
       } catch (error) {

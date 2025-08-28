@@ -22,7 +22,16 @@ const ScenarioSimulatorPage = () => {
       // Create default variables if none exist
       let currentVariables = variables;
       if (currentVariables.length === 0) {
-        const defaultVars = createDefaultVariables();
+        const defaultVars = createDefaultVariables({
+          title: 'Default Idea',
+          description: 'Default description',
+          monetization: 'SaaS',
+          target_market_size: 1000000,
+          initial_investment: 100000,
+          monthly_costs: 10000,
+          revenue_model: 'Subscription',
+          pricing: 99
+        });
         setVariables(defaultVars);
         currentVariables = defaultVars;
       }

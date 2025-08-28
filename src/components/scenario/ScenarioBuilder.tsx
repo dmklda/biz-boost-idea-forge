@@ -232,11 +232,12 @@ const ScenarioBuilder = ({ onScenariosChange, onRunSimulation, isSimulating }: S
     updateScenario(scenario, { customFactors: updatedFactors });
   };
 
-  const updateCustomFactor = (scenario: ScenarioType, index: number, updates: Partial<typeof scenarios[scenario]['customFactors'][0]>) => {
-    const updatedFactors = scenarios[scenario].customFactors.map((factor, i) => 
+  const updateCustomFactor = (scenarioKey: ScenarioType, index: number, updates: Partial<{name: string; value: number; impact: 'positive' | 'negative'}>) => {
+    const scenario = scenarios[scenarioKey];
+    const updatedFactors = scenario.customFactors.map((factor, i) => 
       i === index ? { ...factor, ...updates } : factor
     );
-    updateScenario(scenario, { customFactors: updatedFactors });
+    updateScenario(scenarioKey, { customFactors: updatedFactors });
   };
 
   const copyScenario = (fromScenario: ScenarioType, toScenario: ScenarioType) => {

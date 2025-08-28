@@ -17,7 +17,8 @@ import {
   Zap,
   RefreshCw,
   Download,
-  Info
+  Info,
+  AlertTriangle
 } from "lucide-react";
 import { 
   LineChart, 

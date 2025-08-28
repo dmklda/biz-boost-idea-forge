@@ -559,7 +559,6 @@ const NotificationSystem = () => {
                                   channels: { ...preference.channels, inApp }
                                 })
                               }
-                              size="sm"
                             />
                             <Bell className="h-4 w-4" />
                             <span className="text-sm">App</span>
@@ -573,7 +572,6 @@ const NotificationSystem = () => {
                                   channels: { ...preference.channels, email }
                                 })
                               }
-                              size="sm"
                             />
                             <Mail className="h-4 w-4" />
                             <span className="text-sm">Email</span>
@@ -587,7 +585,6 @@ const NotificationSystem = () => {
                                   channels: { ...preference.channels, push }
                                 })
                               }
-                              size="sm"
                             />
                             <Smartphone className="h-4 w-4" />
                             <span className="text-sm">Push</span>
