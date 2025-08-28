@@ -19,6 +19,10 @@ import ResultsPage from './pages/dashboard/ResultsPage';
 import ToolsPage from './pages/dashboard/ToolsPage';
 import DraftsPage from './pages/dashboard/DraftsPage';
 import GamificationPage from './pages/dashboard/GamificationPage';
+import MarketplacePage from './pages/dashboard/MarketplacePage';
+import ScenarioSimulatorPage from './pages/dashboard/ScenarioSimulatorPage';
+import RegulatoryAnalysisPage from './pages/dashboard/RegulatoryAnalysisPage';
+import BenchmarksPage from './pages/dashboard/BenchmarksPage';
 import { MyContentPage } from "@/pages/dashboard/MyContentPage";
 import { CompareIdeasModalProvider } from './components/ideas/CompareIdeasModal';
 import { AuthProvider } from './hooks/useAuth';
@@ -89,6 +93,10 @@ function App() {
                 <Route path="ferramentas" element={<ToolsPage />} />
                 <Route path="conteudos" element={<MyContentPage />} />
                 <Route path="gamificacao" element={<GamificationPage />} />
+                <Route path="marketplace" element={<MarketplacePage />} />
+                <Route path="simulador" element={<ScenarioSimulatorPage />} />
+                <Route path="analise-regulatoria" element={<RegulatoryAnalysisPage />} />
+                <Route path="benchmarks" element={<BenchmarksPage />} />
                 <Route path="creditos" element={<CreditsPage />} />
                 <Route path="configuracoes" element={<UserSettingsPage />} />
                 <Route path="analise-avancada" element={<AdvancedAnalysisPage />} />

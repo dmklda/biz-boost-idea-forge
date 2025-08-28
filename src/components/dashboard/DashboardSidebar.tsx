@@ -1,7 +1,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Home, BarChart, Settings, LogOut, Calendar, PlusCircle, Save, Wrench, Archive, Trophy } from "lucide-react";
+import { Home, BarChart, Settings, LogOut, Calendar, PlusCircle, Save, Wrench, Archive, Trophy, Users, BarChart3, Shield, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -73,6 +73,30 @@ export const DashboardSidebar = ({
       title: "Gamificação",
       icon: Trophy,
       path: '/dashboard/gamificacao',
+      onClick: undefined
+    },
+    {
+      title: "Marketplace",
+      icon: Users,
+      path: '/dashboard/marketplace',
+      onClick: undefined
+    },
+    {
+      title: "Simulador",
+      icon: BarChart3,
+      path: '/dashboard/simulador',
+      onClick: undefined
+    },
+    {
+      title: "Análise Regulatória",
+      icon: Shield,
+      path: '/dashboard/analise-regulatoria',
+      onClick: undefined
+    },
+    {
+      title: "Benchmarks",
+      icon: Target,
+      path: '/dashboard/benchmarks',
       onClick: undefined
     }, 
     {
