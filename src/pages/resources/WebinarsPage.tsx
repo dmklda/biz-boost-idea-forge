@@ -186,10 +186,9 @@ const WebinarsPage = () => {
                     <Button 
                       variant="outline" 
                       className="w-full"
-                      onClick={() => webinar.recording_url && window.open(webinar.recording_url, '_blank')}
-                      disabled={!webinar.recording_url}
+                      onClick={() => window.location.href = `/recursos/webinars/${webinar.slug}`}
                     >
-                      {webinar.recording_url ? 'Assistir Agora' : 'Em Breve'}
+                      Ver Detalhes
                     </Button>
                   </CardFooter>
                 </Card>
@@ -239,10 +238,9 @@ const WebinarsPage = () => {
                     </div>
                     <div className="flex flex-col gap-2">
                       <Button
-                        onClick={() => webinar.registration_url && window.open(webinar.registration_url, '_blank')}
-                        disabled={!webinar.registration_url}
+                        onClick={() => window.location.href = `/recursos/webinars/${webinar.slug}`}
                       >
-                        {webinar.status === 'live' ? 'Entrar Agora' : 'Inscrever-se'}
+                        Ver Detalhes
                       </Button>
                     </div>
                   </div>

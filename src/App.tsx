@@ -42,6 +42,7 @@ import GuideDetailPage from './pages/resources/GuideDetailPage';
 import SuccessCasesPage from './pages/resources/SuccessCasesPage';
 import SuccessCaseDetailPage from './pages/resources/SuccessCaseDetailPage';
 import WebinarsPage from './pages/resources/WebinarsPage';
+import WebinarDetailPage from './pages/resources/WebinarDetailPage';
 import ApiPage from './pages/platform/ApiPage';
 import ResultsPageStandalone from './pages/ResultsPage';
 import ExampleAnalysisResult from './pages/ExampleAnalysisResult';
@@ -74,6 +75,7 @@ function App() {
               <Route path="/recursos/casos-de-sucesso" element={<SuccessCasesPage />} />
               <Route path="/recursos/casos-de-sucesso/:id" element={<SuccessCaseDetailPage />} />
               <Route path="/recursos/webinars" element={<WebinarsPage />} />
+              <Route path="/recursos/webinars/:id" element={<WebinarDetailPage />} />
 
               {/* Página de API */}
               <Route path="/plataforma/api" element={<ApiPage />} />
