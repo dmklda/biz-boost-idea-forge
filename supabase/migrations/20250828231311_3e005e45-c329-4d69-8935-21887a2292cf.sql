@@ -1,0 +1,16 @@
+-- Inserir dados de exemplo para guias
+INSERT INTO public.guides (title, slug, description, content, category, level, reading_time, featured, status) VALUES
+('Como Validar Sua Ideia de Negócio', 'como-validar-ideia-negocio', 'Aprenda a validar sua ideia antes de investir tempo e dinheiro', 'Neste guia, você aprenderá as técnicas mais eficazes para validar uma ideia de negócio...', 'Estratégia', 'beginner', 8, true, 'published'),
+('Métricas Essenciais para Startups', 'metricas-essenciais-startups', 'Conheça as métricas que todo empreendedor deve acompanhar', 'As métricas são fundamentais para o sucesso de qualquer startup...', 'Analytics', 'intermediate', 12, false, 'published'),
+('Criando um Pitch Perfeito', 'criando-pitch-perfeito', 'Como criar uma apresentação que conquiste investidores', 'Um pitch bem estruturado é essencial para conseguir investimento...', 'Investimento', 'advanced', 15, true, 'draft');
+
+-- Inserir dados de exemplo para casos de sucesso
+INSERT INTO public.success_cases (title, slug, company_name, industry, description, challenge, solution, results, metrics, featured, status) VALUES
+('Como a TechCorp aumentou 300% suas vendas', 'techcorp-aumento-vendas', 'TechCorp', 'Tecnologia', 'Startup de tecnologia que revolucionou suas vendas', 'A empresa estava com dificuldades para escalar suas vendas e alcançar novos mercados', 'Implementação de estratégias de growth hacking e automação de marketing', 'Aumento de 300% nas vendas em 6 meses', '{"revenue_growth": "300%", "time_frame": "6 meses", "team_size": "5x"}', true, 'published'),
+('StartupX: De ideia a IPO em 3 anos', 'startupx-ideia-ipo', 'StartupX', 'Fintech', 'Como uma fintech brasileira chegou ao IPO rapidamente', 'Necessidade de escalar rapidamente em um mercado altamente competitivo', 'Foco em produto, cultura data-driven e parcerias estratégicas', 'IPO em 3 anos com valuation de R$ 2 bilhões', '{"valuation": "2bi", "time_to_ipo": "3 anos", "users": "10M+"}', true, 'published');
+
+-- Inserir dados de exemplo para webinars
+INSERT INTO public.webinars (title, slug, description, speaker_name, speaker_bio, scheduled_date, duration_minutes, registration_url, max_attendees, current_attendees, status, featured) VALUES
+('Tendências de IA para 2025', 'tendencias-ia-2025', 'Descubra as principais tendências de inteligência artificial que vão moldar o futuro dos negócios', 'Dr. Maria Silva', 'PhD em IA pela USP, fundadora da AI Ventures', '2025-01-15 19:00:00', 90, 'https://zoom.us/register/123', 500, 234, 'scheduled', true),
+('Marketing Digital para Startups', 'marketing-digital-startups', 'Estratégias de marketing digital específicas para startups com orçamento limitado', 'João Santos', 'Growth Hacker com 10+ anos de experiência', '2025-01-22 18:00:00', 60, 'https://zoom.us/register/456', 300, 156, 'scheduled', false),
+('Captação de Recursos: Do Anjo ao VC', 'captacao-recursos-anjo-vc', 'Workshop completo sobre como captar recursos desde investidores anjo até venture capital', 'Ana Costa', 'Partner na Redpoint Ventures, ex-Google', '2024-12-20 20:00:00', 120, 'https://zoom.us/register/789', 200, 200, 'completed', true);
