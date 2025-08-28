@@ -19,7 +19,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const Header = () => {
+interface HeaderProps {
+  hideNavLinks?: boolean;
+}
+
+const Header = ({ hideNavLinks = false }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { t } = useTranslation();
@@ -74,18 +78,22 @@ const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <a href="#como-funciona" className="text-foreground/70 hover:text-brand-purple transition-colors text-sm relative group">
-            {t('header.howItWorks')}
-            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-purple scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
-          </a>
-          <a href="#beneficios" className="text-foreground/70 hover:text-brand-purple transition-colors text-sm relative group">
-            {t('header.benefits')}
-            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-purple scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
-          </a>
-          <a href="#planos" className="text-foreground/70 hover:text-brand-purple transition-colors text-sm relative group">
-            {t('header.plans')}
-            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-purple scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
-          </a>
+          {!hideNavLinks && (
+            <>
+              <a href="#como-funciona" className="text-foreground/70 hover:text-brand-purple transition-colors text-sm relative group">
+                {t('header.howItWorks')}
+                <span className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-purple scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+              </a>
+              <a href="#beneficios" className="text-foreground/70 hover:text-brand-purple transition-colors text-sm relative group">
+                {t('header.benefits')}
+                <span className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-purple scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+              </a>
+              <a href="#planos" className="text-foreground/70 hover:text-brand-purple transition-colors text-sm relative group">
+                {t('header.plans')}
+                <span className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-purple scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+              </a>
+            </>
+          )}
           <LanguageSwitcher />
           <ThemeToggle />
           
@@ -233,15 +241,19 @@ const Header = () => {
       {isMenuOpen && (
         <div className="md:hidden py-6 px-4 fixed inset-0 z-20 bg-background/95 dark:bg-black/95 backdrop-blur-lg animate-fade-in pt-24">
           <nav className="flex flex-col space-y-6">
-            <a href="#como-funciona" className="text-foreground hover:text-brand-purple transition-colors py-3 text-xl font-semibold" onClick={() => setIsMenuOpen(false)}>
-              {t('header.howItWorks')}
-            </a>
-            <a href="#beneficios" className="text-foreground hover:text-brand-purple transition-colors py-3 text-xl font-semibold" onClick={() => setIsMenuOpen(false)}>
-              {t('header.benefits')}
-            </a>
-            <a href="#planos" className="text-foreground hover:text-brand-purple transition-colors py-3 text-xl font-semibold" onClick={() => setIsMenuOpen(false)}>
-              {t('header.plans')}
-            </a>
+            {!hideNavLinks && (
+              <>
+                <a href="#como-funciona" className="text-foreground hover:text-brand-purple transition-colors py-3 text-xl font-semibold" onClick={() => setIsMenuOpen(false)}>
+                  {t('header.howItWorks')}
+                </a>
+                <a href="#beneficios" className="text-foreground hover:text-brand-purple transition-colors py-3 text-xl font-semibold" onClick={() => setIsMenuOpen(false)}>
+                  {t('header.benefits')}
+                </a>
+                <a href="#planos" className="text-foreground hover:text-brand-purple transition-colors py-3 text-xl font-semibold" onClick={() => setIsMenuOpen(false)}>
+                  {t('header.plans')}
+                </a>
+              </>
+            )}
             
             {/* Conditional rendering based on authentication status for mobile */}
             {authState.isAuthenticated ? (
