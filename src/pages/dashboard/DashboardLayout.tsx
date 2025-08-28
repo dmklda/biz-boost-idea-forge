@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { Navigate, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useGamification } from "@/hooks/useGamification";
+import { useEarlyAdopter } from "@/hooks/useEarlyAdopter";
+import { useAdminNotifications } from "@/hooks/useAdminNotifications";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { MobileBottomNav } from "@/components/dashboard/MobileBottomNav";
 import { Button } from "@/components/ui/button";
@@ -23,6 +25,8 @@ const DashboardLayout = () => {
   // Extract both authState and logout function
   const { authState, logout } = useAuth();
   const { userLevel } = useGamification();
+  const { isEarlyAdopter, status: adopterStatus } = useEarlyAdopter();
+  const { unreadCount: adminUnreadCount, isAdmin } = useAdminNotifications();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const isMobile = useIsMobile();
   const { t } = useTranslation();
@@ -34,6 +38,13 @@ const DashboardLayout = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { ideas, loading: ideasLoading } = useIdeasData(authState.user?.id);
   const [searchResults, setSearchResults] = useState<any[]>([]);
+
+  // Redirecionar Early Adopters aprovados para dashboard específico
+  useEffect(() => {
+    if (isEarlyAdopter && location.pathname === '/dashboard') {
+      window.location.href = '/dashboard/early-adopter';
+    }
+  }, [isEarlyAdopter, location.pathname]);
 
   useEffect(() => {
     if (searchQuery.trim().length === 0) {
@@ -69,14 +80,16 @@ const DashboardLayout = () => {
     else setPageTitle("Startupideia");
   }, [location.pathname, t]);
 
-  // Check if user has low credits to show notification badge
+  // Check if user has low credits or admin notifications to show notification badge
   useEffect(() => {
     if (authState.user && authState.user.credits < 2) {
+      setHasNotifications(true);
+    } else if (isAdmin && adminUnreadCount > 0) {
       setHasNotifications(true);
     } else {
       setHasNotifications(false);
     }
-  }, [authState.user]);
+  }, [authState.user, isAdmin, adminUnreadCount]);
 
   // Redirect to login if not authenticated
   if (!authState.isAuthenticated) {
@@ -130,13 +143,21 @@ const DashboardLayout = () => {
                   <DropdownMenuContent align="end" className="w-80">
                     <DropdownMenuLabel>{t('notifications.title')}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    {hasNotifications && <DropdownMenuItem>
+                    {authState.user && authState.user.credits < 2 && <DropdownMenuItem>
                         <div className="flex flex-col">
                           <span className="font-medium">{t('notifications.lowCredits')}</span>
                           <span className="text-xs text-muted-foreground">
                             {t('notifications.lowCreditsDesc')}
                           </span>
                         </div>
+                      </DropdownMenuItem>}
+                    {isAdmin && adminUnreadCount > 0 && <DropdownMenuItem asChild>
+                        <Link to="/admin" className="flex flex-col">
+                          <span className="font-medium">Novos pedidos Early Adopter</span>
+                          <span className="text-xs text-muted-foreground">
+                            {adminUnreadCount} pedido(s) aguardando aprovação
+                          </span>
+                        </Link>
                       </DropdownMenuItem>}
                     {!hasNotifications && <div className="px-2 py-4 text-center text-muted-foreground">
                         {t('notifications.noNotifications')}
@@ -196,13 +217,21 @@ const DashboardLayout = () => {
                   <DropdownMenuContent align="end" className="w-80">
                     <DropdownMenuLabel>{t('notifications.title')}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    {hasNotifications && <DropdownMenuItem>
+                    {authState.user && authState.user.credits < 2 && <DropdownMenuItem>
                         <div className="flex flex-col">
                           <span className="font-medium">{t('notifications.lowCredits')}</span>
                           <span className="text-xs text-muted-foreground">
                             {t('notifications.lowCreditsDesc')}
                           </span>
                         </div>
+                      </DropdownMenuItem>}
+                    {isAdmin && adminUnreadCount > 0 && <DropdownMenuItem asChild>
+                        <Link to="/admin" className="flex flex-col">
+                          <span className="font-medium">Novos pedidos Early Adopter</span>
+                          <span className="text-xs text-muted-foreground">
+                            {adminUnreadCount} pedido(s) aguardando aprovação
+                          </span>
+                        </Link>
                       </DropdownMenuItem>}
                     {!hasNotifications && <div className="px-2 py-4 text-center text-muted-foreground">
                         {t('notifications.noNotifications')}
@@ -221,7 +250,10 @@ const DashboardLayout = () => {
               <div className="flex items-center gap-2">
                 {/* Nome e plano (mantém o layout do dashboard) */}
                 {!isMobile && <div className="text-sm hidden md:block">
-                    <span className="font-medium">{authState.user?.display_name || authState.user?.name}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{authState.user?.display_name || authState.user?.name}</span>
+                      {isEarlyAdopter && <Badge variant="secondary" className="text-xs">Early Adopter</Badge>}
+                    </div>
                     <div className="text-xs text-muted-foreground">
                       {authState.user?.plan === "free" ? "Plano Free" : "Plano Premium"} • Nível {userLevel?.current_level || 1}
                     </div>
@@ -243,7 +275,10 @@ const DashboardLayout = () => {
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel>
                       <div className="flex flex-col">
-                        <span>{authState.user?.display_name || authState.user?.name}</span>
+                        <div className="flex items-center gap-2">
+                          <span>{authState.user?.display_name || authState.user?.name}</span>
+                          {isEarlyAdopter && <Badge variant="secondary" className="text-xs">Early Adopter</Badge>}
+                        </div>
                         <span className="text-xs text-muted-foreground font-normal">
                           {authState.user?.plan === "free" ? "Plano Free" : "Plano Premium"} • Nível {userLevel?.current_level || 1}
                         </span>
@@ -256,6 +291,12 @@ const DashboardLayout = () => {
                         Progresso
                       </Link>
                     </DropdownMenuItem>
+                    {isAdmin && <DropdownMenuItem asChild>
+                        <Link to="/admin" className="flex items-center cursor-pointer">
+                          <Settings className="mr-2 h-4 w-4" />
+                          Painel Admin
+                        </Link>
+                      </DropdownMenuItem>}
                     <DropdownMenuItem asChild>
                       <Link to="/dashboard/configuracoes" className="flex items-center cursor-pointer">
                         <Settings className="mr-2 h-4 w-4" />

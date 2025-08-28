@@ -1,7 +1,8 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Home, BarChart, Settings, LogOut, Calendar, PlusCircle, Save, Wrench, Archive, Trophy, Users, BarChart3, Shield, Target } from "lucide-react";
+import { useEarlyAdopter } from "@/hooks/useEarlyAdopter";
+import { Home, BarChart, Settings, LogOut, Calendar, PlusCircle, Save, Wrench, Archive, Trophy, Users, BarChart3, Shield, Target, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ export const DashboardSidebar = ({
   const { t } = useTranslation();
   const location = useLocation();
   const { logout } = useAuth();
+  const { isEarlyAdopter } = useEarlyAdopter();
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
@@ -81,6 +83,12 @@ export const DashboardSidebar = ({
       path: '/dashboard/marketplace',
       onClick: undefined
     },
+    ...(isEarlyAdopter ? [{
+      title: "Dashboard Early Adopter",
+      icon: Star,
+      path: '/dashboard/early-adopter',
+      onClick: undefined
+    }] : []),
     {
       title: "Simulador",
       icon: BarChart3,
