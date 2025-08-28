@@ -3,7 +3,17 @@ import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
-import { AdminBlogManagement, AdminSuccessCasesManagement, AdminFinancialDashboard, AdminUserManagement, AdminAnalytics, AdminAnnouncements, AdminSettings } from '@/components/admin/AdminBlogManagement';
+import { AdminBlogManagement } from '@/components/admin/AdminBlogManagement';
+import { 
+  AdminGuidesManagement,
+  AdminSuccessCasesManagement,
+  AdminWebinarsManagement,
+  AdminFinancialDashboard,
+  AdminUserManagement,
+  AdminAnalytics,
+  AdminAnnouncements,
+  AdminSettings
+} from '@/components/admin/AdminPlaceholders';
 import { AdminEarlyAdopters } from '@/components/admin/AdminEarlyAdopters';
 
 export default function AdminLayout() {
@@ -20,8 +30,12 @@ export default function AdminLayout() {
         return <AdminDashboard />;
       case 'blog':
         return <AdminBlogManagement />;
+      case 'guides':
+        return <AdminGuidesManagement />;
       case 'success-cases':
         return <AdminSuccessCasesManagement />;
+      case 'webinars':
+        return <AdminWebinarsManagement />;
       case 'financial':
         return <AdminFinancialDashboard />;
       case 'users':

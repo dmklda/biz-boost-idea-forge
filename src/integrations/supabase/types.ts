@@ -402,6 +402,51 @@ export type Database = {
           },
         ]
       }
+      guides: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          description: string | null
+          featured: boolean | null
+          id: string
+          level: string
+          reading_time: number | null
+          slug: string
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          level?: string
+          reading_time?: number | null
+          slug: string
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          level?: string
+          reading_time?: number | null
+          slug?: string
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       idea_analyses: {
         Row: {
           ai_insights: Json | null
@@ -1166,6 +1211,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      webinars: {
+        Row: {
+          created_at: string
+          current_attendees: number | null
+          description: string
+          duration_minutes: number
+          featured: boolean | null
+          id: string
+          max_attendees: number | null
+          recording_url: string | null
+          registration_url: string | null
+          scheduled_date: string
+          slug: string
+          speaker_bio: string | null
+          speaker_name: string
+          speaker_photo_url: string | null
+          status: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_attendees?: number | null
+          description: string
+          duration_minutes?: number
+          featured?: boolean | null
+          id?: string
+          max_attendees?: number | null
+          recording_url?: string | null
+          registration_url?: string | null
+          scheduled_date: string
+          slug: string
+          speaker_bio?: string | null
+          speaker_name: string
+          speaker_photo_url?: string | null
+          status?: string | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_attendees?: number | null
+          description?: string
+          duration_minutes?: number
+          featured?: boolean | null
+          id?: string
+          max_attendees?: number | null
+          recording_url?: string | null
+          registration_url?: string | null
+          scheduled_date?: string
+          slug?: string
+          speaker_bio?: string | null
+          speaker_name?: string
+          speaker_photo_url?: string | null
+          status?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {

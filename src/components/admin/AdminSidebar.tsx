@@ -10,7 +10,9 @@ import {
   BarChart3, 
   Megaphone,
   Settings,
-  ArrowLeft
+  ArrowLeft,
+  BookOpen,
+  Video
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -34,10 +36,22 @@ const sidebarItems = [
     description: 'Gerenciar posts do blog'
   },
   {
+    id: 'guides',
+    label: 'Guias',
+    icon: BookOpen,
+    description: 'Guias práticos e tutoriais'
+  },
+  {
     id: 'success-cases',
     label: 'Casos de Sucesso',
     icon: Trophy,
     description: 'Estudos de caso'
+  },
+  {
+    id: 'webinars',
+    label: 'Webinars',
+    icon: Video,
+    description: 'Webinars e eventos'
   },
   {
     id: 'financial',
