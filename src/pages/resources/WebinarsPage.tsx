@@ -46,20 +46,27 @@ const WebinarsPage = () => {
         .from('webinars')
         .select('*')
         .in('status', ['scheduled', 'live', 'completed'])
-        .order('scheduled_date', { ascending: false });
+        .order('scheduled_date', { ascending: true });
 
       if (error) throw error;
 
       const now = new Date();
-      const past = data?.filter(webinar => 
-        new Date(webinar.scheduled_date) < now && webinar.status === 'completed'
-      ) || [];
-      const upcoming = data?.filter(webinar => 
-        new Date(webinar.scheduled_date) >= now && ['scheduled', 'live'].includes(webinar.status)
-      ) || [];
+      const past = data?.filter(webinar => {
+        const webinarDate = new Date(webinar.scheduled_date);
+        return webinarDate < now || webinar.status === 'completed';
+      }) || [];
+      
+      const upcoming = data?.filter(webinar => {
+        const webinarDate = new Date(webinar.scheduled_date);
+        return webinarDate >= now && ['scheduled', 'live'].includes(webinar.status);
+      }) || [];
 
       setPastWebinars(past);
       setUpcomingWebinars(upcoming);
+      
+      console.log('Total webinars:', data?.length);
+      console.log('Past webinars:', past.length);
+      console.log('Upcoming webinars:', upcoming.length);
     } catch (error) {
       console.error('Erro ao buscar webinars:', error);
     } finally {
