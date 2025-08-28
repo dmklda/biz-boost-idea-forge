@@ -1,55 +1,53 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export interface BlogPost {
+export interface Guide {
   id: string;
   title: string;
   slug: string;
-  excerpt: string;
+  description: string;
   content: string;
-  featured_image_url: string;
+  category: string;
+  level: string;
   status: string;
-  tags: string[];
-  views_count: number;
   reading_time: number;
   featured: boolean;
-  published_at: string;
   created_at: string;
   updated_at: string;
 }
 
-export const useBlogPosts = () => {
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+export const useGuides = () => {
+  const [guides, setGuides] = useState<Guide[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchBlogPosts();
+    fetchGuides();
   }, []);
 
-  const fetchBlogPosts = async () => {
+  const fetchGuides = async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('blog_posts')
+        .from('guides')
         .select('*')
         .eq('status', 'published')
-        .order('published_at', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setBlogPosts(data || []);
+      setGuides(data || []);
     } catch (err) {
-      console.error('Error fetching blog posts:', err);
+      console.error('Error fetching guides:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
   };
 
-  const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> => {
+  const getGuideBySlug = async (slug: string): Promise<Guide | null> => {
     try {
       const { data, error } = await supabase
-        .from('blog_posts')
+        .from('guides')
         .select('*')
         .eq('slug', slug)
         .eq('status', 'published')
@@ -58,16 +56,16 @@ export const useBlogPosts = () => {
       if (error) throw error;
       return data;
     } catch (err) {
-      console.error('Error fetching blog post:', err);
+      console.error('Error fetching guide:', err);
       return null;
     }
   };
 
   return {
-    blogPosts,
+    guides,
     loading,
     error,
-    getBlogPostBySlug,
-    refetch: fetchBlogPosts
+    getGuideBySlug,
+    refetch: fetchGuides
   };
 };

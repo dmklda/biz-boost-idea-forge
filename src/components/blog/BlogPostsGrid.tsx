@@ -6,7 +6,7 @@ import { BlogPost } from "../../hooks/useBlogPosts";
 
 interface BlogPostsGridProps {
   posts: BlogPost[];
-  onReadMore: (id: number) => void;
+  onReadMore: (slug: string) => void;
 }
 
 const BlogPostsGrid = ({ posts, onReadMore }: BlogPostsGridProps) => {
@@ -17,7 +17,7 @@ const BlogPostsGrid = ({ posts, onReadMore }: BlogPostsGridProps) => {
       <div className="text-center py-12">
         <h3 className="text-xl font-medium mb-2">No articles found</h3>
         <p className="text-muted-foreground">Try adjusting your search query</p>
-        <Button variant="outline" className="mt-4" onClick={() => onReadMore(-1)}>
+        <Button variant="outline" className="mt-4" onClick={() => onReadMore("clear")}>
           Clear search
         </Button>
       </div>

@@ -1,64 +1,70 @@
-
-import { useTranslation } from "react-i18next";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
-import { BookOpen } from "lucide-react";
+import { ChevronLeft, BookOpen } from "lucide-react";
+import { useGuides, Guide } from "../../hooks/useGuides";
+import { Loader } from "@/components/ui/loader";
 
 const GuideDetailPage = () => {
-  const { t } = useTranslation();
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
-  
-  console.log("Current guide ID:", id);
-  
-  // Mock data for guides
-  const guides = [
-    {
-      id: "1",
-      title: t("guides.items.guide1.title"),
-      description: t("guides.items.guide1.description"),
-      category: t("guides.items.guide1.category"),
-      level: t("guides.items.guide1.level"),
-      content: t("guides.items.guide1.content")
-    },
-    {
-      id: "2",
-      title: t("guides.items.guide2.title"),
-      description: t("guides.items.guide2.description"),
-      category: t("guides.items.guide2.category"),
-      level: t("guides.items.guide2.level"),
-      content: t("guides.items.guide2.content")
-    },
-    {
-      id: "3",
-      title: t("guides.items.guide3.title"),
-      description: t("guides.items.guide3.description"),
-      category: t("guides.items.guide3.category"),
-      level: t("guides.items.guide3.level"),
-      content: t("guides.items.guide3.content")
-    },
-    {
-      id: "4",
-      title: t("guides.items.guide4.title"),
-      description: t("guides.items.guide4.description"),
-      category: t("guides.items.guide4.category"),
-      level: t("guides.items.guide4.level"),
-      content: t("guides.items.guide4.content")
+  const { getGuideBySlug } = useGuides();
+  const [guide, setGuide] = useState<Guide | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    if (slug) {
+      fetchGuide();
     }
-  ];
+  }, [slug]);
 
-  console.log("Available guides:", guides.map(g => g.id));
-  const guide = guides.find(guide => guide.id === id);
-  console.log("Found guide:", guide);
+  const fetchGuide = async () => {
+    if (!slug) return;
+    
+    setLoading(true);
+    try {
+      const data = await getGuideBySlug(slug);
+      if (data) {
+        setGuide(data);
+      } else {
+        setNotFound(true);
+      }
+    } catch (error) {
+      console.error('Error fetching guide:', error);
+      setNotFound(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  if (!guide) {
+  if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-2xl font-bold mb-4">{t("guides.guideNotFound")}</h1>
-        <Button onClick={() => navigate("/recursos/guias")}>{t("guides.backToGuides")}</Button>
+      <div className="min-h-screen bg-gradient-to-b from-background to-background/95 relative overflow-hidden">
+        <Header />
+        <main className="container mx-auto px-4 pt-32 pb-16">
+          <div className="flex justify-center items-center py-20">
+            <Loader />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (notFound || !guide) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-background/95 relative overflow-hidden">
+        <Header />
+        <main className="container mx-auto px-4 pt-32 pb-16">
+          <div className="flex flex-col items-center justify-center py-20">
+            <h1 className="text-2xl font-bold mb-4">Guia não encontrado</h1>
+            <Button onClick={() => navigate("/recursos/guias")}>Voltar aos Guias</Button>
+          </div>
+        </main>
+        <Footer />
       </div>
     );
   }
@@ -77,7 +83,7 @@ const GuideDetailPage = () => {
           className="mb-6 flex items-center"
         >
           <ChevronLeft className="h-4 w-4 mr-2" />
-          {t("guides.backToGuides")}
+          Voltar aos Guias
         </Button>
 
         <div className="max-w-4xl mx-auto">
@@ -90,13 +96,21 @@ const GuideDetailPage = () => {
             <span className="text-sm bg-secondary/50 text-secondary-foreground px-3 py-1 rounded-full">
               {guide.level}
             </span>
+            {guide.reading_time && (
+              <span className="text-sm text-muted-foreground">
+                {guide.reading_time} min de leitura
+              </span>
+            )}
           </div>
 
           <h1 className="text-3xl md:text-5xl font-bold mb-6">{guide.title}</h1>
-          <p className="text-lg text-muted-foreground mb-8">{guide.description}</p>
+          
+          {guide.description && (
+            <p className="text-lg text-muted-foreground mb-8">{guide.description}</p>
+          )}
           
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="whitespace-pre-line mb-8">{guide.content}</p>
+            <div className="whitespace-pre-line" dangerouslySetInnerHTML={{ __html: guide.content }} />
           </div>
         </div>
       </main>

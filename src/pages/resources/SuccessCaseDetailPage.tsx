@@ -1,53 +1,70 @@
-
-import { useTranslation } from "react-i18next";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Users } from "lucide-react";
+import { useSuccessCases, SuccessCase } from "../../hooks/useSuccessCases";
+import { Loader } from "@/components/ui/loader";
 
 const SuccessCaseDetailPage = () => {
-  const { t } = useTranslation();
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
-  
-  // Mock data for success cases
-  const successCases = [
-    {
-      id: "1",
-      company: t("successCases.cases.case1.company"),
-      description: t("successCases.cases.case1.description"),
-      result: t("successCases.cases.case1.result"),
-      image: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?q=80&w=700&auto=format&fit=crop"
-    },
-    {
-      id: "2",
-      company: t("successCases.cases.case2.company"),
-      description: t("successCases.cases.case2.description"),
-      result: t("successCases.cases.case2.result"),
-      image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=700&auto=format&fit=crop"
-    },
-    {
-      id: "3",
-      company: t("successCases.cases.case3.company"),
-      description: t("successCases.cases.case3.description"),
-      result: t("successCases.cases.case3.result"),
-      image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=700&auto=format&fit=crop"
+  const { getSuccessCaseBySlug } = useSuccessCases();
+  const [caseItem, setCaseItem] = useState<SuccessCase | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    if (slug) {
+      fetchCase();
     }
-  ];
+  }, [slug]);
 
-  // Find the case item - ensure we're comparing with the correct type
-  const caseItem = successCases.find(caseItem => caseItem.id === id);
+  const fetchCase = async () => {
+    if (!slug) return;
+    
+    setLoading(true);
+    try {
+      const data = await getSuccessCaseBySlug(slug);
+      if (data) {
+        setCaseItem(data);
+      } else {
+        setNotFound(true);
+      }
+    } catch (error) {
+      console.error('Error fetching success case:', error);
+      setNotFound(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  console.log("Current ID param:", id);
-  console.log("Available cases:", successCases.map(c => c.id));
-  console.log("Found case:", caseItem);
-
-  if (!caseItem) {
+  if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-2xl font-bold mb-4">{t("successCases.caseNotFound")}</h1>
-        <Button onClick={() => navigate("/recursos/casos-de-sucesso")}>{t("successCases.backToCases")}</Button>
+      <div className="min-h-screen bg-gradient-to-b from-background to-background/95 relative overflow-hidden">
+        <Header />
+        <main className="container mx-auto px-4 pt-32 pb-16">
+          <div className="flex justify-center items-center py-20">
+            <Loader />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (notFound || !caseItem) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-background/95 relative overflow-hidden">
+        <Header />
+        <main className="container mx-auto px-4 pt-32 pb-16">
+          <div className="flex flex-col items-center justify-center py-20">
+            <h1 className="text-2xl font-bold mb-4">Caso não encontrado</h1>
+            <Button onClick={() => navigate("/recursos/casos-de-sucesso")}>Voltar aos Casos</Button>
+          </div>
+        </main>
+        <Footer />
       </div>
     );
   }
@@ -66,31 +83,65 @@ const SuccessCaseDetailPage = () => {
           className="mb-6 flex items-center"
         >
           <ChevronLeft className="h-4 w-4 mr-2" />
-          {t("successCases.backToCases")}
+          Voltar aos Casos
         </Button>
 
         <div className="max-w-4xl mx-auto">
-          <img 
-            src={caseItem.image} 
-            alt={caseItem.company}
-            className="w-full h-64 md:h-96 object-cover rounded-xl mb-8"
-          />
+          {(caseItem.company_logo_url || caseItem.founder_photo_url) && (
+            <img 
+              src={caseItem.company_logo_url || caseItem.founder_photo_url || "https://images.unsplash.com/photo-1560179707-f14e90ef3623?q=80&w=700&auto=format&fit=crop"} 
+              alt={caseItem.company_name}
+              className="w-full h-64 md:h-96 object-cover rounded-xl mb-8"
+            />
+          )}
           
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-lg bg-brand-purple/20 mb-6">
             <Users className="h-8 w-8 text-brand-purple" />
           </div>
 
-          <h1 className="text-3xl md:text-5xl font-bold mb-6">{caseItem.company}</h1>
+          <div className="mb-4">
+            <span className="text-sm font-medium px-3 py-1 bg-secondary rounded-full">{caseItem.industry}</span>
+          </div>
+
+          <h1 className="text-3xl md:text-5xl font-bold mb-6">{caseItem.company_name}</h1>
+          
+          {caseItem.founder_name && (
+            <p className="text-lg text-muted-foreground mb-6">
+              Fundador: {caseItem.founder_name}
+            </p>
+          )}
           
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-lg whitespace-pre-line mb-8">
-              {caseItem.description}
-            </p>
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">Sobre a Empresa</h2>
+              <p className="whitespace-pre-line">{caseItem.description}</p>
+            </div>
+
+            {caseItem.challenge && (
+              <div className="bg-muted/50 p-6 rounded-lg mb-8">
+                <h3 className="text-xl font-semibold mb-4">Desafio</h3>
+                <p className="whitespace-pre-line">{caseItem.challenge}</p>
+              </div>
+            )}
+
+            {caseItem.solution && (
+              <div className="mb-8">
+                <h3 className="text-xl font-semibold mb-4">Solução</h3>
+                <p className="whitespace-pre-line">{caseItem.solution}</p>
+              </div>
+            )}
             
             <div className="bg-secondary/50 p-6 rounded-lg mb-8">
-              <h3 className="text-xl font-semibold mb-2">{t("successCases.results")}</h3>
-              <p>{caseItem.result}</p>
+              <h3 className="text-xl font-semibold mb-4">Resultados</h3>
+              <p className="whitespace-pre-line">{caseItem.results}</p>
             </div>
+
+            {caseItem.metrics && (
+              <div className="bg-card/50 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold mb-4">Métricas</h3>
+                <pre className="text-sm">{JSON.stringify(caseItem.metrics, null, 2)}</pre>
+              </div>
+            )}
           </div>
         </div>
       </main>

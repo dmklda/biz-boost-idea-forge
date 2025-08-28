@@ -1,55 +1,58 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export interface BlogPost {
+export interface SuccessCase {
   id: string;
   title: string;
   slug: string;
-  excerpt: string;
-  content: string;
-  featured_image_url: string;
+  company_name: string;
+  company_logo_url: string;
+  founder_name: string;
+  founder_photo_url: string;
+  industry: string;
+  description: string;
+  challenge: string;
+  solution: string;
+  results: string;
   status: string;
-  tags: string[];
-  views_count: number;
-  reading_time: number;
   featured: boolean;
-  published_at: string;
+  metrics: any;
   created_at: string;
   updated_at: string;
 }
 
-export const useBlogPosts = () => {
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+export const useSuccessCases = () => {
+  const [successCases, setSuccessCases] = useState<SuccessCase[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchBlogPosts();
+    fetchSuccessCases();
   }, []);
 
-  const fetchBlogPosts = async () => {
+  const fetchSuccessCases = async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('blog_posts')
+        .from('success_cases')
         .select('*')
         .eq('status', 'published')
-        .order('published_at', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setBlogPosts(data || []);
+      setSuccessCases(data || []);
     } catch (err) {
-      console.error('Error fetching blog posts:', err);
+      console.error('Error fetching success cases:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
   };
 
-  const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> => {
+  const getSuccessCaseBySlug = async (slug: string): Promise<SuccessCase | null> => {
     try {
       const { data, error } = await supabase
-        .from('blog_posts')
+        .from('success_cases')
         .select('*')
         .eq('slug', slug)
         .eq('status', 'published')
@@ -58,16 +61,16 @@ export const useBlogPosts = () => {
       if (error) throw error;
       return data;
     } catch (err) {
-      console.error('Error fetching blog post:', err);
+      console.error('Error fetching success case:', err);
       return null;
     }
   };
 
   return {
-    blogPosts,
+    successCases,
     loading,
     error,
-    getBlogPostBySlug,
-    refetch: fetchBlogPosts
+    getSuccessCaseBySlug,
+    refetch: fetchSuccessCases
   };
 };
