@@ -78,12 +78,13 @@ export const BecomeAdopterModal = ({ open, onOpenChange, onSuccess }: BecomeAdop
           availability: 'available',
           rating: 5.0,
           completed_validations: 0,
-          total_points: 0
+          total_points: 0,
+          status: 'pending'
         });
 
       if (error) throw error;
 
-      toast.success('Perfil de Early Adopter criado com sucesso!');
+      toast.success('Pedido para ser Early Adopter enviado para aprovação!');
       onSuccess?.();
       onOpenChange(false);
 

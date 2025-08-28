@@ -143,6 +143,8 @@ export type Database = {
       }
       early_adopters: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           availability: string | null
           bio: string | null
           completed_validations: number | null
@@ -154,11 +156,15 @@ export type Database = {
           linkedin_url: string | null
           portfolio_url: string | null
           rating: number | null
+          rejection_reason: string | null
+          status: string | null
           total_points: number | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           availability?: string | null
           bio?: string | null
           completed_validations?: number | null
@@ -170,11 +176,15 @@ export type Database = {
           linkedin_url?: string | null
           portfolio_url?: string | null
           rating?: number | null
+          rejection_reason?: string | null
+          status?: string | null
           total_points?: number | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           availability?: string | null
           bio?: string | null
           completed_validations?: number | null
@@ -186,6 +196,8 @@ export type Database = {
           linkedin_url?: string | null
           portfolio_url?: string | null
           rating?: number | null
+          rejection_reason?: string | null
+          status?: string | null
           total_points?: number | null
           updated_at?: string | null
           user_id?: string | null
@@ -894,6 +906,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_early_adopter: {
+        Args: { admin_email: string; admin_user_id: string; adopter_id: string }
+        Returns: undefined
+      }
       award_marketplace_points: {
         Args: {
           description?: string
@@ -922,9 +938,22 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      is_admin: {
+        Args: { user_email: string }
+        Returns: boolean
+      }
       is_first_analysis: {
         Args: { user_id_param: string }
         Returns: boolean
+      }
+      reject_early_adopter: {
+        Args: {
+          admin_email: string
+          admin_user_id: string
+          adopter_id: string
+          reason?: string
+        }
+        Returns: undefined
       }
       update_user_credits: {
         Args: { amount: number; user_id: string }

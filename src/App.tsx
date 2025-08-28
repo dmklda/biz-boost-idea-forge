@@ -45,6 +45,8 @@ import WebinarsPage from './pages/resources/WebinarsPage';
 import ApiPage from './pages/platform/ApiPage';
 import ResultsPageStandalone from './pages/ResultsPage';
 import ExampleAnalysisResult from './pages/ExampleAnalysisResult';
+import AdminPanel from './pages/admin/AdminPanel';
+import EarlyAdopterDashboard from './pages/dashboard/EarlyAdopterDashboard';
 
 function App() {
   return (
@@ -103,7 +105,11 @@ function App() {
                 <Route path="metricas-avancadas" element={<AdvancedMetricsPage />} />
                 <Route path="central-recursos" element={<ResourceCenterPage />} />
                 <Route path="resultados/:id" element={<ResultsPage />} />
+                <Route path="early-adopter" element={<EarlyAdopterDashboard />} />
               </Route>
+
+              {/* Admin Routes */}
+              <Route path="/admin" element={<AdminPanel />} />
 
               {/* Fallback para 404 */}
               <Route path="*" element={<NotFound />} />

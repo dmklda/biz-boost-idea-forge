@@ -6,6 +6,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslation } from "react-i18next";
 import { toast } from "@/components/ui/sonner";
 import { useForm } from "react-hook-form";
@@ -15,6 +18,16 @@ import Header from "@/components/Header";
 import { supabase } from '@/integrations/supabase/client';
 import { Camera } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
+const EXPERTISE_AREAS = [
+  'Tecnologia', 'Marketing', 'Design', 'Vendas', 'Finanças', 'Operações',
+  'Recursos Humanos', 'Produto', 'Estratégia', 'Dados', 'UX/UI', 'Desenvolvimento'
+];
+
+const INTERESTS = [
+  'SaaS', 'E-commerce', 'FinTech', 'EdTech', 'HealthTech', 'Sustentabilidade',
+  'IA/ML', 'Blockchain', 'IoT', 'Mobile', 'Web', 'B2B', 'B2C', 'Marketplace'
+];
 
 const RegisterPage = () => {
   const { t } = useTranslation();
@@ -33,10 +46,25 @@ const RegisterPage = () => {
     email: z.string().email(t('auth.errors.invalidEmail')),
     password: z.string().min(6, t('auth.errors.passwordLength')),
     confirmPassword: z.string().min(6, t('auth.errors.passwordLength')),
-    terms: z.literal(true, { errorMap: () => ({ message: 'Você deve aceitar os termos.' }) })
+    terms: z.literal(true, { errorMap: () => ({ message: 'Você deve aceitar os termos.' }) }),
+    wantEarlyAdopter: z.boolean().default(false),
+    bio: z.string().optional(),
+    expertise_areas: z.array(z.string()).optional(),
+    interests: z.array(z.string()).optional(),
+    hourly_rate: z.number().optional(),
+    portfolio_url: z.string().url("URL inválida").optional().or(z.literal("")),
+    linkedin_url: z.string().url("URL inválida").optional().or(z.literal("")),
   }).refine((data) => data.password === data.confirmPassword, {
     message: 'As senhas não coincidem',
     path: ['confirmPassword'],
+  }).refine((data) => {
+    if (data.wantEarlyAdopter && !data.bio) {
+      return false;
+    }
+    return true;
+  }, {
+    message: "Bio é obrigatória para Early Adopters",
+    path: ["bio"],
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -48,9 +76,20 @@ const RegisterPage = () => {
       email: '',
       password: '',
       confirmPassword: '',
-      terms: true
+      terms: true,
+      wantEarlyAdopter: false,
+      bio: "",
+      expertise_areas: [],
+      interests: [],
+      hourly_rate: undefined,
+      portfolio_url: "",
+      linkedin_url: "",
     }
   });
+
+  const wantEarlyAdopter = form.watch("wantEarlyAdopter");
+  const [selectedExpertise, setSelectedExpertise] = useState<string[]>([]);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
 
   // Check authentication status and redirect if needed
   useEffect(() => {
@@ -113,12 +152,51 @@ const RegisterPage = () => {
           toast.error('Erro ao fazer upload do avatar: ' + (err instanceof Error ? err.message : String(err)));
         }
       }
+
+      // 3. Se quer ser Early Adopter, criar perfil pendente
+      if (data.wantEarlyAdopter) {
+        const { error: adopterError } = await supabase
+          .from('early_adopters')
+          .insert({
+            user_id: user.id,
+            bio: data.bio,
+            expertise_areas: selectedExpertise,
+            interests: selectedInterests,
+            hourly_rate: data.hourly_rate,
+            portfolio_url: data.portfolio_url || null,
+            linkedin_url: data.linkedin_url || null,
+            status: 'pending'
+          });
+
+        if (adopterError) {
+          console.error('Error creating early adopter profile:', adopterError);
+        } else {
+          toast.success('Pedido para ser Early Adopter enviado para aprovação!');
+        }
+      }
+      
       toast.success(t('auth.registerSuccess'));
     } catch (error) {
       console.error('Register error:', error);
       toast.error(error instanceof Error ? error.message : t('auth.registerFailed'));
       setIsLoading(false);
     }
+  };
+
+  const toggleExpertise = (area: string) => {
+    const newExpertise = selectedExpertise.includes(area)
+      ? selectedExpertise.filter(e => e !== area)
+      : [...selectedExpertise, area];
+    setSelectedExpertise(newExpertise);
+    form.setValue('expertise_areas', newExpertise);
+  };
+
+  const toggleInterest = (interest: string) => {
+    const newInterests = selectedInterests.includes(interest)
+      ? selectedInterests.filter(i => i !== interest)
+      : [...selectedInterests, interest];
+    setSelectedInterests(newInterests);
+    form.setValue('interests', newInterests);
   };
 
   // If already redirecting, show loading state
@@ -280,6 +358,144 @@ const RegisterPage = () => {
                       </FormItem>
                     )}
                   />
+
+                  {/* Early Adopter Section */}
+                  <div className="space-y-4 border-t pt-6">
+                    <FormField
+                      control={form.control}
+                      name="wantEarlyAdopter"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel className="text-sm font-medium">
+                              Quero me registrar como Early Adopter
+                            </FormLabel>
+                            <p className="text-xs text-muted-foreground">
+                              Early Adopters ajudam a validar ideias de negócio e ganham pontos por suas contribuições.
+                            </p>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+
+                    {wantEarlyAdopter && (
+                      <div className="space-y-4 pl-6 border-l-2 border-primary/20">
+                        <FormField
+                          control={form.control}
+                          name="bio"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Bio *</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="Descreva sua experiência e o que te motiva a ajudar empreendedores..."
+                                  className="min-h-[80px]"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <div>
+                          <FormLabel className="text-sm font-medium">Áreas de Expertise</FormLabel>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {EXPERTISE_AREAS.map((area) => (
+                              <Badge
+                                key={area}
+                                variant={selectedExpertise.includes(area) ? "default" : "secondary"}
+                                className="cursor-pointer"
+                                onClick={() => toggleExpertise(area)}
+                              >
+                                {area}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <FormLabel className="text-sm font-medium">Interesses</FormLabel>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {INTERESTS.map((interest) => (
+                              <Badge
+                                key={interest}
+                                variant={selectedInterests.includes(interest) ? "default" : "outline"}
+                                className="cursor-pointer"
+                                onClick={() => toggleInterest(interest)}
+                              >
+                                {interest}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="hourly_rate"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Taxa por Hora (R$)</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    placeholder="0"
+                                    {...field}
+                                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="portfolio_url"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>URL do Portfólio</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="https://meuportfolio.com"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="linkedin_url"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>URL do LinkedIn</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="https://linkedin.com/in/seuperfil"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <Button 
                     type="submit" 
                     className="w-full bg-brand-purple hover:bg-brand-purple/90" 
