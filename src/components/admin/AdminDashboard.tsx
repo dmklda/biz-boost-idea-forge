@@ -47,7 +47,7 @@ export const AdminDashboard = () => {
       const { data, error } = await supabase.rpc('get_admin_dashboard_stats');
       
       if (error) throw error;
-      setStats(data as DashboardStats);
+      setStats(data as any);
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
     } finally {
@@ -60,41 +60,72 @@ export const AdminDashboard = () => {
       // Buscar atividades recentes dos últimos 7 dias
       const { data: ideas } = await supabase
         .from('ideas')
-        .select('id, title, created_at, profiles(name)')
+        .select(`
+          id, 
+          title, 
+          created_at, 
+          user_id
+        `)
         .order('created_at', { ascending: false })
         .limit(5);
 
       const { data: analyses } = await supabase
         .from('idea_analyses')
-        .select('id, created_at, profiles(name)')
+        .select(`
+          id, 
+          created_at, 
+          user_id
+        `)
         .order('created_at', { ascending: false })
         .limit(5);
 
       const { data: adopters } = await supabase
         .from('early_adopters')
-        .select('id, created_at, status, profiles(name)')
+        .select(`
+          id, 
+          created_at, 
+          status, 
+          user_id
+        `)
         .order('created_at', { ascending: false })
         .limit(5);
+
+      // Buscar nomes dos usuários separadamente
+      const userIds = [
+        ...(ideas?.map(i => i.user_id) || []),
+        ...(analyses?.map(a => a.user_id) || []),
+        ...(adopters?.map(a => a.user_id) || [])
+      ].filter(Boolean);
+
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, name')
+        .in('id', userIds);
+
+      const getUserName = (userId: string) => {
+        const profile = profiles?.find(p => p.id === userId);
+        return profile?.name || 'Usuário';
+      };
 
       const activities = [
         ...(ideas?.map(i => ({
           type: 'idea',
           title: `Nova ideia: ${i.title}`,
-          user: i.profiles?.name || 'Usuário',
+          user: getUserName(i.user_id),
           time: i.created_at,
           icon: 'lightbulb'
         })) || []),
         ...(analyses?.map(a => ({
           type: 'analysis',
           title: 'Nova análise realizada',
-          user: a.profiles?.name || 'Usuário',
+          user: getUserName(a.user_id),
           time: a.created_at,
           icon: 'chart'
         })) || []),
         ...(adopters?.map(a => ({
           type: 'adopter',
           title: `Early Adopter ${a.status === 'pending' ? 'pendente' : 'aprovado'}`,
-          user: a.profiles?.name || 'Usuário',
+          user: getUserName(a.user_id),
           time: a.created_at,
           icon: 'star'
         })) || [])
