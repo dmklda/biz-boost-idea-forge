@@ -15,6 +15,12 @@ import nextgenSolutionsLogo from "../assets/logos/nextgen-solutions.png";
 import smartCorpLogo from "../assets/logos/smart-corp.png";
 import visionTechLogo from "../assets/logos/vision-tech.png";
 import dataFlowLogo from "../assets/logos/data-flow.png";
+import cloudSyncLogo from "../assets/logos/cloud-sync.png";
+import quantumEdgeLogo from "../assets/logos/quantum-edge.png";
+import ecoFlowLogo from "../assets/logos/eco-flow.png";
+import digitalMindLogo from "../assets/logos/digital-mind.png";
+import flexCodeLogo from "../assets/logos/flex-code.png";
+import rocketBaseLogo from "../assets/logos/rocket-base.png";
 
 // Enhanced trusted companies with AI-generated logos
 const trustedCompanies = [
@@ -25,7 +31,13 @@ const trustedCompanies = [
   { name: "NextGen Solutions", logo: nextgenSolutionsLogo },
   { name: "SmartCorp", logo: smartCorpLogo },
   { name: "VisionTech", logo: visionTechLogo },
-  { name: "DataFlow", logo: dataFlowLogo }
+  { name: "DataFlow", logo: dataFlowLogo },
+  { name: "CloudSync", logo: cloudSyncLogo },
+  { name: "QuantumEdge", logo: quantumEdgeLogo },
+  { name: "EcoFlow", logo: ecoFlowLogo },
+  { name: "DigitalMind", logo: digitalMindLogo },
+  { name: "FlexCode", logo: flexCodeLogo },
+  { name: "RocketBase", logo: rocketBaseLogo }
 ];
 
 const TrustedBy = () => {
@@ -51,14 +63,14 @@ const TrustedBy = () => {
               }}
               className="w-full max-w-7xl mx-auto"
             >
-              <CarouselContent className="-ml-2 md:-ml-4 animate-carousel">
+              <CarouselContent className="-ml-1 md:-ml-2 animate-carousel">
                 {[...trustedCompanies, ...trustedCompanies].map((company, index) => (
-                  <CarouselItem key={`first-${index}`} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                    <div className="p-4 flex items-center justify-center h-20">
-                      <img 
+                  <CarouselItem key={`first-${index}`} className="pl-1 md:pl-2 basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6">
+                    <div className="p-2 md:p-3 flex items-center justify-center h-16 md:h-20">
+                      <img
                         src={company.logo}
                         alt={`${company.name} logo`}
-                        className="h-10 w-auto mx-auto opacity-40 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0 transform hover:scale-105 filter dark:brightness-150"
+                        className="h-8 md:h-10 w-auto mx-auto opacity-40 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0 transform hover:scale-105 filter dark:brightness-150"
                       />
                     </div>
                   </CarouselItem>
@@ -77,19 +89,19 @@ const TrustedBy = () => {
               className="w-full max-w-7xl mx-auto mt-6"
             >
               <CarouselContent 
-                className="-ml-2 md:-ml-4" 
+                className="-ml-1 md:-ml-2" 
                 style={{ 
                   animation: 'carousel 80s linear infinite reverse',
                   animationPlayState: 'running'
                 }}
               >
                 {[...trustedCompanies.reverse(), ...trustedCompanies].map((company, index) => (
-                  <CarouselItem key={`second-${index}`} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                    <div className="p-4 flex items-center justify-center h-20">
+                  <CarouselItem key={`second-${index}`} className="pl-1 md:pl-2 basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6">
+                    <div className="p-2 md:p-3 flex items-center justify-center h-16 md:h-20">
                       <img 
                         src={company.logo}
                         alt={`${company.name} logo`}
-                        className="h-10 w-auto mx-auto opacity-40 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0 transform hover:scale-105 filter dark:brightness-150"
+                        className="h-8 md:h-10 w-auto mx-auto opacity-40 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0 transform hover:scale-105 filter dark:brightness-150"
                       />
                     </div>
                   </CarouselItem>
