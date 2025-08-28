@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CreateValidationModalProps {
   open: boolean;
@@ -107,9 +108,10 @@ const CATEGORIES = [
 export const CreateValidationModal = ({ open, onOpenChange, ideaId }: CreateValidationModalProps) => {
   const { t } = useTranslation();
   const { authState } = useAuth();
-  const { createValidationRequest } = useMarketplace();
+  const { createValidationRequest, createValidationFromIdea } = useMarketplace();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [ideaData, setIdeaData] = useState<any>(null);
   const [formData, setFormData] = useState<ValidationFormData>({
     title: '',
     description: '',
@@ -121,6 +123,38 @@ export const CreateValidationModal = ({ open, onOpenChange, ideaId }: CreateVali
     requirements: '',
     deadline: undefined
   });
+
+  // Load idea data if ideaId is provided
+  React.useEffect(() => {
+    const loadIdeaData = async () => {
+      if (ideaId) {
+        try {
+          const { data: idea, error } = await supabase
+            .from('ideas')
+            .select('*')
+            .eq('id', ideaId)
+            .single();
+
+          if (error) throw error;
+
+          setIdeaData(idea);
+          // Pre-populate form with idea data
+          setFormData(prev => ({
+            ...prev,
+            title: `Validação: ${idea.title}`,
+            description: idea.description,
+            target_audience: idea.audience || ''
+          }));
+        } catch (error) {
+          console.error('Error loading idea:', error);
+        }
+      }
+    };
+
+    if (open) {
+      loadIdeaData();
+    }
+  }, [ideaId, open]);
 
   const selectedValidationType = VALIDATION_TYPES.find(type => type.id === formData.validation_type);
   const selectedCategory = CATEGORIES.find(cat => cat.id === formData.category);
@@ -151,17 +185,31 @@ export const CreateValidationModal = ({ open, onOpenChange, ideaId }: CreateVali
         return;
       }
 
-      await createValidationRequest({
-        title: formData.title,
-        description: formData.description,
-        category: formData.category,
-        target_audience: formData.target_audience,
-        validation_type: formData.validation_type as ValidationType,
-        reward_points: formData.reward_points,
-        max_responses: formData.max_responses,
-        requirements: formData.requirements,
-        deadline: formData.deadline?.toISOString()
-      });
+      if (ideaId) {
+        await createValidationFromIdea(ideaId, {
+          title: formData.title,
+          description: formData.description,
+          category: formData.category,
+          target_audience: formData.target_audience,
+          validation_type: formData.validation_type as ValidationType,
+          reward_points: formData.reward_points,
+          max_responses: formData.max_responses,
+          requirements: formData.requirements,
+          deadline: formData.deadline?.toISOString()
+        });
+      } else {
+        await createValidationRequest({
+          title: formData.title,
+          description: formData.description,
+          category: formData.category,
+          target_audience: formData.target_audience,
+          validation_type: formData.validation_type as ValidationType,
+          reward_points: formData.reward_points,
+          max_responses: formData.max_responses,
+          requirements: formData.requirements,
+          deadline: formData.deadline?.toISOString()
+        });
+      }
 
       toast.success('Solicitação criada! Será exibida na aba "Minhas Solicitações".');
       onOpenChange(false);
@@ -197,10 +245,10 @@ export const CreateValidationModal = ({ open, onOpenChange, ideaId }: CreateVali
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Target className="h-5 w-5 text-blue-600" />
-            Criar Solicitação de Validação
+            {ideaId ? 'Criar Validação da Ideia' : 'Criar Solicitação de Validação'}
           </DialogTitle>
           <DialogDescription>
-            Conecte-se com early adopters para validar sua ideia de negócio
+            {ideaId ? 'Crie uma validação baseada na sua ideia existente' : 'Conecte-se com early adopters para validar sua ideia de negócio'}
           </DialogDescription>
         </DialogHeader>
 
@@ -231,7 +279,16 @@ export const CreateValidationModal = ({ open, onOpenChange, ideaId }: CreateVali
           <div className="space-y-6">
             <div className="text-center mb-6">
               <h3 className="text-lg font-semibold mb-2">Informações Básicas</h3>
-              <p className="text-gray-600">Descreva sua ideia e escolha a categoria</p>
+              <p className="text-gray-600">
+                {ideaId ? 'Personalize os dados da sua ideia para a validação' : 'Descreva sua ideia e escolha a categoria'}
+              </p>
+              {ideaData && (
+                <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    💡 Baseando validação na ideia: <strong>{ideaData.title}</strong>
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="space-y-4">

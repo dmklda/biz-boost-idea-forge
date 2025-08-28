@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, ExternalLink, Edit, FileText, Trash2, Lightbulb, BarChart3, Star, Zap } from "lucide-react";
+import { Calendar, ExternalLink, Edit, FileText, Trash2, Lightbulb, BarChart3, Star, Zap, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -22,6 +22,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel
 } from "@/components/ui/alert-dialog";
+import { CreateValidationModal } from "@/components/marketplace/CreateValidationModal";
 
 interface Idea {
   id: string;
@@ -39,6 +40,7 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
   const navigate = useNavigate();
   const [isCompareModalOpen, setIsCompareModalOpen] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+  const [showCreateValidationModal, setShowCreateValidationModal] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
 
   const handleCardClick = () => {
@@ -58,6 +60,11 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
   const handleViewDetailsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigate(`/dashboard/ideias/${idea.id}`);
+  };
+
+  const handleCreateValidationClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowCreateValidationModal(true);
   };
 
   const handleDeleteClick = (e: React.MouseEvent) => {
@@ -257,6 +264,16 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
             variant="outline" 
             size="sm" 
             className="flex items-center gap-2 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300 group/btn"
+            onClick={handleCreateValidationClick}
+          >
+            <Target className="h-4 w-4 group-hover/btn:scale-110 transition-transform duration-300" />
+            <span className="hidden md:inline text-sm font-medium">{t('ideas.createValidation', "Criar Validação")}</span>
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex items-center gap-2 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300 group/btn"
             onClick={handleViewDetailsClick}
           >
             <ExternalLink className="h-4 w-4 group-hover/btn:scale-110 transition-transform duration-300" />
@@ -269,6 +286,12 @@ export const IdeaCard = ({ idea, onUpdate }: { idea: Idea; onUpdate: () => void 
         isOpen={isCompareModalOpen}
         onClose={() => setIsCompareModalOpen(false)}
         ideaIds={[idea.id]}
+      />
+
+      <CreateValidationModal
+        open={showCreateValidationModal}
+        onOpenChange={setShowCreateValidationModal}
+        ideaId={idea.id}
       />
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
