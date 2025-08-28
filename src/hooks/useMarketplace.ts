@@ -47,6 +47,8 @@ export interface EarlyAdopter {
   expertise_areas: string[];
   availability: 'available' | 'busy' | 'unavailable';
   hourly_rate?: number;
+  portfolio_url?: string;
+  linkedin_url?: string;
 }
 
 export interface ValidationResponse {
@@ -146,8 +148,7 @@ export const useMarketplace = () => {
     try {
       let query = supabase
         .from('early_adopters')
-        .select('*')
-        .eq('availability', 'available');
+        .select('*');
 
       if (criteria?.expertise_required?.length) {
         query = query.overlaps('expertise_areas', criteria.expertise_required);
@@ -178,7 +179,12 @@ export const useMarketplace = () => {
       setEarlyAdopters(enrichedAdopters);
     } catch (err) {
       console.error('Error fetching early adopters:', err);
-      setError('Erro ao carregar early adopters');
+      // Don't show error for empty early adopters list
+      if (err?.message?.includes('Multiple rows') || err?.code === 'PGRST116') {
+        setEarlyAdopters([]);
+      } else {
+        setError('Erro ao carregar early adopters');
+      }
     }
   };
 
@@ -426,24 +432,36 @@ export const useMarketplace = () => {
   // Get marketplace statistics
   const getMarketplaceStats = async () => {
     try {
-      const [requestsCount, adoptersCount, responsesCount] = await Promise.all([
-        supabase.from('validation_requests').select('*', { count: 'exact', head: true }),
+      const [requestsCount, adoptersCount, responsesCount, responsesToday] = await Promise.all([
+        supabase.from('validation_requests').select('*', { count: 'exact', head: true }).eq('status', 'active'),
         supabase.from('early_adopters').select('*', { count: 'exact', head: true }),
+        supabase.from('validation_responses').select('*', { count: 'exact', head: true }),
         supabase.from('validation_responses').select('*', { count: 'exact', head: true })
+          .gte('created_at', new Date().toISOString().split('T')[0])
       ]);
+
+      // Calculate success rate based on approved responses
+      const { count: approvedCount } = await supabase
+        .from('validation_responses')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'approved');
+
+      const totalResponses = responsesCount.count || 0;
+      const approved = approvedCount || 0;
+      const successRate = totalResponses > 0 ? Math.round((approved / totalResponses) * 100) : 0;
 
       return {
         activeValidations: requestsCount.count || 0,
         earlyAdopters: adoptersCount.count || 0,
-        totalResponses: responsesCount.count || 0,
-        successRate: 94 // TODO: Calculate real success rate
+        responsesToday: responsesToday.count || 0,
+        successRate
       };
     } catch (err) {
       console.error('Error fetching stats:', err);
       return {
         activeValidations: 0,
         earlyAdopters: 0,
-        totalResponses: 0,
+        responsesToday: 0,
         successRate: 0
       };
     }

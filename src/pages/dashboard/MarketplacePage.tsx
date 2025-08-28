@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "react-i18next";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,11 +21,16 @@ import {
   Eye,
   Clock,
   Award,
-  Target
+  Target,
+  Plus,
+  Link,
+  ExternalLink
 } from "lucide-react";
 import { useMarketplace } from "@/hooks/useMarketplace";
 import { MarketplaceValidationCard } from "@/components/marketplace/MarketplaceValidationCard";
 import { CreateValidationModal } from "@/components/marketplace/CreateValidationModal";
+import { BecomeAdopterModal } from "@/components/marketplace/BecomeAdopterModal";
+import { ValidationResponseModal } from "@/components/marketplace/ValidationResponseModal";
 
 const MarketplacePage = () => {
   const { t } = useTranslation();
@@ -37,15 +43,77 @@ const MarketplacePage = () => {
     isLoading,
     fetchValidationRequests,
     fetchMyRequests,
-    joinValidation
+    fetchEarlyAdopters,
+    joinValidation,
+    submitValidationResponse,
+    getMarketplaceStats
   } = useMarketplace();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isBecomeAdopterModalOpen, setIsBecomeAdopterModalOpen] = useState(false);
+  const [responseModalData, setResponseModalData] = useState<{ open: boolean; validation: any }>({
+    open: false,
+    validation: null
+  });
+  const [stats, setStats] = useState({
+    activeValidations: 0,
+    earlyAdopters: 0,
+    responsesToday: 0,
+    successRate: 0
+  });
+  const [isUserAdopter, setIsUserAdopter] = useState(false);
+
+  // Check if user is already an adopter
+  const checkIfUserIsAdopter = async () => {
+    if (!authState.user) return;
+    
+    const { data } = await supabase
+      .from('early_adopters')
+      .select('id')
+      .eq('user_id', authState.user.id)
+      .single();
+    
+    setIsUserAdopter(!!data);
+  };
+
+  // Load marketplace stats
+  const loadStats = async () => {
+    const marketplaceStats = await getMarketplaceStats();
+    setStats(marketplaceStats);
+  };
 
   const handleJoinValidation = async (validationId: string) => {
-    await joinValidation(validationId);
+    if (!isUserAdopter) {
+      toast.error('Você precisa ser um Early Adopter para participar de validações');
+      setIsBecomeAdopterModalOpen(true);
+      return;
+    }
+
+    const validation = validationRequests.find(v => v.id === validationId);
+    if (validation) {
+      setResponseModalData({ open: true, validation });
+    }
   };
+
+  const handleSubmitResponse = async (responseData: any, feedback: string, rating: number) => {
+    if (responseModalData.validation) {
+      await submitValidationResponse(
+        responseModalData.validation.id, 
+        responseData, 
+        feedback, 
+        rating
+      );
+      setResponseModalData({ open: false, validation: null });
+    }
+  };
+
+  useEffect(() => {
+    if (authState.user) {
+      checkIfUserIsAdopter();
+      loadStats();
+    }
+  }, [authState.user]);
 
   const filteredRequests = validationRequests.filter(request => {
     const matchesSearch = request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -97,7 +165,7 @@ const MarketplacePage = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-600 dark:text-slate-400">Validações Ativas</p>
-                    <p className="text-2xl font-bold text-blue-600">24</p>
+                    <p className="text-2xl font-bold text-blue-600">{stats.activeValidations}</p>
                   </div>
                   <Target className="h-8 w-8 text-blue-600" />
                 </div>
@@ -109,7 +177,7 @@ const MarketplacePage = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-600 dark:text-slate-400">Early Adopters</p>
-                    <p className="text-2xl font-bold text-green-600">156</p>
+                    <p className="text-2xl font-bold text-green-600">{stats.earlyAdopters}</p>
                   </div>
                   <Users className="h-8 w-8 text-green-600" />
                 </div>
@@ -121,7 +189,7 @@ const MarketplacePage = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-600 dark:text-slate-400">Feedbacks Hoje</p>
-                    <p className="text-2xl font-bold text-purple-600">89</p>
+                    <p className="text-2xl font-bold text-purple-600">{stats.responsesToday}</p>
                   </div>
                   <MessageSquare className="h-8 w-8 text-purple-600" />
                 </div>
@@ -133,7 +201,7 @@ const MarketplacePage = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-600 dark:text-slate-400">Taxa de Sucesso</p>
-                    <p className="text-2xl font-bold text-orange-600">94%</p>
+                    <p className="text-2xl font-bold text-orange-600">{stats.successRate}%</p>
                   </div>
                   <TrendingUp className="h-8 w-8 text-orange-600" />
                 </div>
@@ -207,55 +275,130 @@ const MarketplacePage = () => {
 
             {/* Early Adopters Tab */}
             <TabsContent value="adopters" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {earlyAdopters.map((adopter) => (
-                  <Card key={adopter.id} className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <CardHeader>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-12 w-12">
-                          <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white">
-                            {adopter.name.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <CardTitle className="text-lg">{adopter.name}</CardTitle>
-                          <div className="flex items-center gap-1">
-                            <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                            <span className="text-sm">{adopter.rating}</span>
-                            <span className="text-sm text-slate-600 dark:text-slate-400">
-                              ({adopter.completed_validations} validações)
-                            </span>
+              {!isUserAdopter && (
+                <Card className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-800">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">Torne-se um Early Adopter</h3>
+                        <p className="text-slate-600 dark:text-slate-400">
+                          Ganhe pontos validando ideias e construa sua reputação no marketplace.
+                        </p>
+                      </div>
+                      <Button 
+                        onClick={() => setIsBecomeAdopterModalOpen(true)}
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Começar
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {earlyAdopters.length === 0 ? (
+                <div className="text-center py-12">
+                  <Users className="h-16 w-16 text-slate-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Nenhum Early Adopter ainda</h3>
+                  <p className="text-slate-600 dark:text-slate-400 mb-6">
+                    Seja o primeiro a se tornar um early adopter e começar a ganhar pontos!
+                  </p>
+                  <Button 
+                    onClick={() => setIsBecomeAdopterModalOpen(true)}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                  >
+                    Torne-se Early Adopter
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {earlyAdopters.map((adopter) => (
+                    <Card key={adopter.id} className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <CardHeader>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-12 w-12">
+                            <AvatarImage src={adopter.avatar} />
+                            <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white">
+                              {adopter.name.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <CardTitle className="text-lg">{adopter.name}</CardTitle>
+                            <div className="flex items-center gap-1">
+                              <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                              <span className="text-sm">{adopter.rating?.toFixed(1) || '5.0'}</span>
+                              <span className="text-sm text-slate-600 dark:text-slate-400">
+                                ({adopter.completed_validations} validações)
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <CardDescription>{adopter.bio}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div>
-                          <p className="text-sm font-medium mb-2">Áreas de Expertise:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {adopter.expertise_areas.map((area, index) => (
-                              <Badge key={index} variant="secondary" className="text-xs">
-                                {area}
-                              </Badge>
-                            ))}
+                        <CardDescription className="line-clamp-2">{adopter.bio}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          <div>
+                            <p className="text-sm font-medium mb-2">Áreas de Expertise:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {adopter.expertise_areas?.slice(0, 3).map((area, index) => (
+                                <Badge key={index} variant="secondary" className="text-xs">
+                                  {area}
+                                </Badge>
+                              ))}
+                              {adopter.expertise_areas?.length > 3 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{adopter.expertise_areas.length - 3}
+                                </Badge>
+                              )}
+                            </div>
                           </div>
+                          
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-slate-600 dark:text-slate-400">Pontos Totais:</span>
+                            <span className="font-medium text-purple-600">{adopter.total_points}</span>
+                          </div>
+                          
+                          {adopter.availability === 'available' && (
+                            <div className="flex gap-2">
+                              {adopter.portfolio_url && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => window.open(adopter.portfolio_url, '_blank')}
+                                  className="flex-1"
+                                >
+                                  <ExternalLink className="h-3 w-3 mr-1" />
+                                  Portfolio
+                                </Button>
+                              )}
+                              {adopter.linkedin_url && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => window.open(adopter.linkedin_url, '_blank')}
+                                  className="flex-1"
+                                >
+                                  <Link className="h-3 w-3 mr-1" />
+                                  LinkedIn
+                                </Button>
+                              )}
+                            </div>
+                          )}
+
+                          <Badge 
+                            variant={adopter.availability === 'available' ? 'default' : 'secondary'}
+                            className="w-fit"
+                          >
+                            {adopter.availability === 'available' ? 'Disponível' : 
+                             adopter.availability === 'busy' ? 'Ocupado' : 'Indisponível'}
+                          </Badge>
                         </div>
-                        
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-slate-600 dark:text-slate-400">Pontos Totais:</span>
-                          <span className="font-medium text-purple-600">{adopter.total_points}</span>
-                        </div>
-                        
-                        <Button className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white">
-                          Convidar para Validação
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </TabsContent>
 
             {/* My Requests Tab */}
@@ -349,10 +492,27 @@ const MarketplacePage = () => {
         </div>
       </div>
 
-      {/* Create Validation Modal */}
+      {/* Modals */}
       <CreateValidationModal
         open={isCreateModalOpen}
         onOpenChange={setIsCreateModalOpen}
+      />
+      
+      <BecomeAdopterModal
+        open={isBecomeAdopterModalOpen}
+        onOpenChange={setIsBecomeAdopterModalOpen}
+        onSuccess={() => {
+          checkIfUserIsAdopter();
+          fetchEarlyAdopters();
+          loadStats();
+        }}
+      />
+
+      <ValidationResponseModal
+        open={responseModalData.open}
+        onOpenChange={(open) => setResponseModalData({ open, validation: null })}
+        validation={responseModalData.validation}
+        onSubmit={handleSubmitResponse}
       />
     </div>
   );
