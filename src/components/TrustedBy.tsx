@@ -63,14 +63,14 @@ const TrustedBy = () => {
               }}
               className="w-full max-w-7xl mx-auto"
             >
-              <CarouselContent className="-ml-1 md:-ml-2 animate-carousel">
+              <CarouselContent className="animate-carousel">
                 {[...trustedCompanies, ...trustedCompanies].map((company, index) => (
-                  <CarouselItem key={`first-${index}`} className="pl-1 md:pl-2 basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6">
-                    <div className="p-2 md:p-3 flex items-center justify-center h-16 md:h-20">
+                  <CarouselItem key={`first-${index}`} className="basis-1/4 md:basis-1/5 lg:basis-1/6 xl:basis-1/7">
+                    <div className="px-1 py-2 flex items-center justify-center h-14 md:h-16">
                       <img
                         src={company.logo}
                         alt={`${company.name} logo`}
-                        className="h-8 md:h-10 w-auto mx-auto opacity-40 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0 transform hover:scale-105 filter dark:brightness-150"
+                        className="h-6 md:h-8 w-auto mx-auto opacity-40 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0 transform hover:scale-105 filter dark:brightness-150"
                       />
                     </div>
                   </CarouselItem>
@@ -89,19 +89,19 @@ const TrustedBy = () => {
               className="w-full max-w-7xl mx-auto mt-6"
             >
               <CarouselContent 
-                className="-ml-1 md:-ml-2" 
+                className=""
                 style={{ 
                   animation: 'carousel 80s linear infinite reverse',
                   animationPlayState: 'running'
                 }}
               >
                 {[...trustedCompanies.reverse(), ...trustedCompanies].map((company, index) => (
-                  <CarouselItem key={`second-${index}`} className="pl-1 md:pl-2 basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6">
-                    <div className="p-2 md:p-3 flex items-center justify-center h-16 md:h-20">
+                  <CarouselItem key={`second-${index}`} className="basis-1/4 md:basis-1/5 lg:basis-1/6 xl:basis-1/7">
+                    <div className="px-1 py-2 flex items-center justify-center h-14 md:h-16">
                       <img 
                         src={company.logo}
                         alt={`${company.name} logo`}
-                        className="h-8 md:h-10 w-auto mx-auto opacity-40 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0 transform hover:scale-105 filter dark:brightness-150"
+                        className="h-6 md:h-8 w-auto mx-auto opacity-40 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0 transform hover:scale-105 filter dark:brightness-150"
                       />
                     </div>
                   </CarouselItem>
