@@ -555,24 +555,23 @@ export const CreateValidationModal = ({ open, onOpenChange, ideaId }: CreateVali
               </CardContent>
             </Card>
 
-            {/* Summary */}
-            <Card className="bg-blue-50 border-blue-200">
+            <Card className="backdrop-blur-sm bg-blue-50/70 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Lightbulb className="h-5 w-5 text-blue-600" />
+                <CardTitle className="text-lg flex items-center gap-2 text-slate-900 dark:text-slate-100">
+                  <Lightbulb className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   Resumo da Validação
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2 text-sm">
-                  <p><strong>Título:</strong> {formData.title}</p>
-                  <p><strong>Categoria:</strong> {selectedCategory?.name}</p>
-                  <p><strong>Tipo:</strong> {selectedValidationType?.name}</p>
-                  <p><strong>Público-alvo:</strong> {formData.target_audience}</p>
-                  <p><strong>Recompensa:</strong> {formData.reward_points} pontos por resposta</p>
-                  <p><strong>Máximo de respostas:</strong> {formData.max_responses}</p>
+                <div className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+                  <p><strong className="text-slate-900 dark:text-slate-100">Título:</strong> {formData.title}</p>
+                  <p><strong className="text-slate-900 dark:text-slate-100">Categoria:</strong> {selectedCategory?.name}</p>
+                  <p><strong className="text-slate-900 dark:text-slate-100">Tipo:</strong> {selectedValidationType?.name}</p>
+                  <p><strong className="text-slate-900 dark:text-slate-100">Público-alvo:</strong> {formData.target_audience}</p>
+                  <p><strong className="text-slate-900 dark:text-slate-100">Recompensa:</strong> {formData.reward_points} pontos por resposta</p>
+                  <p><strong className="text-slate-900 dark:text-slate-100">Máximo de respostas:</strong> {formData.max_responses}</p>
                   {formData.deadline && (
-                    <p><strong>Prazo:</strong> {format(formData.deadline, "PPP", { locale: ptBR })}</p>
+                    <p><strong className="text-slate-900 dark:text-slate-100">Prazo:</strong> {format(formData.deadline, "PPP", { locale: ptBR })}</p>
                   )}
                 </div>
               </CardContent>
