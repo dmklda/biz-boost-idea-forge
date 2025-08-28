@@ -65,12 +65,12 @@ const TrustedBy = () => {
             >
               <CarouselContent className="animate-carousel">
                 {[...trustedCompanies, ...trustedCompanies].map((company, index) => (
-                  <CarouselItem key={`first-${index}`} className="basis-1/4 md:basis-1/5 lg:basis-1/6 xl:basis-1/7">
-                    <div className="px-1 py-2 flex items-center justify-center h-14 md:h-16">
+                  <CarouselItem key={`first-${index}`} className="basis-1/6 md:basis-1/7 lg:basis-1/8 xl:basis-1/9">
+                    <div className="px-0.5 py-2 flex items-center justify-center h-16 md:h-20">
                       <img
                         src={company.logo}
                         alt={`${company.name} logo`}
-                        className="h-6 md:h-8 w-auto mx-auto opacity-40 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0 transform hover:scale-105 filter dark:brightness-150"
+                        className="h-8 md:h-10 w-auto mx-auto opacity-40 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0 transform hover:scale-105 filter dark:brightness-150"
                       />
                     </div>
                   </CarouselItem>
@@ -96,12 +96,12 @@ const TrustedBy = () => {
                 }}
               >
                 {[...trustedCompanies.reverse(), ...trustedCompanies].map((company, index) => (
-                  <CarouselItem key={`second-${index}`} className="basis-1/4 md:basis-1/5 lg:basis-1/6 xl:basis-1/7">
-                    <div className="px-1 py-2 flex items-center justify-center h-14 md:h-16">
+                  <CarouselItem key={`second-${index}`} className="basis-1/6 md:basis-1/7 lg:basis-1/8 xl:basis-1/9">
+                    <div className="px-0.5 py-2 flex items-center justify-center h-16 md:h-20">
                       <img 
                         src={company.logo}
                         alt={`${company.name} logo`}
-                        className="h-6 md:h-8 w-auto mx-auto opacity-40 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0 transform hover:scale-105 filter dark:brightness-150"
+                        className="h-8 md:h-10 w-auto mx-auto opacity-40 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0 transform hover:scale-105 filter dark:brightness-150"
                       />
                     </div>
                   </CarouselItem>
