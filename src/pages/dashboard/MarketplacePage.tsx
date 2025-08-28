@@ -22,126 +22,35 @@ import {
   Award,
   Target
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-
-interface ValidationRequest {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  target_audience: string;
-  validation_type: 'feedback' | 'survey' | 'interview' | 'prototype_test';
-  reward_points: number;
-  status: 'active' | 'completed' | 'paused';
-  created_at: string;
-  entrepreneur: {
-    name: string;
-    avatar?: string;
-    rating: number;
-  };
-  responses_count: number;
-  max_responses: number;
-}
-
-interface EarlyAdopter {
-  id: string;
-  name: string;
-  avatar?: string;
-  bio: string;
-  interests: string[];
-  rating: number;
-  completed_validations: number;
-  total_points: number;
-  expertise_areas: string[];
-}
+import { useMarketplace } from "@/hooks/useMarketplace";
+import { MarketplaceValidationCard } from "@/components/marketplace/MarketplaceValidationCard";
+import { CreateValidationModal } from "@/components/marketplace/CreateValidationModal";
 
 const MarketplacePage = () => {
   const { t } = useTranslation();
   const { authState } = useAuth();
   const [activeTab, setActiveTab] = useState("browse");
-  const [validationRequests, setValidationRequests] = useState<ValidationRequest[]>([]);
-  const [earlyAdopters, setEarlyAdopters] = useState<EarlyAdopter[]>([]);
+  const { 
+    validationRequests, 
+    earlyAdopters, 
+    isLoading,
+    fetchValidationRequests,
+    joinValidation
+  } = useMarketplace();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  useEffect(() => {
-    fetchValidationRequests();
-    fetchEarlyAdopters();
-  }, []);
-
-  const fetchValidationRequests = async () => {
-    // Mock data for now - will be replaced with real Supabase queries
-    const mockRequests: ValidationRequest[] = [
-      {
-        id: "1",
-        title: "App de Delivery Sustentável",
-        description: "Preciso validar se pessoas pagariam mais por delivery com embalagens 100% biodegradáveis",
-        category: "sustainability",
-        target_audience: "Millennials urbanos, 25-40 anos",
-        validation_type: "survey",
-        reward_points: 50,
-        status: "active",
-        created_at: "2024-01-15",
-        entrepreneur: {
-          name: "Ana Silva",
-          rating: 4.8
-        },
-        responses_count: 23,
-        max_responses: 100
-      },
-      {
-        id: "2",
-        title: "Plataforma de Educação Financeira",
-        description: "Validar interesse em gamificação para ensino de investimentos para jovens",
-        category: "fintech",
-        target_audience: "Jovens 18-25 anos",
-        validation_type: "prototype_test",
-        reward_points: 75,
-        status: "active",
-        created_at: "2024-01-14",
-        entrepreneur: {
-          name: "Carlos Mendes",
-          rating: 4.9
-        },
-        responses_count: 8,
-        max_responses: 50
-      }
-    ];
-    setValidationRequests(mockRequests);
-    setIsLoading(false);
+  const handleJoinValidation = async (validationId: string) => {
+    await joinValidation(validationId);
   };
 
-  const fetchEarlyAdopters = async () => {
-    // Mock data for now
-    const mockAdopters: EarlyAdopter[] = [
-      {
-        id: "1",
-        name: "Maria Santos",
-        bio: "UX Designer apaixonada por inovação e sustentabilidade",
-        interests: ["sustainability", "design", "mobile-apps"],
-        rating: 4.9,
-        completed_validations: 45,
-        total_points: 2250,
-        expertise_areas: ["UX/UI", "Sustentabilidade", "Mobile"]
-      },
-      {
-        id: "2",
-        name: "João Oliveira",
-        bio: "Desenvolvedor e early adopter de fintechs",
-        interests: ["fintech", "blockchain", "mobile-apps"],
-        rating: 4.7,
-        completed_validations: 32,
-        total_points: 1890,
-        expertise_areas: ["FinTech", "Blockchain", "Desenvolvimento"]
-      }
-    ];
-    setEarlyAdopters(mockAdopters);
-  };
-
-  const handleJoinValidation = async (requestId: string) => {
-    toast.success("Você se inscreveu para esta validação! O empreendedor entrará em contato.");
-  };
+  const filteredRequests = validationRequests.filter(request => {
+    const matchesSearch = request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         request.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === "all" || request.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
 
   const getValidationTypeLabel = (type: string) => {
     const types = {
@@ -164,13 +73,6 @@ const MarketplacePage = () => {
     };
     return categories[category as keyof typeof categories] || category;
   };
-
-  const filteredRequests = validationRequests.filter(request => {
-    const matchesSearch = request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         request.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || request.category === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
@@ -283,79 +185,22 @@ const MarketplacePage = () => {
               </div>
 
               {/* Validation Requests Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredRequests.map((request) => (
-                  <Card key={request.id} className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <CardTitle className="text-lg mb-2">{request.title}</CardTitle>
-                          <div className="flex items-center gap-2 mb-2">
-                            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                              {getCategoryLabel(request.category)}
-                            </Badge>
-                            <Badge variant="outline">
-                              {getValidationTypeLabel(request.validation_type)}
-                            </Badge>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1 text-yellow-500">
-                          <Award className="h-4 w-4" />
-                          <span className="text-sm font-medium">{request.reward_points}</span>
-                        </div>
-                      </div>
-                      <CardDescription className="text-sm">
-                        {request.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-slate-600 dark:text-slate-400">Público-alvo:</span>
-                          <span className="font-medium">{request.target_audience}</span>
-                        </div>
-                        
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-slate-600 dark:text-slate-400">Progresso:</span>
-                          <span className="font-medium">{request.responses_count}/{request.max_responses}</span>
-                        </div>
-                        
-                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                          <div 
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${(request.responses_count / request.max_responses) * 100}%` }}
-                          />
-                        </div>
-                        
-                        <div className="flex items-center justify-between pt-2">
-                          <div className="flex items-center gap-2">
-                            <Avatar className="h-6 w-6">
-                              <AvatarFallback className="text-xs">
-                                {request.entrepreneur.name.charAt(0)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="text-sm text-slate-600 dark:text-slate-400">
-                              {request.entrepreneur.name}
-                            </span>
-                            <div className="flex items-center gap-1">
-                              <Star className="h-3 w-3 text-yellow-500 fill-current" />
-                              <span className="text-xs">{request.entrepreneur.rating}</span>
-                            </div>
-                          </div>
-                          
-                          <Button 
-                            size="sm" 
-                            onClick={() => handleJoinValidation(request.id)}
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                          >
-                            Participar
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              {isLoading ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                  <p className="mt-4 text-slate-600">Carregando validações...</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredRequests.map((request) => (
+                    <MarketplaceValidationCard
+                      key={request.id}
+                      validation={request}
+                      onJoin={handleJoinValidation}
+                    />
+                  ))}
+                </div>
+              )}
             </TabsContent>
 
             {/* Early Adopters Tab */}
@@ -419,7 +264,10 @@ const MarketplacePage = () => {
                 <p className="text-slate-600 dark:text-slate-400 mb-6">
                   Crie sua primeira solicitação de validação para conectar-se com early adopters.
                 </p>
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
+                <Button 
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                >
                   Criar Solicitação
                 </Button>
               </div>
@@ -427,6 +275,12 @@ const MarketplacePage = () => {
           </Tabs>
         </div>
       </div>
+
+      {/* Create Validation Modal */}
+      <CreateValidationModal
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+      />
     </div>
   );
 };

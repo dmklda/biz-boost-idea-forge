@@ -3,16 +3,21 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/components/ui/sonner';
 
+export type ValidationType = 'feedback' | 'survey' | 'interview' | 'prototype_test';
+export type ValidationStatus = 'active' | 'completed' | 'paused';
+
 export interface ValidationRequest {
   id: string;
+  idea_id?: string;
   title: string;
   description: string;
   category: string;
   target_audience: string;
-  validation_type: 'feedback' | 'survey' | 'interview' | 'prototype_test';
+  validation_type: ValidationType;
   reward_points: number;
-  status: 'active' | 'completed' | 'paused';
+  status: ValidationStatus;
   created_at: string;
+  updated_at: string;
   entrepreneur_id: string;
   entrepreneur: {
     name: string;
@@ -23,6 +28,11 @@ export interface ValidationRequest {
   max_responses: number;
   requirements?: string;
   deadline?: string;
+  idea?: {
+    id: string;
+    title: string;
+    description: string;
+  };
 }
 
 export interface EarlyAdopter {
@@ -78,13 +88,7 @@ export const useMarketplace = () => {
       
       let query = supabase
         .from('validation_requests')
-        .select(`
-          *,
-          entrepreneur:profiles!entrepreneur_id(
-            name:display_name,
-            avatar:photo_url
-          )
-        `)
+        .select('*')
         .eq('status', 'active');
 
       if (filters?.category && filters.category !== 'all') {
@@ -99,7 +103,7 @@ export const useMarketplace = () => {
 
       if (error) throw error;
 
-      // Calculate responses count for each request
+      // Calculate responses count for each request and add entrepreneur info
       const requestsWithCounts = await Promise.all(
         (data || []).map(async (request) => {
           const { count } = await supabase
@@ -107,14 +111,23 @@ export const useMarketplace = () => {
             .select('*', { count: 'exact', head: true })
             .eq('validation_request_id', request.id);
 
+          // Get entrepreneur profile
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('display_name, photo_url')
+            .eq('id', request.entrepreneur_id)
+            .single();
+
           return {
             ...request,
             responses_count: count || 0,
             entrepreneur: {
-              name: request.entrepreneur?.name || 'Usuário',
-              avatar: request.entrepreneur?.avatar,
+              name: profile?.display_name || 'Usuário',
+              avatar: profile?.photo_url,
               rating: 4.5 // TODO: Calculate real rating
-            }
+            },
+            validation_type: request.validation_type as ValidationType,
+            status: request.status as ValidationStatus
           };
         })
       );
@@ -144,10 +157,68 @@ export const useMarketplace = () => {
 
       if (error) throw error;
 
-      setEarlyAdopters(data || []);
+      const enrichedAdopters = await Promise.all(
+        (data || []).map(async (adopter) => {
+          // Get user profile
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('display_name, photo_url')
+            .eq('id', adopter.user_id)
+            .single();
+
+          return {
+            ...adopter,
+            name: profile?.display_name || 'Early Adopter',
+            avatar: profile?.photo_url,
+            availability: adopter.availability as 'available' | 'busy' | 'unavailable'
+          };
+        })
+      );
+
+      setEarlyAdopters(enrichedAdopters);
     } catch (err) {
       console.error('Error fetching early adopters:', err);
       setError('Erro ao carregar early adopters');
+    }
+  };
+
+  // Create new validation request from idea
+  const createValidationFromIdea = async (ideaId: string, validationData: {
+    title: string;
+    description: string;
+    category: string;
+    target_audience: string;
+    validation_type: ValidationType;
+    reward_points?: number;
+    max_responses?: number;
+    requirements?: string;
+    deadline?: string;
+  }) => {
+    try {
+      if (!authState.user) throw new Error('Usuário não autenticado');
+
+      const { data, error } = await supabase
+        .from('validation_requests')
+        .insert({
+          idea_id: ideaId,
+          entrepreneur_id: authState.user.id,
+          status: 'active' as ValidationStatus,
+          reward_points: 50,
+          max_responses: 100,
+          ...validationData
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success('Solicitação de validação criada com sucesso!');
+      await fetchMyRequests();
+      return data;
+    } catch (err) {
+      console.error('Error creating validation request:', err);
+      toast.error('Erro ao criar solicitação de validação');
+      throw err;
     }
   };
 
@@ -156,14 +227,23 @@ export const useMarketplace = () => {
     try {
       if (!authState.user) throw new Error('Usuário não autenticado');
 
+      const cleanData = {
+        title: requestData.title!,
+        description: requestData.description!,
+        category: requestData.category!,
+        target_audience: requestData.target_audience!,
+        validation_type: requestData.validation_type!,
+        reward_points: requestData.reward_points || 50,
+        max_responses: requestData.max_responses || 100,
+        requirements: requestData.requirements,
+        deadline: requestData.deadline,
+        entrepreneur_id: authState.user.id,
+        status: 'active' as ValidationStatus
+      };
+
       const { data, error } = await supabase
         .from('validation_requests')
-        .insert({
-          ...requestData,
-          entrepreneur_id: authState.user.id,
-          status: 'active',
-          responses_count: 0
-        })
+        .insert(cleanData)
         .select()
         .single();
 
@@ -276,7 +356,16 @@ export const useMarketplace = () => {
 
       if (error) throw error;
 
-      setMyRequests(data || []);
+      // Transform data to match ValidationRequest interface
+      const transformedRequests = (data || []).map(request => ({
+        ...request,
+        entrepreneur: { name: 'Você', avatar: undefined, rating: 5.0 },
+        responses_count: 0,
+        validation_type: request.validation_type as ValidationType,
+        status: request.status as ValidationStatus
+      }));
+      
+      setMyRequests(transformedRequests);
     } catch (err) {
       console.error('Error fetching my requests:', err);
     }
@@ -298,7 +387,13 @@ export const useMarketplace = () => {
 
       if (error) throw error;
 
-      setMyResponses(data || []);
+      // Transform data to match ValidationResponse interface
+      const transformedResponses = (data || []).map(response => ({
+        ...response,
+        status: response.status as 'pending' | 'approved' | 'rejected'
+      }));
+      
+      setMyResponses(transformedResponses);
     } catch (err) {
       console.error('Error fetching my responses:', err);
     }
@@ -376,6 +471,7 @@ export const useMarketplace = () => {
     fetchValidationRequests,
     fetchEarlyAdopters,
     createValidationRequest,
+    createValidationFromIdea,
     joinValidation,
     submitValidationResponse,
     findMatchingAdopters,

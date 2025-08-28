@@ -7,10 +7,10 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "13.0.4"
   }
   public: {
     Tables: {
@@ -138,6 +138,57 @@ export type Database = {
           insight_type?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      early_adopters: {
+        Row: {
+          availability: string | null
+          bio: string | null
+          completed_validations: number | null
+          created_at: string | null
+          expertise_areas: string[] | null
+          hourly_rate: number | null
+          id: string
+          interests: string[] | null
+          linkedin_url: string | null
+          portfolio_url: string | null
+          rating: number | null
+          total_points: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          availability?: string | null
+          bio?: string | null
+          completed_validations?: number | null
+          created_at?: string | null
+          expertise_areas?: string[] | null
+          hourly_rate?: number | null
+          id?: string
+          interests?: string[] | null
+          linkedin_url?: string | null
+          portfolio_url?: string | null
+          rating?: number | null
+          total_points?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          availability?: string | null
+          bio?: string | null
+          completed_validations?: number | null
+          created_at?: string | null
+          expertise_areas?: string[] | null
+          hourly_rate?: number | null
+          id?: string
+          interests?: string[] | null
+          linkedin_url?: string | null
+          portfolio_url?: string | null
+          rating?: number | null
+          total_points?: number | null
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -417,6 +468,79 @@ export type Database = {
           },
         ]
       }
+      marketplace_analytics: {
+        Row: {
+          id: string
+          metric_data: Json | null
+          metric_name: string
+          metric_value: number
+          recorded_at: string | null
+          validation_request_id: string | null
+        }
+        Insert: {
+          id?: string
+          metric_data?: Json | null
+          metric_name: string
+          metric_value: number
+          recorded_at?: string | null
+          validation_request_id?: string | null
+        }
+        Update: {
+          id?: string
+          metric_data?: Json | null
+          metric_name?: string
+          metric_value?: number
+          recorded_at?: string | null
+          validation_request_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_analytics_validation_request_id_fkey"
+            columns: ["validation_request_id"]
+            isOneToOne: false
+            referencedRelation: "validation_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_rewards: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          points_awarded: number
+          reward_type: string
+          user_id: string | null
+          validation_response_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          points_awarded: number
+          reward_type: string
+          user_id?: string | null
+          validation_response_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          points_awarded?: number
+          reward_type?: string
+          user_id?: string | null
+          validation_response_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_rewards_validation_response_id_fkey"
+            columns: ["validation_response_id"]
+            isOneToOne: false
+            referencedRelation: "validation_responses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           account_alerts: boolean | null
@@ -621,36 +745,191 @@ export type Database = {
         }
         Relationships: []
       }
+      validation_participants: {
+        Row: {
+          adopter_id: string | null
+          completed_at: string | null
+          id: string
+          joined_at: string | null
+          status: string | null
+          validation_request_id: string | null
+        }
+        Insert: {
+          adopter_id?: string | null
+          completed_at?: string | null
+          id?: string
+          joined_at?: string | null
+          status?: string | null
+          validation_request_id?: string | null
+        }
+        Update: {
+          adopter_id?: string | null
+          completed_at?: string | null
+          id?: string
+          joined_at?: string | null
+          status?: string | null
+          validation_request_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "validation_participants_validation_request_id_fkey"
+            columns: ["validation_request_id"]
+            isOneToOne: false
+            referencedRelation: "validation_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      validation_requests: {
+        Row: {
+          category: string
+          created_at: string | null
+          deadline: string | null
+          description: string
+          entrepreneur_id: string | null
+          id: string
+          max_responses: number | null
+          requirements: string | null
+          reward_points: number | null
+          status: string | null
+          target_audience: string
+          title: string
+          updated_at: string | null
+          validation_type: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          deadline?: string | null
+          description: string
+          entrepreneur_id?: string | null
+          id?: string
+          max_responses?: number | null
+          requirements?: string | null
+          reward_points?: number | null
+          status?: string | null
+          target_audience: string
+          title: string
+          updated_at?: string | null
+          validation_type: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          deadline?: string | null
+          description?: string
+          entrepreneur_id?: string | null
+          id?: string
+          max_responses?: number | null
+          requirements?: string | null
+          reward_points?: number | null
+          status?: string | null
+          target_audience?: string
+          title?: string
+          updated_at?: string | null
+          validation_type?: string
+        }
+        Relationships: []
+      }
+      validation_responses: {
+        Row: {
+          adopter_id: string | null
+          approved_at: string | null
+          created_at: string | null
+          feedback: string | null
+          id: string
+          rating: number | null
+          response_data: Json
+          status: string | null
+          time_spent_minutes: number | null
+          validation_request_id: string | null
+        }
+        Insert: {
+          adopter_id?: string | null
+          approved_at?: string | null
+          created_at?: string | null
+          feedback?: string | null
+          id?: string
+          rating?: number | null
+          response_data: Json
+          status?: string | null
+          time_spent_minutes?: number | null
+          validation_request_id?: string | null
+        }
+        Update: {
+          adopter_id?: string | null
+          approved_at?: string | null
+          created_at?: string | null
+          feedback?: string | null
+          id?: string
+          rating?: number | null
+          response_data?: Json
+          status?: string | null
+          time_spent_minutes?: number | null
+          validation_request_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "validation_responses_validation_request_id_fkey"
+            columns: ["validation_request_id"]
+            isOneToOne: false
+            referencedRelation: "validation_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      award_marketplace_points: {
+        Args: {
+          description?: string
+          points_amount: number
+          reward_type?: string
+          user_id: string
+          validation_response_id?: string
+        }
+        Returns: undefined
+      }
+      calculate_adopter_rating: {
+        Args: { adopter_user_id: string }
+        Returns: number
+      }
       deduct_credits_and_log: {
         Args: {
-          p_user_id: string
           p_amount: number
+          p_description?: string
           p_feature: string
           p_item_id?: string
-          p_description?: string
+          p_user_id: string
         }
         Returns: number
+      }
+      get_marketplace_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       is_first_analysis: {
         Args: { user_id_param: string }
         Returns: boolean
       }
       update_user_credits: {
-        Args: { user_id: string; amount: number }
+        Args: { amount: number; user_id: string }
+        Returns: undefined
+      }
+      update_validation_count: {
+        Args: { adopter_user_id: string }
         Returns: undefined
       }
       use_credits_for_feature: {
         Args: {
-          user_id_param: string
           amount_param: number
           description_param: string
           feature_param: string
           item_id_param?: string
+          user_id_param: string
         }
         Returns: boolean
       }

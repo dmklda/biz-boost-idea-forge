@@ -12,7 +12,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
-import { useMarketplace } from "@/hooks/useMarketplace";
+import { useMarketplace, ValidationType } from "@/hooks/useMarketplace";
 import { toast } from "@/components/ui/sonner";
 import { 
   Target, 
@@ -104,7 +104,7 @@ const CATEGORIES = [
   { id: 'other', name: 'Outros', description: 'Outras categorias' }
 ];
 
-const CreateValidationModal = ({ open, onOpenChange, ideaId }: CreateValidationModalProps) => {
+export const CreateValidationModal = ({ open, onOpenChange, ideaId }: CreateValidationModalProps) => {
   const { t } = useTranslation();
   const { authState } = useAuth();
   const { createValidationRequest } = useMarketplace();
@@ -152,7 +152,14 @@ const CreateValidationModal = ({ open, onOpenChange, ideaId }: CreateValidationM
       }
 
       await createValidationRequest({
-        ...formData,
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        target_audience: formData.target_audience,
+        validation_type: formData.validation_type as ValidationType,
+        reward_points: formData.reward_points,
+        max_responses: formData.max_responses,
+        requirements: formData.requirements,
         deadline: formData.deadline?.toISOString()
       });
 
