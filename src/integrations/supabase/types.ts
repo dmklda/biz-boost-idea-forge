@@ -788,6 +788,7 @@ export type Database = {
           description: string
           entrepreneur_id: string | null
           id: string
+          idea_id: string | null
           max_responses: number | null
           requirements: string | null
           reward_points: number | null
@@ -804,6 +805,7 @@ export type Database = {
           description: string
           entrepreneur_id?: string | null
           id?: string
+          idea_id?: string | null
           max_responses?: number | null
           requirements?: string | null
           reward_points?: number | null
@@ -820,6 +822,7 @@ export type Database = {
           description?: string
           entrepreneur_id?: string | null
           id?: string
+          idea_id?: string | null
           max_responses?: number | null
           requirements?: string | null
           reward_points?: number | null
@@ -829,7 +832,15 @@ export type Database = {
           updated_at?: string | null
           validation_type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "validation_requests_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       validation_responses: {
         Row: {
