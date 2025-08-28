@@ -230,7 +230,9 @@
       "noCreditsForInsights": "AIインサイトを生成するにはクレジットが必要です",
       "overallRecommendation": "総合的な推奨事項",
       "recommendedFocus": "推奨される焦点"
-    }
+    },
+    "addedToFavorites": "お気に入りに追加されました",
+    "removedFromFavorites": "お気に入りから削除されました"
   },
   "credits": {
     "title": "クレジット",

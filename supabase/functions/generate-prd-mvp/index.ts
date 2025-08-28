@@ -173,7 +173,7 @@ Formate o documento em Markdown com seções práticas e actionáveis, focando n
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }

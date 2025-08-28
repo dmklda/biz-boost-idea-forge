@@ -1,7 +1,7 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { Configuration, OpenAIApi } from 'https://esm.sh/openai@3.2.1'
+import { OpenAI } from 'https://esm.sh/openai@4.28.4'
 
 // Definir headers CORS
 const corsHeaders = {
@@ -110,8 +110,7 @@ serve(async (req) => {
     console.log('Ideas data prepared for comparison:', ideasData.length);
 
     // Criar cliente OpenAI
-    const configuration = new Configuration({ apiKey: openaiApiKey });
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({ apiKey: openaiApiKey });
 
     // Construir prompt para a análise
     const prompt = `
@@ -152,24 +151,23 @@ IMPORTANTE: Responda APENAS com o JSON, sem texto adicional antes ou depois.`;
     console.log("Enviando prompt para o OpenAI...");
 
     // Chamar a API OpenAI
-    const completion = await openai.createCompletion({
-      model: "gpt-3.5-turbo-instruct",
-      prompt: prompt,
+    const completion = await openai.chat.completions.create({
+      model: "gpt-5",
+      messages: [{ role: "user", content: prompt }],
       max_tokens: 2500,
       temperature: 0.3,
-      stop: null,
     });
 
     console.log("Resposta recebida do OpenAI");
 
     // Verificar se a resposta da OpenAI existe
-    if (!completion.data || !completion.data.choices || completion.data.choices.length === 0) {
+    if (!completion || !completion.choices || completion.choices.length === 0) {
       console.error("Resposta da OpenAI inválida ou vazia");
       throw new Error("A API OpenAI retornou uma resposta inválida ou vazia");
     }
 
     // Processar a resposta
-    const rawResponse = completion.data.choices[0].text?.trim() || "";
+    const rawResponse = completion.choices[0].message?.content?.trim() || "";
     console.log("Raw response length:", rawResponse.length);
     
     let insights;

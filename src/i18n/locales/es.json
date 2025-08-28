@@ -230,7 +230,9 @@
       "noCreditsForInsights": "Necesitas créditos para generar insights de IA",
       "overallRecommendation": "Recomendación general",
       "recommendedFocus": "Enfoque recomendado"
-    }
+    },
+    "addedToFavorites": "Añadido a favoritos",
+    "removedFromFavorites": "Eliminado de favoritos"
   },
   "credits": {
     "title": "Créditos",

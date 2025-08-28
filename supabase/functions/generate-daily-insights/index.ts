@@ -174,7 +174,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5',
         messages: [
           { role: 'system', content: 'Você é um especialista em análise de dados de empreendedorismo que gera insights personalizados para ajudar empreendedores a melhorar seus resultados. Sempre retorne exatamente 3 insights únicos e diferentes.' },
           { role: 'user', content: prompt }

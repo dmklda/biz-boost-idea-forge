@@ -244,7 +244,7 @@ async function generateAnalysis(ideaData, preferredLanguage = 'pt') {
     console.log("Sending request to OpenAI with language setting:", preferredLanguage);
     
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Using a more modern model
+      model: "gpt-5", // Using the latest and most advanced model
       messages: [
         {
           role: "system",
@@ -324,7 +324,7 @@ Devuelve solo el nombre, sin explicaciones adicionales.`;
     }
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-5",
       messages: [
         {
           role: "system",

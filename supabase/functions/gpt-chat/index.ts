@@ -182,7 +182,7 @@ serve(async (req) => {
         "Authorization": `Bearer ${openAiApiKey}`
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini", // Using a cost-effective but capable model
+        model: "gpt-5", // Using the latest and most advanced model
         messages: openAiMessages,
         temperature: 0.7,
       })

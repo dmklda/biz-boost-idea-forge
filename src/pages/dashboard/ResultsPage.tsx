@@ -317,19 +317,19 @@ const ResultsPage = () => {
   const statusTranslation = getStatusTranslation(status);
 
   return (
-    <div className="pb-16 md:pb-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-16 md:pb-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-4">
           <Button 
             variant="ghost" 
             size="sm"
             onClick={() => navigate("/dashboard/ideias")}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-300"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">{t('common.back', "Voltar")}</span>
+            <span className="hidden sm:inline font-medium">{t('common.back', "Voltar")}</span>
           </Button>
-          <h1 className="text-xl md:text-2xl font-bold truncate">
+          <h1 className="text-xl md:text-2xl font-bold truncate bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             {t('results.title', "Resultados da Análise")}
           </h1>
         </div>
@@ -397,21 +397,22 @@ const ResultsPage = () => {
         </div>
       </div>
       
-      <Card className="mb-6 border shadow overflow-hidden">
-        <CardContent className="p-0">
-          <div className="bg-gradient-to-r from-brand-blue to-brand-purple p-4 md:p-6 text-white">
-            <h1 className="text-lg md:text-2xl font-bold mb-2 break-words">
+      <Card className="mb-6 backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 pointer-events-none" />
+        <CardContent className="p-0 relative">
+          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-4 md:p-6 text-white">
+            <h1 className="text-lg md:text-2xl font-bold mb-2 break-words bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
               {idea.generated_name || idea.title}
             </h1>
-            <p className="text-white/80 text-sm md:text-base break-words">{idea.description}</p>
+            <p className="text-blue-100 text-sm md:text-base break-words">{idea.description}</p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100 bg-white">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-slate-200 dark:divide-slate-600 bg-gradient-to-r from-slate-50/80 via-blue-50/80 to-indigo-50/80 dark:from-slate-800/80 dark:via-slate-700/80 dark:to-slate-800/80 backdrop-blur-sm">
             <div className="p-3 md:p-4 text-center">
-              <div className="text-xl md:text-2xl font-bold text-brand-blue">
+              <div className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 {score}%
               </div>
-              <div className="text-xs md:text-sm text-gray-500">{t('results.viability', "Viabilidade")}</div>
+              <div className="text-xs md:text-sm text-slate-600 dark:text-slate-400">{t('results.viability', "Viabilidade")}</div>
             </div>
             <div className="p-3 md:p-4 text-center">
               <div className="text-sm md:text-xl font-bold truncate" style={{ 
@@ -420,28 +421,28 @@ const ResultsPage = () => {
               }}>
                 {statusTranslation}
               </div>
-              <div className="text-xs md:text-sm text-gray-500">{t('results.status.label', "Status") as string}</div>
+              <div className="text-xs md:text-sm text-slate-600 dark:text-slate-400">{t('results.status.label', "Status") as string}</div>
             </div>
             <div className="p-3 md:p-4 text-center">
-              <div className="text-xl md:text-2xl font-bold text-brand-green">
+              <div className="text-xl md:text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                 {safeGetArray(swotAnalysis, 'strengths').length || 0}
               </div>
-              <div className="text-xs md:text-sm text-gray-500">{t('results.strengths', "Pontos Fortes")}</div>
+              <div className="text-xs md:text-sm text-slate-600 dark:text-slate-400">{t('results.strengths', "Pontos Fortes")}</div>
             </div>
             <div className="p-3 md:p-4 text-center">
-              <div className="text-xl md:text-2xl font-bold text-red-500">
+              <div className="text-xl md:text-2xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
                 {safeGetArray(swotAnalysis, 'weaknesses').length || 0}
               </div>
-              <div className="text-xs md:text-sm text-gray-500">{t('results.weaknesses', "Pontos Fracos")}</div>
+              <div className="text-xs md:text-sm text-slate-600 dark:text-slate-400">{t('results.weaknesses', "Pontos Fracos")}</div>
             </div>
           </div>
           
           {/* Advanced Analysis Button */}
           {idea && analysis && (
-            <div className="p-4 bg-gray-50 flex justify-center">
+            <div className="p-4 bg-gradient-to-r from-slate-50/80 via-blue-50/80 to-indigo-50/80 dark:from-slate-800/80 dark:via-slate-700/80 dark:to-slate-800/80 backdrop-blur-sm flex justify-center">
               <AdvancedAnalysisButton 
                 ideaId={idea.id} 
-                className="bg-gradient-to-r from-brand-blue to-brand-purple hover:opacity-90 transition-all"
+                className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
               />
             </div>
           )}
@@ -449,18 +450,19 @@ const ResultsPage = () => {
       </Card>
       
       <Tabs defaultValue="summary" className="w-full">
-        <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 mb-6 overflow-x-auto">
-          <TabsTrigger value="summary" className="text-xs sm:text-sm">{t('results.tabs.summary', "Resumo")}</TabsTrigger>
-          <TabsTrigger value="swot" className="text-xs sm:text-sm">{t('results.tabs.swot', "SWOT")}</TabsTrigger>
-          <TabsTrigger value="market" className="text-xs sm:text-sm">{t('results.tabs.market', "Mercado")}</TabsTrigger>
-          <TabsTrigger value="competitors" className="text-xs sm:text-sm">{t('results.tabs.competitors', "Concorrentes")}</TabsTrigger>
-          <TabsTrigger value="financial" className="text-xs sm:text-sm">{t('results.tabs.financial', "Financeiro")}</TabsTrigger>
-          <TabsTrigger value="recommendations" className="text-xs sm:text-sm">{t('results.tabs.recommendations', "Recomendações")}</TabsTrigger>
+        <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 mb-6 overflow-x-auto backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg">
+          <TabsTrigger value="summary" className="text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">{t('results.tabs.summary', "Resumo")}</TabsTrigger>
+          <TabsTrigger value="swot" className="text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">{t('results.tabs.swot', "SWOT")}</TabsTrigger>
+          <TabsTrigger value="market" className="text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">{t('results.tabs.market', "Mercado")}</TabsTrigger>
+          <TabsTrigger value="competitors" className="text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">{t('results.tabs.competitors', "Concorrentes")}</TabsTrigger>
+          <TabsTrigger value="financial" className="text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">{t('results.tabs.financial', "Financeiro")}</TabsTrigger>
+          <TabsTrigger value="recommendations" className="text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">{t('results.tabs.recommendations', "Recomendações")}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="summary" className="mt-0">
-          <Card>
-            <CardContent className="p-4 md:p-6">
+          <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 pointer-events-none rounded-lg" />
+            <CardContent className="p-4 md:p-6 relative">
               <h2 className="text-lg md:text-xl font-bold mb-4">{t('results.summaryTitle', "Resumo da Análise")}</h2>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
@@ -512,8 +514,9 @@ const ResultsPage = () => {
         </TabsContent>
         
         <TabsContent value="swot" className="mt-0">
-          <Card>
-            <CardContent className="p-6">
+          <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 pointer-events-none rounded-lg" />
+            <CardContent className="p-6 relative">
               <h2 className="text-xl font-bold mb-4">{t('results.swotAnalysis', "Análise SWOT")}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-green-50 p-4 rounded-lg">
@@ -585,8 +588,9 @@ const ResultsPage = () => {
         </TabsContent>
         
         <TabsContent value="market" className="mt-0">
-          <Card>
-            <CardContent className="p-6">
+          <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 pointer-events-none rounded-lg" />
+            <CardContent className="p-6 relative">
               <h2 className="text-xl font-bold mb-4">{t('results.marketAnalysis', "Análise de Mercado")}</h2>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
@@ -617,8 +621,9 @@ const ResultsPage = () => {
         </TabsContent>
         
         <TabsContent value="competitors" className="mt-0">
-          <Card>
-            <CardContent className="p-6">
+          <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 pointer-events-none rounded-lg" />
+            <CardContent className="p-6 relative">
               <h2 className="text-xl font-bold mb-4">{t('results.competitorAnalysis', "Análise de Concorrentes")}</h2>
               
               <h3 className="font-semibold mb-2">{t('results.competitors.keyCompetitors', "Principais Concorrentes")}</h3>
@@ -659,8 +664,9 @@ const ResultsPage = () => {
         </TabsContent>
         
         <TabsContent value="financial" className="mt-0">
-          <Card>
-            <CardContent className="p-6">
+          <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 pointer-events-none rounded-lg" />
+            <CardContent className="p-6 relative">
               <h2 className="text-xl font-bold mb-4">{t('results.financialAnalysis', "Análise Financeira")}</h2>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
@@ -691,8 +697,9 @@ const ResultsPage = () => {
         </TabsContent>
         
         <TabsContent value="recommendations" className="mt-0">
-          <Card>
-            <CardContent className="p-6">
+          <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 pointer-events-none rounded-lg" />
+            <CardContent className="p-6 relative">
               <h2 className="text-xl font-bold mb-4">{t('results.recommendationsTitle', "Recomendações")}</h2>
               
               <h3 className="font-semibold mb-2">{t('results.recommendations.actionItems', "Ações Recomendadas")}</h3>
@@ -751,7 +758,8 @@ const ResultsPage = () => {
       
       {/* Gráfico de evolução do score */}
       {scoreHistoryData.length > 1 && (
-        <UICard className="mb-6 p-4">
+        <UICard className="mb-6 p-4 backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 pointer-events-none rounded-lg" />
           <h2 className="text-lg font-semibold mb-2">{t('results.scoreEvolution', 'Evolução do Score')}</h2>
           <div className="w-full h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -769,7 +777,8 @@ const ResultsPage = () => {
       )}
 
       {/* Gráfico de barras SWOT */}
-      <UICard className="mb-6 p-4">
+      <UICard className="mb-6 p-4 backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 pointer-events-none rounded-lg" />
         <h2 className="text-lg font-semibold mb-2">{t('results.swotBar', 'Resumo SWOT')}</h2>
         <div className="w-full h-48">
           <ResponsiveContainer width="100%" height="100%">
@@ -786,7 +795,8 @@ const ResultsPage = () => {
 
       {/* Cards de recomendações */}
       {safeGetArray(recommendations, 'action_items').length > 0 && (
-        <UICard className="mb-6 p-4">
+        <UICard className="mb-6 p-4 backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 pointer-events-none rounded-lg" />
           <h2 className="text-lg font-semibold mb-2">{t('results.recommendationsTitle', 'Recomendações Principais')}</h2>
           <div className="grid gap-2 md:grid-cols-2">
             {safeGetArray(recommendations, 'action_items').map((item: string, idx: number) => (
@@ -800,7 +810,8 @@ const ResultsPage = () => {
 
       {/* Checklist de próximos passos */}
       {safeGetArray(recommendations, 'next_steps').length > 0 && (
-        <UICard className="mb-6 p-4">
+        <UICard className="mb-6 p-4 backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 pointer-events-none rounded-lg" />
           <h2 className="text-lg font-semibold mb-2">{t('results.nextSteps', 'Próximos Passos')}</h2>
           <ul className="space-y-2">
             {safeGetArray(recommendations, 'next_steps').map((step: string, idx: number) => (
@@ -815,7 +826,8 @@ const ResultsPage = () => {
 
       {/* Comparação de histórico */}
       {history.length > 1 && (
-        <UICard className="mb-6 p-4">
+        <UICard className="mb-6 p-4 backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 pointer-events-none rounded-lg" />
           <h2 className="text-lg font-semibold mb-2">{t('results.compareHistory', 'Comparar Análises')}</h2>
           <div className="flex flex-wrap gap-2 mb-4">
             {history.map((item) => (
@@ -847,18 +859,19 @@ const ResultsPage = () => {
 
       {/* Adiciona a seção de histórico de análises */}
       <div className="my-8">
-        <h2 className="text-lg font-semibold mb-4">Histórico de Análises</h2>
+        <h2 className="text-lg font-semibold mb-4 bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 dark:from-white dark:via-blue-100 dark:to-purple-100 bg-clip-text text-transparent">Histórico de Análises</h2>
         {history.length > 1 ? (
           <div className="space-y-2">
             {history.map((item, idx) => (
-              <Card key={item.id} className="border shadow-sm">
-                <CardContent className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 p-4">
+              <Card key={item.id} className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 pointer-events-none" />
+                <CardContent className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 p-4 relative">
                   <div>
-                    <div className="text-sm text-muted-foreground">{new Date(item.created_at).toLocaleString()}</div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">{new Date(item.created_at).toLocaleString()}</div>
                     <div className="font-medium">Score: <span className={item.score >= 70 ? 'text-green-600' : item.score >= 40 ? 'text-yellow-600' : 'text-red-600'}>{item.score}</span></div>
-                    <div className="text-xs text-muted-foreground">Status: {item.status}</div>
+                    <div className="text-xs text-slate-600 dark:text-slate-400">Status: {item.status}</div>
                   </div>
-                  <Button size="sm" variant="outline" onClick={() => setAnalysis(item)}>
+                  <Button size="sm" variant="outline" onClick={() => setAnalysis(item)} className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300">
                     Ver detalhes
                   </Button>
                 </CardContent>
@@ -866,7 +879,7 @@ const ResultsPage = () => {
             ))}
           </div>
         ) : (
-          <div className="text-muted-foreground text-sm">Nenhum histórico anterior encontrado.</div>
+          <div className="text-slate-600 dark:text-slate-400 text-sm">Nenhum histórico anterior encontrado.</div>
         )}
       </div>
     </div>

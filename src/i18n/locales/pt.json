@@ -699,7 +699,9 @@
       "title": "Você ainda não tem ideias analisadas",
       "button": "Criar minha primeira ideia"
     },
-    "filterByTags": "Filtrar por etiquetas"
+    "filterByTags": "Filtrar por etiquetas",
+    "addedToFavorites": "Adicionado aos favoritos",
+    "removedFromFavorites": "Removido dos favoritos"
   },
   "tags": {
     "title": "Etiquetas",
@@ -950,7 +952,109 @@
     "validateIdea": "Validar minha ideia",
     "learnMore": "Saiba mais"
   },
+  "testimonials": {
+    "tagline": "Depoimentos",
+    "title": "O que nossos usuários dizem",
+    "subtitle": "Empreendedores, investidores e criadores de conteúdo estão transformando suas ideias em negócios de sucesso",
+    "quote1": "A análise que recebi foi surpreendentemente precisa. Consegui identificar problemas no meu modelo de negócio que nem havia percebido.",
+    "author1": "Marina Silva",
+    "role1": "Fundadora da TechStart",
+    "quote2": "Economizei meses de pesquisa e milhares de reais com a validação da minha ideia. O relatório me ajudou a pivotar minha estratégia.",
+    "author2": "Pedro Santos",
+    "role2": "CEO da DeliveryPro",
+    "quote3": "Como investidor anjo, uso a Startupideia para pré-analisar as startups que chegam até mim. É uma ferramenta indispensável.",
+    "author3": "Carlos Mendes",
+    "role3": "Investidor Anjo"
+  },
+  "pricing": {
+    "tagline": "Preços",
+    "title": "Planos e preços",
+    "subtitle": "Escolha o plano que melhor se adequa às suas necessidades empreendedoras",
+    "period": "/mês",
+    "mostPopular": "Mais Popular",
+    "monthly": "Mensal",
+    "annually": "Anual",
+    "free": {
+      "name": "Gratuito",
+      "description": "Para iniciantes que querem validar sua primeira ideia.",
+      "features": [
+        "1 análise de ideia",
+        "Resultados básicos",
+        "Sugestões de nome e slogan",
+        "Avaliação de viabilidade"
+      ],
+      "cta": "Começar Grátis"
+    },
+    "entrepreneur": {
+      "name": "Empreendedor",
+      "description": "Para empreendedores sérios que querem análises detalhadas.",
+      "features": [
+        "Análises ilimitadas",
+        "Relatórios completos",
+        "Análise de concorrência",
+        "Sugestões de MVP",
+        "Stack tecnológico recomendado"
+      ],
+      "cta": "Assinar Agora"
+    },
+    "business": {
+      "name": "Empresarial",
+      "description": "Para empresas que precisam de análises avançadas e suporte prioritário.",
+      "features": [
+        "Tudo do plano Empreendedor",
+        "Análises de equipe",
+        "Suporte prioritário",
+        "Integrações via API",
+        "Relatórios personalizados"
+      ],
+      "cta": "Falar com Vendas"
+    }
+  },
+  "cta": {
+    "title": "Pronto para transformar sua ideia em realidade?",
+    "subtitle": "Nossa plataforma está esperando para analisar o potencial do seu próximo grande negócio. Comece agora!",
+    "validateIdea": "Validar Minha Ideia",
+    "seeExample": "Ver Exemplo de Análise"
+  },
+  "features": {
+    "tagline": "Recursos",
+    "title": "Recursos Avançados",
+    "subtitle": "Nossa plataforma oferece uma análise abrangente da viabilidade e potencial do seu conceito de negócio.",
+    "viabilityAnalysis": {
+      "title": "Análise de Viabilidade",
+      "description": "Avaliação detalhada baseada no mercado, tendências e aplicabilidade prática da sua ideia."
+    },
+    "nameSloganPitch": {
+      "title": "Nome, Slogan e Pitch",
+      "description": "Sugestões criativas para apresentar seu negócio de forma memorável e impactante."
+    },
+    "modelEvaluation": {
+      "title": "Avaliação do Modelo",
+      "description": "Análise do seu modelo de negócio com pontos fortes e oportunidades de melhoria."
+    },
+    "nichePersona": {
+      "title": "Nicho e Persona",
+      "description": "Identificação do seu público-alvo ideal e criação de uma persona detalhada."
+    },
+    "mvpSuggestion": {
+      "title": "Sugestão de MVP",
+      "description": "Recomendações para criar um produto mínimo viável que valide rapidamente sua ideia."
+    },
+    "recommendedStack": {
+      "title": "Stack Recomendado",
+      "description": "Sugestões das melhores ferramentas e tecnologias para o desenvolvimento do seu projeto."
+    },
+    "monetizationPotential": {
+      "title": "Potencial de Monetização",
+      "description": "Estratégias para gerar receita do seu negócio de forma sustentável."
+    },
+    "competitionDifferentials": {
+      "title": "Concorrência e Diferenciais",
+      "description": "Análise da concorrência e identificação dos seus diferenciais competitivos."
+    }
+  },
   "howItWorks": {
+    "title": "Como Funciona",
     "tagline": "Como funciona",
     "step1": {
       "title": "Descreva sua ideia",
