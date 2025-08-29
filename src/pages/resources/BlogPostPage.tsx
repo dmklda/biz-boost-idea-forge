@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronLeft } from "lucide-react";
 import { useBlogPosts, BlogPost } from "../../hooks/useBlogPosts";
 import { Loader } from "@/components/ui/loader";
+import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 
 const BlogPostPage = () => {
   const { slug } = useParams();
@@ -20,7 +21,7 @@ const BlogPostPage = () => {
     if (slug) {
       fetchPost();
     }
-  }, [slug]);
+  }, [slug, getBlogPostBySlug]);
 
   const fetchPost = async () => {
     if (!slug) return;
@@ -113,9 +114,7 @@ const BlogPostPage = () => {
             <p className="text-lg text-muted-foreground mb-8">{post.excerpt}</p>
           )}
           
-          <div className="prose prose-lg dark:prose-invert max-w-none">
-            <div className="whitespace-pre-line" dangerouslySetInnerHTML={{ __html: post.content }} />
-          </div>
+          <MarkdownRenderer content={post.content} />
 
           {post.reading_time && (
             <div className="mt-8 pt-8 border-t border-border">

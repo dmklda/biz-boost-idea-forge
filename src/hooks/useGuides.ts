@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface Guide {
@@ -44,7 +44,7 @@ export const useGuides = () => {
     }
   };
 
-  const getGuideBySlug = async (slug: string): Promise<Guide | null> => {
+  const getGuideBySlug = useCallback(async (slug: string): Promise<Guide | null> => {
     try {
       const { data, error } = await supabase
         .from('guides')
@@ -59,7 +59,7 @@ export const useGuides = () => {
       console.error('Error fetching guide:', err);
       return null;
     }
-  };
+  }, []);
 
   return {
     guides,

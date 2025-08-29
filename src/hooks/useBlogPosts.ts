@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface BlogPost {
@@ -46,7 +46,7 @@ export const useBlogPosts = () => {
     }
   };
 
-  const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> => {
+  const getBlogPostBySlug = useCallback(async (slug: string): Promise<BlogPost | null> => {
     try {
       const { data, error } = await supabase
         .from('blog_posts')
@@ -61,7 +61,7 @@ export const useBlogPosts = () => {
       console.error('Error fetching blog post:', err);
       return null;
     }
-  };
+  }, []);
 
   return {
     blogPosts,

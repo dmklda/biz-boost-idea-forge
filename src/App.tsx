@@ -69,13 +69,13 @@ function App() {
 
               {/* Recursos e Blog */}
               <Route path="/recursos/blog" element={<BlogPage />} />
-              <Route path="/recursos/blog/:id" element={<BlogPostPage />} />
+              <Route path="/recursos/blog/:slug" element={<BlogPostPage />} />
               <Route path="/recursos/guias" element={<GuidesPage />} />
-              <Route path="/recursos/guias/:id" element={<GuideDetailPage />} />
+              <Route path="/recursos/guias/:slug" element={<GuideDetailPage />} />
               <Route path="/recursos/casos-de-sucesso" element={<SuccessCasesPage />} />
-              <Route path="/recursos/casos-de-sucesso/:id" element={<SuccessCaseDetailPage />} />
+              <Route path="/recursos/casos-de-sucesso/:slug" element={<SuccessCaseDetailPage />} />
               <Route path="/recursos/webinars" element={<WebinarsPage />} />
-              <Route path="/recursos/webinars/:id" element={<WebinarDetailPage />} />
+              <Route path="/recursos/webinars/:slug" element={<WebinarDetailPage />} />
 
               {/* Página de API */}
               <Route path="/plataforma/api" element={<ApiPage />} />

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, BookOpen } from "lucide-react";
 import { useGuides, Guide } from "../../hooks/useGuides";
 import { Loader } from "@/components/ui/loader";
+import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 
 const GuideDetailPage = () => {
   const { slug } = useParams();
@@ -19,7 +20,7 @@ const GuideDetailPage = () => {
     if (slug) {
       fetchGuide();
     }
-  }, [slug]);
+  }, [slug, getGuideBySlug]);
 
   const fetchGuide = async () => {
     if (!slug) return;
@@ -109,9 +110,7 @@ const GuideDetailPage = () => {
             <p className="text-lg text-muted-foreground mb-8">{guide.description}</p>
           )}
           
-          <div className="prose prose-lg dark:prose-invert max-w-none">
-            <div className="whitespace-pre-line" dangerouslySetInnerHTML={{ __html: guide.content }} />
-          </div>
+          <MarkdownRenderer content={guide.content} />
         </div>
       </main>
       <Footer />

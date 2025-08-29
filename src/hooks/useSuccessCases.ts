@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface SuccessCase {
@@ -49,7 +49,7 @@ export const useSuccessCases = () => {
     }
   };
 
-  const getSuccessCaseBySlug = async (slug: string): Promise<SuccessCase | null> => {
+  const getSuccessCaseBySlug = useCallback(async (slug: string): Promise<SuccessCase | null> => {
     try {
       const { data, error } = await supabase
         .from('success_cases')
@@ -64,7 +64,7 @@ export const useSuccessCases = () => {
       console.error('Error fetching success case:', err);
       return null;
     }
-  };
+  }, []);
 
   return {
     successCases,

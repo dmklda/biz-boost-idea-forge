@@ -19,7 +19,7 @@ const SuccessCaseDetailPage = () => {
     if (slug) {
       fetchCase();
     }
-  }, [slug]);
+  }, [slug, getSuccessCaseBySlug]);
 
   const fetchCase = async () => {
     if (!slug) return;
