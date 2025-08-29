@@ -1,69 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
 };
-
-interface BenchmarkRequest {
-  sector: string;
-  region: 'brazil' | 'latam' | 'global';
-  companyStage: 'startup' | 'scaleup' | 'established';
-  businessModel: string;
-  targetMetrics?: string[];
-}
-
-interface BenchmarkMetric {
-  name: string;
-  value: number;
-  unit: string;
-  percentile_25: number;
-  percentile_50: number;
-  percentile_75: number;
-  percentile_90: number;
-  description: string;
-  source: string;
-  lastUpdated: string;
-  trend: 'increasing' | 'decreasing' | 'stable';
-  importance: 'critical' | 'important' | 'moderate';
-}
-
-interface IndustryBenchmark {
-  sector: string;
-  region: string;
-  companyStage: string;
-  metrics: BenchmarkMetric[];
-  marketInsights: {
-    marketSize: number;
-    growthRate: number;
-    competitionLevel: 'low' | 'medium' | 'high' | 'very_high';
-    entryBarriers: string[];
-    keySuccessFactors: string[];
-    typicalChallenges: string[];
-  };
-  financialBenchmarks: {
-    averageRevenue: number;
-    averageValuation: number;
-    burnRate: number;
-    timeToBreakeven: number;
-    fundingRounds: {
-      seed: number;
-      seriesA: number;
-      seriesB: number;
-    };
-  };
-  operationalBenchmarks: {
-    customerAcquisitionCost: number;
-    lifetimeValue: number;
-    churnRate: number;
-    grossMargin: number;
-    employeeCount: number;
-    revenuePerEmployee: number;
-  };
-  generatedAt: string;
-}
-
 // Comprehensive industry benchmarks database
 const INDUSTRY_BENCHMARKS = {
   brazil: {
@@ -81,8 +21,8 @@ const INDUSTRY_BENCHMARKS = {
             description: 'Custo médio para adquirir um novo cliente',
             source: 'ABFintech 2024',
             lastUpdated: '2024-01-15',
-            trend: 'increasing' as const,
-            importance: 'critical' as const
+            trend: 'increasing',
+            importance: 'critical'
           },
           {
             name: 'Lifetime Value (LTV)',
@@ -95,8 +35,8 @@ const INDUSTRY_BENCHMARKS = {
             description: 'Valor total que um cliente gera durante seu relacionamento',
             source: 'ABFintech 2024',
             lastUpdated: '2024-01-15',
-            trend: 'increasing' as const,
-            importance: 'critical' as const
+            trend: 'increasing',
+            importance: 'critical'
           },
           {
             name: 'Monthly Churn Rate',
@@ -109,8 +49,8 @@ const INDUSTRY_BENCHMARKS = {
             description: 'Taxa mensal de cancelamento de clientes',
             source: 'ABFintech 2024',
             lastUpdated: '2024-01-15',
-            trend: 'decreasing' as const,
-            importance: 'critical' as const
+            trend: 'decreasing',
+            importance: 'critical'
           },
           {
             name: 'Monthly Active Users Growth',
@@ -123,8 +63,8 @@ const INDUSTRY_BENCHMARKS = {
             description: 'Crescimento mensal de usuários ativos',
             source: 'ABFintech 2024',
             lastUpdated: '2024-01-15',
-            trend: 'stable' as const,
-            importance: 'important' as const
+            trend: 'stable',
+            importance: 'important'
           },
           {
             name: 'Time to Break-even',
@@ -137,14 +77,14 @@ const INDUSTRY_BENCHMARKS = {
             description: 'Tempo médio para atingir o ponto de equilíbrio',
             source: 'Distrito 2024',
             lastUpdated: '2024-01-15',
-            trend: 'stable' as const,
-            importance: 'important' as const
+            trend: 'stable',
+            importance: 'important'
           }
         ],
         marketInsights: {
-          marketSize: 45000000000, // R$ 45 bilhões
+          marketSize: 45000000000,
           growthRate: 25.5,
-          competitionLevel: 'very_high' as const,
+          competitionLevel: 'very_high',
           entryBarriers: [
             'Regulamentação BACEN complexa',
             'Alto investimento em compliance',
@@ -167,13 +107,13 @@ const INDUSTRY_BENCHMARKS = {
           ]
         },
         financialBenchmarks: {
-          averageRevenue: 2500000, // R$ 2.5M
-          averageValuation: 15000000, // R$ 15M
-          burnRate: 180000, // R$ 180K/mês
+          averageRevenue: 2500000,
+          averageValuation: 15000000,
+          burnRate: 180000,
           timeToBreakeven: 18,
           fundingRounds: {
-            seed: 800000, // R$ 800K
-            seriesA: 5000000, // R$ 5M
+            seed: 800000,
+            seriesA: 5000000,
             seriesB: 15000000 // R$ 15M
           }
         },
@@ -201,8 +141,8 @@ const INDUSTRY_BENCHMARKS = {
             description: 'Custo médio para adquirir um novo cliente/paciente',
             source: 'HealthTech Report 2024',
             lastUpdated: '2024-01-15',
-            trend: 'increasing' as const,
-            importance: 'critical' as const
+            trend: 'increasing',
+            importance: 'critical'
           },
           {
             name: 'Patient Retention Rate',
@@ -215,8 +155,8 @@ const INDUSTRY_BENCHMARKS = {
             description: 'Taxa de retenção de pacientes após 12 meses',
             source: 'HealthTech Report 2024',
             lastUpdated: '2024-01-15',
-            trend: 'increasing' as const,
-            importance: 'critical' as const
+            trend: 'increasing',
+            importance: 'critical'
           },
           {
             name: 'Clinical Validation Time',
@@ -229,8 +169,8 @@ const INDUSTRY_BENCHMARKS = {
             description: 'Tempo médio para validação clínica',
             source: 'ANVISA Studies 2024',
             lastUpdated: '2024-01-15',
-            trend: 'decreasing' as const,
-            importance: 'important' as const
+            trend: 'decreasing',
+            importance: 'important'
           },
           {
             name: 'Regulatory Approval Success Rate',
@@ -243,14 +183,14 @@ const INDUSTRY_BENCHMARKS = {
             description: 'Taxa de sucesso em aprovações regulatórias',
             source: 'ANVISA Studies 2024',
             lastUpdated: '2024-01-15',
-            trend: 'stable' as const,
-            importance: 'critical' as const
+            trend: 'stable',
+            importance: 'critical'
           }
         ],
         marketInsights: {
-          marketSize: 12000000000, // R$ 12 bilhões
+          marketSize: 12000000000,
           growthRate: 18.2,
-          competitionLevel: 'medium' as const,
+          competitionLevel: 'medium',
           entryBarriers: [
             'Regulamentação ANVISA rigorosa',
             'Necessidade de validação clínica',
@@ -307,8 +247,8 @@ const INDUSTRY_BENCHMARKS = {
             description: 'Custo médio para adquirir um novo estudante',
             source: 'EdTech Brasil 2024',
             lastUpdated: '2024-01-15',
-            trend: 'increasing' as const,
-            importance: 'critical' as const
+            trend: 'increasing',
+            importance: 'critical'
           },
           {
             name: 'Course Completion Rate',
@@ -321,8 +261,8 @@ const INDUSTRY_BENCHMARKS = {
             description: 'Taxa de conclusão de cursos',
             source: 'EdTech Brasil 2024',
             lastUpdated: '2024-01-15',
-            trend: 'increasing' as const,
-            importance: 'critical' as const
+            trend: 'increasing',
+            importance: 'critical'
           },
           {
             name: 'Monthly Active Learners Growth',
@@ -335,8 +275,8 @@ const INDUSTRY_BENCHMARKS = {
             description: 'Crescimento mensal de estudantes ativos',
             source: 'EdTech Brasil 2024',
             lastUpdated: '2024-01-15',
-            trend: 'stable' as const,
-            importance: 'important' as const
+            trend: 'stable',
+            importance: 'important'
           },
           {
             name: 'Student Satisfaction Score',
@@ -349,14 +289,14 @@ const INDUSTRY_BENCHMARKS = {
             description: 'Pontuação média de satisfação dos estudantes',
             source: 'EdTech Brasil 2024',
             lastUpdated: '2024-01-15',
-            trend: 'increasing' as const,
-            importance: 'important' as const
+            trend: 'increasing',
+            importance: 'important'
           }
         ],
         marketInsights: {
-          marketSize: 8500000000, // R$ 8.5 bilhões
+          marketSize: 8500000000,
           growthRate: 28.7,
-          competitionLevel: 'high' as const,
+          competitionLevel: 'high',
           entryBarriers: [
             'Necessidade de conteúdo de qualidade',
             'Competição com instituições tradicionais',
@@ -401,61 +341,40 @@ const INDUSTRY_BENCHMARKS = {
     }
   }
 };
-
-serve(async (req) => {
+serve(async (req)=>{
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response('ok', {
+      headers: corsHeaders
+    });
   }
-
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
+    const supabaseClient = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_ANON_KEY') ?? '', {
+      global: {
+        headers: {
+          Authorization: req.headers.get('Authorization')
+        }
       }
-    );
-
-    const { sector, region = 'brazil', companyStage = 'startup', businessModel, targetMetrics }: BenchmarkRequest = await req.json();
-    
+    });
+    const { sector, region = 'brazil', companyStage = 'startup', businessModel, targetMetrics } = await req.json();
     if (!sector) {
       throw new Error('Sector is required');
     }
-
     console.log(`Generating industry benchmarks for ${sector} in ${region} (${companyStage})`);
-
     // Get base benchmark data
     const benchmarkData = INDUSTRY_BENCHMARKS[region]?.[sector]?.[companyStage];
-    
     if (!benchmarkData) {
       throw new Error(`Benchmark data not available for ${sector} in ${region} (${companyStage})`);
     }
-
     // Filter metrics if specific ones are requested
     let filteredMetrics = benchmarkData.metrics;
     if (targetMetrics && targetMetrics.length > 0) {
-      filteredMetrics = benchmarkData.metrics.filter(metric => 
-        targetMetrics.some(target => 
-          metric.name.toLowerCase().includes(target.toLowerCase())
-        )
-      );
+      filteredMetrics = benchmarkData.metrics.filter((metric)=>targetMetrics.some((target)=>metric.name.toLowerCase().includes(target.toLowerCase())));
     }
-
     // Generate AI-powered insights
-    const aiInsights = await generateAIBenchmarkInsights(
-      sector,
-      region,
-      companyStage,
-      benchmarkData,
-      businessModel
-    );
-
+    const aiInsights = await generateAIBenchmarkInsights(sector, region, companyStage, benchmarkData, businessModel);
     // Enrich with comparative analysis
     const enrichedMetrics = await enrichMetricsWithComparison(filteredMetrics, sector, region);
-
-    const result: IndustryBenchmark = {
+    const result = {
       sector,
       region,
       companyStage,
@@ -468,39 +387,32 @@ serve(async (req) => {
       operationalBenchmarks: benchmarkData.operationalBenchmarks,
       generatedAt: new Date().toISOString()
     };
-
     console.log(`Industry benchmarks generated for ${sector}`);
-
-    return new Response(
-      JSON.stringify(result),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-
+    return new Response(JSON.stringify(result), {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json'
+      }
+    });
   } catch (error) {
     console.error('Error in industry-benchmarks function:', error);
-    return new Response(
-      JSON.stringify({ 
-        error: error.message,
-        benchmarks: null
-      }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+    return new Response(JSON.stringify({
+      error: error.message,
+      benchmarks: null
+    }), {
+      status: 500,
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json'
       }
-    );
+    });
   }
 });
-
 // Enrich metrics with comparative analysis
-async function enrichMetricsWithComparison(
-  metrics: BenchmarkMetric[], 
-  sector: string, 
-  region: string
-): Promise<BenchmarkMetric[]> {
-  return metrics.map(metric => {
+async function enrichMetricsWithComparison(metrics, sector, region) {
+  return metrics.map((metric)=>{
     // Add contextual information based on sector
     let enhancedDescription = metric.description;
-    
     if (sector === 'fintech') {
       if (metric.name.includes('CAC')) {
         enhancedDescription += '. No setor FinTech, CACs baixos são críticos devido à alta competição.';
@@ -516,29 +428,20 @@ async function enrichMetricsWithComparison(
         enhancedDescription += '. Taxa de conclusão alta indica qualidade do conteúdo e engajamento.';
       }
     }
-    
     return {
       ...metric,
       description: enhancedDescription
     };
   });
 }
-
 // Generate AI-powered benchmark insights
-async function generateAIBenchmarkInsights(
-  sector: string,
-  region: string,
-  companyStage: string,
-  benchmarkData: any,
-  businessModel: string
-): Promise<{ marketInsights: any }> {
+async function generateAIBenchmarkInsights(sector, region, companyStage, benchmarkData, businessModel) {
   const openAiApiKey = Deno.env.get('OPENAI_API_KEY');
   if (!openAiApiKey) {
     return {
       marketInsights: {}
     };
   }
-
   const prompt = `
   Analise o setor ${sector} no ${region} para empresas em estágio ${companyStage}.
   
@@ -550,7 +453,7 @@ async function generateAIBenchmarkInsights(
   MODELO DE NEGÓCIO: ${businessModel}
   
   MÉTRICAS PRINCIPAIS:
-  ${benchmarkData.metrics.map((m: any) => `- ${m.name}: ${m.value} ${m.unit} (mediana: ${m.percentile_50})`).join('\n')}
+  ${benchmarkData.metrics.map((m)=>`- ${m.name}: ${m.value} ${m.unit} (mediana: ${m.percentile_50})`).join('\n')}
   
   Forneça insights específicos sobre:
   1. Tendências emergentes no setor
@@ -560,25 +463,26 @@ async function generateAIBenchmarkInsights(
   
   Seja específico e prático para o contexto brasileiro.
   `;
-
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${openAiApiKey}`,
+        'Authorization': `Bearer ${openAiApiKey}`
       },
       body: JSON.stringify({
         model: 'gpt-5',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.7,
-        max_tokens: 800,
-      }),
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_completion_tokens: 800
+      })
     });
-
     const result = await response.json();
     const insights = result.choices[0]?.message?.content || '';
-    
     return {
       marketInsights: {
         aiInsights: insights,
@@ -593,47 +497,39 @@ async function generateAIBenchmarkInsights(
     };
   }
 }
-
 // Extract trends from AI insights
-function extractTrends(insights: string): string[] {
+function extractTrends(insights) {
   const lines = insights.split('\n');
-  const trends: string[] = [];
+  const trends = [];
   let inTrends = false;
-  
-  for (const line of lines) {
+  for (const line of lines){
     if (line.toLowerCase().includes('tendência') || line.toLowerCase().includes('trend')) {
       inTrends = true;
       continue;
     }
-    
     if (inTrends && (line.startsWith('- ') || line.match(/^\d+\./))) {
       trends.push(line.replace(/^[-\d.\s]+/, '').trim());
     } else if (inTrends && line.trim() === '') {
       break;
     }
   }
-  
   return trends.slice(0, 5);
 }
-
 // Extract recommendations from AI insights
-function extractRecommendations(insights: string): string[] {
+function extractRecommendations(insights) {
   const lines = insights.split('\n');
-  const recommendations: string[] = [];
+  const recommendations = [];
   let inRecommendations = false;
-  
-  for (const line of lines) {
+  for (const line of lines){
     if (line.toLowerCase().includes('recomenda') || line.toLowerCase().includes('estratég')) {
       inRecommendations = true;
       continue;
     }
-    
     if (inRecommendations && (line.startsWith('- ') || line.match(/^\d+\./))) {
       recommendations.push(line.replace(/^[-\d.\s]+/, '').trim());
     } else if (inRecommendations && line.trim() === '') {
       break;
     }
   }
-  
   return recommendations.slice(0, 5);
 }

@@ -1,42 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
 };
-
-interface SectorAnalysisRequest {
-  ideaData: {
-    title: string;
-    description: string;
-    audience: string;
-    problem: string;
-    solution: string;
-    monetization?: string;
-    competition?: string;
-    budget?: string;
-    location?: string;
-  };
-  sector: 'fintech' | 'healthtech' | 'edtech' | 'sustainability' | 'ecommerce' | 'saas';
-  analysisType: 'comprehensive' | 'regulatory' | 'market' | 'technical' | 'competitive';
-  language?: string;
-}
-
-interface SectorPrompts {
-  [key: string]: {
-    comprehensive: string;
-    regulatory: string;
-    market: string;
-    technical: string;
-    competitive: string;
-    specificMetrics: string[];
-    keyConsiderations: string[];
-    regulatoryFrameworks: string[];
-  };
-}
-
-const SECTOR_PROMPTS: SectorPrompts = {
+const SECTOR_PROMPTS = {
   fintech: {
     comprehensive: `
     Você é um especialista em FinTech com 15+ anos de experiência no setor financeiro e tecnológico.
@@ -138,7 +106,6 @@ const SECTOR_PROMPTS: SectorPrompts = {
       'ISO 27001'
     ]
   },
-  
   healthtech: {
     comprehensive: `
     Você é um especialista em HealthTech com experiência em regulamentação médica e inovação em saúde.
@@ -237,7 +204,6 @@ const SECTOR_PROMPTS: SectorPrompts = {
       'HIPAA (se aplicável)'
     ]
   },
-  
   edtech: {
     comprehensive: `
     Você é um especialista em EdTech com experiência em pedagogia digital e mercado educacional.
@@ -338,39 +304,31 @@ const SECTOR_PROMPTS: SectorPrompts = {
     ]
   }
 };
-
-serve(async (req) => {
+serve(async (req)=>{
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response('ok', {
+      headers: corsHeaders
+    });
   }
-
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
+    const supabaseClient = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_ANON_KEY') ?? '', {
+      global: {
+        headers: {
+          Authorization: req.headers.get('Authorization')
+        }
       }
-    );
-
-    const { ideaData, sector, analysisType, language = 'pt' }: SectorAnalysisRequest = await req.json();
-    
+    });
+    const { ideaData, sector, analysisType, language = 'pt' } = await req.json();
     if (!ideaData || !sector) {
       throw new Error('ideaData and sector are required');
     }
-
     console.log(`Performing ${analysisType} analysis for ${sector} sector`);
-
     const sectorPrompts = SECTOR_PROMPTS[sector];
     if (!sectorPrompts) {
       throw new Error(`Sector ${sector} not supported`);
     }
-
     // Get the specific prompt for the analysis type
-    const specificPrompt = sectorPrompts[analysisType as keyof typeof sectorPrompts] as string;
-    
+    const specificPrompt = sectorPrompts[analysisType];
     const systemPrompt = `
     ${specificPrompt}
     
@@ -396,19 +354,16 @@ serve(async (req) => {
     
     Responda em português brasileiro com uma análise estruturada e detalhada.
     `;
-
     const openAiApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAiApiKey) {
       throw new Error('OpenAI API key not configured');
     }
-
     console.log('Calling OpenAI for sector-specific analysis...');
-    
     const openAiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${openAiApiKey}`,
+        'Authorization': `Bearer ${openAiApiKey}`
       },
       body: JSON.stringify({
         model: 'gpt-5',
@@ -418,23 +373,18 @@ serve(async (req) => {
             content: systemPrompt
           }
         ],
-        temperature: 0.7,
-        max_tokens: 3000,
-      }),
+        max_completion_tokens: 3000
+      })
     });
-
     if (!openAiResponse.ok) {
       const errorText = await openAiResponse.text();
       throw new Error(`OpenAI API error: ${openAiResponse.status} - ${errorText}`);
     }
-
     const openAiResult = await openAiResponse.json();
     const analysis = openAiResult.choices[0]?.message?.content;
-
     if (!analysis) {
       throw new Error('No analysis received from OpenAI');
     }
-
     // Structure the response
     const structuredAnalysis = {
       sector,
@@ -449,37 +399,34 @@ serve(async (req) => {
       nextSteps: extractNextSteps(analysis),
       generatedAt: new Date().toISOString()
     };
-
     console.log(`Sector analysis completed for ${sector}`);
-
-    return new Response(
-      JSON.stringify(structuredAnalysis),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-
+    return new Response(JSON.stringify(structuredAnalysis), {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json'
+      }
+    });
   } catch (error) {
     console.error('Error in sector-analysis function:', error);
-    return new Response(
-      JSON.stringify({ 
-        error: error.message,
-        sector: null,
-        analysis: null
-      }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+    return new Response(JSON.stringify({
+      error: error.message,
+      sector: null,
+      analysis: null
+    }), {
+      status: 500,
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json'
       }
-    );
+    });
   }
 });
-
 // Helper functions to extract structured information
-function extractRecommendations(analysis: string): string[] {
-  const recommendations: string[] = [];
+function extractRecommendations(analysis) {
+  const recommendations = [];
   const lines = analysis.split('\n');
   let inRecommendations = false;
-  
-  for (const line of lines) {
+  for (const line of lines){
     if (line.toLowerCase().includes('recomenda') || line.toLowerCase().includes('sugest')) {
       inRecommendations = true;
     }
@@ -490,16 +437,13 @@ function extractRecommendations(analysis: string): string[] {
       inRecommendations = false;
     }
   }
-  
   return recommendations.slice(0, 5); // Limit to 5 recommendations
 }
-
-function extractRisks(analysis: string): string[] {
-  const risks: string[] = [];
+function extractRisks(analysis) {
+  const risks = [];
   const lines = analysis.split('\n');
   let inRisks = false;
-  
-  for (const line of lines) {
+  for (const line of lines){
     if (line.toLowerCase().includes('risco') || line.toLowerCase().includes('desafio')) {
       inRisks = true;
     }
@@ -510,16 +454,13 @@ function extractRisks(analysis: string): string[] {
       inRisks = false;
     }
   }
-  
   return risks.slice(0, 5);
 }
-
-function extractOpportunities(analysis: string): string[] {
-  const opportunities: string[] = [];
+function extractOpportunities(analysis) {
+  const opportunities = [];
   const lines = analysis.split('\n');
   let inOpportunities = false;
-  
-  for (const line of lines) {
+  for (const line of lines){
     if (line.toLowerCase().includes('oportunidade') || line.toLowerCase().includes('potencial')) {
       inOpportunities = true;
     }
@@ -530,18 +471,14 @@ function extractOpportunities(analysis: string): string[] {
       inOpportunities = false;
     }
   }
-  
   return opportunities.slice(0, 5);
 }
-
-function extractNextSteps(analysis: string): string[] {
-  const nextSteps: string[] = [];
+function extractNextSteps(analysis) {
+  const nextSteps = [];
   const lines = analysis.split('\n');
   let inNextSteps = false;
-  
-  for (const line of lines) {
-    if (line.toLowerCase().includes('próximo') || line.toLowerCase().includes('passo') || 
-        line.toLowerCase().includes('ação')) {
+  for (const line of lines){
+    if (line.toLowerCase().includes('próximo') || line.toLowerCase().includes('passo') || line.toLowerCase().includes('ação')) {
       inNextSteps = true;
     }
     if (inNextSteps && (line.startsWith('- ') || line.startsWith('• '))) {
@@ -551,6 +488,5 @@ function extractNextSteps(analysis: string): string[] {
       inNextSteps = false;
     }
   }
-  
   return nextSteps.slice(0, 5);
 }

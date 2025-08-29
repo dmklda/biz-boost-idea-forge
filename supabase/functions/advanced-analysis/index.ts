@@ -1,86 +1,73 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.0";
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type"
 };
-
-serve(async (req) => {
+serve(async (req)=>{
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, {
+      headers: corsHeaders
+    });
   }
-
   try {
     // Get request body
     const { ideaId, userLanguage = 'pt' } = await req.json();
-
     // Validate input
     if (!ideaId) {
-      return new Response(
-        JSON.stringify({ error: "Missing ideaId parameter" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
-      );
+      return new Response(JSON.stringify({
+        error: "Missing ideaId parameter"
+      }), {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        },
+        status: 400
+      });
     }
-
     console.log(`Processing advanced analysis for idea: ${ideaId} in language: ${userLanguage}`);
-
     // Create Supabase client
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") as string;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") as string;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
     // Remove any existing analysis for this idea to ensure we generate a fresh one
     // This ensures we're not using cached/old data after a re-analysis
-    const { error: deleteError } = await supabase
-      .from("advanced_analyses")
-      .delete()
-      .eq("idea_id", ideaId);
-    
+    const { error: deleteError } = await supabase.from("advanced_analyses").delete().eq("idea_id", ideaId);
     if (deleteError) {
       console.log("No previous analysis to delete or error deleting:", deleteError);
     } else {
       console.log("Successfully deleted previous analysis for idea:", ideaId);
     }
-
     // Fetch the idea details - always get the latest data
     console.log("Fetching latest idea details");
-    const { data: ideaData, error: ideaError } = await supabase
-      .from("ideas")
-      .select("*")
-      .eq("id", ideaId)
-      .single();
-
+    const { data: ideaData, error: ideaError } = await supabase.from("ideas").select("*").eq("id", ideaId).single();
     if (ideaError || !ideaData) {
       console.error("Error fetching idea data:", ideaError);
-      return new Response(
-        JSON.stringify({ error: "Failed to fetch idea data", details: ideaError }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
-      );
+      return new Response(JSON.stringify({
+        error: "Failed to fetch idea data",
+        details: ideaError
+      }), {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        },
+        status: 404
+      });
     }
-
     // Fetch existing analysis for enrichment - get the latest analysis
     console.log("Fetching latest basic analysis");
-    const { data: basicAnalysisData, error: analysisError } = await supabase
-      .from("idea_analyses")
-      .select("*")
-      .eq("idea_id", ideaId)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
-    
+    const { data: basicAnalysisData, error: analysisError } = await supabase.from("idea_analyses").select("*").eq("idea_id", ideaId).order("created_at", {
+      ascending: false
+    }).limit(1).single();
     console.log("Latest basic analysis data:", basicAnalysisData);
     console.log("Latest idea data:", ideaData);
-
     // Prepare a prompt for OpenAI to generate a complete analysis
-    const openAiApiKey = Deno.env.get("OPENAI_API_KEY") as string;
+    const openAiApiKey = Deno.env.get("OPENAI_API_KEY");
     if (!openAiApiKey) {
       throw new Error("Missing OpenAI API key in environment variables");
     }
-
     // Ensure we use the latest idea and analysis data for generating the prompt
     const inputData = {
       idea: {
@@ -88,7 +75,7 @@ serve(async (req) => {
         description: ideaData.description || "No description provided",
         problem: ideaData.problem || "Not specified",
         audience: ideaData.audience || "Not specified",
-        monetization: ideaData.monetization || "Not specified", 
+        monetization: ideaData.monetization || "Not specified",
         has_competitors: ideaData.has_competitors || "Not specified",
         budget: ideaData.budget || null,
         location: ideaData.location || "Not specified"
@@ -103,40 +90,24 @@ serve(async (req) => {
         recommendations: basicAnalysisData.recommendations
       } : null
     };
-
     // Create a specific custom instruction based on the idea's domain/industry
     let domainSpecificInstructions = "";
-    const lowerCaseDesc = ideaData.description.toLowerCase() + 
-                          " " + (ideaData.problem || "").toLowerCase() + 
-                          " " + (ideaData.audience || "").toLowerCase();
-
+    const lowerCaseDesc = ideaData.description.toLowerCase() + " " + (ideaData.problem || "").toLowerCase() + " " + (ideaData.audience || "").toLowerCase();
     // Add industry-specific analysis guidance based on the idea content
-    if (lowerCaseDesc.includes("tech") || lowerCaseDesc.includes("software") || 
-        lowerCaseDesc.includes("app") || lowerCaseDesc.includes("aplicativo") || 
-        lowerCaseDesc.includes("tecnologia")) {
+    if (lowerCaseDesc.includes("tech") || lowerCaseDesc.includes("software") || lowerCaseDesc.includes("app") || lowerCaseDesc.includes("aplicativo") || lowerCaseDesc.includes("tecnologia")) {
       domainSpecificInstructions = "This appears to be a technology/software idea. Focus on tech adoption curves, software development costs, technical scalability challenges, and digital marketing strategies.";
-    } else if (lowerCaseDesc.includes("food") || lowerCaseDesc.includes("restaurant") || 
-              lowerCaseDesc.includes("comida") || lowerCaseDesc.includes("restaurante") || 
-              lowerCaseDesc.includes("café")) {
+    } else if (lowerCaseDesc.includes("food") || lowerCaseDesc.includes("restaurant") || lowerCaseDesc.includes("comida") || lowerCaseDesc.includes("restaurante") || lowerCaseDesc.includes("café")) {
       domainSpecificInstructions = "This appears to be a food/restaurant business. Focus on location analysis, food costs, staffing requirements, health regulations, and local competition.";
-    } else if (lowerCaseDesc.includes("retail") || lowerCaseDesc.includes("shop") || 
-              lowerCaseDesc.includes("store") || lowerCaseDesc.includes("loja") || 
-              lowerCaseDesc.includes("ecommerce") || lowerCaseDesc.includes("e-commerce")) {
+    } else if (lowerCaseDesc.includes("retail") || lowerCaseDesc.includes("shop") || lowerCaseDesc.includes("store") || lowerCaseDesc.includes("loja") || lowerCaseDesc.includes("ecommerce") || lowerCaseDesc.includes("e-commerce")) {
       domainSpecificInstructions = "This appears to be a retail/e-commerce business. Focus on inventory management, supply chain logistics, online vs physical presence, and customer acquisition costs.";
-    } else if (lowerCaseDesc.includes("health") || lowerCaseDesc.includes("wellness") || 
-              lowerCaseDesc.includes("fitness") || lowerCaseDesc.includes("saúde") || 
-              lowerCaseDesc.includes("bem-estar")) {
+    } else if (lowerCaseDesc.includes("health") || lowerCaseDesc.includes("wellness") || lowerCaseDesc.includes("fitness") || lowerCaseDesc.includes("saúde") || lowerCaseDesc.includes("bem-estar")) {
       domainSpecificInstructions = "This appears to be a health/wellness business. Focus on regulations, certifications needed, insurance considerations, and specialized marketing for health-conscious consumers.";
-    } else if (lowerCaseDesc.includes("education") || lowerCaseDesc.includes("learning") || 
-              lowerCaseDesc.includes("teaching") || lowerCaseDesc.includes("course") || 
-              lowerCaseDesc.includes("educação") || lowerCaseDesc.includes("curso")) {
+    } else if (lowerCaseDesc.includes("education") || lowerCaseDesc.includes("learning") || lowerCaseDesc.includes("teaching") || lowerCaseDesc.includes("course") || lowerCaseDesc.includes("educação") || lowerCaseDesc.includes("curso")) {
       domainSpecificInstructions = "This appears to be an education business. Focus on curriculum development costs, accreditation requirements, instructor recruitment, and education technology integration.";
     }
-
     // Get the language-specific system prompt
     let systemPrompt;
     let languageInstructions;
-    
     // Set language-specific instructions
     if (userLanguage === 'en') {
       systemPrompt = "You are an expert business consultant specializing in startup analysis and market intelligence. You create thorough, specific analyses based on the exact details provided for each unique business idea.";
@@ -152,7 +123,6 @@ serve(async (req) => {
       systemPrompt = "Você é um consultor de negócios especializado em análise de startups e inteligência de mercado. Você cria análises completas e específicas com base nos detalhes exatos fornecidos para cada ideia de negócio única.";
       languageInstructions = "Gere a análise em português";
     }
-
     // Structure the AI prompt with enhanced customization for the specific idea
     const aiPrompt = `
     ${languageInstructions}. Generate a comprehensive, UNIQUE business analysis for the following specific idea. This analysis MUST be completely tailored to this particular idea and should NOT contain generic content that could apply to any business:
@@ -473,7 +443,6 @@ serve(async (req) => {
     
     Make sure the entire response is focused specifically on the business idea provided and not generic business advice. Include actual data from the idea in your analysis wherever possible.
     `;
-
     console.log("Making API request to OpenAI");
     const apiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -482,7 +451,7 @@ serve(async (req) => {
         "Authorization": `Bearer ${openAiApiKey}`
       },
       body: JSON.stringify({
-        model: "gpt-5",  // Using the latest and most advanced model for better analysis
+        model: "gpt-5",
         messages: [
           {
             role: "system",
@@ -497,22 +466,18 @@ serve(async (req) => {
         max_tokens: 4000
       })
     });
-
     if (!apiResponse.ok) {
       const errorData = await apiResponse.text();
       console.error("OpenAI API error:", errorData);
       throw new Error(`OpenAI API error: ${errorData}`);
     }
-
     const aiData = await apiResponse.json();
     console.log("Received response from OpenAI");
-    
     // Parse the response content which should be JSON
     let advancedAnalysis;
     try {
       // The content should be a JSON string in the response
       const rawContent = aiData.choices[0].message.content.trim();
-      
       // Find JSON content if wrapped in ```json or ``` blocks
       let jsonContent = rawContent;
       if (rawContent.includes("```")) {
@@ -521,51 +486,58 @@ serve(async (req) => {
           jsonContent = jsonMatch[1];
         }
       }
-      
       advancedAnalysis = JSON.parse(jsonContent);
-      
       // Add logoUrl which is expected by the frontend
       if (!advancedAnalysis.logoUrl) {
         advancedAnalysis.logoUrl = "https://placehold.co/400x400/3b82f6/FFFFFF/png?text=Logo";
       }
-      
       console.log("Successfully parsed AI response");
     } catch (error) {
       console.error("Error parsing OpenAI response:", error);
       console.log("Raw response:", aiData.choices[0].message.content);
       throw new Error("Failed to parse AI-generated analysis");
     }
-
     // Save the AI-generated advanced analysis to the database
     console.log("Saving new advanced analysis to database");
-    const { data: savedAnalysis, error: saveError } = await supabase
-      .from("advanced_analyses")
-      .upsert({ 
-        idea_id: ideaId,
-        user_id: ideaData.user_id,
-        analysis_data: advancedAnalysis 
-      })
-      .select()
-      .single();
-
+    const { data: savedAnalysis, error: saveError } = await supabase.from("advanced_analyses").upsert({
+      idea_id: ideaId,
+      user_id: ideaData.user_id,
+      analysis_data: advancedAnalysis
+    }).select().single();
     if (saveError) {
       console.error("Error saving advanced analysis:", saveError);
-      return new Response(
-        JSON.stringify({ error: "Failed to save analysis", details: saveError }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
-      );
+      return new Response(JSON.stringify({
+        error: "Failed to save analysis",
+        details: saveError
+      }), {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        },
+        status: 500
+      });
     }
-
     console.log("Advanced analysis created successfully");
-    return new Response(
-      JSON.stringify({ message: "Advanced analysis created successfully", analysis: savedAnalysis }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({
+      message: "Advanced analysis created successfully",
+      analysis: savedAnalysis
+    }), {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json"
+      }
+    });
   } catch (error) {
     console.error("Error in advanced-analysis function:", error);
-    return new Response(
-      JSON.stringify({ error: "Internal server error", details: error.message }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
-    );
+    return new Response(JSON.stringify({
+      error: "Internal server error",
+      details: error.message
+    }), {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json"
+      },
+      status: 500
+    });
   }
 });

@@ -1,91 +1,79 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.0";
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type"
 };
-
-serve(async (req) => {
+serve(async (req)=>{
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, {
+      headers: corsHeaders
+    });
   }
-
   try {
     // Get request body
     const requestBody = await req.json();
     const { ideaId, message, history, userId } = requestBody;
-
     // Validate input
     if (!ideaId || !message) {
-      console.error("Missing required parameters:", { ideaId, message });
-      return new Response(
-        JSON.stringify({ error: "Missing required parameters" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
-      );
+      console.error("Missing required parameters:", {
+        ideaId,
+        message
+      });
+      return new Response(JSON.stringify({
+        error: "Missing required parameters"
+      }), {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        },
+        status: 400
+      });
     }
-
     console.log("Processing chat for idea:", ideaId);
     console.log("User message:", message);
     console.log("Chat history length:", history ? history.length : 0);
-
     // Initialize Supabase client to fetch idea and analysis data
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") as string;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") as string;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
     // Save the user message to the database
     if (userId) {
       console.log(`Saving user message to database for user: ${userId}`);
-      const { error: saveUserMessageError } = await supabase
-        .from("chat_messages")
-        .insert({
-          user_id: userId,
-          idea_id: ideaId,
-          role: "user",
-          content: message
-        });
-
+      const { error: saveUserMessageError } = await supabase.from("chat_messages").insert({
+        user_id: userId,
+        idea_id: ideaId,
+        role: "user",
+        content: message
+      });
       if (saveUserMessageError) {
         console.error("Error saving user message:", saveUserMessageError);
-        // Continue with the process even if saving failed
+      // Continue with the process even if saving failed
       }
     }
-
     // Fetch the idea details
-    const { data: ideaData, error: ideaError } = await supabase
-      .from("ideas")
-      .select("*")
-      .eq("id", ideaId)
-      .single();
-
+    const { data: ideaData, error: ideaError } = await supabase.from("ideas").select("*").eq("id", ideaId).single();
     if (ideaError || !ideaData) {
       console.error("Error fetching idea data:", ideaError);
-      return new Response(
-        JSON.stringify({ error: "Failed to fetch idea data", details: ideaError }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
-      );
+      return new Response(JSON.stringify({
+        error: "Failed to fetch idea data",
+        details: ideaError
+      }), {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        },
+        status: 404
+      });
     }
-
     // Fetch the advanced analysis data
-    const { data: analysisData, error: analysisError } = await supabase
-      .from("advanced_analyses")
-      .select("*")
-      .eq("idea_id", ideaId)
-      .maybeSingle();
-
+    const { data: analysisData, error: analysisError } = await supabase.from("advanced_analyses").select("*").eq("idea_id", ideaId).maybeSingle();
     // Fetch basic analysis as fallback or additional context
-    const { data: basicAnalysisData } = await supabase
-      .from("idea_analyses")
-      .select("*")
-      .eq("idea_id", ideaId)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
+    const { data: basicAnalysisData } = await supabase.from("idea_analyses").select("*").eq("idea_id", ideaId).order("created_at", {
+      ascending: false
+    }).limit(1).maybeSingle();
     // Prepare context for the AI with available data
     const ideaContext = {
       title: ideaData.title,
@@ -97,7 +85,6 @@ serve(async (req) => {
       budget: ideaData.budget || "Not specified",
       location: ideaData.location || "Not specified"
     };
-
     // Add analysis data to context if available
     let analysisContext = {};
     if (analysisData && analysisData.analysis_data) {
@@ -110,9 +97,9 @@ serve(async (req) => {
         differentials: analysis.differentials,
         marketAnalysis: analysis.marketAnalysis,
         monetization: analysis.monetization,
-        personas: analysis.personas?.map(p => `${p.name}: ${p.description}`).join("; "),
+        personas: analysis.personas?.map((p)=>`${p.name}: ${p.description}`).join("; "),
         swot: analysis.swot,
-        risks: analysis.risks?.map(r => `${r.name} (${r.level}): ${r.description}`).join("; ")
+        risks: analysis.risks?.map((r)=>`${r.name} (${r.level}): ${r.description}`).join("; ")
       };
     } else if (basicAnalysisData) {
       // Use basic analysis as fallback
@@ -126,23 +113,25 @@ serve(async (req) => {
         recommendations: basicAnalysisData.recommendations
       };
     }
-
     // Get OpenAI API key
     const openAiApiKey = Deno.env.get("OPENAI_API_KEY");
     if (!openAiApiKey) {
       console.error("Missing OpenAI API key");
-      return new Response(
-        JSON.stringify({ error: "OpenAI API key not configured" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
-      );
+      return new Response(JSON.stringify({
+        error: "OpenAI API key not configured"
+      }), {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        },
+        status: 500
+      });
     }
-
     // Format chat history for OpenAI context
-    const formattedHistory = (history || []).map(msg => ({
-      role: msg.role,
-      content: msg.content
-    }));
-
+    const formattedHistory = (history || []).map((msg)=>({
+        role: msg.role,
+        content: msg.content
+      }));
     // Create a system message with context about the idea and analysis
     const systemPrompt = `
     You are a business consultant AI assistant specialized in analyzing business ideas and providing strategic advice.
@@ -166,14 +155,18 @@ serve(async (req) => {
     Be concise but thorough in your responses. Use a conversational, professional tone.
     Respond in the same language the user uses (Portuguese, English, Spanish, or Japanese).
     `;
-
     // Call OpenAI API with context and user message
     const openAiMessages = [
-      { role: "system", content: systemPrompt },
+      {
+        role: "system",
+        content: systemPrompt
+      },
       ...formattedHistory,
-      { role: "user", content: message }
+      {
+        role: "user",
+        content: message
+      }
     ];
-
     console.log("Calling OpenAI API with context");
     const openAiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -182,61 +175,73 @@ serve(async (req) => {
         "Authorization": `Bearer ${openAiApiKey}`
       },
       body: JSON.stringify({
-        model: "gpt-5", // Using the latest and most advanced model
-        messages: openAiMessages,
-        temperature: 0.7,
+        model: "gpt-5",
+        messages: openAiMessages
       })
     });
-
     // Handle OpenAI API response
     if (!openAiResponse.ok) {
       const errorText = await openAiResponse.text();
       console.error("OpenAI API error:", errorText);
-      return new Response(
-        JSON.stringify({ error: "Error calling AI service", details: errorText }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
-      );
+      return new Response(JSON.stringify({
+        error: "Error calling AI service",
+        details: errorText
+      }), {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        },
+        status: 500
+      });
     }
-
     const aiData = await openAiResponse.json();
     if (!aiData.choices || aiData.choices.length === 0) {
       console.error("Invalid response from OpenAI:", aiData);
-      return new Response(
-        JSON.stringify({ error: "Invalid response from AI" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
-      );
+      return new Response(JSON.stringify({
+        error: "Invalid response from AI"
+      }), {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        },
+        status: 500
+      });
     }
-
     const response = aiData.choices[0].message.content;
     console.log("AI response generated successfully");
-
     // Save the assistant response to the database
     if (userId) {
       console.log("Saving assistant response to database");
-      const { error: saveAssistantMessageError } = await supabase
-        .from("chat_messages")
-        .insert({
-          user_id: userId,
-          idea_id: ideaId,
-          role: "assistant",
-          content: response
-        });
-
+      const { error: saveAssistantMessageError } = await supabase.from("chat_messages").insert({
+        user_id: userId,
+        idea_id: ideaId,
+        role: "assistant",
+        content: response
+      });
       if (saveAssistantMessageError) {
         console.error("Error saving assistant message:", saveAssistantMessageError);
-        // Continue with the process even if saving failed
+      // Continue with the process even if saving failed
       }
     }
-
-    return new Response(
-      JSON.stringify({ response }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({
+      response
+    }), {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json"
+      }
+    });
   } catch (error) {
     console.error("Error in gpt-chat function:", error);
-    return new Response(
-      JSON.stringify({ error: "Internal server error", details: error.message }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
-    );
+    return new Response(JSON.stringify({
+      error: "Internal server error",
+      details: error.message
+    }), {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json"
+      },
+      status: 500
+    });
   }
 });
