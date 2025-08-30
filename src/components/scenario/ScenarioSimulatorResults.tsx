@@ -48,8 +48,15 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
   const [activeTab, setActiveTab] = useState('overview');
   const { getScenarioInfo, calculateROI, calculatePaybackPeriod, getConfidenceInterval } = useScenarioSimulator();
 
+  // Debug logging
+  console.log('SimulationResults received:', results);
+  console.log('Results object:', results.results);
+  
   const scenarios = Object.keys(results.results) as ScenarioType[];
   const currentResult = results.results[activeScenario];
+  
+  console.log('Current scenario:', activeScenario);
+  console.log('Current result:', currentResult);
   
   // Prepare chart data
   const chartData = currentResult.projections.map(projection => ({
