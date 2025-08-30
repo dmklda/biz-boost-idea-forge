@@ -122,8 +122,8 @@ const ScenarioSimulatorPage = () => {
       const ideaData = getSelectedIdeaData();
       
       const simulationParams = {
-        timeHorizon: 60,
-        iterations: 10000,
+        timeHorizon: 36,
+        iterations: 1000,
         confidenceLevel: 95,
         variables: currentVariables
       };
@@ -153,8 +153,8 @@ const ScenarioSimulatorPage = () => {
       const ideaData = getSelectedIdeaData();
       
       const simulationParams = {
-        timeHorizon: 60,
-        iterations: 1000,
+        timeHorizon: 24,
+        iterations: 500,
         confidenceLevel: 95,
         variables: testVariables
       };
