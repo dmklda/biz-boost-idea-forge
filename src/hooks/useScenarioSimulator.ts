@@ -100,6 +100,7 @@ export const useScenarioSimulator = () => {
       setError(null);
       
       console.log('Starting Monte Carlo simulation...');
+      console.log('Input data:', { ideaData, simulationParams, scenarioTypes });
       
       const { data, error } = await supabase.functions.invoke('scenario-simulator', {
         body: {
@@ -109,7 +110,10 @@ export const useScenarioSimulator = () => {
         }
       });
 
+      console.log('Raw response from edge function:', { data, error });
+
       if (error) {
+        console.error('Supabase function error details:', error);
         throw new Error(error.message || 'Erro na simulação de cenários');
       }
 
@@ -117,6 +121,12 @@ export const useScenarioSimulator = () => {
         throw new Error('Nenhum resultado retornado da simulação');
       }
 
+      if (data.error) {
+        console.error('Edge function returned error:', data.error);
+        throw new Error(data.error);
+      }
+
+      console.log('Simulation completed successfully:', data);
       setSimulationResults(data);
       toast.success('Simulação Monte Carlo concluída com sucesso!');
       
@@ -125,7 +135,7 @@ export const useScenarioSimulator = () => {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido na simulação';
       setError(errorMessage);
       toast.error(`Erro na simulação: ${errorMessage}`);
-      console.error('Simulation error:', err);
+      console.error('Detailed simulation error:', err);
       return null;
     } finally {
       setIsSimulating(false);
