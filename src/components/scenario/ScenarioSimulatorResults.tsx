@@ -98,7 +98,12 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
     return colors[scenario];
   };
 
-  const formatPercentage = (value: number) => `${value.toFixed(1)}%`;
+  const formatPercentage = (value: number | null | undefined) => {
+    if (value === null || value === undefined || isNaN(value)) {
+      return '0.0%';
+    }
+    return `${value.toFixed(1)}%`;
+  };
   const formatCurrencyValue = (value: number | null | undefined) => {
     if (value === null || value === undefined || isNaN(value)) {
       return 'R$ 0';
@@ -384,7 +389,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
-                  <Tooltip formatter={(value: number) => [`${value.toFixed(1)}%`, 'Probabilidade']} />
+                  <Tooltip formatter={(value: number) => [`${(value || 0).toFixed(1)}%`, 'Probabilidade']} />
                   <Area 
                     type="monotone" 
                     dataKey="breakEvenProb" 
@@ -415,7 +420,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="scenario" />
                     <YAxis tickFormatter={(value) => `${value}%`} />
-                    <Tooltip formatter={(value: number) => [`${value.toFixed(1)}%`, 'Prob. de Perda']} />
+                    <Tooltip formatter={(value: number) => [`${(value || 0).toFixed(1)}%`, 'Prob. de Perda']} />
                     <Bar dataKey="probabilityOfLoss" fill="#EF4444" />
                   </BarChart>
                 </ResponsiveContainer>
@@ -522,7 +527,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis type="number" tickFormatter={(value) => `${value}%`} />
                   <YAxis type="category" dataKey="variable" width={120} />
-                  <Tooltip formatter={(value: number) => [`${value.toFixed(1)}%`, 'Impacto no VPL']} />
+                  <Tooltip formatter={(value: number) => [`${(value || 0).toFixed(1)}%`, 'Impacto no VPL']} />
                   <Bar dataKey="impact" fill="#8B5CF6" />
                 </BarChart>
               </ResponsiveContainer>
@@ -541,12 +546,12 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
                     <div>
                       <p className="font-medium capitalize">{analysis.variable.replace(/_/g, ' ')}</p>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Correlação: {analysis.correlation.toFixed(3)}
+                        Correlação: {(analysis.correlation || 0).toFixed(3)}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="font-semibold">
-                        {analysis.impact_on_npv > 0 ? '+' : ''}{analysis.impact_on_npv.toFixed(1)}%
+                        {analysis.impact_on_npv > 0 ? '+' : ''}{(analysis.impact_on_npv || 0).toFixed(1)}%
                       </p>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
                         Impacto no VPL
