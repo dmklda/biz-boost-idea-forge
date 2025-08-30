@@ -99,7 +99,10 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
   };
 
   const formatPercentage = (value: number) => `${value.toFixed(1)}%`;
-  const formatCurrencyValue = (value: number) => {
+  const formatCurrencyValue = (value: number | null | undefined) => {
+    if (value === null || value === undefined || isNaN(value)) {
+      return 'R$ 0';
+    }
     if (Math.abs(value) >= 1000000) {
       return `R$ ${(value / 1000000).toFixed(1)}M`;
     } else if (Math.abs(value) >= 1000) {
