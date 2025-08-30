@@ -76,7 +76,7 @@ const ScenarioSimulatorPage = () => {
 
   const getSelectedIdeaData = () => {
     const selectedIdea = ideas.find(idea => idea.id === selectedIdeaId);
-    if (!selectedIdea) {
+    if (!selectedIdea || selectedIdeaId === 'custom') {
       return {
         title: 'Simulação Personalizada',
         description: 'Análise Monte Carlo personalizada',
@@ -209,7 +209,7 @@ const ScenarioSimulatorPage = () => {
                     } />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Simulação Personalizada</SelectItem>
+                    <SelectItem value="custom">Simulação Personalizada</SelectItem>
                     {ideas.map((idea) => (
                       <SelectItem key={idea.id} value={idea.id}>
                         {idea.title}
