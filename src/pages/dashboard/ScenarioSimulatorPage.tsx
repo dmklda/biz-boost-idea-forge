@@ -1,19 +1,109 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Target, Zap } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BarChart3, Target, Zap, Lightbulb } from "lucide-react";
 import ScenarioBuilder from "@/components/scenario/ScenarioBuilder";
 import SensitivityAnalysisPanel from "@/components/scenario/SensitivityAnalysisPanel";
 import ScenarioSimulatorResults from "@/components/scenario/ScenarioSimulatorResults";
 import { useScenarioSimulator, SimulationVariable, ScenarioType } from "@/hooks/useScenarioSimulator";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
+
+interface IdeaWithAnalysis {
+  id: string;
+  title: string;
+  description: string;
+  monetization?: string;
+  budget?: number;
+  location?: string;
+  audience?: string;
+  idea_analyses?: {
+    financial_analysis?: any;
+    market_analysis?: any;
+  }[];
+}
 
 const ScenarioSimulatorPage = () => {
   const [activeTab, setActiveTab] = useState('builder');
   const [simulationResults, setSimulationResults] = useState(null);
   const [variables, setVariables] = useState<SimulationVariable[]>([]);
   const [isSimulating, setIsSimulating] = useState(false);
+  const [ideas, setIdeas] = useState<IdeaWithAnalysis[]>([]);
+  const [selectedIdeaId, setSelectedIdeaId] = useState<string>('');
+  const [loadingIdeas, setLoadingIdeas] = useState(true);
+  const { authState } = useAuth();
   const { runSimulation, createDefaultVariables } = useScenarioSimulator();
+
+  const fetchIdeas = async () => {
+    if (!authState.user?.id) return;
+    
+    try {
+      setLoadingIdeas(true);
+      const { data, error } = await supabase
+        .from('ideas')
+        .select(`
+          id,
+          title,
+          description,
+          monetization,
+          budget,
+          location,
+          audience,
+          idea_analyses (
+            financial_analysis,
+            market_analysis
+          )
+        `)
+        .eq('user_id', authState.user.id)
+        .not('idea_analyses', 'is', null)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      setIdeas(data || []);
+    } catch (error) {
+      console.error('Erro ao carregar ideias:', error);
+      toast.error('Erro ao carregar suas ideias');
+    } finally {
+      setLoadingIdeas(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchIdeas();
+  }, [authState.user?.id]);
+
+  const getSelectedIdeaData = () => {
+    const selectedIdea = ideas.find(idea => idea.id === selectedIdeaId);
+    if (!selectedIdea) {
+      return {
+        title: 'Simulação Personalizada',
+        description: 'Análise Monte Carlo personalizada',
+        monetization: 'SaaS',
+        target_market_size: 1000000,
+        initial_investment: 100000,
+        monthly_costs: 10000,
+        revenue_model: 'Subscription',
+        pricing: 99
+      };
+    }
+
+    const analysis = selectedIdea.idea_analyses?.[0];
+    const financialData = analysis?.financial_analysis;
+    const marketData = analysis?.market_analysis;
+
+    return {
+      title: selectedIdea.title,
+      description: selectedIdea.description,
+      monetization: selectedIdea.monetization || 'SaaS',
+      target_market_size: marketData?.target_market_size || selectedIdea.budget || 1000000,
+      initial_investment: financialData?.initial_investment || selectedIdea.budget || 100000,
+      monthly_costs: financialData?.monthly_costs || 10000,
+      revenue_model: financialData?.revenue_model || 'Subscription',
+      pricing: financialData?.pricing || 99
+    };
+  };
 
   const handleRunSimulation = async (scenarios: ScenarioType[]) => {
     try {
@@ -22,31 +112,14 @@ const ScenarioSimulatorPage = () => {
       // Create default variables if none exist
       let currentVariables = variables;
       if (currentVariables.length === 0) {
-        const defaultVars = createDefaultVariables({
-          title: 'Default Idea',
-          description: 'Default description',
-          monetization: 'SaaS',
-          target_market_size: 1000000,
-          initial_investment: 100000,
-          monthly_costs: 10000,
-          revenue_model: 'Subscription',
-          pricing: 99
-        });
+        const ideaData = getSelectedIdeaData();
+        const defaultVars = createDefaultVariables(ideaData);
         setVariables(defaultVars);
         currentVariables = defaultVars;
       }
       
-      // Create mock idea data for simulation
-      const ideaData = {
-        title: 'Simulação de Cenários',
-        description: 'Análise Monte Carlo para validação de negócio',
-        monetization: 'SaaS',
-        target_market_size: 1000000,
-        initial_investment: 100000,
-        monthly_costs: 10000,
-        revenue_model: 'Subscription',
-        pricing: 99
-      };
+      // Get idea data for simulation
+      const ideaData = getSelectedIdeaData();
       
       const simulationParams = {
         timeHorizon: 60,
@@ -77,16 +150,7 @@ const ScenarioSimulatorPage = () => {
 
   const handleRunAnalysis = async (testVariables: SimulationVariable[]) => {
     try {
-      const ideaData = {
-        title: 'Análise de Sensibilidade',
-        description: 'Teste de variáveis para análise de sensibilidade',
-        monetization: 'SaaS',
-        target_market_size: 1000000,
-        initial_investment: 100000,
-        monthly_costs: 10000,
-        revenue_model: 'Subscription',
-        pricing: 99
-      };
+      const ideaData = getSelectedIdeaData();
       
       const simulationParams = {
         timeHorizon: 60,
@@ -116,9 +180,52 @@ const ScenarioSimulatorPage = () => {
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 dark:from-white dark:via-blue-100 dark:to-purple-100 bg-clip-text text-transparent mb-4">
               Simulador de Cenários Monte Carlo
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl">
+            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mb-6">
               Crie cenários otimistas, realistas e pessimistas para sua ideia de negócio e execute simulações avançadas Monte Carlo.
             </p>
+            
+            {/* Idea Selector */}
+            <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-2">
+                  <Lightbulb className="h-5 w-5 text-blue-600" />
+                  <CardTitle className="text-lg">Selecionar Ideia para Simulação</CardTitle>
+                </div>
+                <CardDescription>
+                  Escolha uma de suas ideias analisadas ou faça uma simulação personalizada
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Select 
+                  value={selectedIdeaId} 
+                  onValueChange={setSelectedIdeaId}
+                  disabled={loadingIdeas}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={
+                      loadingIdeas ? "Carregando ideias..." : 
+                      ideas.length === 0 ? "Nenhuma ideia analisada encontrada" :
+                      "Selecione uma ideia ou faça simulação personalizada"
+                    } />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Simulação Personalizada</SelectItem>
+                    {ideas.map((idea) => (
+                      <SelectItem key={idea.id} value={idea.id}>
+                        {idea.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {selectedIdeaId && (
+                  <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      <strong>Ideia selecionada:</strong> {ideas.find(i => i.id === selectedIdeaId)?.title || 'Simulação Personalizada'}
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
           {/* Stats Cards */}
