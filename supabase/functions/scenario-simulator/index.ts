@@ -405,15 +405,14 @@ async function generateSimulationInsights(ideaData, results, sensitivityAnalysis
         'Authorization': `Bearer ${openAiApiKey}`
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4.1-2025-04-14',
         messages: [
           {
             role: 'user',
             content: prompt
           }
         ],
-        max_tokens: 1500,
-        temperature: 0.7
+        max_completion_tokens: 1500
       })
     });
     if (!response.ok) {

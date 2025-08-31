@@ -379,9 +379,9 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
                   <YAxis tickFormatter={formatCurrencyValue} />
                   <Tooltip formatter={(value: number) => [formatCurrencyValue(value)]} />
                   <Legend />
-                  {scenarios.map(scenario => (
+                  {scenarios.map((scenario, index) => (
                     <Line 
-                      key={scenario}
+                      key={`scenario-${scenario}-${index}`}
                       type="monotone" 
                       dataKey={`${scenario}_profit`} 
                       stroke={getScenarioColor(scenario)}
@@ -415,6 +415,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
                     stroke="#8B5CF6" 
                     fill="#8B5CF6"
                     fillOpacity={0.3}
+                    key="break-even-area"
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -440,7 +441,11 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
                     <XAxis dataKey="scenario" />
                     <YAxis tickFormatter={(value) => `${value}%`} />
                     <Tooltip formatter={(value: number) => [`${(value || 0).toFixed(1)}%`, 'Prob. de Perda']} />
-                    <Bar dataKey="probabilityOfLoss" fill="#EF4444" />
+                    <Bar 
+                      dataKey="probabilityOfLoss" 
+                      fill="#EF4444"
+                      key="risk-bar"
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
