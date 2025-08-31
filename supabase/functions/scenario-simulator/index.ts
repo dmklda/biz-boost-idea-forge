@@ -11,6 +11,7 @@ serve(async (req)=>{
     });
   }
   try {
+    console.log('=== SCENARIO SIMULATOR STARTED ===');
     const supabaseClient = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_ANON_KEY') ?? '', {
       global: {
         headers: {
@@ -19,6 +20,7 @@ serve(async (req)=>{
       }
     });
     const { ideaData, simulationParams, scenarioTypes } = await req.json();
+    console.log('Received data:', { ideaData, simulationParams, scenarioTypes });
     if (!ideaData || !simulationParams) {
       throw new Error('ideaData and simulationParams are required');
     }
@@ -82,7 +84,9 @@ serve(async (req)=>{
       }
     }
     // Generate insights using AI
+    console.log('Generating AI insights...');
     const insights = await generateSimulationInsights(ideaData, results, sensitivityAnalysis);
+    console.log('AI insights generated:', insights ? 'Success' : 'Failed');
     const response = {
       ideaTitle: ideaData.title,
       simulationParams,
@@ -393,6 +397,7 @@ async function generateSimulationInsights(ideaData, results, sensitivityAnalysis
   Seja específico e prático nas recomendações.
   `;
   try {
+    console.log('Making OpenAI API call...');
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -400,17 +405,26 @@ async function generateSimulationInsights(ideaData, results, sensitivityAnalysis
         'Authorization': `Bearer ${openAiApiKey}`
       },
       body: JSON.stringify({
-        model: 'gpt-5',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'user',
             content: prompt
           }
         ],
-        max_completion_tokens: 1500
+        max_tokens: 1500,
+        temperature: 0.7
       })
     });
+    if (!response.ok) {
+      console.error('OpenAI API error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('OpenAI error details:', errorText);
+      return 'Erro na API do OpenAI: ' + response.statusText;
+    }
+    
     const result = await response.json();
+    console.log('OpenAI response received successfully');
     return result.choices[0]?.message?.content || 'Não foi possível gerar insights';
   } catch (error) {
     console.error('Error generating insights:', error);
