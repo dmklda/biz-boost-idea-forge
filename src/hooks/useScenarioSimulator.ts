@@ -140,7 +140,7 @@ export const useScenarioSimulator = () => {
     };
   };
 
-  const getScenarioInfo = (scenario: ScenarioType) => {
+  const getScenarioInfo = (scenario: ScenarioType | string) => {
     const scenarioInfo = {
       optimistic: {
         name: 'Otimista',
@@ -168,7 +168,14 @@ export const useScenarioSimulator = () => {
       }
     };
     
-    return scenarioInfo[scenario];
+    return scenarioInfo[scenario as keyof typeof scenarioInfo] || {
+      name: scenario,
+      description: 'Cenário personalizado',
+      color: 'text-gray-600',
+      bgColor: 'bg-gray-50',
+      borderColor: 'border-gray-200',
+      icon: '📈'
+    };
   };
 
   const calculateROI = (results: MonteCarloResult[], initialInvestment: number): number => {

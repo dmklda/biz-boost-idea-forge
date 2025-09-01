@@ -93,8 +93,9 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
   // Risk distribution data
   const riskData = scenarios.map(scenario => {
     const result = results[scenario];
+    const scenarioInfo = getScenarioInfo(scenario);
     return {
-      scenario: getScenarioInfo(scenario).name,
+      scenario: scenarioInfo?.name || scenario,
       probabilityOfLoss: (result?.riskMetrics?.probabilityOfLoss || 0) * 100,
       valueAtRisk: Math.abs(result?.riskMetrics?.valueAtRisk || 0),
       expectedReturn: result?.statistics?.mean || 0
@@ -155,6 +156,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
           <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             {scenarios.map((scenario) => {
               const info = getScenarioInfo(scenario);
+              if (!info) return null; // Evita renderizar se não encontrar info
               return (
                 <button
                   key={scenario}
@@ -281,7 +283,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
-                  Lucro Acumulado - {getScenarioInfo(activeScenario).name}
+                  Lucro Acumulado - {getScenarioInfo(activeScenario)?.name || activeScenario}
                 </CardTitle>
                 <CardDescription>
                   Evolução do lucro acumulado ao longo do tempo
@@ -336,7 +338,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
           {/* Statistics summary */}
           <Card>
             <CardHeader>
-              <CardTitle>Estatísticas do Cenário {getScenarioInfo(activeScenario).name}</CardTitle>
+              <CardTitle>Estatísticas do Cenário {getScenarioInfo(activeScenario)?.name || activeScenario}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -459,7 +461,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
             <Card>
               <CardHeader>
                 <CardTitle>Métricas de Risco</CardTitle>
-                <CardDescription>Cenário {getScenarioInfo(activeScenario).name}</CardDescription>
+                <CardDescription>Cenário {getScenarioInfo(activeScenario)?.name || activeScenario}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
