@@ -6,10 +6,12 @@ import { BarChart3, Target, Zap, Lightbulb } from "lucide-react";
 import ScenarioBuilder from "@/components/scenario/ScenarioBuilder";
 import SensitivityAnalysisPanel from "@/components/scenario/SensitivityAnalysisPanel";
 import ScenarioSimulatorResults from "@/components/scenario/ScenarioSimulatorResults";
+import IdeaDataEditor from "@/components/scenario/IdeaDataEditor";
 import { useScenarioSimulator, SimulationVariable, ScenarioType } from "@/hooks/useScenarioSimulator";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
+import { extractFinancialData, generateSmartDefaults, validateFinancialData } from "@/lib/financial-parser";
 
 interface IdeaWithAnalysis {
   id: string;
@@ -33,6 +35,7 @@ const ScenarioSimulatorPage = () => {
   const [ideas, setIdeas] = useState<IdeaWithAnalysis[]>([]);
   const [selectedIdeaId, setSelectedIdeaId] = useState<string>('');
   const [loadingIdeas, setLoadingIdeas] = useState(true);
+  const [customIdeaData, setCustomIdeaData] = useState(null);
   const { authState } = useAuth();
   const { runSimulation, createDefaultVariables } = useScenarioSimulator();
 
@@ -75,9 +78,14 @@ const ScenarioSimulatorPage = () => {
   }, [authState.user?.id]);
 
   const getSelectedIdeaData = () => {
+    // Se há dados customizados, usa eles
+    if (customIdeaData) {
+      return customIdeaData;
+    }
+    
     const selectedIdea = ideas.find(idea => idea.id === selectedIdeaId);
     if (!selectedIdea || selectedIdeaId === 'custom') {
-      return {
+      const defaultData = {
         title: 'Simulação Personalizada',
         description: 'Análise Monte Carlo personalizada',
         monetization: 'SaaS',
@@ -87,21 +95,35 @@ const ScenarioSimulatorPage = () => {
         revenue_model: 'Subscription',
         pricing: 99
       };
+      
+      // Se é simulação personalizada e não tem dados customizados, define os padrão
+      if (selectedIdeaId === 'custom' && !customIdeaData) {
+        setCustomIdeaData(defaultData);
+      }
+      
+      return defaultData;
     }
 
     const analysis = selectedIdea.idea_analyses?.[0];
-    const financialData = analysis?.financial_analysis;
-    const marketData = analysis?.market_analysis;
+    
+    // Usa o parser inteligente para extrair dados financeiros
+    const extractedData = extractFinancialData(analysis);
+    
+    // Se não conseguir extrair dados válidos, usa valores padrão inteligentes
+    let smartDefaults: any = {};
+    if (extractedData.initial_investment === 0 && extractedData.monthly_costs === 0 && extractedData.pricing === 0) {
+      smartDefaults = generateSmartDefaults(selectedIdea);
+    }
 
     return {
       title: selectedIdea.title,
       description: selectedIdea.description,
       monetization: selectedIdea.monetization || 'SaaS',
-      target_market_size: marketData?.target_market_size || selectedIdea.budget || 1000000,
-      initial_investment: financialData?.initial_investment || selectedIdea.budget || 100000,
-      monthly_costs: financialData?.monthly_costs || 10000,
-      revenue_model: financialData?.revenue_model || 'Subscription',
-      pricing: financialData?.pricing || 99
+      target_market_size: extractedData.target_market_size || smartDefaults.target_market_size || 1000000,
+      initial_investment: extractedData.initial_investment || smartDefaults.initial_investment || 100000,
+      monthly_costs: extractedData.monthly_costs || smartDefaults.monthly_costs || 10000,
+      revenue_model: analysis?.financial_analysis?.revenue_model || 'Subscription',
+      pricing: extractedData.pricing || smartDefaults.pricing || 99
     };
   };
 
@@ -109,17 +131,23 @@ const ScenarioSimulatorPage = () => {
     try {
       setIsSimulating(true);
       
+      // Get idea data for simulation
+      const ideaData = getSelectedIdeaData();
+      
+      // Valida dados financeiros
+      const validation = validateFinancialData(ideaData);
+      if (!validation.isValid) {
+        validation.warnings.forEach(warning => toast.error(warning));
+        return;
+      }
+      
       // Create default variables if none exist
       let currentVariables = variables;
       if (currentVariables.length === 0) {
-        const ideaData = getSelectedIdeaData();
         const defaultVars = createDefaultVariables(ideaData);
         setVariables(defaultVars);
         currentVariables = defaultVars;
       }
-      
-      // Get idea data for simulation
-      const ideaData = getSelectedIdeaData();
       
       const simulationParams = {
         timeHorizon: 36,
@@ -128,17 +156,20 @@ const ScenarioSimulatorPage = () => {
         variables: currentVariables
       };
       
+      console.log('Running simulation with data:', { ideaData, simulationParams });
+      
       // Run simulation with correct parameters
       const result = await runSimulation(ideaData, simulationParams, scenarios);
       
       if (result) {
+        console.log('Simulation result:', result);
         setSimulationResults(result);
         setActiveTab('results');
         toast.success('Simulação concluída com sucesso!');
       }
     } catch (error) {
       console.error('Error running simulation:', error);
-      toast.error('Erro ao executar simulação');
+      toast.error('Erro ao executar simulação: ' + error.message);
     } finally {
       setIsSimulating(false);
     }
@@ -146,6 +177,13 @@ const ScenarioSimulatorPage = () => {
 
   const handleVariableChange = (newVariables: SimulationVariable[]) => {
     setVariables(newVariables);
+  };
+
+  const handleIdeaDataChange = (newData: any) => {
+    setCustomIdeaData(newData);
+    // Reset variables quando os dados da ideia mudam
+    setVariables([]);
+    setSimulationResults(null);
   };
 
   const handleRunAnalysis = async (testVariables: SimulationVariable[]) => {
@@ -198,7 +236,12 @@ const ScenarioSimulatorPage = () => {
               <CardContent>
                 <Select 
                   value={selectedIdeaId} 
-                  onValueChange={setSelectedIdeaId}
+                  onValueChange={(value) => {
+                    setSelectedIdeaId(value);
+                    setCustomIdeaData(null); // Reset dados customizados
+                    setVariables([]); // Reset variáveis
+                    setSimulationResults(null); // Reset resultados
+                  }}
                   disabled={loadingIdeas}
                 >
                   <SelectTrigger className="w-full">
@@ -268,6 +311,15 @@ const ScenarioSimulatorPage = () => {
               </CardContent>
             </Card>
           </div>
+
+          {/* Idea Data Editor */}
+          {selectedIdeaId && (
+            <IdeaDataEditor
+              ideaData={getSelectedIdeaData()}
+              onSave={handleIdeaDataChange}
+              isCustomSimulation={selectedIdeaId === 'custom'}
+            />
+          )}
 
           {/* Main Content */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>

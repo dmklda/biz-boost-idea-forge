@@ -127,10 +127,12 @@ async function runMonteCarloSimulation(ideaData, params, scenarioParams) {
   const timeHorizon = params.timeHorizon;
   const results = []; // [iteration][month]
   const finalValues = [];
-  // Base parameters
-  const baseRevenue = ideaData.pricing || 100;
-  const baseCosts = ideaData.monthly_costs || 50;
-  const initialInvestment = ideaData.initial_investment || 10000;
+  // Base parameters - ensure they are numeric
+  const baseRevenue = parseFloat(ideaData.pricing) || 100;
+  const baseCosts = parseFloat(ideaData.monthly_costs) || 50;
+  const initialInvestment = parseFloat(ideaData.initial_investment) || 10000;
+  
+  console.log(`Base parameters: Revenue=${baseRevenue}, Costs=${baseCosts}, Investment=${initialInvestment}`);
   for(let i = 0; i < iterations; i++){
     const iterationResults = [];
     let cumulativeProfit = -initialInvestment;
@@ -142,6 +144,11 @@ async function runMonteCarloSimulation(ideaData, params, scenarioParams) {
       const monthlyCosts = calculateMonthlyCosts(baseCosts, month, randomFactors, scenarioParams);
       const monthlyProfit = monthlyRevenue - monthlyCosts;
       cumulativeProfit += monthlyProfit;
+      
+      // Log first iteration for debugging
+      if (i === 0 && month <= 3) {
+        console.log(`Month ${month}: Revenue=${monthlyRevenue.toFixed(2)}, Costs=${monthlyCosts.toFixed(2)}, Profit=${monthlyProfit.toFixed(2)}, Cumulative=${cumulativeProfit.toFixed(2)}`);
+      }
       iterationResults.push(cumulativeProfit);
     }
     results.push(iterationResults);
