@@ -141,63 +141,96 @@ async function runMonteCarloSimulation(ideaData, params, scenarioParams) {
   }
   
   console.log(`Base parameters: Revenue=${baseRevenue}, Costs=${baseCosts}, Investment=${initialInvestment}`);
+  // Initialize results tracking
+  const monthlyResults = [];
+  let cumulativeOperationalProfit = 0; // Track operational profit separately
+  let cumulativeNetProfit = -initialInvestment; // Track net profit including investment
+  let breakEvenMonth = null;
+  let monthsToBreakEven = null;
+
   for(let i = 0; i < iterations; i++){
     const iterationResults = [];
-    let cumulativeProfit = -initialInvestment;
+    let iterationCumulativeOperational = 0;
+    let iterationCumulativeNet = -initialInvestment;
+    
     for(let month = 1; month <= timeHorizon; month++){
       // Generate random variables for this iteration and month
       const randomFactors = generateRandomFactors(params.variables, scenarioParams);
       // Calculate monthly metrics with bounds checking
       const monthlyRevenue = calculateMonthlyRevenue(baseRevenue, month, randomFactors, scenarioParams);
       const monthlyCosts = calculateMonthlyCosts(baseCosts, month, randomFactors, scenarioParams);
-      const monthlyProfit = monthlyRevenue - monthlyCosts;
-      cumulativeProfit += monthlyProfit;
+      const monthlyOperationalProfit = monthlyRevenue - monthlyCosts;
       
-      // Sanity check for extreme values
-      if (Math.abs(monthlyRevenue) > 1000000 || Math.abs(monthlyCosts) > 1000000) {
-        console.warn(`Extreme values detected - Month ${month}: Revenue=${monthlyRevenue}, Costs=${monthlyCosts}`);
+      iterationCumulativeOperational += monthlyOperationalProfit;
+      iterationCumulativeNet += monthlyOperationalProfit; // Add operational profit to net profit
+      
+      // Check for break-even point (when net profit becomes positive)
+      if (iterationCumulativeNet > 0 && breakEvenMonth === null) {
+        breakEvenMonth = month;
       }
       
       // Log first iteration for debugging
       if (i === 0 && month <= 3) {
-        console.log(`Month ${month}: Revenue=${monthlyRevenue.toFixed(2)}, Costs=${monthlyCosts.toFixed(2)}, Profit=${monthlyProfit.toFixed(2)}, Cumulative=${cumulativeProfit.toFixed(2)}`);
+        console.log(`Month ${month}: Revenue=${monthlyRevenue.toFixed(2)}, Costs=${monthlyCosts.toFixed(2)}, Operational Profit=${monthlyOperationalProfit.toFixed(2)}, Net Profit=${iterationCumulativeNet.toFixed(2)}`);
       }
-      iterationResults.push(cumulativeProfit);
+      
+      // Store monthly results for first iteration (for projections)
+      if (i === 0) {
+        monthlyResults.push({
+          month,
+          revenue: monthlyRevenue,
+          costs: monthlyCosts,
+          operationalProfit: monthlyOperationalProfit,
+          cumulativeOperationalProfit: iterationCumulativeOperational,
+          cumulativeNetProfit: iterationCumulativeNet,
+          netPresentValue: monthlyOperationalProfit / Math.pow(1 + 0.1/12, month) // Monthly discount rate
+        });
+      }
+      
+      iterationResults.push(iterationCumulativeNet); // Track net profit for statistics
     }
     results.push(iterationResults);
     finalValues.push(iterationResults[iterationResults.length - 1]);
   }
-  // Calculate statistics
+  
+  // Calculate final statistics from net profit values
   const statistics = calculateStatistics(finalValues);
-  // Calculate monthly projections (averages across iterations)
-  const projections = [];
-  for(let month = 0; month < timeHorizon; month++){
-    const monthValues = results.map((iteration)=>iteration[month]);
-    const monthStats = calculateStatistics(monthValues);
-    // Calculate break-even probability for this month
-    const breakEvenCount = monthValues.filter((value)=>value >= 0).length;
-    const breakEvenProbability = breakEvenCount / iterations;
-    // Calculate average monthly metrics for projections
-    const avgRevenue = calculateAverageRevenue(month + 1, params.variables, scenarioParams, baseRevenue);
-    const avgCosts = calculateAverageCosts(month + 1, params.variables, scenarioParams, baseCosts);
-    const monthlyProfit = avgRevenue - avgCosts;
-    
-    projections.push({
-      month: month + 1,
-      revenue: avgRevenue,
-      costs: avgCosts,
-      profit: monthlyProfit,
-      cumulative_profit: monthStats.mean,
-      break_even_probability: breakEvenProbability
-    });
-  }
+  
+  // Calculate final metrics
+  const finalNetProfit = statistics.mean;
+  const finalOperationalProfit = monthlyResults.reduce((sum, month) => sum + month.operationalProfit, 0);
+  const totalRevenue = monthlyResults.reduce((sum, month) => sum + month.revenue, 0);
+  const totalCosts = monthlyResults.reduce((sum, month) => sum + month.costs, 0);
+  const npvValues = monthlyResults.map(month => month.netPresentValue);
+  const totalNPV = npvValues.reduce((sum, npv) => sum + npv, 0) - initialInvestment;
+  
   // Calculate risk metrics
   const riskMetrics = calculateRiskMetrics(results, initialInvestment);
+  
   return {
     scenario: 'realistic',
+    finalNetProfit,
+    finalOperationalProfit,
+    totalRevenue,
+    totalCosts,
+    breakEvenMonth,
+    monthsToBreakEven,
+    monthlyProjections: monthlyResults,
     statistics,
-    projections,
-    riskMetrics
+    riskMetrics,
+    npv: totalNPV,
+    roi: finalOperationalProfit > 0 ? ((finalNetProfit + initialInvestment) / initialInvestment) * 100 : -100,
+    profitMargin: totalRevenue > 0 ? (finalOperationalProfit / totalRevenue) * 100 : 0,
+    paybackPeriod: breakEvenMonth || null,
+    investmentRecovery: finalNetProfit + initialInvestment,
+    projections: monthlyResults.map(month => ({
+      month: month.month,
+      revenue: month.revenue,
+      costs: month.costs,
+      profit: month.operationalProfit,
+      cumulative_profit: month.cumulativeNetProfit,
+      break_even_probability: month.cumulativeNetProfit > 0 ? 1 : 0
+    }))
   };
 }
 // Generate random factors based on variable distributions

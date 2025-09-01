@@ -188,16 +188,16 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Retorno Esperado</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Lucro Operacional</p>
                 <p className="text-2xl font-bold text-green-600">
-                  {formatCurrencyValue(currentResult?.statistics?.mean)}
+                  {formatCurrencyValue(currentResult?.finalOperationalProfit)}
                 </p>
               </div>
               <DollarSign className="h-8 w-8 text-green-600" />
             </div>
             <div className="mt-2">
               <p className="text-xs text-gray-500">
-                Intervalo: {formatCurrencyValue(currentResult?.statistics?.percentile_25)} - {formatCurrencyValue(currentResult?.statistics?.percentile_75)}
+                Margem: {currentResult?.profitMargin?.toFixed(1) || 0}%
               </p>
             </div>
           </CardContent>
@@ -225,9 +225,9 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Break-even</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Payback</p>
                 <p className="text-2xl font-bold text-purple-600">
-                  {currentResult?.riskMetrics?.break_even_month ? `${currentResult.riskMetrics.break_even_month}º mês` : 'N/A'}
+                  {currentResult?.paybackPeriod ? `${currentResult.paybackPeriod} meses` : 'N/A'}
                 </p>
               </div>
               <Calendar className="h-8 w-8 text-purple-600" />

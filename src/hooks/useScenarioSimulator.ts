@@ -35,6 +35,26 @@ export interface IdeaFinancialData {
 
 export interface MonteCarloResult {
   scenario: string;
+  finalNetProfit?: number;
+  finalOperationalProfit?: number;
+  totalRevenue?: number;
+  totalCosts?: number;
+  breakEvenMonth?: number | null;
+  monthsToBreakEven?: number | null;
+  npv?: number;
+  roi?: number;
+  profitMargin?: number;
+  paybackPeriod?: number | null;
+  investmentRecovery?: number;
+  monthlyProjections?: {
+    month: number;
+    revenue: number;
+    costs: number;
+    operationalProfit: number;
+    cumulativeOperationalProfit: number;
+    cumulativeNetProfit: number;
+    netPresentValue: number;
+  }[];
   statistics: {
     mean: number;
     median: number;
