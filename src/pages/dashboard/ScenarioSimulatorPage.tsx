@@ -2,11 +2,14 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BarChart3, Target, Zap, Lightbulb } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { BarChart3, Target, Zap, Lightbulb, Save, History } from "lucide-react";
 import ScenarioBuilder from "@/components/scenario/ScenarioBuilder";
 import SensitivityAnalysisPanel from "@/components/scenario/SensitivityAnalysisPanel";
 import ScenarioSimulatorResults from "@/components/scenario/ScenarioSimulatorResults";
 import IdeaDataEditor from "@/components/scenario/IdeaDataEditor";
+import SaveSimulationModal from "@/components/scenario/SaveSimulationModal";
+import HistoricalSimulationsPanel from "@/components/scenario/HistoricalSimulationsPanel";
 import { useScenarioSimulator, SimulationVariable, ScenarioType } from "@/hooks/useScenarioSimulator";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,8 +39,11 @@ const ScenarioSimulatorPage = () => {
   const [selectedIdeaId, setSelectedIdeaId] = useState<string>('');
   const [loadingIdeas, setLoadingIdeas] = useState(true);
   const [customIdeaData, setCustomIdeaData] = useState(null);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedSimulations, setSavedSimulations] = useState([]);
   const { authState } = useAuth();
-  const { runSimulation, createDefaultVariables } = useScenarioSimulator();
+  const { runSimulation, createDefaultVariables, saveSimulation, loadSimulations } = useScenarioSimulator();
 
   const fetchIdeas = async () => {
     if (!authState.user?.id) return;
@@ -75,7 +81,17 @@ const ScenarioSimulatorPage = () => {
 
   useEffect(() => {
     fetchIdeas();
+    fetchSavedSimulations();
   }, [authState.user?.id]);
+
+  const fetchSavedSimulations = async () => {
+    try {
+      const data = await loadSimulations();
+      setSavedSimulations(data);
+    } catch (error) {
+      console.error('Error fetching saved simulations:', error);
+    }
+  };
 
   const getSelectedIdeaData = () => {
     // Se há dados customizados, usa eles
@@ -224,6 +240,32 @@ const ScenarioSimulatorPage = () => {
     }
   };
 
+  const handleSaveSimulation = async (simulationName: string) => {
+    setIsSaving(true);
+    try {
+      const success = await saveSimulation(simulationName);
+      if (success) {
+        await fetchSavedSimulations(); // Refresh the list
+      }
+    } catch (error) {
+      console.error('Error saving simulation:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleLoadSimulation = (simulation: any) => {
+    // Load historical simulation data
+    setSimulationResults({
+      ...simulation.results,
+      ideaTitle: simulation.financial_data.idea_title,
+      simulationParams: simulation.simulation_params,
+      revenueModel: simulation.revenue_model
+    });
+    setActiveTab('results');
+    toast.success('Simulação carregada com sucesso!');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <div className="container mx-auto px-4 py-8">
@@ -316,9 +358,9 @@ const ScenarioSimulatorPage = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">Simulações Executadas</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Simulações Salvas</p>
                     <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                      {simulationResults ? simulationResults.length : 0}
+                      {savedSimulations.length}
                     </p>
                   </div>
                   <BarChart3 className="h-8 w-8 text-green-600" />
@@ -339,12 +381,13 @@ const ScenarioSimulatorPage = () => {
 
           {/* Main Content */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="builder">Construtor de Cenários</TabsTrigger>
               <TabsTrigger value="sensitivity">Análise de Sensibilidade</TabsTrigger>
               <TabsTrigger value="results" disabled={!simulationResults}>
                 Resultados
               </TabsTrigger>
+              <TabsTrigger value="history">Histórico</TabsTrigger>
             </TabsList>
 
             {/* Scenario Builder Tab */}
@@ -363,7 +406,7 @@ const ScenarioSimulatorPage = () => {
             <TabsContent value="sensitivity" className="mt-6">
               <SensitivityAnalysisPanel
                 variables={variables}
-                baselineResult={simulationResults?.[0]?.expectedValue || 1000000}
+                baselineResult={simulationResults?.results?.realistic?.statistics?.mean || 0}
                 onVariableChange={handleVariableChange}
                 onRunAnalysis={handleRunAnalysis}
               />
@@ -372,12 +415,35 @@ const ScenarioSimulatorPage = () => {
             {/* Results Tab */}
             <TabsContent value="results" className="mt-6">
               {simulationResults ? (
-                <ScenarioSimulatorResults
-                  results={simulationResults}
-                  onExport={() => {
-                    toast.success('Resultados exportados com sucesso!');
-                  }}
-                />
+                <div className="space-y-6">
+                  {/* Save Simulation Button */}
+                  <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-semibold">Gostou dos resultados?</h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Salve esta simulação para acessá-la posteriormente
+                          </p>
+                        </div>
+                        <Button
+                          onClick={() => setShowSaveModal(true)}
+                          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                        >
+                          <Save className="mr-2 h-4 w-4" />
+                          Salvar Simulação
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <ScenarioSimulatorResults
+                    results={simulationResults}
+                    onExport={() => {
+                      toast.success('Resultados exportados com sucesso!');
+                    }}
+                  />
+                </div>
               ) : (
                 <Card>
                   <CardContent className="p-8 text-center">
@@ -390,7 +456,20 @@ const ScenarioSimulatorPage = () => {
                 </Card>
               )}
             </TabsContent>
+
+            {/* Historical Simulations Tab */}
+            <TabsContent value="history" className="mt-6">
+              <HistoricalSimulationsPanel onLoadSimulation={handleLoadSimulation} />
+            </TabsContent>
           </Tabs>
+
+          {/* Save Simulation Modal */}
+          <SaveSimulationModal
+            isOpen={showSaveModal}
+            onClose={() => setShowSaveModal(false)}
+            onSave={handleSaveSimulation}
+            isLoading={isSaving}
+          />
         </div>
       </div>
     </div>

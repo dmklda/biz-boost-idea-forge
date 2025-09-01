@@ -81,6 +81,8 @@ const SensitivityAnalysisPanel = ({
   onVariableChange, 
   onRunAnalysis 
 }: SensitivityAnalysisPanelProps) => {
+  // Use proper baseline result from simulation data
+  const actualBaselineResult = baselineResult || 0;
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [sensitivityResults, setSensitivityResults] = useState<SensitivityResult[]>([]);
   const [selectedVariable, setSelectedVariable] = useState<string>('');
@@ -130,7 +132,8 @@ const SensitivityAnalysisPanel = ({
 
         // Calculate sensitivity metrics
         const sensitivity = ((highResult - lowResult) / (2 * rangeFactor * baseValue)) * 100;
-        const elasticity = (((highResult - lowResult) / baselineResult) / (2 * rangeFactor)) * 100;
+        const elasticity = actualBaselineResult > 0 ? 
+          (((highResult - lowResult) / actualBaselineResult) / (2 * rangeFactor)) * 100 : 0;
         
         let impact: 'high' | 'medium' | 'low' = 'low';
         if (Math.abs(elasticity) > 50) impact = 'high';
@@ -140,7 +143,7 @@ const SensitivityAnalysisPanel = ({
           variable: variable.name,
           baseValue,
           testValue: highValue,
-          baseResult: baselineResult,
+          baseResult: actualBaselineResult,
           testResult: highResult,
           sensitivity,
           elasticity,
@@ -174,13 +177,14 @@ const SensitivityAnalysisPanel = ({
       const variable = variables.find(v => v.name === variableName);
       const baseValue = variable?.parameters.mean || variable?.parameters.mode || 1;
       const percentChange = ((newValue - baseValue) / baseValue) * 100;
-      const resultChange = ((result - baselineResult) / baselineResult) * 100;
+      const resultChange = actualBaselineResult > 0 ? 
+        ((result - actualBaselineResult) / actualBaselineResult) * 100 : 0;
       
       toast.success(`Variação de ${percentChange.toFixed(1)}% resultou em ${resultChange.toFixed(1)}% de mudança no resultado`);
       return result;
     } catch (error) {
       console.error('Error in single variable analysis:', error);
-      return baselineResult;
+      return actualBaselineResult;
     }
   };
 
@@ -258,7 +262,7 @@ const SensitivityAnalysisPanel = ({
             <div>
               <Label>Resultado Base</Label>
               <div className="mt-1 p-2 bg-gray-50 dark:bg-gray-800 rounded text-sm font-medium">
-                {formatCurrency(baselineResult)}
+                {formatCurrency(actualBaselineResult)}
               </div>
             </div>
             
