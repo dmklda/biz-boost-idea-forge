@@ -314,11 +314,12 @@ const ScenarioSimulatorPage = () => {
 
           {/* Idea Data Editor */}
           {selectedIdeaId && (
-            <IdeaDataEditor
-              ideaData={getSelectedIdeaData()}
-              onSave={handleIdeaDataChange}
-              isCustomSimulation={selectedIdeaId === 'custom'}
-            />
+              <IdeaDataEditor
+                ideaData={getSelectedIdeaData()}
+                onSave={handleIdeaDataChange}
+                isCustomSimulation={selectedIdeaId === 'custom'}
+                allowEdit={true}
+              />
           )}
 
           {/* Main Content */}

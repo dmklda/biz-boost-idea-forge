@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,11 +24,17 @@ interface IdeaDataEditorProps {
   ideaData: IdeaData;
   onSave: (data: IdeaData) => void;
   isCustomSimulation?: boolean;
+  allowEdit?: boolean;
 }
 
-const IdeaDataEditor = ({ ideaData, onSave, isCustomSimulation = false }: IdeaDataEditorProps) => {
+const IdeaDataEditor = ({ ideaData, onSave, isCustomSimulation = false, allowEdit = true }: IdeaDataEditorProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<IdeaData>(ideaData);
+
+  // Atualiza editData quando ideaData muda
+  useEffect(() => {
+    setEditData(ideaData);
+  }, [ideaData]);
 
   const handleSave = () => {
     // Validações
@@ -71,7 +77,7 @@ const IdeaDataEditor = ({ ideaData, onSave, isCustomSimulation = false }: IdeaDa
               <CardTitle className="text-lg">{ideaData.title}</CardTitle>
               <CardDescription>Dados da simulação</CardDescription>
             </div>
-            {isCustomSimulation && (
+            {allowEdit && (
               <Button 
                 variant="outline" 
                 size="sm" 

@@ -2,14 +2,26 @@
  * Parser inteligente para extrair dados financeiros de strings descritivas
  */
 
-// Padrões de regex para valores monetários
+// Padrões de regex para valores monetários com contexto
 const CURRENCY_PATTERNS = [
-  /R\$?\s*([0-9]+(?:\.[0-9]{3})*(?:,[0-9]{2})?)/g,  // R$ 100.000,00
-  /\$\s*([0-9]+(?:,[0-9]{3})*(?:\.[0-9]{2})?)/g,    // $ 100,000.00
-  /([0-9]+(?:\.[0-9]{3})*(?:,[0-9]{2})?)\s*reais?/gi, // 100.000 reais
-  /([0-9]+(?:,[0-9]{3})*(?:\.[0-9]{2})?)\s*dólares?/gi, // 100,000 dólares
-  /([0-9]+\.?[0-9]*[kK])/g,                          // 100k, 50K
-  /([0-9]+\.?[0-9]*[mM])/g,                          // 1.5m, 2M
+  // Padrões específicos com contexto para melhor extração
+  /investimento\s+(?:inicial\s+)?(?:de\s+)?R?\$?\s*([0-9]+(?:\.[0-9]{3})*(?:,[0-9]{2})?)/gi,
+  /investir\s+R?\$?\s*([0-9]+(?:\.[0-9]{3})*(?:,[0-9]{2})?)/gi,
+  /capital\s+(?:inicial\s+)?(?:de\s+)?R?\$?\s*([0-9]+(?:\.[0-9]{3})*(?:,[0-9]{2})?)/gi,
+  /orçamento\s+(?:de\s+)?R?\$?\s*([0-9]+(?:\.[0-9]{3})*(?:,[0-9]{2})?)/gi,
+  /custo\s+(?:mensal\s+|inicial\s+)?(?:de\s+)?R?\$?\s*([0-9]+(?:\.[0-9]{3})*(?:,[0-9]{2})?)/gi,
+  /preço\s+(?:de\s+)?R?\$?\s*([0-9]+(?:\.[0-9]{3})*(?:,[0-9]{2})?)/gi,
+  /valor\s+(?:de\s+)?R?\$?\s*([0-9]+(?:\.[0-9]{3})*(?:,[0-9]{2})?)/gi,
+  /receita\s+(?:mensal\s+)?(?:de\s+)?R?\$?\s*([0-9]+(?:\.[0-9]{3})*(?:,[0-9]{2})?)/gi,
+  // Padrões gerais de moeda
+  /R\$?\s*([0-9]+(?:\.[0-9]{3})*(?:,[0-9]{2})?)/g,
+  /\$\s*([0-9]+(?:,[0-9]{3})*(?:\.[0-9]{2})?)/g,
+  /([0-9]+(?:\.[0-9]{3})*(?:,[0-9]{2})?)\s*reais?/gi,
+  // Números abreviados
+  /([0-9]+(?:\.[0-9]+)?)\s*(?:mil|k)/gi,
+  /([0-9]+(?:\.[0-9]+)?)\s*(?:milhão|milhões|mi|m)/gi,
+  // Números básicos
+  /([0-9]+(?:\.[0-9]{3})*(?:,[0-9]{2})?)/g
 ];
 
 // Padrões para números sem formatação monetária
@@ -32,27 +44,47 @@ export function parseFinancialValue(text: string): number {
   }
 
   // Remove espaços extras e normaliza
-  const cleanText = text.trim();
+  const normalizedText = text.trim().toLowerCase();
   
-  // Tenta extrair com padrões monetários primeiro
+  let bestValue = 0;
+  let bestConfidence = 0;
+  
+  // Tenta extrair com padrões monetários primeiro (maior confiança)
   for (const pattern of CURRENCY_PATTERNS) {
-    const matches = Array.from(cleanText.matchAll(pattern));
-    if (matches.length > 0) {
-      const match = matches[0][1] || matches[0][0];
-      return parseNumericValue(match);
+    pattern.lastIndex = 0; // Reset regex
+    const matches = Array.from(normalizedText.matchAll(pattern));
+    
+    for (const match of matches) {
+      const numericValue = parseNumericValue(match[1] || match[0]);
+      if (numericValue > 0) {
+        // Calcula confiança baseada na especificidade do padrão
+        let confidence = match[0].includes('investimento') || match[0].includes('custo') ? 3 : 
+                        match[0].includes('r$') || match[0].includes('$') ? 2 : 1;
+        
+        if (confidence > bestConfidence || (confidence === bestConfidence && numericValue > bestValue)) {
+          bestValue = numericValue;
+          bestConfidence = confidence;
+        }
+      }
     }
   }
-  
-  // Se não encontrou, tenta com padrões numéricos
-  for (const pattern of NUMBER_PATTERNS) {
-    const matches = Array.from(cleanText.matchAll(pattern));
-    if (matches.length > 0) {
-      const match = matches[0][1] || matches[0][0];
-      return parseNumericValue(match);
+
+  // Se não encontrou boa correspondência, tenta padrões numéricos
+  if (bestValue === 0) {
+    for (const pattern of NUMBER_PATTERNS) {
+      pattern.lastIndex = 0;
+      const matches = Array.from(normalizedText.matchAll(pattern));
+      
+      for (const match of matches) {
+        const numericValue = parseNumericValue(match[1] || match[0]);
+        if (numericValue > bestValue) {
+          bestValue = numericValue;
+        }
+      }
     }
   }
-  
-  return 0;
+
+  return bestValue;
 }
 
 /**
@@ -102,51 +134,67 @@ export function extractFinancialData(analysis: any): {
   revenue_per_month?: number;
   target_market_size?: number;
 } {
-  const financial = analysis?.financial_analysis || {};
-  const market = analysis?.market_analysis || {};
-  
-  // Extrai investimento inicial
-  let initial_investment = 0;
-  if (financial.initial_investment) {
-    initial_investment = parseFinancialValue(financial.initial_investment);
-  } else if (financial.investment || financial.startup_cost) {
-    initial_investment = parseFinancialValue(financial.investment || financial.startup_cost);
+  if (!analysis) {
+    return {
+      initial_investment: 0,
+      monthly_costs: 0,
+      pricing: 0,
+    };
   }
-  
-  // Extrai custos mensais
-  let monthly_costs = 0;
-  if (financial.monthly_costs) {
-    monthly_costs = parseFinancialValue(financial.monthly_costs);
-  } else if (financial.operational_costs || financial.running_costs) {
-    monthly_costs = parseFinancialValue(financial.operational_costs || financial.running_costs);
-  }
-  
-  // Extrai preço
-  let pricing = 0;
-  if (financial.pricing) {
-    pricing = parseFinancialValue(financial.pricing);
-  } else if (financial.price || financial.subscription_price) {
-    pricing = parseFinancialValue(financial.price || financial.subscription_price);
-  }
-  
-  // Extrai receita mensal estimada
-  let revenue_per_month = 0;
-  if (financial.revenue_per_month || financial.monthly_revenue) {
-    revenue_per_month = parseFinancialValue(financial.revenue_per_month || financial.monthly_revenue);
-  }
-  
-  // Extrai tamanho do mercado
-  let target_market_size = 0;
-  if (market.target_market_size || market.market_size) {
-    target_market_size = parseFinancialValue(market.target_market_size || market.market_size);
-  }
-  
+
+  // Trata diferentes formatos de análise
+  const content = typeof analysis === 'string' ? analysis : 
+                  analysis.content || analysis.analysis || 
+                  JSON.stringify(analysis);
+
+  const text = content.toLowerCase();
+
+  // Extrai diferentes métricas financeiras com parsing contextual
+  const extractValue = (patterns: string[]) => {
+    for (const pattern of patterns) {
+      const regex = new RegExp(pattern, 'gi');
+      const match = text.match(regex);
+      if (match) {
+        for (const m of match) {
+          const value = parseFinancialValue(m);
+          if (value > 0) return value;
+        }
+      }
+    }
+    return 0;
+  };
+
   return {
-    initial_investment,
-    monthly_costs,
-    pricing,
-    revenue_per_month,
-    target_market_size
+    initial_investment: extractValue([
+      'investimento\\s+inicial[^.]*',
+      'capital\\s+inicial[^.]*', 
+      'investir[^.]*',
+      'orçamento\\s+inicial[^.]*'
+    ]),
+    monthly_costs: extractValue([
+      'custo\\s+mensal[^.]*',
+      'gastos\\s+mensais[^.]*',
+      'despesas\\s+mensais[^.]*',
+      'custos\\s+operacionais[^.]*'
+    ]),
+    pricing: extractValue([
+      'preço[^.]*',
+      'valor\\s+do\\s+produto[^.]*',
+      'valor\\s+da\\s+assinatura[^.]*',
+      'mensalidade[^.]*',
+      'cobrança[^.]*'
+    ]),
+    revenue_per_month: extractValue([
+      'receita\\s+mensal[^.]*',
+      'faturamento\\s+mensal[^.]*',
+      'vendas\\s+mensais[^.]*'
+    ]),
+    target_market_size: extractValue([
+      'tamanho\\s+do\\s+mercado[^.]*',
+      'mercado\\s+total[^.]*',
+      'público\\s+alvo[^.]*',
+      'potencial\\s+de\\s+clientes[^.]*'
+    ]),
   };
 }
 
