@@ -71,8 +71,8 @@ interface SpiderData {
 interface SensitivityAnalysisPanelProps {
   variables: SimulationVariable[];
   baselineResult: number;
-  onVariableChange?: (variables: SimulationVariable[]) => void;
-  onRunAnalysis?: (variables: SimulationVariable[]) => Promise<number>;
+  onVariableChange: (variableName: string, newValue: number) => void;
+  onRunAnalysis: () => Promise<number>;
 }
 
 const SensitivityAnalysisPanel = ({ 
@@ -98,8 +98,18 @@ const SensitivityAnalysisPanel = ({
   }, [variables]);
 
   const runSensitivityAnalysis = async () => {
+    console.log("🔍 Iniciando análise de sensibilidade");
+    console.log("📊 Variáveis:", variables);
+    console.log("📈 Baseline result:", actualBaselineResult);
+    
     if (!onRunAnalysis || variables.length === 0) {
       toast.error('Função de análise não disponível ou variáveis não definidas');
+      return;
+    }
+
+    if (actualBaselineResult <= 0) {
+      console.error("❌ Baseline result inválido:", actualBaselineResult);
+      toast.error("Resultado baseline inválido. Execute uma simulação primeiro.");
       return;
     }
 
@@ -107,57 +117,85 @@ const SensitivityAnalysisPanel = ({
     const results: SensitivityResult[] = [];
 
     try {
+      console.log(`🚀 Analisando ${variables.length} variáveis`);
+      
       for (const variable of variables) {
-        // Test with +/- analysis range
+        console.log(`🔬 Testando variável: ${variable.name}`);
         const baseValue = variable.parameters.mean || variable.parameters.mode || 1;
         const rangeFactor = analysisRange / 100;
+        const originalValue = baseValue;
         
-        // Low value test
-        const lowValue = baseValue * (1 - rangeFactor);
-        const lowVariables = variables.map(v => 
-          v.name === variable.name 
-            ? { ...v, parameters: { ...v.parameters, mean: lowValue, mode: lowValue } }
-            : v
-        );
-        const lowResult = await onRunAnalysis(lowVariables);
+        try {
+          // Test high value (+range%)
+          const highValue = baseValue * (1 + rangeFactor);
+          console.log(`📈 Testando +${analysisRange}%: ${highValue}`);
+          onVariableChange(variable.name, highValue);
+          const highResult = await onRunAnalysis();
+          console.log(`✅ Resultado alto: ${highResult}`);
 
-        // High value test
-        const highValue = baseValue * (1 + rangeFactor);
-        const highVariables = variables.map(v => 
-          v.name === variable.name 
-            ? { ...v, parameters: { ...v.parameters, mean: highValue, mode: highValue } }
-            : v
-        );
-        const highResult = await onRunAnalysis(highVariables);
+          // Test low value (-range%)
+          const lowValue = baseValue * (1 - rangeFactor);
+          console.log(`📉 Testando -${analysisRange}%: ${lowValue}`);
+          onVariableChange(variable.name, lowValue);
+          const lowResult = await onRunAnalysis();
+          console.log(`✅ Resultado baixo: ${lowResult}`);
 
-        // Calculate sensitivity metrics
-        const sensitivity = ((highResult - lowResult) / (2 * rangeFactor * baseValue)) * 100;
-        const elasticity = actualBaselineResult > 0 ? 
-          (((highResult - lowResult) / actualBaselineResult) / (2 * rangeFactor)) * 100 : 0;
-        
-        let impact: 'high' | 'medium' | 'low' = 'low';
-        if (Math.abs(elasticity) > 50) impact = 'high';
-        else if (Math.abs(elasticity) > 20) impact = 'medium';
+          // Reset to original value
+          onVariableChange(variable.name, originalValue);
 
-        results.push({
-          variable: variable.name,
-          baseValue,
-          testValue: highValue,
-          baseResult: actualBaselineResult,
-          testResult: highResult,
-          sensitivity,
-          elasticity,
-          impact
-        });
+          // Calculate sensitivity metrics with better validation
+          const highChange = highResult && actualBaselineResult ? ((highResult - actualBaselineResult) / actualBaselineResult) * 100 : 0;
+          const lowChange = lowResult && actualBaselineResult ? ((lowResult - actualBaselineResult) / actualBaselineResult) * 100 : 0;
+          const averageSensitivity = Math.abs((highChange + lowChange) / 2);
+          
+          const sensitivity = averageSensitivity / (analysisRange / 10); // Sensitivity per 1% change
+          const elasticity = averageSensitivity;
+          
+          let impact: 'high' | 'medium' | 'low';
+          if (averageSensitivity > 10) impact = 'high';
+          else if (averageSensitivity > 5) impact = 'medium';
+          else impact = 'low';
+          
+          console.log(`📊 Métricas calculadas para ${variable.name}:`, {
+            sensitivity,
+            elasticity,
+            impact,
+            highChange,
+            lowChange,
+            averageSensitivity
+          });
+
+          results.push({
+            variable: variable.name,
+            baseValue: originalValue,
+            testValue: highValue,
+            baseResult: actualBaselineResult,
+            testResult: highResult,
+            sensitivity,
+            elasticity,
+            impact
+          });
+        } catch (variableError) {
+          console.error(`❌ Erro ao testar variável ${variable.name}:`, variableError);
+          // Reset value and continue with next variable
+          onVariableChange(variable.name, originalValue);
+        }
       }
 
+      console.log("✅ Análise concluída. Resultados:", results);
+      
       // Sort by absolute elasticity (highest impact first)
       results.sort((a, b) => Math.abs(b.elasticity) - Math.abs(a.elasticity));
       setSensitivityResults(results);
-      toast.success('Análise de sensibilidade concluída!');
+      
+      if (results.length > 0) {
+        toast.success(`Análise de sensibilidade concluída! ${results.length} variáveis analisadas.`);
+      } else {
+        toast.error("Nenhuma variável foi analisada com sucesso. Verifique os dados.");
+      }
     } catch (error) {
-      console.error('Error in sensitivity analysis:', error);
-      toast.error('Erro na análise de sensibilidade');
+      console.error('❌ Erro na análise:', error);
+      toast.error('Erro ao executar análise de sensibilidade');
     } finally {
       setIsAnalyzing(false);
     }
@@ -173,7 +211,9 @@ const SensitivityAnalysisPanel = ({
     );
 
     try {
-      const result = await onRunAnalysis(updatedVariables);
+      // First update the variables
+      onVariableChange(variableName, newValue);
+      const result = await onRunAnalysis();
       const variable = variables.find(v => v.name === variableName);
       const baseValue = variable?.parameters.mean || variable?.parameters.mode || 1;
       const percentChange = ((newValue - baseValue) / baseValue) * 100;
@@ -263,13 +303,23 @@ const SensitivityAnalysisPanel = ({
               <Label>Resultado Base</Label>
               <div className="mt-1 p-2 bg-gray-50 dark:bg-gray-800 rounded text-sm font-medium">
                 {formatCurrency(actualBaselineResult)}
+                {actualBaselineResult <= 0 && (
+                  <div className="text-xs text-red-600 mt-1">
+                    ❌ Execute uma simulação primeiro
+                  </div>
+                )}
+                {actualBaselineResult > 0 && (
+                  <div className="text-xs text-green-600 mt-1">
+                    ✅ Baseline válido
+                  </div>
+                )}
               </div>
             </div>
             
             <div className="flex items-end">
               <Button 
                 onClick={runSensitivityAnalysis}
-                disabled={isAnalyzing || variables.length === 0}
+                disabled={isAnalyzing || variables.length === 0 || actualBaselineResult <= 0}
                 className="w-full"
               >
                 {isAnalyzing ? (
@@ -488,14 +538,7 @@ const SensitivityAnalysisPanel = ({
                                         if (isRealTime) {
                                           await runSingleVariableAnalysis(variable.name, value[0]);
                                         }
-                                        if (onVariableChange) {
-                                          const updatedVariables = variables.map(v => 
-                                            v.name === variable.name 
-                                              ? { ...v, parameters: { ...v.parameters, mean: value[0], mode: value[0] } }
-                                              : v
-                                          );
-                                          onVariableChange(updatedVariables);
-                                        }
+                                         onVariableChange(variable.name, value[0]);
                                       }}
                                       max={baseValue * 2}
                                       min={baseValue * 0.1}

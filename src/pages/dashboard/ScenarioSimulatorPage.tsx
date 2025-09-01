@@ -217,27 +217,58 @@ const ScenarioSimulatorPage = () => {
     setSimulationResults(null);
   };
 
-  const handleRunAnalysis = async (testVariables: SimulationVariable[]) => {
+  const handleRunAnalysis = async (): Promise<number> => {
+    console.log("🔬 Executando análise rápida...");
+    
     try {
       const ideaData = getSelectedIdeaData();
+      console.log("💡 Dados da ideia:", ideaData);
       
-      const simulationParams = {
+      if (!ideaData) {
+        console.error("❌ Dados da ideia não encontrados");
+        throw new Error("Dados da ideia não encontrados");
+      }
+
+      // Use current variables state
+      const currentVariables = variables.length > 0 ? variables : createDefaultVariables(ideaData);
+      console.log("⚙️ Variáveis atuais:", currentVariables);
+      
+      // Run a quick simulation with fewer iterations for sensitivity analysis
+      const quickParams = {
         timeHorizon: 24,
-        iterations: 500,
+        iterations: Math.min(500, 1000), // Limit iterations for speed
         confidenceLevel: 95,
-        variables: testVariables
+        variables: currentVariables
       };
       
-      const result = await runSimulation(ideaData, simulationParams, ['realistic']);
+      console.log("🚀 Executando simulação rápida...");
+      const result = await runSimulation(ideaData, quickParams, ['realistic']);
       
-      if (result && result.results && result.results.realistic) {
-        return result.results.realistic.statistics.mean;
+      console.log("📊 Resultado da simulação:", result);
+      
+      if (result?.results?.realistic?.statistics?.mean) {
+        const meanValue = result.results.realistic.statistics.mean;
+        console.log("✅ Valor médio obtido:", meanValue);
+        return meanValue;
       }
-      return 0;
+      
+      console.error("❌ Resultado da simulação inválido:", result);
+      throw new Error("Resultado da simulação inválido");
     } catch (error) {
-      console.error('Error in analysis:', error);
-      return 0;
+      console.error("❌ Erro na análise:", error);
+      throw error;
     }
+  };
+
+  const handleVariableChangeForSensitivity = (variableName: string, newValue: number) => {
+    console.log(`🔧 Alterando variável ${variableName} para ${newValue}`);
+    setVariables(prevVariables => 
+      prevVariables.map(v => 
+        v.name === variableName 
+          ? { ...v, parameters: { ...v.parameters, mean: newValue, mode: newValue } }
+          : v
+      )
+    );
   };
 
   const handleSaveSimulation = async (simulationName: string) => {
@@ -406,8 +437,12 @@ const ScenarioSimulatorPage = () => {
             <TabsContent value="sensitivity" className="mt-6">
               <SensitivityAnalysisPanel
                 variables={variables}
-                baselineResult={simulationResults?.results?.realistic?.statistics?.mean || 0}
-                onVariableChange={handleVariableChange}
+                baselineResult={(() => {
+                  const baseline = simulationResults?.results?.realistic?.statistics?.mean || 0;
+                  console.log("📊 Baseline sendo passado para SensitivityAnalysisPanel:", baseline);
+                  return baseline;
+                })()}
+                onVariableChange={handleVariableChangeForSensitivity}
                 onRunAnalysis={handleRunAnalysis}
               />
             </TabsContent>
