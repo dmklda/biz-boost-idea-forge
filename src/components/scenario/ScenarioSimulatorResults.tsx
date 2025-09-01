@@ -35,7 +35,8 @@ import {
   Shield,
   Clock
 } from "lucide-react";
-import { SimulationResults, ScenarioType, useScenarioSimulator } from "@/hooks/useScenarioSimulator";
+import { useScenarioSimulator } from "@/hooks/useScenarioSimulator";
+import { SimulationResults, ScenarioType } from "@/types/scenario";
 import { formatCurrency } from "@/lib/utils";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 
@@ -100,7 +101,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
   console.log('Risk data prepared:', riskData);
 
   // Sensitivity analysis chart data
-  const sensitivityData = (results.sensitivityAnalysis || []).map(analysis => ({
+  const sensitivityData = (Array.isArray(results.sensitivityAnalysis) ? results.sensitivityAnalysis : []).map(analysis => ({
     variable: analysis.variable.replace(/_/g, ' '),
     impact: Math.abs(analysis.impact_on_npv || 0),
     correlation: analysis.correlation || 0
@@ -565,7 +566,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {results.sensitivityAnalysis.map((analysis, index) => (
+                {(Array.isArray(results.sensitivityAnalysis) ? results.sensitivityAnalysis : []).map((analysis, index) => (
                   <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <p className="font-medium capitalize">{analysis.variable.replace(/_/g, ' ')}</p>
@@ -590,7 +591,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
       </Tabs>
 
       {/* AI Insights */}
-      {results.insights && (
+      {results.insights && typeof results.insights === 'string' && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

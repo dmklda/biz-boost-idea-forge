@@ -41,7 +41,8 @@ import {
   Pause,
   RotateCcw
 } from "lucide-react";
-import { SimulationVariable, useScenarioSimulator } from "@/hooks/useScenarioSimulator";
+import { useScenarioSimulator } from "@/hooks/useScenarioSimulator";
+import { SimulationVariable } from "@/types/scenario";
 import { toast } from "@/components/ui/sonner";
 
 interface SensitivityResult {

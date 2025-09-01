@@ -36,7 +36,8 @@ import {
   Target,
   Zap
 } from "lucide-react";
-import { ScenarioType, useScenarioSimulator } from "@/hooks/useScenarioSimulator";
+import { useScenarioSimulator } from "@/hooks/useScenarioSimulator";
+import { ScenarioType } from "@/types/scenario";
 import { toast } from "@/components/ui/sonner";
 
 interface ScenarioConfig {

@@ -134,6 +134,9 @@ export function extractFinancialData(analysis: any): {
   pricing: number;
   revenue_per_month?: number;
   target_market_size?: number;
+  revenue_model?: string;
+  customer_acquisition_cost?: number;
+  churn_rate?: number;
 } {
   if (!analysis) {
     return {
@@ -163,6 +166,40 @@ export function extractFinancialData(analysis: any): {
       }
     }
     return 0;
+  };
+
+  // Detecta modelo de receita baseado no texto
+  const detectRevenueModel = (text: string): string => {
+    const lowerText = text.toLowerCase();
+    
+    if (lowerText.includes('assinatura') || lowerText.includes('mensalidade') || 
+        lowerText.includes('plano') || lowerText.includes('saas') || 
+        lowerText.includes('subscription')) {
+      return 'Subscription';
+    }
+    
+    if (lowerText.includes('freemium') || lowerText.includes('plano gratuito') ||
+        lowerText.includes('versão premium')) {
+      return 'Freemium';
+    }
+    
+    if (lowerText.includes('comissão') || lowerText.includes('marketplace') ||
+        lowerText.includes('taxa por transação') || lowerText.includes('percentual')) {
+      return 'Commission';
+    }
+    
+    if (lowerText.includes('publicidade') || lowerText.includes('anúncios') ||
+        lowerText.includes('ads') || lowerText.includes('advertising')) {
+      return 'Advertising';
+    }
+    
+    if (lowerText.includes('venda única') || lowerText.includes('pagamento único') ||
+        lowerText.includes('compra') || lowerText.includes('produto físico')) {
+      return 'One-time';
+    }
+    
+    // Padrão: se menciona preço fixo, assume assinatura
+    return 'Subscription';
   };
 
   return {
@@ -195,6 +232,17 @@ export function extractFinancialData(analysis: any): {
       'mercado\\s+total[^.]*',
       'público\\s+alvo[^.]*',
       'potencial\\s+de\\s+clientes[^.]*'
+    ]),
+    revenue_model: detectRevenueModel(text),
+    customer_acquisition_cost: extractValue([
+      'custo\\s+de\\s+aquisição[^.]*',
+      'cac[^.]*',
+      'customer\\s+acquisition[^.]*'
+    ]),
+    churn_rate: extractValue([
+      'taxa\\s+de\\s+cancelamento[^.]*',
+      'churn[^.]*',
+      'rotatividade[^.]*'
     ]),
   };
 }
@@ -239,6 +287,9 @@ export function generateSmartDefaults(ideaData: any): {
   monthly_costs: number;
   pricing: number;
   target_market_size: number;
+  revenue_model: string;
+  customer_acquisition_cost: number;
+  churn_rate: number;
 } {
   const description = (ideaData.description || '').toLowerCase();
   const monetization = (ideaData.monetization || '').toLowerCase();
@@ -262,25 +313,37 @@ export function generateSmartDefaults(ideaData: any): {
       initial_investment: 50000,
       monthly_costs: 5000,
       pricing: 49,
-      target_market_size: 100000
+      target_market_size: 100000,
+      revenue_model: 'Subscription',
+      customer_acquisition_cost: 150,
+      churn_rate: 5
     },
     ecommerce: {
       initial_investment: 30000,
       monthly_costs: 8000,
       pricing: 99,
-      target_market_size: 50000
+      target_market_size: 50000,
+      revenue_model: 'One-time',
+      customer_acquisition_cost: 30,
+      churn_rate: 0
     },
     service: {
       initial_investment: 10000,
       monthly_costs: 3000,
       pricing: 200,
-      target_market_size: 10000
+      target_market_size: 10000,
+      revenue_model: 'Subscription',
+      customer_acquisition_cost: 100,
+      churn_rate: 8
     },
     physical: {
       initial_investment: 100000,
       monthly_costs: 15000,
       pricing: 150,
-      target_market_size: 20000
+      target_market_size: 20000,
+      revenue_model: 'One-time',
+      customer_acquisition_cost: 50,
+      churn_rate: 0
     }
   };
   
@@ -291,6 +354,9 @@ export function generateSmartDefaults(ideaData: any): {
     initial_investment: Math.max(1000, Math.min(result.initial_investment, 10000000)),
     monthly_costs: Math.max(100, Math.min(result.monthly_costs, 1000000)),
     pricing: Math.max(1, Math.min(result.pricing, 100000)),
-    target_market_size: Math.max(1000, Math.min(result.target_market_size, 100000000))
+    target_market_size: Math.max(1000, Math.min(result.target_market_size, 100000000)),
+    revenue_model: result.revenue_model,
+    customer_acquisition_cost: Math.max(10, Math.min(result.customer_acquisition_cost, 1000)),
+    churn_rate: Math.max(0, Math.min(result.churn_rate, 50))
   };
 }
