@@ -113,4 +113,42 @@ export interface SimulationResults {
   };
 }
 
+// Interface para resultados completos com metadados
+export interface CompleteSimulationResults {
+  // Dados por cenário usando chaves dinâmicas
+  [scenario: string]: {
+    results: MonteCarloResult[];
+    statistics: {
+      mean: number;
+      median: number;
+      stdDev: number;
+      percentile5: number;
+      percentile95: number;
+    };
+    riskMetrics: {
+      probabilityOfLoss: number;
+      valueAtRisk: number;
+      expectedShortfall: number;
+      breakEvenMonth: number;
+    };
+    finalMetrics: {
+      roi: number;
+      paybackPeriod: number;
+      netPresentValue: number;
+      totalRevenue: number;
+      totalCosts: number;
+      netProfit: number;
+    };
+  } | {
+    totalIterations: number;
+    timeHorizon: number;
+    confidenceLevel: number;
+  } | Array<{
+    variable: string;
+    correlation: number;
+    impact_on_npv: number;
+    impact_on_break_even: number;
+  }> | string;
+}
+
 export type ScenarioType = 'optimistic' | 'realistic' | 'pessimistic';
