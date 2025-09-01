@@ -91,6 +91,7 @@ export interface SensitivityAnalysis {
 
 export interface SimulationResults {
   ideaTitle: string;
+  revenueModel?: string;
   simulationParams: SimulationParams;
   results: { [key: string]: MonteCarloResult };
   sensitivityAnalysis: SensitivityAnalysis[];
@@ -100,6 +101,7 @@ export interface SimulationResults {
     totalIterations: number;
     timeHorizon: number;
     confidenceLevel: number;
+    revenueModel?: string;
   };
 }
 
@@ -164,63 +166,135 @@ export const useScenarioSimulator = () => {
 
   const createDefaultVariables = (ideaData: IdeaFinancialData): SimulationVariable[] => {
     const variables: SimulationVariable[] = [];
+    const revenueModel = ideaData.revenue_model || 'one_time';
 
-    // Market demand variability
+    // Base variables for all models
     variables.push({
       name: 'market_demand',
       type: 'normal',
       parameters: {
         mean: 1.0,
-        stdDev: 0.2
+        stdDev: 0.25
       },
       impact: 'revenue'
     });
 
-    // Customer acquisition cost
     variables.push({
-      name: 'customer_acquisition_cost',
+      name: 'operational_costs',
       type: 'triangular',
       parameters: {
         min: 0.8,
-        max: 1.5,
+        max: 1.3,
         mode: 1.0
       },
       impact: 'costs'
     });
 
-    // Competition impact
     variables.push({
-      name: 'competition_impact',
+      name: 'competition_intensity',
       type: 'uniform',
       parameters: {
         min: 0.7,
-        max: 1.3
+        max: 1.4
       },
       impact: 'market_share'
     });
 
-    // Operational efficiency
-    variables.push({
-      name: 'operational_efficiency',
-      type: 'normal',
-      parameters: {
-        mean: 1.0,
-        stdDev: 0.15
-      },
-      impact: 'costs'
-    });
+    // Model-specific variables
+    switch (revenueModel) {
+      case 'subscription':
+      case 'freemium':
+        variables.push({
+          name: 'churn_rate_variation',
+          type: 'normal',
+          parameters: {
+            mean: 1.0,
+            stdDev: 0.3
+          },
+          impact: 'churn_rate'
+        });
+        
+        variables.push({
+          name: 'customer_acquisition_efficiency',
+          type: 'triangular',
+          parameters: {
+            min: 0.6,
+            max: 1.5,
+            mode: 1.0
+          },
+          impact: 'growth_rate'
+        });
+        break;
 
-    // Market growth rate
-    variables.push({
-      name: 'market_growth_rate',
-      type: 'triangular',
-      parameters: {
-        min: 0.02,
-        max: 0.15,
-        mode: 0.05
-      },
-      impact: 'growth_rate'
-    });
+      case 'marketplace':
+        variables.push({
+          name: 'transaction_volume_volatility',
+          type: 'lognormal',
+          parameters: {
+            mean: 0.0,
+            stdDev: 0.4
+          },
+          impact: 'revenue'
+        });
+        
+        variables.push({
+          name: 'platform_adoption_rate',
+          type: 'triangular',
+          parameters: {
+            min: 0.5,
+            max: 2.0,
+            mode: 1.0
+          },
+          impact: 'growth_rate'
+        });
+        break;
+
+      case 'advertising':
+        variables.push({
+          name: 'cpm_fluctuation',
+          type: 'normal',
+          parameters: {
+            mean: 1.0,
+            stdDev: 0.35
+          },
+          impact: 'revenue'
+        });
+        
+        variables.push({
+          name: 'user_engagement_rate',
+          type: 'uniform',
+          parameters: {
+            min: 0.6,
+            max: 1.4
+          },
+          impact: 'revenue'
+        });
+        break;
+
+      case 'one_time':
+      default:
+        variables.push({
+          name: 'repeat_purchase_rate',
+          type: 'triangular',
+          parameters: {
+            min: 0.1,
+            max: 0.4,
+            mode: 0.2
+          },
+          impact: 'revenue'
+        });
+        
+        variables.push({
+          name: 'market_saturation_rate',
+          type: 'normal',
+          parameters: {
+            mean: 1.0,
+            stdDev: 0.2
+          },
+          impact: 'growth_rate'
+        });
+        break;
+    }
 
     return variables;
   };
@@ -234,7 +308,7 @@ export const useScenarioSimulator = () => {
     };
   };
 
-  const getScenarioInfo = (scenario: ScenarioType) => {
+  const getScenarioInfo = (scenario: ScenarioType | string) => {
     const scenarioInfo = {
       optimistic: {
         name: 'Otimista',
@@ -262,7 +336,79 @@ export const useScenarioSimulator = () => {
       }
     };
     
-    return scenarioInfo[scenario];
+    return scenarioInfo[scenario as ScenarioType] || {
+      name: 'Desconhecido',
+      description: 'Cenário não identificado',
+      color: 'text-gray-600',
+      bgColor: 'bg-gray-50',
+      borderColor: 'border-gray-200',
+      icon: '❓'
+    };
+  };
+
+  const saveSimulation = async (simulationName: string): Promise<boolean> => {
+    if (!simulationResults) {
+      toast.error('Nenhuma simulação para salvar');
+      return false;
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Usuário não autenticado');
+        return false;
+      }
+
+      const { error } = await supabase
+        .from('scenario_simulations')
+        .insert({
+          user_id: user.id,
+          simulation_name: simulationName,
+          simulation_params: simulationResults.simulationParams as any,
+          results: simulationResults.results as any,
+          revenue_model: simulationResults.revenueModel || simulationResults.metadata.revenueModel || 'one_time',
+          financial_data: {
+            idea_title: simulationResults.ideaTitle,
+            generated_at: simulationResults.generatedAt
+          } as any
+        });
+
+      if (error) {
+        console.error('Error saving simulation:', error);
+        toast.error('Erro ao salvar simulação');
+        return false;
+      }
+
+      toast.success('Simulação salva com sucesso!');
+      return true;
+    } catch (error) {
+      console.error('Error saving simulation:', error);
+      toast.error('Erro inesperado ao salvar simulação');
+      return false;
+    }
+  };
+
+  const loadSimulations = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
+      const { data, error } = await supabase
+        .from('scenario_simulations')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading simulations:', error);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Error loading simulations:', error);
+      return [];
+    }
   };
 
   const calculateROI = (result: MonteCarloResult, initialInvestment: number): number => {
@@ -429,6 +575,8 @@ export const useScenarioSimulator = () => {
     runSimulation,
     clearResults,
     exportResults,
+    saveSimulation,
+    loadSimulations,
     
     // Utilities
     createDefaultVariables,

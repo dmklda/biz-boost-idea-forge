@@ -863,6 +863,45 @@ export type Database = {
         }
         Relationships: []
       }
+      scenario_simulations: {
+        Row: {
+          created_at: string
+          financial_data: Json
+          id: string
+          idea_id: string | null
+          results: Json
+          revenue_model: string
+          simulation_name: string
+          simulation_params: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          financial_data: Json
+          id?: string
+          idea_id?: string | null
+          results: Json
+          revenue_model: string
+          simulation_name: string
+          simulation_params: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          financial_data?: Json
+          id?: string
+          idea_id?: string | null
+          results?: Json
+          revenue_model?: string
+          simulation_name?: string
+          simulation_params?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       success_cases: {
         Row: {
           author_id: string | null
