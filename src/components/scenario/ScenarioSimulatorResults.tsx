@@ -35,13 +35,12 @@ import {
   Shield,
   Clock
 } from "lucide-react";
-import { useScenarioSimulator } from "@/hooks/useScenarioSimulator";
-import { CompleteSimulationResults, ScenarioType } from "@/types/scenario";
+import { SimulationResults, ScenarioType, useScenarioSimulator } from "@/hooks/useScenarioSimulator";
 import { formatCurrency } from "@/lib/utils";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 
 interface ScenarioSimulatorResultsProps {
-  results: any; // Usando any temporariamente para resolver os erros
+  results: SimulationResults;
   onExport?: (format: 'json' | 'csv' | 'pdf') => void;
 }
 
@@ -52,37 +51,34 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
 
   // Debug logging
   console.log('SimulationResults received:', results);
+  console.log('Results object:', results.results);
   
-  // Filtra apenas as chaves que são cenários (não metadata, insights, etc.)
-  const scenarios = Object.keys(results).filter(key => 
-    key !== 'metadata' && key !== 'sensitivityAnalysis' && key !== 'insights'
-  ) as ScenarioType[];
-  
-  const currentResult = results[activeScenario];
+  const scenarios = Object.keys(results.results) as ScenarioType[];
+  const currentResult = results.results[activeScenario];
   
   console.log('Current scenario:', activeScenario);
   console.log('Current result:', currentResult);
   
   // Prepare chart data
-  const chartData = currentResult?.results?.map((result, index) => ({
-    month: `Mês ${index + 1}`,
-    revenue: result.revenue || 0,
-    costs: result.costs || 0,
-    profit: result.profit || 0,
-    cumulativeProfit: result.cumulativeProfit || 0,
-    breakEvenProb: 50 // Valor padrão, será calculado pela edge function futuramente
+  const chartData = currentResult?.projections?.map(projection => ({
+    month: `Mês ${projection.month}`,
+    revenue: projection.revenue || 0,
+    costs: projection.costs || 0,
+    profit: projection.profit || 0,
+    cumulativeProfit: projection.cumulative_profit || 0,
+    breakEvenProb: (projection.break_even_probability || 0) * 100
   })) || [];
 
   console.log('Chart data prepared:', chartData);
 
   // Comparison data for all scenarios - using first available scenario as reference
   const referenceScenario = scenarios[0] || 'realistic';
-  const comparisonData = (results[referenceScenario]?.results || []).map((result, index) => {
+  const comparisonData = (results.results[referenceScenario]?.projections || []).map((_, index) => {
     const dataPoint: any = { month: `Mês ${index + 1}` };
     scenarios.forEach(scenario => {
-      const scenarioResult = results[scenario]?.results?.[index];
-      if (scenarioResult) {
-        dataPoint[`${scenario}_profit`] = scenarioResult.cumulativeProfit || 0;
+      const projection = results.results[scenario]?.projections?.[index];
+      if (projection) {
+        dataPoint[`${scenario}_profit`] = projection.cumulative_profit || 0;
       }
     });
     return dataPoint;
@@ -92,12 +88,11 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
 
   // Risk distribution data
   const riskData = scenarios.map(scenario => {
-    const result = results[scenario];
-    const scenarioInfo = getScenarioInfo(scenario);
+    const result = results.results[scenario];
     return {
-      scenario: scenarioInfo?.name || scenario,
-      probabilityOfLoss: (result?.riskMetrics?.probabilityOfLoss || 0) * 100,
-      valueAtRisk: Math.abs(result?.riskMetrics?.valueAtRisk || 0),
+      scenario: getScenarioInfo(scenario).name,
+      probabilityOfLoss: (result?.riskMetrics?.probability_of_loss || 0) * 100,
+      valueAtRisk: Math.abs(result?.riskMetrics?.value_at_risk_95 || 0),
       expectedReturn: result?.statistics?.mean || 0
     };
   });
@@ -105,7 +100,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
   console.log('Risk data prepared:', riskData);
 
   // Sensitivity analysis chart data
-  const sensitivityData = (Array.isArray(results.sensitivityAnalysis) ? results.sensitivityAnalysis : []).map(analysis => ({
+  const sensitivityData = (results.sensitivityAnalysis || []).map(analysis => ({
     variable: analysis.variable.replace(/_/g, ' '),
     impact: Math.abs(analysis.impact_on_npv || 0),
     correlation: analysis.correlation || 0
@@ -147,7 +142,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
         <div>
           <h2 className="text-2xl font-bold mb-2">Resultados da Simulação Monte Carlo</h2>
           <p className="text-gray-600 dark:text-gray-400">
-            {results.metadata?.totalIterations?.toLocaleString() || '1.000'} iterações • {results.metadata?.timeHorizon || '36'} meses
+            {results.metadata.totalIterations.toLocaleString()} iterações • {results.metadata.timeHorizon} meses
           </p>
         </div>
         
@@ -156,7 +151,6 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
           <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             {scenarios.map((scenario) => {
               const info = getScenarioInfo(scenario);
-              if (!info) return null; // Evita renderizar se não encontrar info
               return (
                 <button
                   key={scenario}
@@ -196,14 +190,14 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Lucro Operacional</p>
                 <p className="text-2xl font-bold text-green-600">
-                  {formatCurrencyValue(currentResult?.finalMetrics?.netProfit)}
+                  {formatCurrencyValue(currentResult?.finalOperationalProfit)}
                 </p>
               </div>
               <DollarSign className="h-8 w-8 text-green-600" />
             </div>
             <div className="mt-2">
               <p className="text-xs text-gray-500">
-                Margem: {currentResult?.finalMetrics?.roi?.toFixed(1) || 0}%
+                Margem: {currentResult?.profitMargin?.toFixed(1) || 0}%
               </p>
             </div>
           </CardContent>
@@ -215,13 +209,13 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Probabilidade de Lucro</p>
                 <p className="text-2xl font-bold text-blue-600">
-                  {formatPercentage((1 - (currentResult?.riskMetrics?.probabilityOfLoss || 0)) * 100)}
+                  {formatPercentage((1 - (currentResult?.riskMetrics?.probability_of_loss || 0)) * 100)}
                 </p>
               </div>
               <Target className="h-8 w-8 text-blue-600" />
             </div>
             <Progress 
-              value={(1 - (currentResult?.riskMetrics?.probabilityOfLoss || 0)) * 100}
+              value={(1 - (currentResult?.riskMetrics?.probability_of_loss || 0)) * 100} 
               className="mt-2" 
             />
           </CardContent>
@@ -233,7 +227,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Payback</p>
                 <p className="text-2xl font-bold text-purple-600">
-                  {currentResult?.finalMetrics?.paybackPeriod ? `${currentResult.finalMetrics.paybackPeriod} meses` : 'N/A'}
+                  {currentResult?.paybackPeriod ? `${currentResult.paybackPeriod} meses` : 'N/A'}
                 </p>
               </div>
               <Calendar className="h-8 w-8 text-purple-600" />
@@ -252,7 +246,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Risco (VaR 95%)</p>
                 <p className="text-2xl font-bold text-red-600">
-                  {formatCurrencyValue(Math.abs(currentResult?.riskMetrics?.valueAtRisk || 0))}
+                  {formatCurrencyValue(Math.abs(currentResult?.riskMetrics?.value_at_risk_95 || 0))}
                 </p>
               </div>
               <AlertTriangle className="h-8 w-8 text-red-600" />
@@ -283,7 +277,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
-                  Lucro Acumulado - {getScenarioInfo(activeScenario)?.name || activeScenario}
+                  Lucro Acumulado - {getScenarioInfo(activeScenario).name}
                 </CardTitle>
                 <CardDescription>
                   Evolução do lucro acumulado ao longo do tempo
@@ -338,7 +332,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
           {/* Statistics summary */}
           <Card>
             <CardHeader>
-              <CardTitle>Estatísticas do Cenário {getScenarioInfo(activeScenario)?.name || activeScenario}</CardTitle>
+              <CardTitle>Estatísticas do Cenário {getScenarioInfo(activeScenario).name}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -355,12 +349,12 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
                   <p className="text-lg font-semibold">{formatCurrencyValue(currentResult?.statistics?.stdDev)}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Percentil 5%</p>
-                  <p className="text-lg font-semibold">{formatCurrencyValue(currentResult?.statistics?.percentile5)}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Mínimo</p>
+                  <p className="text-lg font-semibold">{formatCurrencyValue(currentResult?.statistics?.min)}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Percentil 95%</p>
-                  <p className="text-lg font-semibold">{formatCurrencyValue(currentResult?.statistics?.percentile95)}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Máximo</p>
+                  <p className="text-lg font-semibold">{formatCurrencyValue(currentResult?.statistics?.max)}</p>
                 </div>
               </div>
             </CardContent>
@@ -461,34 +455,34 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
             <Card>
               <CardHeader>
                 <CardTitle>Métricas de Risco</CardTitle>
-                <CardDescription>Cenário {getScenarioInfo(activeScenario)?.name || activeScenario}</CardDescription>
+                <CardDescription>Cenário {getScenarioInfo(activeScenario).name}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Probabilidade de Perda</span>
-                  <Badge variant={(currentResult?.riskMetrics?.probabilityOfLoss || 0) > 0.3 ? 'destructive' : 'secondary'}>
-                    {formatPercentage((currentResult?.riskMetrics?.probabilityOfLoss || 0) * 100)}
+                  <Badge variant={(currentResult?.riskMetrics?.probability_of_loss || 0) > 0.3 ? 'destructive' : 'secondary'}>
+                    {formatPercentage((currentResult?.riskMetrics?.probability_of_loss || 0) * 100)}
                   </Badge>
                 </div>
                 
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Value at Risk (95%)</span>
                   <span className="font-semibold text-red-600">
-                    {formatCurrencyValue(Math.abs(currentResult?.riskMetrics?.valueAtRisk || 0))}
+                    {formatCurrencyValue(Math.abs(currentResult?.riskMetrics?.value_at_risk_95 || 0))}
                   </span>
                 </div>
                 
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Expected Shortfall</span>
                   <span className="font-semibold text-red-600">
-                    {formatCurrencyValue(Math.abs(currentResult?.riskMetrics?.expectedShortfall || 0))}
+                    {formatCurrencyValue(Math.abs(currentResult?.riskMetrics?.expected_shortfall || 0))}
                   </span>
                 </div>
                 
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Tempo para Break-even</span>
                   <span className="font-semibold">
-                    {currentResult?.riskMetrics?.breakEvenMonth ? `${currentResult.riskMetrics.breakEvenMonth} meses` : 'Não atingido'}
+                    {currentResult?.riskMetrics?.break_even_month ? `${currentResult.riskMetrics.break_even_month} meses` : 'Não atingido'}
                   </span>
                 </div>
               </CardContent>
@@ -511,7 +505,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
                     <p className="text-sm text-gray-600 dark:text-gray-400">5% de chance de superar</p>
                   </div>
                   <span className="text-lg font-bold text-green-600">
-                    {formatCurrencyValue(currentResult?.statistics?.percentile95)}
+                    {formatCurrencyValue(currentResult?.statistics?.percentile_95)}
                   </span>
                 </div>
                 
@@ -531,7 +525,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
                     <p className="text-sm text-gray-600 dark:text-gray-400">5% de chance de ficar abaixo</p>
                   </div>
                   <span className="text-lg font-bold text-red-600">
-                    {formatCurrencyValue(currentResult?.statistics?.percentile5)}
+                    {formatCurrencyValue(currentResult?.statistics?.percentile_5)}
                   </span>
                 </div>
               </div>
@@ -571,7 +565,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {(Array.isArray(results.sensitivityAnalysis) ? results.sensitivityAnalysis : []).map((analysis, index) => (
+                {results.sensitivityAnalysis.map((analysis, index) => (
                   <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <p className="font-medium capitalize">{analysis.variable.replace(/_/g, ' ')}</p>
@@ -596,7 +590,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
       </Tabs>
 
       {/* AI Insights */}
-      {results.insights && typeof results.insights === 'string' && (
+      {results.insights && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

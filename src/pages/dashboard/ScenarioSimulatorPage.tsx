@@ -7,8 +7,7 @@ import ScenarioBuilder from "@/components/scenario/ScenarioBuilder";
 import SensitivityAnalysisPanel from "@/components/scenario/SensitivityAnalysisPanel";
 import ScenarioSimulatorResults from "@/components/scenario/ScenarioSimulatorResults";
 import IdeaDataEditor from "@/components/scenario/IdeaDataEditor";
-import { useScenarioSimulator } from "@/hooks/useScenarioSimulator";
-import { SimulationVariable, ScenarioType } from "@/types/scenario";
+import { useScenarioSimulator, SimulationVariable, ScenarioType } from "@/hooks/useScenarioSimulator";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
@@ -215,10 +214,8 @@ const ScenarioSimulatorPage = () => {
       
       const result = await runSimulation(ideaData, simulationParams, ['realistic']);
       
-      // Busca pelos nomes de cenário corretos (português ou inglês)
-      const realisticData = result?.realistic || result?.realista;
-      if (realisticData?.finalMetrics?.netProfit) {
-        return realisticData.finalMetrics.netProfit;
+      if (result && result.results && result.results.realistic) {
+        return result.results.realistic.statistics.mean;
       }
       return 0;
     } catch (error) {

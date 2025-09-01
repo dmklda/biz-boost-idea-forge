@@ -1,15 +1,109 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { REVENUE_MODELS } from '@/types/scenario';
-import type { 
-  IdeaFinancialData, 
-  SimulationParams, 
-  SimulationResults, 
-  ScenarioType,
-  SimulationVariable,
-  MonteCarloResult
-} from '@/types/scenario';
 import { toast } from '@/components/ui/sonner';
+
+export interface SimulationVariable {
+  name: string;
+  type: 'normal' | 'uniform' | 'triangular' | 'lognormal';
+  parameters: {
+    mean?: number;
+    stdDev?: number;
+    min?: number;
+    max?: number;
+    mode?: number;
+  };
+  impact: 'revenue' | 'costs' | 'growth_rate' | 'market_share' | 'churn_rate';
+}
+
+export interface SimulationParams {
+  timeHorizon: number; // months
+  iterations: number; // Monte Carlo iterations
+  confidenceLevel: number; // 0.95 for 95%
+  variables: SimulationVariable[];
+}
+
+export interface IdeaFinancialData {
+  title: string;
+  description: string;
+  monetization: string;
+  target_market_size?: number;
+  initial_investment?: number;
+  monthly_costs?: number;
+  revenue_model?: string;
+  pricing?: number;
+}
+
+export interface MonteCarloResult {
+  scenario: string;
+  finalNetProfit?: number;
+  finalOperationalProfit?: number;
+  totalRevenue?: number;
+  totalCosts?: number;
+  breakEvenMonth?: number | null;
+  monthsToBreakEven?: number | null;
+  npv?: number;
+  roi?: number;
+  profitMargin?: number;
+  paybackPeriod?: number | null;
+  investmentRecovery?: number;
+  monthlyProjections?: {
+    month: number;
+    revenue: number;
+    costs: number;
+    operationalProfit: number;
+    cumulativeOperationalProfit: number;
+    cumulativeNetProfit: number;
+    netPresentValue: number;
+  }[];
+  statistics: {
+    mean: number;
+    median: number;
+    stdDev: number;
+    min: number;
+    max: number;
+    percentile_5: number;
+    percentile_25: number;
+    percentile_75: number;
+    percentile_95: number;
+  };
+  projections: {
+    month: number;
+    revenue: number;
+    costs: number;
+    profit: number;
+    cumulative_profit: number;
+    break_even_probability: number;
+  }[];
+  riskMetrics: {
+    probability_of_loss: number;
+    value_at_risk_95: number;
+    expected_shortfall: number;
+    break_even_month: number | null;
+  };
+}
+
+export interface SensitivityAnalysis {
+  variable: string;
+  correlation: number;
+  impact_on_npv: number;
+  impact_on_break_even: number;
+}
+
+export interface SimulationResults {
+  ideaTitle: string;
+  simulationParams: SimulationParams;
+  results: { [key: string]: MonteCarloResult };
+  sensitivityAnalysis: SensitivityAnalysis[];
+  insights: string;
+  generatedAt: string;
+  metadata: {
+    totalIterations: number;
+    timeHorizon: number;
+    confidenceLevel: number;
+  };
+}
+
+export type ScenarioType = 'optimistic' | 'realistic' | 'pessimistic';
 
 export const useScenarioSimulator = () => {
   const [isSimulating, setIsSimulating] = useState(false);
@@ -133,14 +227,14 @@ export const useScenarioSimulator = () => {
 
   const getDefaultSimulationParams = (): SimulationParams => {
     return {
-      timeHorizon: 36, // 3 years
+      timeHorizon: 24, // 2 years
       iterations: 1000,
-      confidenceLevel: 95,
+      confidenceLevel: 0.95,
       variables: []
     };
   };
 
-  const getScenarioInfo = (scenario: ScenarioType | string) => {
+  const getScenarioInfo = (scenario: ScenarioType) => {
     const scenarioInfo = {
       optimistic: {
         name: 'Otimista',
@@ -168,35 +262,31 @@ export const useScenarioSimulator = () => {
       }
     };
     
-    return scenarioInfo[scenario as keyof typeof scenarioInfo] || {
-      name: scenario,
-      description: 'Cenário personalizado',
-      color: 'text-gray-600',
-      bgColor: 'bg-gray-50',
-      borderColor: 'border-gray-200',
-      icon: '📈'
-    };
+    return scenarioInfo[scenario];
   };
 
-  const calculateROI = (results: MonteCarloResult[], initialInvestment: number): number => {
-    if (results.length === 0) return 0;
-    const finalResult = results[results.length - 1];
-    return ((finalResult.cumulativeProfit + initialInvestment) / initialInvestment - 1) * 100;
+  const calculateROI = (result: MonteCarloResult, initialInvestment: number): number => {
+    const finalProfit = result.statistics.mean;
+    return ((finalProfit + initialInvestment) / initialInvestment - 1) * 100;
   };
 
-  const calculatePaybackPeriod = (results: MonteCarloResult[]): number | null => {
+  const calculatePaybackPeriod = (result: MonteCarloResult): number | null => {
     // Find the month where cumulative profit becomes positive
-    for (const result of results) {
-      if (result.cumulativeProfit >= 0) {
-        return result.month;
+    for (const projection of result.projections) {
+      if (projection.cumulative_profit >= 0) {
+        return projection.month;
       }
     }
     return null;
   };
 
-  const getConfidenceInterval = (statistics: any, confidence: number = 0.95): [number, number] => {
-    // Return confidence interval based on statistics
-    return [statistics?.percentile5 || 0, statistics?.percentile95 || 0];
+  const getConfidenceInterval = (result: MonteCarloResult, confidence: number = 0.95): [number, number] => {
+    const alpha = 1 - confidence;
+    const lowerPercentile = alpha / 2;
+    const upperPercentile = 1 - alpha / 2;
+    
+    // For 95% confidence: 2.5th and 97.5th percentiles
+    return [result.statistics.percentile_5, result.statistics.percentile_95];
   };
 
   const exportResults = (format: 'json' | 'csv' | 'pdf' = 'json') => {
@@ -212,19 +302,19 @@ export const useScenarioSimulator = () => {
     switch (format) {
       case 'json':
         content = JSON.stringify(simulationResults, null, 2);
-        filename = `simulacao-${Date.now()}.json`;
+        filename = `simulacao-${simulationResults.ideaTitle.replace(/\s+/g, '-')}-${Date.now()}.json`;
         mimeType = 'application/json';
         break;
       
       case 'csv':
         content = convertToCSV(simulationResults);
-        filename = `simulacao-${Date.now()}.csv`;
+        filename = `simulacao-${simulationResults.ideaTitle.replace(/\s+/g, '-')}-${Date.now()}.csv`;
         mimeType = 'text/csv';
         break;
       
       default:
         content = JSON.stringify(simulationResults, null, 2);
-        filename = `simulacao-${Date.now()}.json`;
+        filename = `simulacao-${simulationResults.ideaTitle.replace(/\s+/g, '-')}-${Date.now()}.json`;
         mimeType = 'application/json';
     }
 
@@ -242,22 +332,21 @@ export const useScenarioSimulator = () => {
   };
 
   const convertToCSV = (results: SimulationResults): string => {
-    const headers = ['Scenario', 'Month', 'Revenue', 'Costs', 'Profit', 'Cumulative_Profit'];
+    const headers = ['Scenario', 'Month', 'Revenue', 'Costs', 'Profit', 'Cumulative_Profit', 'Break_Even_Probability'];
     const rows = [headers.join(',')];
 
-    Object.entries(results).forEach(([scenario, result]) => {
-      if (result && result.results) {
-        result.results.forEach(monthData => {
-          rows.push([
-            scenario,
-            monthData.month,
-            monthData.revenue.toFixed(2),
-            monthData.costs.toFixed(2),
-            monthData.profit.toFixed(2),
-            monthData.cumulativeProfit.toFixed(2)
-          ].join(','));
-        });
-      }
+    Object.entries(results.results).forEach(([scenario, result]) => {
+      result.projections.forEach(projection => {
+        rows.push([
+          scenario,
+          projection.month,
+          projection.revenue.toFixed(2),
+          projection.costs.toFixed(2),
+          projection.profit.toFixed(2),
+          projection.cumulative_profit.toFixed(2),
+          projection.break_even_probability.toFixed(4)
+        ].join(','));
+      });
     });
 
     return rows.join('\n');
@@ -330,14 +419,6 @@ export const useScenarioSimulator = () => {
     return errors;
   };
 
-  const getRevenueModelInfo = (modelName: string) => {
-    return REVENUE_MODELS[modelName] || REVENUE_MODELS['Subscription'];
-  };
-
-  const getAvailableRevenueModels = () => {
-    return Object.values(REVENUE_MODELS);
-  };
-
   return {
     // State
     isSimulating,
@@ -357,8 +438,6 @@ export const useScenarioSimulator = () => {
     calculateROI,
     calculatePaybackPeriod,
     getConfidenceInterval,
-    validateSimulationParams,
-    getRevenueModelInfo,
-    getAvailableRevenueModels
+    validateSimulationParams
   };
 };
