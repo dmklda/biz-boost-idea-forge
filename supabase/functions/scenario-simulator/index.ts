@@ -127,10 +127,18 @@ async function runMonteCarloSimulation(ideaData, params, scenarioParams) {
   const timeHorizon = params.timeHorizon;
   const results = []; // [iteration][month]
   const finalValues = [];
-  // Base parameters - ensure they are numeric
-  const baseRevenue = parseFloat(ideaData.pricing) || 100;
-  const baseCosts = parseFloat(ideaData.monthly_costs) || 50;
-  const initialInvestment = parseFloat(ideaData.initial_investment) || 10000;
+  // Base parameters - ensure they are numeric and realistic
+  const baseRevenue = Math.max(parseFloat(ideaData.pricing) || 100, 1);
+  const baseCosts = Math.max(parseFloat(ideaData.monthly_costs) || 50, 1);
+  const initialInvestment = Math.max(parseFloat(ideaData.initial_investment) || 10000, 100);
+  
+  // Validate inputs to prevent extreme values
+  if (baseRevenue > 1000000) {
+    console.warn('Base revenue seems very high:', baseRevenue);
+  }
+  if (initialInvestment > 10000000) {
+    console.warn('Initial investment seems very high:', initialInvestment);
+  }
   
   console.log(`Base parameters: Revenue=${baseRevenue}, Costs=${baseCosts}, Investment=${initialInvestment}`);
   for(let i = 0; i < iterations; i++){
@@ -139,11 +147,16 @@ async function runMonteCarloSimulation(ideaData, params, scenarioParams) {
     for(let month = 1; month <= timeHorizon; month++){
       // Generate random variables for this iteration and month
       const randomFactors = generateRandomFactors(params.variables, scenarioParams);
-      // Calculate monthly metrics
+      // Calculate monthly metrics with bounds checking
       const monthlyRevenue = calculateMonthlyRevenue(baseRevenue, month, randomFactors, scenarioParams);
       const monthlyCosts = calculateMonthlyCosts(baseCosts, month, randomFactors, scenarioParams);
       const monthlyProfit = monthlyRevenue - monthlyCosts;
       cumulativeProfit += monthlyProfit;
+      
+      // Sanity check for extreme values
+      if (Math.abs(monthlyRevenue) > 1000000 || Math.abs(monthlyCosts) > 1000000) {
+        console.warn(`Extreme values detected - Month ${month}: Revenue=${monthlyRevenue}, Costs=${monthlyCosts}`);
+      }
       
       // Log first iteration for debugging
       if (i === 0 && month <= 3) {
@@ -164,11 +177,16 @@ async function runMonteCarloSimulation(ideaData, params, scenarioParams) {
     // Calculate break-even probability for this month
     const breakEvenCount = monthValues.filter((value)=>value >= 0).length;
     const breakEvenProbability = breakEvenCount / iterations;
+    // Calculate average monthly metrics for projections
+    const avgRevenue = calculateAverageRevenue(month + 1, params.variables, scenarioParams, baseRevenue);
+    const avgCosts = calculateAverageCosts(month + 1, params.variables, scenarioParams, baseCosts);
+    const monthlyProfit = avgRevenue - avgCosts;
+    
     projections.push({
       month: month + 1,
-      revenue: calculateAverageRevenue(month + 1, params.variables, scenarioParams, baseRevenue),
-      costs: calculateAverageCosts(month + 1, params.variables, scenarioParams, baseCosts),
-      profit: monthStats.mean - (month === 0 ? -initialInvestment : results.map((r)=>r[month - 1] || 0).reduce((a, b)=>a + b, 0) / iterations),
+      revenue: avgRevenue,
+      costs: avgCosts,
+      profit: monthlyProfit,
       cumulative_profit: monthStats.mean,
       break_even_probability: breakEvenProbability
     });
@@ -257,35 +275,51 @@ function generateLogNormalRandom(mean, stdDev) {
 // Calculate monthly revenue with random factors
 function calculateMonthlyRevenue(baseRevenue, month, factors, scenarioParams) {
   let revenue = baseRevenue;
-  // Apply growth over time
-  const growthRate = 0.05 * scenarioParams.market_growth_multiplier; // 5% base monthly growth
+  
+  // Apply moderate growth over time (reduced from 5% to 2% monthly)
+  const growthRate = Math.min(0.02 * (scenarioParams.market_growth_multiplier || 1), 0.1); // Cap at 10% monthly
   revenue *= Math.pow(1 + growthRate, month - 1);
-  // Apply random factors
+  
+  // Apply random factors with bounds
   for (const [factorName, factorValue] of Object.entries(factors)){
-    if (factorName.includes('revenue') || factorName.includes('demand')) {
-      revenue *= factorValue;
+    if (factorName.includes('revenue') || factorName.includes('demand') || factorName.includes('market')) {
+      // Constrain factor values to reasonable bounds
+      const boundedFactor = Math.max(0.1, Math.min(5.0, factorValue || 1));
+      revenue *= boundedFactor;
     }
   }
-  // Apply scenario multipliers
-  revenue *= scenarioParams.adoption_rate_multiplier;
-  revenue /= scenarioParams.competition_impact;
-  return Math.max(0, revenue);
+  
+  // Apply scenario multipliers with bounds
+  const adoptionMultiplier = Math.max(0.2, Math.min(3.0, scenarioParams.adoption_rate_multiplier || 1));
+  const competitionImpact = Math.max(0.5, Math.min(2.0, scenarioParams.competition_impact || 1));
+  
+  revenue *= adoptionMultiplier;
+  revenue /= competitionImpact;
+  
+  return Math.max(0, Math.min(revenue, baseRevenue * 100)); // Cap revenue at 100x base
 }
 // Calculate monthly costs with random factors
 function calculateMonthlyCosts(baseCosts, month, factors, scenarioParams) {
   let costs = baseCosts;
-  // Apply cost inflation
-  const inflationRate = 0.02; // 2% monthly inflation
+  
+  // Apply moderate cost inflation (reduced from 2% to 0.5% monthly)
+  const inflationRate = Math.min(0.005, 0.02); // Cap at 2% monthly
   costs *= Math.pow(1 + inflationRate, month - 1);
-  // Apply random factors
+  
+  // Apply random factors with bounds
   for (const [factorName, factorValue] of Object.entries(factors)){
-    if (factorName.includes('cost') || factorName.includes('expense')) {
-      costs *= factorValue;
+    if (factorName.includes('cost') || factorName.includes('expense') || factorName.includes('operational')) {
+      // Constrain factor values to reasonable bounds
+      const boundedFactor = Math.max(0.3, Math.min(3.0, factorValue || 1));
+      costs *= boundedFactor;
     }
   }
-  // Apply scenario multipliers
-  costs *= scenarioParams.cost_efficiency_multiplier;
-  return Math.max(0, costs);
+  
+  // Apply scenario multipliers with bounds
+  const efficiencyMultiplier = Math.max(0.5, Math.min(2.0, scenarioParams.cost_efficiency_multiplier || 1));
+  costs *= efficiencyMultiplier;
+  
+  return Math.max(baseCosts * 0.1, Math.min(costs, baseCosts * 20)); // Keep costs within reasonable bounds
 }
 // Calculate statistics from array of values
 function calculateStatistics(values) {
@@ -370,14 +404,27 @@ async function performSensitivityAnalysis(ideaData, params, variable, scenarioPa
 }
 // Helper functions for average calculations
 function calculateAverageRevenue(month, variables, scenarioParams, baseRevenue) {
-  // Simplified calculation for display purposes
-  const growthRate = 0.05 * scenarioParams.market_growth_multiplier;
-  return baseRevenue * Math.pow(1 + growthRate, month - 1) * scenarioParams.adoption_rate_multiplier / scenarioParams.competition_impact;
+  // Use same bounds as main calculation
+  const growthRate = Math.min(0.02 * (scenarioParams.market_growth_multiplier || 1), 0.1);
+  const adoptionMultiplier = Math.max(0.2, Math.min(3.0, scenarioParams.adoption_rate_multiplier || 1));
+  const competitionImpact = Math.max(0.5, Math.min(2.0, scenarioParams.competition_impact || 1));
+  
+  let revenue = baseRevenue * Math.pow(1 + growthRate, month - 1);
+  revenue *= adoptionMultiplier;
+  revenue /= competitionImpact;
+  
+  return Math.max(0, Math.min(revenue, baseRevenue * 100));
 }
+
 function calculateAverageCosts(month, variables, scenarioParams, baseCosts) {
-  // Simplified calculation for display purposes
-  const inflationRate = 0.02;
-  return baseCosts * Math.pow(1 + inflationRate, month - 1) * scenarioParams.cost_efficiency_multiplier;
+  // Use same bounds as main calculation
+  const inflationRate = Math.min(0.005, 0.02);
+  const efficiencyMultiplier = Math.max(0.5, Math.min(2.0, scenarioParams.cost_efficiency_multiplier || 1));
+  
+  let costs = baseCosts * Math.pow(1 + inflationRate, month - 1);
+  costs *= efficiencyMultiplier;
+  
+  return Math.max(baseCosts * 0.1, Math.min(costs, baseCosts * 20));
 }
 // Generate AI insights
 async function generateSimulationInsights(ideaData, results, sensitivityAnalysis) {

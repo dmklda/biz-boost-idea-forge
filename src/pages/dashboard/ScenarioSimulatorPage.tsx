@@ -85,6 +85,17 @@ const ScenarioSimulatorPage = () => {
     
     const selectedIdea = ideas.find(idea => idea.id === selectedIdeaId);
     if (!selectedIdea || selectedIdeaId === 'custom') {
+      // Para dados customizados, aplica validação
+      if (customIdeaData) {
+        return {
+          ...customIdeaData,
+          initial_investment: Math.max(1000, Math.min(customIdeaData.initial_investment || 100000, 10000000)),
+          monthly_costs: Math.max(100, Math.min(customIdeaData.monthly_costs || 10000, 1000000)),
+          pricing: Math.max(1, Math.min(customIdeaData.pricing || 99, 100000)),
+          target_market_size: Math.max(1000, Math.min(customIdeaData.target_market_size || 1000000, 100000000))
+        };
+      }
+      
       const defaultData = {
         title: 'Simulação Personalizada',
         description: 'Análise Monte Carlo personalizada',
@@ -115,16 +126,20 @@ const ScenarioSimulatorPage = () => {
       smartDefaults = generateSmartDefaults(selectedIdea);
     }
 
-    return {
+    // Aplica validação e limites aos dados extraídos
+    const validatedData = {
       title: selectedIdea.title,
       description: selectedIdea.description,
       monetization: selectedIdea.monetization || 'SaaS',
-      target_market_size: extractedData.target_market_size || smartDefaults.target_market_size || 1000000,
-      initial_investment: extractedData.initial_investment || smartDefaults.initial_investment || 100000,
-      monthly_costs: extractedData.monthly_costs || smartDefaults.monthly_costs || 10000,
+      target_market_size: Math.max(1000, Math.min(extractedData.target_market_size || smartDefaults.target_market_size || 1000000, 100000000)),
+      initial_investment: Math.max(1000, Math.min(extractedData.initial_investment || smartDefaults.initial_investment || 100000, 10000000)),
+      monthly_costs: Math.max(100, Math.min(extractedData.monthly_costs || smartDefaults.monthly_costs || 10000, 1000000)),
       revenue_model: analysis?.financial_analysis?.revenue_model || 'Subscription',
-      pricing: extractedData.pricing || smartDefaults.pricing || 99
+      pricing: Math.max(1, Math.min(extractedData.pricing || smartDefaults.pricing || 99, 100000))
     };
+    
+    console.log('Dados validados para simulação:', validatedData);
+    return validatedData;
   };
 
   const handleRunSimulation = async (scenarios: ScenarioType[]) => {

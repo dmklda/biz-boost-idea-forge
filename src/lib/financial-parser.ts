@@ -56,7 +56,8 @@ export function parseFinancialValue(text: string): number {
     
     for (const match of matches) {
       const numericValue = parseNumericValue(match[1] || match[0]);
-      if (numericValue > 0) {
+      // Aplica limites realistas para valores financeiros
+      if (numericValue > 0 && numericValue <= 100000000) {
         // Calcula confiança baseada na especificidade do padrão
         let confidence = match[0].includes('investimento') || match[0].includes('custo') ? 3 : 
                         match[0].includes('r$') || match[0].includes('$') ? 2 : 1;
@@ -283,5 +284,13 @@ export function generateSmartDefaults(ideaData: any): {
     }
   };
   
-  return defaults[category];
+  const result = defaults[category];
+  
+  // Aplica limites de segurança
+  return {
+    initial_investment: Math.max(1000, Math.min(result.initial_investment, 10000000)),
+    monthly_costs: Math.max(100, Math.min(result.monthly_costs, 1000000)),
+    pricing: Math.max(1, Math.min(result.pricing, 100000)),
+    target_market_size: Math.max(1000, Math.min(result.target_market_size, 100000000))
+  };
 }
