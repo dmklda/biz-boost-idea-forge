@@ -41,6 +41,7 @@ const HistoricalSimulationsPanel = ({ onLoadSimulation }: HistoricalSimulationsP
   const [exportingId, setExportingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { loadSimulations, exportResults } = useScenarioSimulator();
+  const { generateSimulationPDF, isGeneratingPdf } = useSimulationPDFGenerator();
 
   useEffect(() => {
     fetchSimulations();
@@ -142,11 +143,14 @@ const HistoricalSimulationsPanel = ({ onLoadSimulation }: HistoricalSimulationsP
         return;
       }
 
-      // Use PDF generator
-      const { useSimulationPDFGenerator } = await import('@/hooks/useSimulationPDFGenerator');
-      const pdfGenerator = useSimulationPDFGenerator();
+      // Validate simulation data
+      if (!simulation.results || !simulation.results.results) {
+        console.error('❌ Invalid simulation data structure:', simulation);
+        toast.error('Dados da simulação estão incompletos');
+        return;
+      }
       
-      await pdfGenerator.generateSimulationPDF({
+      await generateSimulationPDF({
         results: simulation.results,
         simulationName: simulation.simulation_name,
         companyName: simulation.financial_data?.idea_title || simulation.simulation_name
@@ -282,17 +286,11 @@ const HistoricalSimulationsPanel = ({ onLoadSimulation }: HistoricalSimulationsP
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => {
-                        setExportingId(simulation.id);
-                        handleExportSimulation(simulation).finally(() => setExportingId(null));
-                      }}
-                      disabled={exportingId === simulation.id}
+                      onClick={() => handleExportSimulation(simulation)}
+                      disabled={exportingId === simulation.id || isGeneratingPdf}
                     >
-                      {exportingId === simulation.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Download className="h-4 w-4" />
-                      )}
+                      <Download className="h-4 w-4 mr-2" />
+                      {(exportingId === simulation.id || isGeneratingPdf) ? 'Exportando...' : 'PDF'}
                     </Button>
                     
                     <Button

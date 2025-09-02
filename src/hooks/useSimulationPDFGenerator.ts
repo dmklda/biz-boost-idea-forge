@@ -15,7 +15,15 @@ export const useSimulationPDFGenerator = () => {
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const generateSimulationPDF = async ({ results, simulationName, companyName }: SimulationPDFOptions) => {
+    console.log('🔍 Starting PDF generation with:', { 
+      hasResults: !!results, 
+      hasResultsData: !!results?.results,
+      simulationName,
+      companyName 
+    });
+
     if (!results || !results.results) {
+      console.error('❌ Invalid simulation data:', results);
       toast({
         variant: "destructive",
         title: "Erro na exportação",
@@ -26,6 +34,8 @@ export const useSimulationPDFGenerator = () => {
 
     try {
       setIsGeneratingPdf(true);
+      console.log('🚀 Initializing PDF generation...');
+      
       toast({
         title: "Gerando relatório PDF",
         description: "Preparando documento executivo..."
