@@ -53,6 +53,85 @@ const RegulatoryAnalysisPage = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const normalizeAnalysisResult = (rawResult: any) => {
+    // Normalizar estrutura de custos se necessário
+    if (rawResult?.costs && typeof rawResult.costs.breakdown === 'object' && !Array.isArray(rawResult.costs.breakdown)) {
+      // Converter objeto breakdown para array
+      const breakdownArray = Object.entries(rawResult.costs.breakdown).map(([category, amount]) => ({
+        category: category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        amount: parseFloat(String(amount).replace(/[^\d.,]/g, '').replace(',', '.')) || 0
+      }));
+
+      rawResult.costs = {
+        ...rawResult.costs,
+        initialCompliance: parseFloat(String(rawResult.costs.initial_setup || 0).replace(/[^\d.,]/g, '').replace(',', '.')) || 0,
+        annualCompliance: parseFloat(String(rawResult.costs.annual_compliance || 0).replace(/[^\d.,]/g, '').replace(',', '.')) || 0,
+        breakdown: breakdownArray
+      };
+    }
+
+    // Normalizar roadmap se necessário
+    if (rawResult?.roadmap && !rawResult.roadmap.phases) {
+      const phases = [];
+      
+      if (rawResult.roadmap.immediate) {
+        phases.push({
+          phase: "Imediato (0-3 meses)",
+          timeline: "0-3 meses",
+          requirements: rawResult.roadmap.immediate.map((item: any) => item.task || item),
+          estimated_cost: rawResult.roadmap.immediate.reduce((sum: number, item: any) => {
+            const cost = parseFloat(String(item.cost || 0).replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+            return sum + cost;
+          }, 0),
+          critical_path: true
+        });
+      }
+
+      if (rawResult.roadmap.medium_term) {
+        phases.push({
+          phase: "Médio Prazo (3-6 meses)",
+          timeline: "3-6 meses",
+          requirements: rawResult.roadmap.medium_term.map((item: any) => item.task || item),
+          estimated_cost: rawResult.roadmap.medium_term.reduce((sum: number, item: any) => {
+            const cost = parseFloat(String(item.cost || 0).replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+            return sum + cost;
+          }, 0),
+          critical_path: false
+        });
+      }
+
+      if (rawResult.roadmap.long_term) {
+        phases.push({
+          phase: "Longo Prazo (6+ meses)",
+          timeline: "6+ meses",
+          requirements: rawResult.roadmap.long_term.map((item: any) => item.task || item),
+          estimated_cost: rawResult.roadmap.long_term.reduce((sum: number, item: any) => {
+            const cost = parseFloat(String(item.cost || 0).replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+            return sum + cost;
+          }, 0),
+          critical_path: false
+        });
+      }
+
+      rawResult.roadmap = {
+        ...rawResult.roadmap,
+        phases,
+        totalTimeframe: "6+ meses"
+      };
+    }
+
+    // Normalizar riskAssessment se necessário
+    if (rawResult?.risk_assessment) {
+      rawResult.riskAssessment = {
+        overallRisk: rawResult.risk_assessment.overall_risk || 'Médio',
+        riskFactors: rawResult.risk_assessment.key_risks || [],
+        mitigationStrategies: rawResult.risk_assessment.mitigation_strategies || []
+      };
+    }
+
+    return rawResult;
+  };
+
   const handleAnalysis = async () => {
     // Validação no frontend
     const currentData = selectedIdea ? {
@@ -106,9 +185,10 @@ const RegulatoryAnalysisPage = () => {
       const result = await runRegulatoryAnalysis(currentData);
       
       if (result) {
+        const normalizedResult = normalizeAnalysisResult(result);
         setAnalysisProgress('Análise concluída!');
         setAnalysisSteps(prev => [...prev, 'Análise regulatória finalizada com sucesso!']);
-        setAnalysisResult(result);
+        setAnalysisResult(normalizedResult);
         setTimeout(() => {
           setCurrentView('results');
           setAnalysisProgress('');
@@ -161,7 +241,8 @@ const RegulatoryAnalysisPage = () => {
   };
 
   const handleViewAnalysis = (analysis: any) => {
-    setAnalysisResult(analysis.analysis_results);
+    const normalizedResult = normalizeAnalysisResult(analysis.analysis_results);
+    setAnalysisResult(normalizedResult);
     setCurrentView('results');
   };
 
@@ -418,7 +499,7 @@ const RegulatoryAnalysisPage = () => {
                         </p>
                       </div>
                     </div>
-                    {analysisResult.costs?.breakdown && (
+                    {analysisResult.costs?.breakdown && Array.isArray(analysisResult.costs.breakdown) && analysisResult.costs.breakdown.length > 0 ? (
                       <div className="space-y-2">
                         <h4 className="font-semibold">Detalhamento por Categoria</h4>
                         {analysisResult.costs.breakdown.map((item: any, index: number) => (
@@ -427,6 +508,10 @@ const RegulatoryAnalysisPage = () => {
                             <span className="font-semibold">{formatCurrency(item.amount)}</span>
                           </div>
                         ))}
+                      </div>
+                    ) : (
+                      <div className="text-muted-foreground text-center py-4">
+                        Detalhamento de custos não disponível
                       </div>
                     )}
                   </div>
