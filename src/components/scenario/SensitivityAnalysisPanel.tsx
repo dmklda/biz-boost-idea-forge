@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import OptimizedSensitivityAnalysis from "./OptimizedSensitivityAnalysis";
+import { getHumanReadableVariableName, getVariableDescription } from "@/lib/variable-names";
 import { 
   LineChart, 
   Line, 
@@ -91,6 +92,7 @@ const SensitivityAnalysisPanel = ({
   const [activeTab, setActiveTab] = useState('tornado');
   const [currentVariableValue, setCurrentVariableValue] = useState<number>(0);
   const { getVariableTypeInfo } = useScenarioSimulator();
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Initialize selected variable and current value
   useEffect(() => {
@@ -109,6 +111,26 @@ const SensitivityAnalysisPanel = ({
       }
     }
   }, [selectedVariable, variables]);
+
+  // Debounced function for interactive analysis
+  const debouncedAnalysis = useCallback((variableName: string, newValue: number) => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    
+    debounceRef.current = setTimeout(() => {
+      runSingleVariableAnalysis(variableName, newValue);
+    }, 800); // 800ms debounce for better UX
+  }, []);
+
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, []);
 
   const runSensitivityAnalysis = async () => {
     if (!variables || variables.length === 0) {
@@ -233,7 +255,7 @@ const SensitivityAnalysisPanel = ({
     const highImpact = result.highResult - baselineResult;
     
     return {
-      variable: result.variable,
+      variable: getHumanReadableVariableName(result.variable),
       low: lowImpact,
       high: highImpact,
       impact: result.impact
@@ -247,7 +269,7 @@ const SensitivityAnalysisPanel = ({
     const maxElasticity = Math.max(...results.map(r => r.elasticity));
     
     return {
-      variable: result.variable,
+      variable: getHumanReadableVariableName(result.variable),
       sensitivity: maxSensitivity > 0 ? (result.sensitivity / maxSensitivity) * 100 : 0,
       impact: maxImpact > 0 ? (result.impact / maxImpact) * 100 : 0,
       elasticity: maxElasticity > 0 ? Math.min((result.elasticity / maxElasticity) * 100, 100) : 0
@@ -285,7 +307,7 @@ const SensitivityAnalysisPanel = ({
         }}
       />
       
-      {/* Fallback Analysis Controls */}
+      {/* Advanced Analysis Controls - Temporarily Disabled for Performance 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -293,7 +315,7 @@ const SensitivityAnalysisPanel = ({
             Análise Completa (Avançada)
           </CardTitle>
           <CardDescription>
-            Execute análise detalhada com maior precisão (mais lenta)
+            Execute análise detalhada com maior precisão (mais lenta) - Temporariamente desabilitada
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -354,6 +376,7 @@ const SensitivityAnalysisPanel = ({
           </div>
         </CardContent>
       </Card>
+      */}
 
       {/* Results Visualization */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -479,8 +502,8 @@ const SensitivityAnalysisPanel = ({
                   {results.map((result, index) => (
                     <div key={index} className="border rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-medium capitalize">
-                          {result.variable.replace(/_/g, ' ')}
+                        <h4 className="font-medium">
+                          {getHumanReadableVariableName(result.variable)}
                         </h4>
                         <Badge className={getImpactColor(result.impact)}>
                           {result.impact > baselineResult * 0.1 ? 'ALTO' : 
@@ -540,7 +563,7 @@ const SensitivityAnalysisPanel = ({
                     <SelectContent>
                       {variables?.map((variable) => (
                         <SelectItem key={variable.name} value={variable.name}>
-                          {variable.name}
+                          {getHumanReadableVariableName(variable.name)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -573,9 +596,10 @@ const SensitivityAnalysisPanel = ({
                               step={baseValue * 0.01}
                               onValueChange={(values) => {
                                 setCurrentVariableValue(values[0]);
-                                // Debounced analysis - only update variable in parent after user stops dragging
+                                // Immediate visual update + debounced analysis
                                 if (selectedVariable) {
                                   onVariableChange?.(selectedVariable, values[0]);
+                                  debouncedAnalysis(selectedVariable, values[0]);
                                 }
                               }}
                               className="w-full"
@@ -634,15 +658,15 @@ const SensitivityAnalysisPanel = ({
               return (
                 <>
                   <p>
-                    <strong>Variável mais sensível:</strong> {mostSensitive.variable} 
+                    <strong>Variável mais sensível:</strong> {getHumanReadableVariableName(mostSensitive.variable)} 
                     (elasticidade: {mostSensitive.elasticity.toFixed(2)})
                   </p>
                   <p>
-                    <strong>Maior impacto absoluto:</strong> {highestImpact.variable} 
+                    <strong>Maior impacto absoluto:</strong> {getHumanReadableVariableName(highestImpact.variable)} 
                     ({formatCurrency(highestImpact.impact)})
                   </p>
                   <p>
-                    <strong>Variável mais estável:</strong> {leastSensitive.variable} 
+                    <strong>Variável mais estável:</strong> {getHumanReadableVariableName(leastSensitive.variable)} 
                     (elasticidade: {leastSensitive.elasticity.toFixed(2)})
                   </p>
                   
@@ -650,7 +674,7 @@ const SensitivityAnalysisPanel = ({
                   <div className="mt-3 space-y-2">
                     <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
                       <p className="text-blue-700 dark:text-blue-300">
-                        <strong>🎯 Foco principal:</strong> Monitore "{mostSensitive.variable}" - pequenas mudanças 
+                        <strong>🎯 Foco principal:</strong> Monitore "{getHumanReadableVariableName(mostSensitive.variable)}" - pequenas mudanças 
                         causam grandes impactos ({mostSensitive.elasticity.toFixed(1)}% de elasticidade).
                       </p>
                     </div>
@@ -658,7 +682,7 @@ const SensitivityAnalysisPanel = ({
                     {highestImpact.variable !== mostSensitive.variable && (
                       <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded">
                         <p className="text-orange-700 dark:text-orange-300">
-                          <strong>💰 Maior impacto:</strong> "{highestImpact.variable}" pode gerar 
+                          <strong>💰 Maior impacto:</strong> "{getHumanReadableVariableName(highestImpact.variable)}" pode gerar 
                           variações de até {formatCurrency(highestImpact.impact)} nos resultados.
                         </p>
                       </div>
@@ -666,7 +690,7 @@ const SensitivityAnalysisPanel = ({
                     
                     <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded">
                       <p className="text-green-700 dark:text-green-300">
-                        <strong>✅ Mais estável:</strong> "{leastSensitive.variable}" é uma base sólida 
+                        <strong>✅ Mais estável:</strong> "{getHumanReadableVariableName(leastSensitive.variable)}" é uma base sólida 
                         para projeções (baixa volatilidade).
                       </p>
                     </div>
