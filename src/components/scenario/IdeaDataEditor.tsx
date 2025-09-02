@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Edit, Save, X } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getRevenueModelDisplayName } from "@/lib/utils";
 
 interface IdeaData {
   title: string;
@@ -131,7 +131,7 @@ const IdeaDataEditor = ({ ideaData, onSave, isCustomSimulation = false, allowEdi
               <Label className="text-sm font-medium text-slate-600 dark:text-slate-400">
                 Modelo de Receita
               </Label>
-              <p className="text-sm font-medium">{ideaData.revenue_model}</p>
+              <p className="text-sm font-medium">{getRevenueModelDisplayName(ideaData.revenue_model)}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-slate-600 dark:text-slate-400">
@@ -244,11 +244,11 @@ const IdeaDataEditor = ({ ideaData, onSave, isCustomSimulation = false, allowEdi
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Subscription">Assinatura</SelectItem>
-                <SelectItem value="One-time">Pagamento único</SelectItem>
-                <SelectItem value="Freemium">Freemium</SelectItem>
-                <SelectItem value="Commission">Comissão</SelectItem>
-                <SelectItem value="Advertising">Publicidade</SelectItem>
+                <SelectItem value="subscription">Assinatura</SelectItem>
+                <SelectItem value="one_time">Pagamento único</SelectItem>
+                <SelectItem value="freemium">Freemium</SelectItem>
+                <SelectItem value="marketplace">Marketplace</SelectItem>
+                <SelectItem value="advertising">Publicidade</SelectItem>
               </SelectContent>
             </Select>
           </div>

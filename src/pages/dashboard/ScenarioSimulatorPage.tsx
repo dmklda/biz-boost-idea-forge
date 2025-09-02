@@ -10,7 +10,7 @@ import ScenarioSimulatorResults from "@/components/scenario/ScenarioSimulatorRes
 import IdeaDataEditor from "@/components/scenario/IdeaDataEditor";
 import SaveSimulationModal from "@/components/scenario/SaveSimulationModal";
 import HistoricalSimulationsPanel from "@/components/scenario/HistoricalSimulationsPanel";
-import { useScenarioSimulator, SimulationVariable, ScenarioType } from "@/hooks/useScenarioSimulator";
+import { useScenarioSimulator, SimulationVariable, ScenarioType, SimulationResults } from "@/hooks/useScenarioSimulator";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
@@ -324,15 +324,43 @@ const ScenarioSimulatorPage = () => {
   };
 
   const handleLoadSimulation = (simulation: any) => {
-    // Load historical simulation data
-    setSimulationResults({
-      ...simulation.results,
-      ideaTitle: simulation.financial_data.idea_title,
-      simulationParams: simulation.simulation_params,
-      revenueModel: simulation.revenue_model
-    });
-    setActiveTab('results');
-    toast.success('Simulação carregada com sucesso!');
+    console.log('🔄 Carregando simulação:', simulation);
+    
+    try {
+      // Validate that we have the necessary data
+      if (!simulation.results || !simulation.financial_data?.idea_title) {
+        console.error('❌ Dados da simulação inválidos:', simulation);
+        toast.error('Dados da simulação são inválidos');
+        return;
+      }
+
+      // Create a proper SimulationResults object
+      const loadedResults: SimulationResults = {
+        results: simulation.results,
+        metadata: {
+          totalIterations: simulation.simulation_params?.iterations || 1000,
+          timeHorizon: simulation.simulation_params?.timeHorizon || 24,
+          confidenceLevel: simulation.simulation_params?.confidenceLevel || 95,
+          revenueModel: simulation.revenue_model || 'subscription',
+          originalRevenueModel: simulation.financial_data?.original_revenue_model
+        },
+        ideaTitle: simulation.financial_data.idea_title,
+        simulationParams: simulation.simulation_params,
+        revenueModel: simulation.revenue_model || 'subscription',
+        generatedAt: simulation.created_at || new Date().toISOString(),
+        sensitivityAnalysis: [],
+        insights: ''
+      };
+
+      console.log('✅ Simulação estruturada:', loadedResults);
+      
+      setSimulationResults(loadedResults);
+      setActiveTab('results');
+      toast.success('Simulação carregada com sucesso!');
+    } catch (error) {
+      console.error('❌ Erro ao carregar simulação:', error);
+      toast.error('Erro ao carregar simulação');
+    }
   };
 
   return (

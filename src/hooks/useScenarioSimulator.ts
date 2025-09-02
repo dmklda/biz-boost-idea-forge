@@ -102,6 +102,7 @@ export interface SimulationResults {
     timeHorizon: number;
     confidenceLevel: number;
     revenueModel?: string;
+    originalRevenueModel?: string;
   };
 }
 
