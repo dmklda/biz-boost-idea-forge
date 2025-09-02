@@ -7,6 +7,7 @@ import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import OptimizedSensitivityAnalysis from "./OptimizedSensitivityAnalysis";
 import { 
   LineChart, 
   Line, 
@@ -137,15 +138,15 @@ const SensitivityAnalysisPanel = ({
         const lowValue = Math.max(0, baseValue - delta);
         const highValue = baseValue + delta;
 
-        // Test low value
+        // Test low value - fix data structure
         const lowTestVars = variables.map(v => 
-          v.name === variable.name ? { ...v, baseValue: lowValue } : v
+          v.name === variable.name ? { ...v, parameters: { ...v.parameters, mean: lowValue, mode: lowValue } } : v
         );
         const lowResult = await onRunAnalysis(lowTestVars);
 
-        // Test high value  
+        // Test high value - fix data structure  
         const highTestVars = variables.map(v =>
-          v.name === variable.name ? { ...v, baseValue: highValue } : v
+          v.name === variable.name ? { ...v, parameters: { ...v.parameters, mean: highValue, mode: highValue } } : v
         );
         const highResult = await onRunAnalysis(highTestVars);
 
@@ -203,7 +204,7 @@ const SensitivityAnalysisPanel = ({
     console.log(`🔍 Análise única para ${variableName}:`, newValue);
 
     const testVars = variables.map(v => 
-      v.name === variableName ? { ...v, baseValue: newValue } : v
+      v.name === variableName ? { ...v, parameters: { ...v.parameters, mean: newValue, mode: newValue } } : v
     );
     
     try {
@@ -271,15 +272,28 @@ const SensitivityAnalysisPanel = ({
 
   return (
     <div className="space-y-6">
-      {/* Analysis Controls */}
+      {/* Optimized Analysis Component */}
+      <OptimizedSensitivityAnalysis
+        variables={variables}
+        baselineResult={baselineResult}
+        onRunAnalysis={onRunAnalysis}
+        onAnalysisComplete={(analysisResults) => {
+          setResults(analysisResults);
+          if (analysisResults.length > 0) {
+            setActiveTab('tornado'); // Switch to results view
+          }
+        }}
+      />
+      
+      {/* Fallback Analysis Controls */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-purple-600" />
-            Análise de Sensibilidade
+            <Settings className="h-5 w-5 text-slate-600" />
+            Análise Completa (Avançada)
           </CardTitle>
           <CardDescription>
-            Analise como mudanças nas variáveis impactam os resultados
+            Execute análise detalhada com maior precisão (mais lenta)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -321,6 +335,7 @@ const SensitivityAnalysisPanel = ({
               <Button 
                 onClick={runSensitivityAnalysis}
                 disabled={isAnalyzing || variables.length === 0 || baselineResult <= 0}
+                variant="outline"
                 className="w-full"
               >
                 {isAnalyzing ? (
@@ -331,7 +346,7 @@ const SensitivityAnalysisPanel = ({
                 ) : (
                   <>
                     <Play className="mr-2 h-4 w-4" />
-                    Executar Análise
+                    Análise Detalhada
                   </>
                 )}
               </Button>
@@ -343,10 +358,18 @@ const SensitivityAnalysisPanel = ({
       {/* Results Visualization */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="tornado">Tornado Chart</TabsTrigger>
-          <TabsTrigger value="spider">Spider Chart</TabsTrigger>
-          <TabsTrigger value="table">Tabela Detalhada</TabsTrigger>
-          <TabsTrigger value="interactive">Análise Interativa</TabsTrigger>
+          <TabsTrigger value="tornado" disabled={results.length === 0}>
+            Tornado Chart
+          </TabsTrigger>
+          <TabsTrigger value="spider" disabled={results.length === 0}>
+            Spider Chart
+          </TabsTrigger>
+          <TabsTrigger value="table" disabled={results.length === 0}>
+            Tabela Detalhada
+          </TabsTrigger>
+          <TabsTrigger value="interactive" disabled={results.length === 0}>
+            Análise Interativa
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="tornado" className="space-y-4">

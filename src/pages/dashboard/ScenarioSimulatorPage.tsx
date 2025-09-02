@@ -217,45 +217,63 @@ const ScenarioSimulatorPage = () => {
     setSimulationResults(null);
   };
 
-  const handleRunAnalysis = async (): Promise<number> => {
+  const handleRunAnalysis = async (testVariables?: SimulationVariable[]): Promise<number> => {
     console.log("🔬 Executando análise rápida...");
     
+    // Implement timeout for analysis
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error("Timeout na análise - muito lenta")), 15000); // 15 second timeout
+    });
+    
     try {
-      const ideaData = getSelectedIdeaData();
-      console.log("💡 Dados da ideia:", ideaData);
-      
-      if (!ideaData) {
-        console.error("❌ Dados da ideia não encontrados");
-        throw new Error("Dados da ideia não encontrados");
-      }
+      const analysisPromise = (async () => {
+        const ideaData = getSelectedIdeaData();
+        console.log("💡 Dados da ideia:", ideaData);
+        
+        if (!ideaData) {
+          console.error("❌ Dados da ideia não encontrados");
+          throw new Error("Dados da ideia não encontrados");
+        }
 
-      // Use current variables state
-      const currentVariables = variables.length > 0 ? variables : createDefaultVariables(ideaData);
-      console.log("⚙️ Variáveis atuais:", currentVariables);
+        // Use test variables if provided, otherwise use current variables
+        const currentVariables = testVariables || (variables.length > 0 ? variables : createDefaultVariables(ideaData));
+        console.log("⚙️ Variáveis atuais:", currentVariables);
+        
+        // Extremely optimized parameters for sensitivity analysis
+        const quickParams = {
+          timeHorizon: 6, // Further reduced to 6 months for maximum speed
+          iterations: 50, // Minimal iterations for speed
+          confidenceLevel: 90, // Lower confidence for speed
+          variables: currentVariables
+        };
+        
+        console.log("🚀 Executando simulação ultra-rápida...");
+        const result = await runSimulation(ideaData, quickParams, ['realistic']);
+        
+        console.log("📊 Resultado da simulação:", result);
+        
+        if (result?.results?.realistic?.statistics?.mean) {
+          const meanValue = result.results.realistic.statistics.mean;
+          console.log("✅ Valor médio obtido:", meanValue);
+          return meanValue;
+        }
+        
+        console.error("❌ Resultado da simulação inválido:", result);
+        throw new Error("Resultado da simulação inválido");
+      })();
       
-      // Run a quick simulation with fewer iterations for sensitivity analysis
-      const quickParams = {
-        timeHorizon: 24,
-        iterations: Math.min(500, 1000), // Limit iterations for speed
-        confidenceLevel: 95,
-        variables: currentVariables
-      };
+      // Race between analysis and timeout
+      const result = await Promise.race([analysisPromise, timeoutPromise]);
+      return result;
       
-      console.log("🚀 Executando simulação rápida...");
-      const result = await runSimulation(ideaData, quickParams, ['realistic']);
-      
-      console.log("📊 Resultado da simulação:", result);
-      
-      if (result?.results?.realistic?.statistics?.mean) {
-        const meanValue = result.results.realistic.statistics.mean;
-        console.log("✅ Valor médio obtido:", meanValue);
-        return meanValue;
-      }
-      
-      console.error("❌ Resultado da simulação inválido:", result);
-      throw new Error("Resultado da simulação inválido");
     } catch (error) {
       console.error("❌ Erro na análise:", error);
+      // Fallback: return baseline or estimate if analysis fails
+      if (error.message.includes("Timeout")) {
+        console.log("⚡ Usando fallback devido ao timeout");
+        toast.warning("Análise demorou muito - usando estimativa");
+        return simulationResults?.results?.realistic?.statistics?.mean || 100000; // Return baseline if available
+      }
       throw error;
     }
   };

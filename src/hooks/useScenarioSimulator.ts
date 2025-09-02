@@ -111,6 +111,7 @@ export const useScenarioSimulator = () => {
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulationResults, setSimulationResults] = useState<SimulationResults | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [simulationCache, setSimulationCache] = useState<Map<string, any>>(new Map());
 
   const runSimulation = async (
     ideaData: IdeaFinancialData,
@@ -120,6 +121,35 @@ export const useScenarioSimulator = () => {
     try {
       setIsSimulating(true);
       setError(null);
+      
+      // Create cache key for optimization
+      const cacheKey = JSON.stringify({ 
+        ideaData: {
+          title: ideaData.title,
+          initial_investment: ideaData.initial_investment,
+          monthly_costs: ideaData.monthly_costs,
+          pricing: ideaData.pricing,
+          revenue_model: ideaData.revenue_model
+        },
+        simulationParams: {
+          timeHorizon: simulationParams.timeHorizon,
+          iterations: simulationParams.iterations,
+          variables: simulationParams.variables.map(v => ({
+            name: v.name,
+            parameters: v.parameters
+          }))
+        },
+        scenarioTypes
+      });
+      
+      // Check cache for repeated simulations
+      if (simulationCache.has(cacheKey)) {
+        console.log('🚀 Using cached simulation result');
+        const cachedResult = simulationCache.get(cacheKey);
+        setSimulationResults(cachedResult);
+        toast.success('Resultado da simulação (cache)');
+        return cachedResult;
+      }
       
       console.log('Starting Monte Carlo simulation...');
       console.log('Input data:', { ideaData, simulationParams, scenarioTypes });
@@ -149,6 +179,19 @@ export const useScenarioSimulator = () => {
       }
 
       console.log('Simulation completed successfully:', data);
+      
+      // Cache the result for future use
+      setSimulationCache(prev => {
+        const newCache = new Map(prev);
+        newCache.set(cacheKey, data);
+        // Limit cache size to prevent memory issues
+        if (newCache.size > 10) {
+          const firstKey = newCache.keys().next().value;
+          newCache.delete(firstKey);
+        }
+        return newCache;
+      });
+      
       setSimulationResults(data);
       toast.success('Simulação Monte Carlo concluída com sucesso!');
       
