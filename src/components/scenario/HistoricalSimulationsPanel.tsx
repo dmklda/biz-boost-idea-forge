@@ -37,6 +37,7 @@ const HistoricalSimulationsPanel = ({ onLoadSimulation }: HistoricalSimulationsP
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [exportingId, setExportingId] = useState<string | null>(null);
   const { loadSimulations, exportResults } = useScenarioSimulator();
 
   useEffect(() => {
@@ -55,11 +56,22 @@ const HistoricalSimulationsPanel = ({ onLoadSimulation }: HistoricalSimulationsP
   const fetchSimulations = async () => {
     setIsLoading(true);
     try {
+      console.log('📊 Carregando simulações...');
+      
+      // Verificar autenticação
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.error('❌ Usuário não autenticado');
+        toast.error('Você precisa estar logado para ver suas simulações');
+        return;
+      }
+      
       const data = await loadSimulations();
+      console.log('✅ Simulações carregadas:', data.length);
       setSimulations(data as SavedSimulation[]);
-    } catch (error) {
-      console.error('Error fetching simulations:', error);
-      toast.error('Erro ao carregar simulações');
+    } catch (error: any) {
+      console.error('❌ Erro ao carregar simulações:', error);
+      toast.error(`Erro ao carregar simulações: ${error.message || 'Erro desconhecido'}`);
     } finally {
       setIsLoading(false);
     }
@@ -70,52 +82,106 @@ const HistoricalSimulationsPanel = ({ onLoadSimulation }: HistoricalSimulationsP
     
     setDeletingId(id);
     try {
+      console.log('🗑️ Iniciando deleção da simulação:', id);
+      
+      // Verificar autenticação
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.error('❌ Usuário não autenticado');
+        toast.error('Você precisa estar logado para deletar simulações');
+        return;
+      }
+      
+      console.log('✅ Usuário autenticado:', user.id);
+      
+      // Tentar deletar
       const { error } = await supabase
         .from('scenario_simulations')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Erro no Supabase ao deletar:', error);
+        throw error;
+      }
 
+      console.log('✅ Simulação deletada no banco');
       setSimulations(prev => prev.filter(sim => sim.id !== id));
       toast.success('Simulação excluída com sucesso!');
-    } catch (error) {
-      console.error('Error deleting simulation:', error);
-      toast.error('Erro ao excluir simulação');
+    } catch (error: any) {
+      console.error('❌ Erro ao deletar simulação:', error);
+      toast.error(`Erro ao deletar simulação: ${error.message || 'Erro desconhecido'}`);
     } finally {
       setDeletingId(null);
     }
   };
 
-  const handleExportSimulation = (simulation: SavedSimulation) => {
+  const handleExportSimulation = async (simulation: SavedSimulation) => {
     try {
+      console.log('📤 Iniciando exportação da simulação:', simulation.simulation_name);
+      console.log('📊 Dados da simulação:', simulation);
+      
+      // Validar dados da simulação
+      if (!simulation.simulation_name || !simulation.id) {
+        console.error('❌ Dados da simulação inválidos:', { 
+          name: simulation.simulation_name, 
+          id: simulation.id 
+        });
+        toast.error('Dados da simulação estão incompletos');
+        return;
+      }
+      
+      // Preparar dados para exportação
       const exportData = {
+        id: simulation.id,
+        simulationName: simulation.simulation_name,
         ideaTitle: simulation.financial_data?.idea_title || simulation.simulation_name,
-        simulationParams: simulation.simulation_params,
-        results: simulation.results,
-        revenueModel: simulation.revenue_model,
+        simulationParams: simulation.simulation_params || {},
+        results: simulation.results || {},
+        revenueModel: simulation.revenue_model || 'Não especificado',
         generatedAt: simulation.financial_data?.generated_at || simulation.created_at,
+        financialData: simulation.financial_data || {},
         metadata: {
-          simulationName: simulation.simulation_name,
-          createdAt: simulation.created_at
+          createdAt: simulation.created_at,
+          exportedAt: new Date().toISOString(),
+          version: '1.0'
         }
       };
-
+      
+      console.log('📋 Dados preparados para exportação:', exportData);
+      
+      // Gerar arquivo
       const content = JSON.stringify(exportData, null, 2);
-      const filename = `simulacao-${simulation.simulation_name.replace(/\s+/g, '-')}-${Date.now()}.json`;
+      const filename = `simulacao-${simulation.simulation_name.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.json`;
+      
+      // Verificar se o browser suporta download
+      if (!('download' in document.createElement('a'))) {
+        console.error('❌ Browser não suporta download automático');
+        toast.error('Seu browser não suporta download automático. Tente outro browser.');
+        return;
+      }
+      
+      // Criar e executar download
       const blob = new Blob([content], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = filename;
+      a.style.display = 'none';
+      
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      URL.revokeObjectURL(url);
       
+      // Limpar URL do blob
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+      
+      console.log('✅ Exportação concluída:', filename);
       toast.success('Simulação exportada com sucesso!');
-    } catch (error) {
-      toast.error('Erro ao exportar simulação');
+    } catch (error: any) {
+      console.error('❌ Erro ao exportar simulação:', error);
+      toast.error(`Erro ao exportar simulação: ${error.message || 'Erro desconhecido'}`);
     }
   };
 
@@ -237,9 +303,17 @@ const HistoricalSimulationsPanel = ({ onLoadSimulation }: HistoricalSimulationsP
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleExportSimulation(simulation)}
+                      onClick={() => {
+                        setExportingId(simulation.id);
+                        handleExportSimulation(simulation).finally(() => setExportingId(null));
+                      }}
+                      disabled={exportingId === simulation.id}
                     >
-                      <Download className="h-4 w-4" />
+                      {exportingId === simulation.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Download className="h-4 w-4" />
+                      )}
                     </Button>
                     
                     <Button
