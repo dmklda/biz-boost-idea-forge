@@ -46,33 +46,35 @@ import { toast } from "@/components/ui/sonner";
 
 interface SensitivityResult {
   variable: string;
-  baseValue: number;
-  testValue: number;
-  baseResult: number;
-  testResult: number;
+  baselineValue: number;
+  lowValue: number;
+  highValue: number;
+  lowResult: number;
+  highResult: number;
+  impact: number;
   sensitivity: number;
   elasticity: number;
-  impact: 'high' | 'medium' | 'low';
 }
 
 interface TornadoData {
   variable: string;
   low: number;
   high: number;
-  range: number;
+  impact: number;
 }
 
 interface SpiderData {
   variable: string;
   sensitivity: number;
   impact: number;
+  elasticity: number;
 }
 
 interface SensitivityAnalysisPanelProps {
   variables: SimulationVariable[];
   baselineResult: number;
   onVariableChange: (variableName: string, newValue: number) => void;
-  onRunAnalysis: () => Promise<number>;
+  onRunAnalysis: (variables: SimulationVariable[]) => Promise<number>;
 }
 
 const SensitivityAnalysisPanel = ({ 
@@ -81,181 +83,180 @@ const SensitivityAnalysisPanel = ({
   onVariableChange, 
   onRunAnalysis 
 }: SensitivityAnalysisPanelProps) => {
-  // Use proper baseline result from simulation data
-  const actualBaselineResult = baselineResult || 0;
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [sensitivityResults, setSensitivityResults] = useState<SensitivityResult[]>([]);
+  const [results, setResults] = useState<SensitivityResult[]>([]);
   const [selectedVariable, setSelectedVariable] = useState<string>('');
   const [analysisRange, setAnalysisRange] = useState(20); // ±20% by default
   const [activeTab, setActiveTab] = useState('tornado');
-  const [isRealTime, setIsRealTime] = useState(false);
+  const [currentVariableValue, setCurrentVariableValue] = useState<number>(0);
   const { getVariableTypeInfo } = useScenarioSimulator();
 
+  // Initialize selected variable and current value
   useEffect(() => {
-    if (variables.length > 0 && !selectedVariable) {
+    if (variables && variables.length > 0 && !selectedVariable) {
       setSelectedVariable(variables[0].name);
+      setCurrentVariableValue(variables[0].parameters?.mean || variables[0].parameters?.mode || 1);
     }
-  }, [variables]);
+  }, [variables, selectedVariable]);
+
+  // Update current value when selected variable changes
+  useEffect(() => {
+    if (selectedVariable && variables) {
+      const variable = variables.find(v => v.name === selectedVariable);
+      if (variable) {
+        setCurrentVariableValue(variable.parameters?.mean || variable.parameters?.mode || 1);
+      }
+    }
+  }, [selectedVariable, variables]);
 
   const runSensitivityAnalysis = async () => {
-    console.log("🔍 Iniciando análise de sensibilidade");
-    console.log("📊 Variáveis:", variables);
-    console.log("📈 Baseline result:", actualBaselineResult);
-    
-    if (!onRunAnalysis || variables.length === 0) {
-      toast.error('Função de análise não disponível ou variáveis não definidas');
+    if (!variables || variables.length === 0) {
+      toast.error("Nenhuma variável disponível para análise");
       return;
     }
 
-    if (actualBaselineResult <= 0) {
-      console.error("❌ Baseline result inválido:", actualBaselineResult);
-      toast.error("Resultado baseline inválido. Execute uma simulação primeiro.");
+    console.log("🔍 Iniciando análise de sensibilidade completa...");
+    console.log("📊 Baseline inicial:", baselineResult);
+    console.log("🔧 Variáveis:", variables.map(v => ({ name: v.name, value: v.parameters?.mean || v.parameters?.mode || 1 })));
+
+    if (!baselineResult || baselineResult === 0) {
+      toast.error("Resultado baseline não disponível. Execute uma simulação primeiro.");
       return;
     }
 
     setIsAnalyzing(true);
-    const results: SensitivityResult[] = [];
+    const newResults: SensitivityResult[] = [];
 
     try {
-      console.log(`🚀 Analisando ${variables.length} variáveis`);
-      
       for (const variable of variables) {
-        console.log(`🔬 Testando variável: ${variable.name}`);
-        const baseValue = variable.parameters.mean || variable.parameters.mode || 1;
-        const rangeFactor = analysisRange / 100;
-        const originalValue = baseValue;
+        console.log(`🔍 Analisando variável: ${variable.name}`);
         
-        try {
-          // Test high value (+range%)
-          const highValue = baseValue * (1 + rangeFactor);
-          console.log(`📈 Testando +${analysisRange}%: ${highValue}`);
-          onVariableChange(variable.name, highValue);
-          const highResult = await onRunAnalysis();
-          console.log(`✅ Resultado alto: ${highResult}`);
+        // Calculate range based on analysis range (±%)
+        const baseValue = variable.parameters?.mean || variable.parameters?.mode || 1;
+        const delta = (baseValue * analysisRange) / 100;
+        const lowValue = Math.max(0, baseValue - delta);
+        const highValue = baseValue + delta;
 
-          // Test low value (-range%)
-          const lowValue = baseValue * (1 - rangeFactor);
-          console.log(`📉 Testando -${analysisRange}%: ${lowValue}`);
-          onVariableChange(variable.name, lowValue);
-          const lowResult = await onRunAnalysis();
-          console.log(`✅ Resultado baixo: ${lowResult}`);
+        // Test low value
+        const lowTestVars = variables.map(v => 
+          v.name === variable.name ? { ...v, baseValue: lowValue } : v
+        );
+        const lowResult = await onRunAnalysis(lowTestVars);
 
-          // Reset to original value
-          onVariableChange(variable.name, originalValue);
+        // Test high value  
+        const highTestVars = variables.map(v =>
+          v.name === variable.name ? { ...v, baseValue: highValue } : v
+        );
+        const highResult = await onRunAnalysis(highTestVars);
 
-          // Calculate sensitivity metrics with better validation
-          const highChange = highResult && actualBaselineResult ? ((highResult - actualBaselineResult) / actualBaselineResult) * 100 : 0;
-          const lowChange = lowResult && actualBaselineResult ? ((lowResult - actualBaselineResult) / actualBaselineResult) * 100 : 0;
-          const averageSensitivity = Math.abs((highChange + lowChange) / 2);
+        if (lowResult && highResult && lowResult !== 0 && highResult !== 0) {
+          // Calculate absolute impact
+          const impact = Math.abs(highResult - lowResult);
           
-          const sensitivity = averageSensitivity / (analysisRange / 10); // Sensitivity per 1% change
-          const elasticity = averageSensitivity;
+          // Calculate sensitivity as change in output per unit change in input
+          const inputChange = highValue - lowValue;
+          const outputChange = highResult - lowResult;
+          const sensitivity = inputChange !== 0 ? Math.abs(outputChange / inputChange) : 0;
           
-          let impact: 'high' | 'medium' | 'low';
-          if (averageSensitivity > 10) impact = 'high';
-          else if (averageSensitivity > 5) impact = 'medium';
-          else impact = 'low';
-          
-          console.log(`📊 Métricas calculadas para ${variable.name}:`, {
-            sensitivity,
-            elasticity,
-            impact,
-            highChange,
-            lowChange,
-            averageSensitivity
-          });
+          // Calculate elasticity as percentage change in output / percentage change in input
+          const percentInputChange = ((highValue - lowValue) / baseValue) * 100;
+          const percentOutputChange = ((highResult - lowResult) / baselineResult) * 100;
+          const elasticity = percentInputChange !== 0 ? Math.abs(percentOutputChange / percentInputChange) : 0;
 
-          results.push({
+          newResults.push({
             variable: variable.name,
-            baseValue: originalValue,
-            testValue: highValue,
-            baseResult: actualBaselineResult,
-            testResult: highResult,
+            baselineValue: baseValue,
+            lowValue,
+            highValue,
+            lowResult,
+            highResult,
+            impact,
             sensitivity,
-            elasticity,
-            impact
+            elasticity
           });
-        } catch (variableError) {
-          console.error(`❌ Erro ao testar variável ${variable.name}:`, variableError);
-          // Reset value and continue with next variable
-          onVariableChange(variable.name, originalValue);
+
+          console.log(`✅ ${variable.name}: Impact=${impact.toFixed(2)}, Sensitivity=${sensitivity.toFixed(4)}, Elasticity=${elasticity.toFixed(2)}`);
+        } else {
+          console.warn(`⚠️ Resultado inválido para ${variable.name}: low=${lowResult}, high=${highResult}`);
         }
       }
 
-      console.log("✅ Análise concluída. Resultados:", results);
+      console.log("📈 Análise concluída:", newResults);
+      setResults(newResults);
       
-      // Sort by absolute elasticity (highest impact first)
-      results.sort((a, b) => Math.abs(b.elasticity) - Math.abs(a.elasticity));
-      setSensitivityResults(results);
-      
-      if (results.length > 0) {
-        toast.success(`Análise de sensibilidade concluída! ${results.length} variáveis analisadas.`);
+      if (newResults.length > 0) {
+        toast.success(`Análise de sensibilidade concluída para ${newResults.length} variáveis`);
       } else {
-        toast.error("Nenhuma variável foi analisada com sucesso. Verifique os dados.");
+        toast.error("Não foi possível calcular sensibilidade para nenhuma variável");
       }
     } catch (error) {
-      console.error('❌ Erro na análise:', error);
-      toast.error('Erro ao executar análise de sensibilidade');
+      console.error("❌ Erro na análise:", error);
+      toast.error("Erro durante a análise de sensibilidade");
     } finally {
       setIsAnalyzing(false);
     }
   };
 
   const runSingleVariableAnalysis = async (variableName: string, newValue: number) => {
-    if (!onRunAnalysis) return;
+    if (!variables || !baselineResult) return;
 
-    const updatedVariables = variables.map(v => 
-      v.name === variableName 
-        ? { ...v, parameters: { ...v.parameters, mean: newValue, mode: newValue } }
-        : v
+    console.log(`🔍 Análise única para ${variableName}:`, newValue);
+
+    const testVars = variables.map(v => 
+      v.name === variableName ? { ...v, baseValue: newValue } : v
     );
-
+    
     try {
-      // First update the variables
-      onVariableChange(variableName, newValue);
-      const result = await onRunAnalysis();
-      const variable = variables.find(v => v.name === variableName);
-      const baseValue = variable?.parameters.mean || variable?.parameters.mode || 1;
-      const percentChange = ((newValue - baseValue) / baseValue) * 100;
-      const resultChange = actualBaselineResult > 0 ? 
-        ((result - actualBaselineResult) / actualBaselineResult) * 100 : 0;
+      const result = await onRunAnalysis(testVars);
+      console.log(`📊 Resultado único: ${result}`);
       
-      toast.success(`Variação de ${percentChange.toFixed(1)}% resultou em ${resultChange.toFixed(1)}% de mudança no resultado`);
-      return result;
+      if (result && result !== 0) {
+        const impact = Math.abs(result - baselineResult);
+        const percentChange = ((result - baselineResult) / baselineResult) * 100;
+        
+        toast.success(`${variableName}: ${formatCurrency(result)} (${percentChange > 0 ? '+' : ''}${percentChange.toFixed(1)}%)`);
+        return result;
+      } else {
+        toast.error(`Não foi possível calcular resultado para ${variableName}`);
+      }
     } catch (error) {
-      console.error('Error in single variable analysis:', error);
-      return actualBaselineResult;
+      console.error(`Erro na análise de ${variableName}:`, error);
+      toast.error(`Erro ao analisar ${variableName}`);
     }
   };
 
-  // Prepare tornado chart data
-  const tornadoData: TornadoData[] = sensitivityResults.map(result => {
-    const rangeFactor = analysisRange / 100;
-    const lowImpact = result.baseResult * (1 - Math.abs(result.elasticity) / 100 * rangeFactor);
-    const highImpact = result.baseResult * (1 + Math.abs(result.elasticity) / 100 * rangeFactor);
+  // Prepare data for charts
+  const tornadoData: TornadoData[] = results.map(result => {
+    // Calculate relative impact from baseline
+    const lowImpact = baselineResult - result.lowResult;
+    const highImpact = result.highResult - baselineResult;
     
     return {
-      variable: result.variable.replace(/_/g, ' '),
-      low: Math.min(lowImpact, highImpact),
-      high: Math.max(lowImpact, highImpact),
-      range: Math.abs(highImpact - lowImpact)
+      variable: result.variable,
+      low: lowImpact,
+      high: highImpact,
+      impact: result.impact
     };
-  });
+  }).sort((a, b) => b.impact - a.impact);
 
-  // Prepare spider chart data
-  const spiderData: SpiderData[] = sensitivityResults.map(result => ({
-    variable: result.variable.replace(/_/g, ' '),
-    sensitivity: Math.abs(result.sensitivity),
-    impact: Math.abs(result.elasticity)
-  }));
-
-  const getImpactColor = (impact: 'high' | 'medium' | 'low') => {
-    const colors = {
-      high: 'text-red-600 bg-red-50 border-red-200',
-      medium: 'text-yellow-600 bg-yellow-50 border-yellow-200',
-      low: 'text-green-600 bg-green-50 border-green-200'
+  const spiderData: SpiderData[] = results.length > 0 ? results.map(result => {
+    // Normalize values for radar chart (0-100 scale)
+    const maxImpact = Math.max(...results.map(r => r.impact));
+    const maxSensitivity = Math.max(...results.map(r => r.sensitivity));
+    const maxElasticity = Math.max(...results.map(r => r.elasticity));
+    
+    return {
+      variable: result.variable,
+      sensitivity: maxSensitivity > 0 ? (result.sensitivity / maxSensitivity) * 100 : 0,
+      impact: maxImpact > 0 ? (result.impact / maxImpact) * 100 : 0,
+      elasticity: maxElasticity > 0 ? Math.min((result.elasticity / maxElasticity) * 100, 100) : 0
     };
-    return colors[impact];
+  }) : [];
+
+  const getImpactColor = (impact: number) => {
+    if (impact > baselineResult * 0.1) return 'text-red-600 bg-red-50 border-red-200';
+    if (impact > baselineResult * 0.05) return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+    return 'text-green-600 bg-green-50 border-green-200';
   };
 
   const formatPercentage = (value: number) => `${value.toFixed(1)}%`;
@@ -302,13 +303,13 @@ const SensitivityAnalysisPanel = ({
             <div>
               <Label>Resultado Base</Label>
               <div className="mt-1 p-2 bg-gray-50 dark:bg-gray-800 rounded text-sm font-medium">
-                {formatCurrency(actualBaselineResult)}
-                {actualBaselineResult <= 0 && (
+                {formatCurrency(baselineResult)}
+                {baselineResult <= 0 && (
                   <div className="text-xs text-red-600 mt-1">
                     ❌ Execute uma simulação primeiro
                   </div>
                 )}
-                {actualBaselineResult > 0 && (
+                {baselineResult > 0 && (
                   <div className="text-xs text-green-600 mt-1">
                     ✅ Baseline válido
                   </div>
@@ -319,7 +320,7 @@ const SensitivityAnalysisPanel = ({
             <div className="flex items-end">
               <Button 
                 onClick={runSensitivityAnalysis}
-                disabled={isAnalyzing || variables.length === 0 || actualBaselineResult <= 0}
+                disabled={isAnalyzing || variables.length === 0 || baselineResult <= 0}
                 className="w-full"
               >
                 {isAnalyzing ? (
@@ -340,17 +341,16 @@ const SensitivityAnalysisPanel = ({
       </Card>
 
       {/* Results Visualization */}
-      {sensitivityResults.length > 0 && (
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="tornado">Tornado Chart</TabsTrigger>
-            <TabsTrigger value="spider">Spider Chart</TabsTrigger>
-            <TabsTrigger value="table">Tabela Detalhada</TabsTrigger>
-            <TabsTrigger value="interactive">Análise Interativa</TabsTrigger>
-          </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="tornado">Tornado Chart</TabsTrigger>
+          <TabsTrigger value="spider">Spider Chart</TabsTrigger>
+          <TabsTrigger value="table">Tabela Detalhada</TabsTrigger>
+          <TabsTrigger value="interactive">Análise Interativa</TabsTrigger>
+        </TabsList>
 
-          {/* Tornado Chart */}
-          <TabsContent value="tornado">
+        <TabsContent value="tornado" className="space-y-4">
+          {tornadoData.length > 0 ? (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -362,21 +362,34 @@ const SensitivityAnalysisPanel = ({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={400}>
-                  <BarChart data={tornadoData} layout="horizontal">
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" tickFormatter={formatCurrency} />
-                    <YAxis type="category" dataKey="variable" width={120} />
-                    <Tooltip formatter={(value: number) => [formatCurrency(value), 'Impacto']} />
-                    <Bar dataKey="range" fill="#8B5CF6" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={tornadoData} layout="horizontal" margin={{ left: 80 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis type="number" />
+                      <YAxis type="category" dataKey="variable" width={120} />
+                      <Tooltip 
+                        formatter={(value: number, name: string) => [
+                          `${value > 0 ? '+' : ''}${formatCurrency(value)}`, 
+                          name === 'low' ? 'Impacto Negativo' : 'Impacto Positivo'
+                        ]}
+                      />
+                      <Bar dataKey="low" fill="hsl(var(--destructive))" />
+                      <Bar dataKey="high" fill="hsl(var(--primary))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          ) : (
+            <div className="h-80 flex items-center justify-center border-2 border-dashed border-muted rounded-lg">
+              <p className="text-muted-foreground">Execute a análise para ver o gráfico Tornado</p>
+            </div>
+          )}
+        </TabsContent>
 
-          {/* Spider Chart */}
-          <TabsContent value="spider">
+        <TabsContent value="spider" className="space-y-4">
+          {spiderData.length > 0 ? (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -388,34 +401,49 @@ const SensitivityAnalysisPanel = ({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={400}>
-                  <RadarChart data={spiderData}>
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey="variable" />
-                    <PolarRadiusAxis angle={90} domain={[0, 'dataMax']} />
-                    <Radar
-                      name="Sensibilidade"
-                      dataKey="sensitivity"
-                      stroke="#8B5CF6"
-                      fill="#8B5CF6"
-                      fillOpacity={0.3}
-                    />
-                    <Radar
-                      name="Impacto"
-                      dataKey="impact"
-                      stroke="#10B981"
-                      fill="#10B981"
-                      fillOpacity={0.3}
-                    />
-                    <Legend />
-                  </RadarChart>
-                </ResponsiveContainer>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart data={spiderData}>
+                      <PolarGrid />
+                      <PolarAngleAxis dataKey="variable" />
+                      <PolarRadiusAxis angle={0} domain={[0, 100]} />
+                      <Radar
+                        name="Sensibilidade"
+                        dataKey="sensitivity"
+                        stroke="hsl(var(--primary))"
+                        fill="hsl(var(--primary))"
+                        fillOpacity={0.2}
+                      />
+                      <Radar
+                        name="Impacto"
+                        dataKey="impact"
+                        stroke="hsl(var(--destructive))"
+                        fill="hsl(var(--destructive))"
+                        fillOpacity={0.2}
+                      />
+                      <Radar
+                        name="Elasticidade"
+                        dataKey="elasticity"
+                        stroke="hsl(var(--secondary))"
+                        fill="hsl(var(--secondary))"
+                        fillOpacity={0.2}
+                      />
+                      <Tooltip formatter={(value: number) => [`${value.toFixed(1)}%`, '']} />
+                      <Legend />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          ) : (
+            <div className="h-80 flex items-center justify-center border-2 border-dashed border-muted rounded-lg">
+              <p className="text-muted-foreground">Execute a análise para ver o gráfico Spider</p>
+            </div>
+          )}
+        </TabsContent>
 
-          {/* Detailed Table */}
-          <TabsContent value="table">
+        <TabsContent value="table" className="space-y-4">
+          {results.length > 0 ? (
             <Card>
               <CardHeader>
                 <CardTitle>Resultados Detalhados</CardTitle>
@@ -425,33 +453,34 @@ const SensitivityAnalysisPanel = ({
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {sensitivityResults.map((result, index) => (
+                  {results.map((result, index) => (
                     <div key={index} className="border rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="font-medium capitalize">
                           {result.variable.replace(/_/g, ' ')}
                         </h4>
                         <Badge className={getImpactColor(result.impact)}>
-                          {result.impact.toUpperCase()}
+                          {result.impact > baselineResult * 0.1 ? 'ALTO' : 
+                           result.impact > baselineResult * 0.05 ? 'MÉDIO' : 'BAIXO'}
                         </Badge>
                       </div>
                       
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <p className="text-gray-600 dark:text-gray-400">Sensibilidade</p>
-                          <p className="font-semibold">{formatPercentage(result.sensitivity)}</p>
+                          <p className="font-semibold">{result.sensitivity.toFixed(2)}</p>
                         </div>
                         <div>
                           <p className="text-gray-600 dark:text-gray-400">Elasticidade</p>
-                          <p className="font-semibold">{formatPercentage(result.elasticity)}</p>
+                          <p className="font-semibold">{result.elasticity.toFixed(2)}</p>
                         </div>
                         <div>
-                          <p className="text-gray-600 dark:text-gray-400">Valor Base</p>
-                          <p className="font-semibold">{result.baseValue.toFixed(2)}</p>
+                          <p className="text-gray-600 dark:text-gray-400">Impacto</p>
+                          <p className="font-semibold">{formatCurrency(result.impact)}</p>
                         </div>
                         <div>
-                          <p className="text-gray-600 dark:text-gray-400">Resultado Base</p>
-                          <p className="font-semibold">{formatCurrency(result.baseResult)}</p>
+                          <p className="text-gray-600 dark:text-gray-400">Baseline</p>
+                          <p className="font-semibold">{formatCurrency(baselineResult)}</p>
                         </div>
                       </div>
                     </div>
@@ -459,217 +488,171 @@ const SensitivityAnalysisPanel = ({
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          ) : (
+            <div className="h-80 flex items-center justify-center border-2 border-dashed border-muted rounded-lg">
+              <p className="text-muted-foreground">Execute a análise para ver a tabela detalhada</p>
+            </div>
+          )}
+        </TabsContent>
 
-          {/* Interactive Analysis */}
-          <TabsContent value="interactive">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Análise Interativa
-                </CardTitle>
-                <CardDescription>
-                  Teste diferentes valores para as variáveis em tempo real
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="variable-select">Selecionar Variável</Label>
-                      <Select value={selectedVariable} onValueChange={setSelectedVariable}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Escolha uma variável" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {variables.map((variable) => (
-                            <SelectItem key={variable.name} value={variable.name}>
-                              {variable.name.replace(/_/g, ' ')}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="real-time"
-                        checked={isRealTime}
-                        onChange={(e) => setIsRealTime(e.target.checked)}
-                        className="rounded"
-                      />
-                      <Label htmlFor="real-time">Análise em Tempo Real</Label>
-                    </div>
-                  </div>
-
-                  {selectedVariable && (
-                    <div className="space-y-4">
-                      {variables
-                        .filter(v => v.name === selectedVariable)
-                        .map((variable) => {
-                          const baseValue = variable.parameters.mean || variable.parameters.mode || 1;
-                          const typeInfo = getVariableTypeInfo(variable.type);
-                          
-                          return (
-                            <div key={variable.name} className="border rounded-lg p-4">
-                              <div className="flex items-center justify-between mb-4">
-                                <div>
-                                  <h4 className="font-medium capitalize">
-                                    {variable.name.replace(/_/g, ' ')}
-                                  </h4>
-                                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    {typeInfo.icon} {typeInfo.name} • Valor atual: {baseValue.toFixed(2)}
-                                  </p>
-                                </div>
-                                <Badge variant="outline">
-                                  {variable.impact}
-                                </Badge>
-                              </div>
-                              
-                              <div className="space-y-3">
-                                <div>
-                                  <Label>Novo Valor</Label>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <Slider
-                                      value={[baseValue]}
-                                      onValueChange={async (value) => {
-                                        if (isRealTime) {
-                                          await runSingleVariableAnalysis(variable.name, value[0]);
-                                        }
-                                         onVariableChange(variable.name, value[0]);
-                                      }}
-                                      max={baseValue * 2}
-                                      min={baseValue * 0.1}
-                                      step={baseValue * 0.01}
-                                      className="flex-1"
-                                    />
-                                    <span className="text-sm font-medium w-16">
-                                      {baseValue.toFixed(2)}
-                                    </span>
-                                  </div>
-                                </div>
-                                
-                                <div className="grid grid-cols-3 gap-2 text-xs">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                      const newValue = baseValue * 0.8;
-                                      runSingleVariableAnalysis(variable.name, newValue);
-                                    }}
-                                  >
-                                    -20%
-                                  </Button>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                      runSingleVariableAnalysis(variable.name, baseValue);
-                                    }}
-                                  >
-                                    <RotateCcw className="h-3 w-3" />
-                                  </Button>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                      const newValue = baseValue * 1.2;
-                                      runSingleVariableAnalysis(variable.name, newValue);
-                                    }}
-                                  >
-                                    +20%
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  )}
+        <TabsContent value="interactive" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                Análise Interativa
+              </CardTitle>
+              <CardDescription>
+                Teste diferentes valores para as variáveis em tempo real
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <Label className="min-w-[120px]">Variável:</Label>
+                  <Select value={selectedVariable} onValueChange={setSelectedVariable}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="Selecione uma variável" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {variables?.map((variable) => (
+                        <SelectItem key={variable.name} value={variable.name}>
+                          {variable.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      )}
+
+                {selectedVariable && variables && (
+                  <div className="space-y-4">
+                    {(() => {
+                      const variable = variables.find(v => v.name === selectedVariable);
+                      if (!variable) return null;
+
+                      const baseValue = variable.parameters?.mean || variable.parameters?.mode || 1;
+                      const min = baseValue * 0.5;
+                      const max = baseValue * 1.5;
+
+                      return (
+                        <>
+                          <div className="space-y-2">
+                            <div className="flex justify-between">
+                              <Label>Valor: {formatCurrency(currentVariableValue)}</Label>
+                              <span className="text-sm text-muted-foreground">
+                                Baseline: {formatCurrency(baselineResult)} | Original: {formatCurrency(baseValue)}
+                              </span>
+                            </div>
+                            <Slider
+                              value={[currentVariableValue]}
+                              min={min}
+                              max={max}
+                              step={baseValue * 0.01}
+                              onValueChange={(values) => {
+                                setCurrentVariableValue(values[0]);
+                                // Debounced analysis - only update variable in parent after user stops dragging
+                                if (selectedVariable) {
+                                  onVariableChange?.(selectedVariable, values[0]);
+                                }
+                              }}
+                              className="w-full"
+                            />
+                            <div className="flex justify-between text-sm text-muted-foreground">
+                              <span>{formatCurrency(min)}</span>
+                              <span>{formatCurrency(max)}</span>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => runSingleVariableAnalysis(selectedVariable, currentVariableValue)}
+                              disabled={!baselineResult}
+                              className="flex-1"
+                            >
+                              Analisar Impacto
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                setCurrentVariableValue(baseValue);
+                                onVariableChange?.(selectedVariable, baseValue);
+                              }}
+                              disabled={currentVariableValue === baseValue}
+                            >
+                              Reset
+                            </Button>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Insights and Recommendations */}
-      {sensitivityResults.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Info className="h-5 w-5 text-blue-600" />
-              Insights da Análise de Sensibilidade
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200">
-                  <h4 className="font-medium text-red-800 dark:text-red-200 mb-2">
-                    Variáveis de Alto Impacto
-                  </h4>
-                  <ul className="text-sm space-y-1">
-                    {sensitivityResults
-                      .filter(r => r.impact === 'high')
-                      .slice(0, 3)
-                      .map((result, index) => (
-                        <li key={index} className="text-red-700 dark:text-red-300">
-                          • {result.variable.replace(/_/g, ' ')}
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-                
-                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200">
-                  <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">
-                    Variáveis de Médio Impacto
-                  </h4>
-                  <ul className="text-sm space-y-1">
-                    {sensitivityResults
-                      .filter(r => r.impact === 'medium')
-                      .slice(0, 3)
-                      .map((result, index) => (
-                        <li key={index} className="text-yellow-700 dark:text-yellow-300">
-                          • {result.variable.replace(/_/g, ' ')}
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-                
-                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
-                  <h4 className="font-medium text-green-800 dark:text-green-200 mb-2">
-                    Variáveis de Baixo Impacto
-                  </h4>
-                  <ul className="text-sm space-y-1">
-                    {sensitivityResults
-                      .filter(r => r.impact === 'low')
-                      .slice(0, 3)
-                      .map((result, index) => (
-                        <li key={index} className="text-green-700 dark:text-green-300">
-                          • {result.variable.replace(/_/g, ' ')}
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              </div>
+      {results.length > 0 && (
+        <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+          <h4 className="font-semibold mb-2 flex items-center gap-2">
+            <TrendingUp className="h-4 w-4" />
+            Insights da Análise de Sensibilidade
+          </h4>
+          <div className="space-y-2 text-sm">
+            {(() => {
+              const sortedByElasticity = results.sort((a, b) => b.elasticity - a.elasticity);
+              const sortedByImpact = results.sort((a, b) => b.impact - a.impact);
               
-              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200">
-                <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">
-                  Recomendações Estratégicas
-                </h4>
-                <ul className="text-sm space-y-2 text-blue-700 dark:text-blue-300">
-                  <li>• Foque no controle das variáveis de alto impacto para maximizar resultados</li>
-                  <li>• Monitore constantemente as variáveis mais sensíveis</li>
-                  <li>• Considere estratégias de hedge para variáveis de alto risco</li>
-                  <li>• Use as variáveis de baixo impacto como alavancas operacionais</li>
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              const mostSensitive = sortedByElasticity[0];
+              const leastSensitive = sortedByElasticity[sortedByElasticity.length - 1];
+              const highestImpact = sortedByImpact[0];
+
+              return (
+                <>
+                  <p>
+                    <strong>Variável mais sensível:</strong> {mostSensitive.variable} 
+                    (elasticidade: {mostSensitive.elasticity.toFixed(2)})
+                  </p>
+                  <p>
+                    <strong>Maior impacto absoluto:</strong> {highestImpact.variable} 
+                    ({formatCurrency(highestImpact.impact)})
+                  </p>
+                  <p>
+                    <strong>Variável mais estável:</strong> {leastSensitive.variable} 
+                    (elasticidade: {leastSensitive.elasticity.toFixed(2)})
+                  </p>
+                  
+                  {/* Strategic recommendations */}
+                  <div className="mt-3 space-y-2">
+                    <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+                      <p className="text-blue-700 dark:text-blue-300">
+                        <strong>🎯 Foco principal:</strong> Monitore "{mostSensitive.variable}" - pequenas mudanças 
+                        causam grandes impactos ({mostSensitive.elasticity.toFixed(1)}% de elasticidade).
+                      </p>
+                    </div>
+                    
+                    {highestImpact.variable !== mostSensitive.variable && (
+                      <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded">
+                        <p className="text-orange-700 dark:text-orange-300">
+                          <strong>💰 Maior impacto:</strong> "{highestImpact.variable}" pode gerar 
+                          variações de até {formatCurrency(highestImpact.impact)} nos resultados.
+                        </p>
+                      </div>
+                    )}
+                    
+                    <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded">
+                      <p className="text-green-700 dark:text-green-300">
+                        <strong>✅ Mais estável:</strong> "{leastSensitive.variable}" é uma base sólida 
+                        para projeções (baixa volatilidade).
+                      </p>
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        </div>
       )}
     </div>
   );
