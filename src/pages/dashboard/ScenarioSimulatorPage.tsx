@@ -142,6 +142,26 @@ const ScenarioSimulatorPage = () => {
       smartDefaults = generateSmartDefaults(selectedIdea);
     }
 
+    // Determine revenue model correctly 
+    let revenueModel = 'subscription'; // default
+    if (analysis?.financial_analysis?.revenue_model) {
+      revenueModel = analysis.financial_analysis.revenue_model;
+    } else if (selectedIdea.monetization) {
+      // Map common monetization terms to our revenue models
+      const monetizationMapping: { [key: string]: string } = {
+        'SaaS': 'subscription',
+        'B2B SaaS': 'subscription', 
+        'B2C SaaS': 'subscription',
+        'Subscription': 'subscription',
+        'Freemium': 'freemium',
+        'Marketplace': 'marketplace',
+        'Advertising': 'advertising',
+        'One-time Payment': 'one_time',
+        'One Time': 'one_time'
+      };
+      revenueModel = monetizationMapping[selectedIdea.monetization] || 'subscription';
+    }
+
     // Aplica validação e limites aos dados extraídos
     const validatedData = {
       title: selectedIdea.title,
@@ -150,7 +170,7 @@ const ScenarioSimulatorPage = () => {
       target_market_size: Math.max(1000, Math.min(extractedData.target_market_size || smartDefaults.target_market_size || 1000000, 100000000)),
       initial_investment: Math.max(1000, Math.min(extractedData.initial_investment || smartDefaults.initial_investment || 100000, 10000000)),
       monthly_costs: Math.max(100, Math.min(extractedData.monthly_costs || smartDefaults.monthly_costs || 10000, 1000000)),
-      revenue_model: analysis?.financial_analysis?.revenue_model || 'Subscription',
+      revenue_model: revenueModel,
       pricing: Math.max(1, Math.min(extractedData.pricing || smartDefaults.pricing || 99, 100000))
     };
     

@@ -402,6 +402,30 @@ export const useScenarioSimulator = () => {
         return false;
       }
 
+      // Map revenue model names correctly
+      const revenueModelMapping: { [key: string]: string } = {
+        'Subscription': 'subscription',
+        'subscription': 'subscription',
+        'Freemium': 'freemium',
+        'freemium': 'freemium', 
+        'Marketplace': 'marketplace',
+        'marketplace': 'marketplace',
+        'Advertising': 'advertising',
+        'advertising': 'advertising',
+        'One-time Payment': 'one_time',
+        'one_time': 'one_time',
+        'One Time': 'one_time',
+        'SaaS': 'subscription', // SaaS maps to subscription
+        'B2B SaaS': 'subscription',
+        'B2C SaaS': 'subscription'
+      };
+
+      const originalRevenueModel = simulationResults.revenueModel || 
+                                  simulationResults.metadata?.revenueModel || 
+                                  'subscription';
+      
+      const normalizedRevenueModel = revenueModelMapping[originalRevenueModel] || 'subscription';
+
       const { error } = await supabase
         .from('scenario_simulations')
         .insert({
@@ -409,10 +433,11 @@ export const useScenarioSimulator = () => {
           simulation_name: simulationName,
           simulation_params: simulationResults.simulationParams as any,
           results: simulationResults.results as any,
-          revenue_model: simulationResults.revenueModel || simulationResults.metadata.revenueModel || 'one_time',
+          revenue_model: normalizedRevenueModel,
           financial_data: {
             idea_title: simulationResults.ideaTitle,
-            generated_at: simulationResults.generatedAt
+            generated_at: simulationResults.generatedAt,
+            original_revenue_model: originalRevenueModel
           } as any
         });
 
