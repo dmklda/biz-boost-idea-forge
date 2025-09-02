@@ -10,8 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Building, AlertTriangle, DollarSign, Calendar, MapPin, Users, FileText, Download, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRegulatoryAnalysis } from '@/hooks/useRegulatoryAnalysis';
-import { IdeaSelector } from '@/components/regulatory-analysis/IdeaSelector';
-import { AnalysisHistory } from '@/components/regulatory-analysis/AnalysisHistory';
+import { IdeaSelector, AnalysisHistory } from '@/components/regulatory-analysis';
 
 interface RegulatoryAnalysisResult {
   requirements: any[];
