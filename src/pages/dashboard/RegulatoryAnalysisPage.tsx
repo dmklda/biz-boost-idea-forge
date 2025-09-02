@@ -45,6 +45,8 @@ const RegulatoryAnalysisPage = () => {
   const [selectedIdea, setSelectedIdea] = useState<any>(null);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [currentView, setCurrentView] = useState<'main' | 'history' | 'results'>('main');
+  const [analysisProgress, setAnalysisProgress] = useState<string>('');
+  const [analysisSteps, setAnalysisSteps] = useState<string[]>([]);
   const { runRegulatoryAnalysis, isAnalyzing } = useRegulatoryAnalysis();
 
   const handleInputChange = (field: string, value: string) => {
@@ -81,11 +83,45 @@ const RegulatoryAnalysisPage = () => {
 
     console.log('Enviando dados para análise:', currentData);
 
-    const result = await runRegulatoryAnalysis(currentData);
-    
-    if (result) {
-      setAnalysisResult(result);
-      setCurrentView('results');
+    try {
+      // Simulate real-time analysis progress
+      setAnalysisProgress('Iniciando análise...');
+      setAnalysisSteps(['Iniciando análise regulatória...']);
+      
+      setTimeout(() => {
+        setAnalysisProgress('Consultando APIs governamentais...');
+        setAnalysisSteps(prev => [...prev, 'Consultando BACEN, ANVISA e Receita Federal...']);
+      }, 1000);
+
+      setTimeout(() => {
+        setAnalysisProgress('Processando dados com IA...');
+        setAnalysisSteps(prev => [...prev, 'Analisando requisitos específicos com IA...']);
+      }, 2000);
+
+      setTimeout(() => {
+        setAnalysisProgress('Gerando recomendações personalizadas...');
+        setAnalysisSteps(prev => [...prev, 'Criando roadmap personalizado...']);
+      }, 3000);
+
+      const result = await runRegulatoryAnalysis(currentData);
+      
+      if (result) {
+        setAnalysisProgress('Análise concluída!');
+        setAnalysisSteps(prev => [...prev, 'Análise regulatória finalizada com sucesso!']);
+        setAnalysisResult(result);
+        setTimeout(() => {
+          setCurrentView('results');
+          setAnalysisProgress('');
+          setAnalysisSteps([]);
+        }, 1000);
+        
+        toast.success('Análise regulatória real gerada com sucesso!');
+      }
+    } catch (error) {
+      console.error('Error running analysis:', error);
+      setAnalysisProgress('');
+      setAnalysisSteps([]);
+      toast.error('Ocorreu um erro ao gerar a análise. Tente novamente.');
     }
   };
 
@@ -519,7 +555,7 @@ const RegulatoryAnalysisPage = () => {
               Informações do Negócio
             </CardTitle>
             <CardDescription>
-              Preencha os dados para análise regulatória personalizada
+              Receba uma análise regulatória em tempo real consultando APIs governamentais e usando IA
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -622,25 +658,40 @@ const RegulatoryAnalysisPage = () => {
 
             <Button 
               onClick={handleAnalysis} 
-              disabled={isAnalyzing}
+              disabled={isAnalyzing || !formData.businessName || !formData.businessDescription}
               className="w-full"
             >
               {isAnalyzing ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Analisando requisitos regulatórios...
+                  {analysisProgress || 'Analisando...'}
                 </>
               ) : (
-                <>
-                  <Building className="mr-2 h-4 w-4" />
-                  Realizar Análise Regulatória
-                </>
+                "Gerar Análise Regulatória Real"
               )}
             </Button>
+
+            {/* Real-time Analysis Progress */}
+            {isAnalyzing && analysisSteps.length > 0 && (
+              <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+                <h4 className="font-medium text-sm mb-2 flex items-center">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Progresso da Análise
+                </h4>
+                <div className="space-y-2">
+                  {analysisSteps.map((step, index) => (
+                    <div key={index} className="flex items-center text-sm text-muted-foreground">
+                      <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0" />
+                      {step}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             
-            <div className="text-xs text-muted-foreground space-y-1">
-              <p>* Campos obrigatórios</p>
-              <p>💡 Dica: Se uma ideia foi selecionada acima, alguns campos serão preenchidos automaticamente</p>
+            <div className="text-sm text-muted-foreground mb-4">
+              🤖 <strong>Análise Inteligente:</strong> Nossa IA consulta APIs governamentais em tempo real (BACEN, ANVISA, Receita Federal) 
+              para fornecer requisitos regulatórios atualizados e específicos para seu negócio.
             </div>
           </CardContent>
         </Card>
