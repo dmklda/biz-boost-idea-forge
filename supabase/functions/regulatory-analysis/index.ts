@@ -164,11 +164,29 @@ serve(async (req) => {
 
 // Intelligent sector classification using AI
 async function classifyBusinessSector(businessName: string, businessDescription: string): Promise<string> {
-  if (!openaiApiKey) {
-    return 'iot'; // fallback to IoT for tech startups
-  }
-
   try {
+    console.log('Classificando setor para:', businessName);
+    
+    // Keywords-based pre-classification for IoT + Agriculture
+    const description = (businessName + ' ' + businessDescription).toLowerCase();
+    const agTechKeywords = ['plant', 'plantas', 'agricultura', 'farm', 'fazenda', 'cultivo', 'horta', 'jardim', 'vegetais', 'sensor', 'monitoramento', 'irrigação', 'umidade', 'temperatura', 'luz', 'solo'];
+    const iotKeywords = ['dispositivo', 'sensor', 'iot', 'internet das coisas', 'monitoramento', 'tempo real', 'app', 'aplicativo', 'automação'];
+    
+    const hasAgTech = agTechKeywords.some(keyword => description.includes(keyword));
+    const hasIoT = iotKeywords.some(keyword => description.includes(keyword));
+    
+    if (hasAgTech && hasIoT) {
+      console.log('Setor detectado por keywords: agtech');
+      return 'agtech';
+    }
+    
+    if (!openaiApiKey) {
+      console.log('OpenAI API key não encontrada, usando fallback');
+      if (hasAgTech) return 'agtech';
+      if (hasIoT) return 'iot';
+      return 'technology';
+    }
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -176,50 +194,38 @@ async function classifyBusinessSector(businessName: string, businessDescription:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
-            content: `Você é um especialista em classificação de setores de negócio. Classifique o negócio em UM dos seguintes setores baseado na descrição:
+            content: `Você é um especialista em classificação de setores empresariais. Analise o nome e descrição do negócio e retorne APENAS o setor principal em uma palavra simples, sem explicações.
 
-SETORES DISPONÍVEIS:
-- fintech: Serviços financeiros, pagamentos, investimentos, bancos digitais
-- healthtech: Saúde, medicina, dispositivos médicos, telemedicina, farmacêutica
-- agtech: Agricultura, agronegócio, monitoramento de plantações, pecuária, dispositivos agrícolas
-- iot: Internet das coisas, dispositivos conectados, sensores, automação, monitoramento
-- edtech: Educação, ensino online, plataformas educacionais
-- retailtech: Varejo, e-commerce, marketplace, vendas online
-- proptech: Imóveis, construção, arquitetura, gestão predial
-- insurtech: Seguros, proteção, gestão de riscos
-- legaltech: Jurídico, advocacia, contratos, compliance
-- technology: Tecnologia geral, software, aplicativos, SaaS
+PRIORIDADES DE CLASSIFICAÇÃO:
+- Dispositivos IoT para plantas/agricultura = "agtech"
+- Monitoramento agrícola com sensores = "agtech" 
+- Apps para cuidado de plantas = "agtech"
+- Tecnologia + agricultura = "agtech"
 
-EXEMPLOS:
-- "Dispositivo que monitora plantas" = agtech
-- "App de pagamentos" = fintech
-- "Sistema de prontuário médico" = healthtech
-- "Sensor de temperatura" = iot
-
-Responda APENAS com o nome do setor (ex: "fintech", "agtech", etc.). Não adicione explicações.`
+Setores válidos: fintech, healthtech, edtech, agtech, logistics, retail, saas, marketplace, consulting, manufacturing, energy, construction, food, automotive, entertainment, security, iot, ai, blockchain, ecommerce, real_estate, insurance, legal, hr, marketing, design.`
           },
           {
             role: 'user',
-            content: `Nome do negócio: ${businessName}\nDescrição: ${businessDescription}`
+            content: `Nome: ${businessName}\nDescrição: ${businessDescription}\n\nClassifique este negócio no setor mais específico possível.`
           }
         ],
-        max_completion_tokens: 50,
+        max_tokens: 10,
+        temperature: 0.1
       }),
     });
 
     const data = await response.json();
     const sector = data.choices[0].message.content.trim().toLowerCase();
+    console.log('Setor classificado como:', sector);
     
-    // Validate sector exists
-    const validSectors = ['fintech', 'healthtech', 'agtech', 'iot', 'edtech', 'retailtech', 'proptech', 'insurtech', 'legaltech', 'technology'];
-    return validSectors.includes(sector) ? sector : 'iot';
+    return sector;
   } catch (error) {
     console.error('Erro na classificação de setor:', error);
-    return 'iot';
+    return 'technology'; // fallback
   }
 }
 
