@@ -51,12 +51,42 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
 
   // Debug logging
   console.log('SimulationResults received:', results);
-  console.log('Results object:', results.results);
+  console.log('Results object:', results?.results);
+  
+  // Early return if results are not valid
+  if (!results || !results.results || typeof results.results !== 'object') {
+    console.warn('Invalid results object received:', results);
+    return (
+      <div className="flex items-center justify-center h-64 border-2 border-dashed border-muted rounded-lg">
+        <div className="text-center">
+          <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-muted-foreground mb-2">Resultados não disponíveis</h3>
+          <p className="text-sm text-muted-foreground">Execute uma simulação para ver os resultados aqui.</p>
+        </div>
+      </div>
+    );
+  }
   
   const scenarios = Object.keys(results.results) as ScenarioType[];
-  const currentResult = results.results[activeScenario];
   
-  console.log('Current scenario:', activeScenario);
+  // If no scenarios available, show empty state
+  if (scenarios.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-64 border-2 border-dashed border-muted rounded-lg">
+        <div className="text-center">
+          <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-muted-foreground mb-2">Nenhum cenário disponível</h3>
+          <p className="text-sm text-muted-foreground">Execute uma simulação para gerar cenários de análise.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Ensure activeScenario exists in the available scenarios
+  const validActiveScenario = scenarios.includes(activeScenario) ? activeScenario : scenarios[0];
+  const currentResult = results.results[validActiveScenario];
+  
+  console.log('Current scenario:', validActiveScenario);
   console.log('Current result:', currentResult);
   
   // Prepare chart data
@@ -142,7 +172,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
         <div>
           <h2 className="text-2xl font-bold mb-2">Resultados da Simulação Monte Carlo</h2>
           <p className="text-gray-600 dark:text-gray-400">
-            {results.metadata.totalIterations.toLocaleString()} iterações • {results.metadata.timeHorizon} meses
+            {results.metadata?.totalIterations?.toLocaleString() || 'N/A'} iterações • {results.metadata?.timeHorizon || 'N/A'} meses
           </p>
         </div>
         
@@ -156,7 +186,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
                   key={scenario}
                   onClick={() => setActiveScenario(scenario)}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                    activeScenario === scenario
+                    validActiveScenario === scenario
                       ? `${info.bgColor} ${info.color} shadow-sm`
                       : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
                   }`}
@@ -277,7 +307,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
-                  Lucro Acumulado - {getScenarioInfo(activeScenario).name}
+                  Lucro Acumulado - {getScenarioInfo(validActiveScenario).name}
                 </CardTitle>
                 <CardDescription>
                   Evolução do lucro acumulado ao longo do tempo
@@ -293,8 +323,8 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
                     <Area 
                       type="monotone" 
                       dataKey="cumulativeProfit" 
-                      stroke={getScenarioColor(activeScenario)} 
-                      fill={getScenarioColor(activeScenario)}
+                      stroke={getScenarioColor(validActiveScenario)} 
+                      fill={getScenarioColor(validActiveScenario)}
                       fillOpacity={0.3}
                     />
                   </AreaChart>
@@ -332,7 +362,7 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
           {/* Statistics summary */}
           <Card>
             <CardHeader>
-              <CardTitle>Estatísticas do Cenário {getScenarioInfo(activeScenario).name}</CardTitle>
+              <CardTitle>Estatísticas do Cenário {getScenarioInfo(validActiveScenario).name}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
