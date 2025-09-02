@@ -1,5 +1,4 @@
 import { SimulationVariable } from "@/hooks/useScenarioSimulator";
-import { getHumanReadableVariableName } from "@/lib/variable-names";
 
 interface OfflineAnalysisFallbackProps {
   variables: SimulationVariable[];
@@ -78,19 +77,17 @@ export const useOfflineAnalysisFallback = () => {
     const mediumImpactVars = results.filter(r => r.elasticity >= 40 && r.elasticity <= 80);
     const lowImpactVars = results.filter(r => r.elasticity < 40);
     
-      const recommendations = [
-        `Foque em otimizar as ${highImpactVars.length} variáveis de maior impacto para resultados rápidos`,
-        `Monitore de perto: ${highImpactVars.map(v => getHumanReadableVariableName(v.variable)).join(', ')}`,
-        `Considere estratégias para as variáveis de médio impacto: ${mediumImpactVars.map(v => getHumanReadableVariableName(v.variable)).join(', ')}`,
-        lowImpactVars.length > 0 ? `Menor prioridade: ${lowImpactVars.map(v => getHumanReadableVariableName(v.variable)).join(', ')}` : null
-      ].filter(Boolean) as string[];
-
-      return {
-        highImpact: highImpactVars.map(v => v.variable),
-        mediumImpact: mediumImpactVars.map(v => v.variable),
-        lowImpact: lowImpactVars.map(v => v.variable),
-        recommendations
-      };
+    return {
+      highImpact: highImpactVars.map(v => v.variable),
+      mediumImpact: mediumImpactVars.map(v => v.variable),
+      lowImpact: lowImpactVars.map(v => v.variable),
+      recommendations: [
+        `📈 Foque nos ${highImpactVars.length} fatores de alto impacto`,
+        `⚖️ Monitore os ${mediumImpactVars.length} fatores de impacto médio`,
+        `📊 Os ${lowImpactVars.length} fatores têm baixo impacto nos resultados`,
+        "⚠️ Esta análise é baseada em estimativas. Execute uma simulação completa para maior precisão."
+      ]
+    };
   };
   
   return {

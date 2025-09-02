@@ -16,7 +16,6 @@ import {
 import { SimulationVariable } from "@/hooks/useScenarioSimulator";
 import { toast } from "@/components/ui/sonner";
 import { useOfflineAnalysisFallback } from "./OfflineAnalysisFallback";
-import { getHumanReadableVariableName, getVariableDescription } from "@/lib/variable-names";
 
 interface OptimizedSensitivityAnalysisProps {
   variables: SimulationVariable[];
@@ -108,7 +107,7 @@ const OptimizedSensitivityAnalysis = ({
         setProgress(prev => ({
           ...prev,
           current: i,
-          currentVariable: getHumanReadableVariableName(variable.name),
+          currentVariable: variable.name,
           estimatedTimeRemaining: calculateETA(startTime, i, totalVariables)
         }));
 
@@ -162,7 +161,7 @@ const OptimizedSensitivityAnalysis = ({
             
             // Show real-time feedback
             const changeText = percentChange > 0 ? `+${percentChange.toFixed(1)}%` : `${percentChange.toFixed(1)}%`;
-            toast.success(`${getHumanReadableVariableName(variable.name)}: ${changeText} de impacto`, {
+            toast.success(`${variable.name}: ${changeText} de impacto`, {
               duration: 2000
             });
             
@@ -235,7 +234,7 @@ const OptimizedSensitivityAnalysis = ({
           ...prev,
           current: progressCount,
           total: variables.length,
-          currentVariable: getHumanReadableVariableName(variables[progressCount - 1]?.name) || 'Calculando...'
+          currentVariable: variables[progressCount - 1]?.name || 'Calculando...'
         }));
         
         if (progressCount >= variables.length) {
@@ -451,8 +450,8 @@ const OptimizedSensitivityAnalysis = ({
                   className={`p-3 rounded-lg border transition-all ${getStatusColor(result.status)}`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-sm">
-                      {getHumanReadableVariableName(result.variable)}
+                    <span className="font-medium text-sm capitalize">
+                      {result.variable.replace(/_/g, ' ')}
                     </span>
                     {getStatusIcon(result.status)}
                   </div>
