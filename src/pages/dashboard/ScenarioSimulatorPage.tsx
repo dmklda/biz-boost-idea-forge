@@ -349,7 +349,7 @@ const ScenarioSimulatorPage = () => {
         revenueModel: simulation.revenue_model || 'subscription',
         generatedAt: simulation.created_at || new Date().toISOString(),
         sensitivityAnalysis: [],
-        insights: ''
+        insights: simulation.financial_data?.insights || ''
       };
 
       console.log('✅ Simulação estruturada:', loadedResults);

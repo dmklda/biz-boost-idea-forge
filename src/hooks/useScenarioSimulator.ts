@@ -438,7 +438,8 @@ export const useScenarioSimulator = () => {
           financial_data: {
             idea_title: simulationResults.ideaTitle,
             generated_at: simulationResults.generatedAt,
-            original_revenue_model: originalRevenueModel
+            original_revenue_model: originalRevenueModel,
+            insights: simulationResults.insights
           } as any
         });
 
