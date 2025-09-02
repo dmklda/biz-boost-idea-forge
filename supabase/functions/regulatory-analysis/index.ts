@@ -212,17 +212,46 @@ serve(async (req) => {
     console.log('Request body:', JSON.stringify(body, null, 2));
     
     const { businessName, businessSector, businessDescription, targetAudience, businessModel, location = 'Brazil', ideaId } = body;
-    // Validate required fields
-    if (!businessName || !businessSector || !businessDescription) {
-      console.error('Missing required fields:', { businessName, businessSector, businessDescription });
-      throw new Error('Campos obrigatórios: nome do negócio, setor e descrição');
+    
+    // Improved validation with better error messages
+    if (!businessName || businessName.trim() === '') {
+      console.error('Missing business name');
+      throw new Error('Nome do negócio é obrigatório');
     }
     
+    if (!businessDescription || businessDescription.trim() === '') {
+      console.error('Missing business description');
+      throw new Error('Descrição do negócio é obrigatória');
+    }
+    
+    // Set default sector if not provided
+    const finalSector = businessSector && businessSector.trim() !== '' ? businessSector : 'Tecnologia';
+    console.log('Using sector:', finalSector);
+    
     console.log('=== VALIDATION PASSED ===');
-    console.log('Business data:', { businessName, businessSector, businessDescription, targetAudience, businessModel, location, ideaId });
+    console.log('Business data:', { businessName, businessSector: finalSector, businessDescription, targetAudience, businessModel, location, ideaId });
+    
     // Get regulatory data for sector
     const jurisdiction = location.toLowerCase() === 'brazil' ? 'brazil' : 'brazil';
-    const sectorKey = businessSector.toLowerCase();
+    
+    // Map sectors to database keys
+    const sectorMappings = {
+      'fintech': 'fintech',
+      'financeiro': 'fintech',
+      'pagamentos': 'fintech',
+      'banco': 'fintech',
+      'healthtech': 'healthtech',
+      'saúde': 'healthtech',
+      'medicina': 'healthtech',
+      'edtech': 'edtech',
+      'educação': 'edtech',
+      'ensino': 'edtech',
+      'tecnologia': 'fintech', // Default fallback
+      'tech': 'fintech'
+    };
+    
+    const sectorKey = sectorMappings[finalSector.toLowerCase()] || 'fintech';
+    console.log('Mapped sector key:', sectorKey);
     const sectorData = REGULATORY_DATABASE[jurisdiction]?.[sectorKey];
     
     if (!sectorData) {
@@ -233,9 +262,16 @@ serve(async (req) => {
     
     // Generate analysis components
     const roadmap = generateRegulatoryRoadmap(requirements);
-    const riskAssessment = assessRegulatoryRisks(requirements, { businessSector });
+    const riskAssessment = assessRegulatoryRisks(requirements, { businessSector: finalSector });
     const costs = calculateComplianceCosts(requirements);
     const contacts = getRegulatoryContacts(requirements, jurisdiction);
+    
+    console.log('Generated components:', {
+      roadmapPhases: roadmap.length,
+      requirementsCount: requirements.length,
+      riskLevel: riskAssessment.overall_risk,
+      contactsCount: contacts.length
+    });
     
     // Generate AI recommendations
     const recommendations = [

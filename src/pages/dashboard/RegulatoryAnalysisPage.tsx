@@ -52,8 +52,8 @@ const RegulatoryAnalysisPage = () => {
   };
 
   const handleAnalysis = async () => {
-    // Se uma ideia foi selecionada, preencher dados automaticamente
-    const analysisData = selectedIdea ? {
+    // Validação no frontend
+    const currentData = selectedIdea ? {
       businessName: selectedIdea.title,
       businessSector: formData.businessSector || 'Tecnologia',
       businessDescription: selectedIdea.description,
@@ -63,7 +63,25 @@ const RegulatoryAnalysisPage = () => {
       ideaId: selectedIdea.id
     } : formData;
 
-    const result = await runRegulatoryAnalysis(analysisData);
+    // Validar campos obrigatórios
+    if (!currentData.businessName.trim()) {
+      toast.error('Nome do negócio é obrigatório');
+      return;
+    }
+    
+    if (!currentData.businessDescription.trim()) {
+      toast.error('Descrição do negócio é obrigatória');
+      return;
+    }
+    
+    if (!currentData.businessSector.trim()) {
+      currentData.businessSector = 'Tecnologia';
+      toast.info('Setor definido como "Tecnologia" por padrão');
+    }
+
+    console.log('Enviando dados para análise:', currentData);
+
+    const result = await runRegulatoryAnalysis(currentData);
     
     if (result) {
       setAnalysisResult(result);
@@ -74,14 +92,36 @@ const RegulatoryAnalysisPage = () => {
   const handleIdeaSelect = (idea: any) => {
     setSelectedIdea(idea);
     if (idea) {
+      // Mapear setor baseado na análise da ideia ou usar padrão
+      const inferredSector = mapSectorFromIdea(idea);
+      
       setFormData({
         ...formData,
         businessName: idea.title,
+        businessSector: inferredSector,
         businessDescription: idea.description,
         targetAudience: idea.audience || '',
         businessModel: idea.monetization || ''
       });
     }
+  };
+
+  const mapSectorFromIdea = (idea: any): string => {
+    const description = (idea.description || '').toLowerCase();
+    const title = (idea.title || '').toLowerCase();
+    const combined = `${title} ${description}`;
+    
+    if (combined.includes('fintech') || combined.includes('financ') || combined.includes('pagamento') || combined.includes('banco')) {
+      return 'Fintech';
+    }
+    if (combined.includes('health') || combined.includes('saúde') || combined.includes('medicina') || combined.includes('médic')) {
+      return 'Healthtech';
+    }
+    if (combined.includes('educ') || combined.includes('ensino') || combined.includes('escola') || combined.includes('curso')) {
+      return 'Edtech';
+    }
+    
+    return 'Tecnologia';
   };
 
   const handleViewAnalysis = (analysis: any) => {
@@ -567,15 +607,28 @@ const RegulatoryAnalysisPage = () => {
               </Select>
             </div>
 
+            {/* Validation Messages */}
+            {!formData.businessName.trim() && (
+              <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-700">⚠️ Nome do negócio é obrigatório</p>
+              </div>
+            )}
+            
+            {!formData.businessDescription.trim() && (
+              <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-700">⚠️ Descrição do negócio é obrigatória</p>
+              </div>
+            )}
+
             <Button 
               onClick={handleAnalysis} 
-              disabled={isAnalyzing || !formData.businessName || !formData.businessSector || !formData.businessDescription}
+              disabled={isAnalyzing}
               className="w-full"
             >
               {isAnalyzing ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Analisando...
+                  Analisando requisitos regulatórios...
                 </>
               ) : (
                 <>
@@ -584,6 +637,11 @@ const RegulatoryAnalysisPage = () => {
                 </>
               )}
             </Button>
+            
+            <div className="text-xs text-muted-foreground space-y-1">
+              <p>* Campos obrigatórios</p>
+              <p>💡 Dica: Se uma ideia foi selecionada acima, alguns campos serão preenchidos automaticamente</p>
+            </div>
           </CardContent>
         </Card>
       </div>
