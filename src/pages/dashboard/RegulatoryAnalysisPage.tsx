@@ -39,7 +39,8 @@ const RegulatoryAnalysisPage = () => {
     businessDescription: '',
     targetAudience: '',
     businessModel: '',
-    location: 'Brazil'
+    location: '',
+    country: 'brasil'
   });
 
   const [selectedIdea, setSelectedIdea] = useState<any>(null);
@@ -656,25 +657,35 @@ const RegulatoryAnalysisPage = () => {
               </div>
               
               <div>
-                <Label htmlFor="businessSector">Setor *</Label>
+                <Label htmlFor="country">País/Região *</Label>
                 <Select 
-                  value={formData.businessSector} 
-                  onValueChange={(value) => handleInputChange('businessSector', value)}
+                  value={formData.country} 
+                  onValueChange={(value) => handleInputChange('country', value)}
                 >
                   <SelectTrigger className="bg-background">
-                    <SelectValue placeholder="Selecione o setor" />
+                    <SelectValue placeholder="Selecione o país" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border shadow-lg z-50">
-                    <SelectItem value="fintech">FinTech</SelectItem>
-                    <SelectItem value="healthtech">HealthTech</SelectItem>
-                    <SelectItem value="edtech">EdTech</SelectItem>
-                    <SelectItem value="ecommerce">E-commerce</SelectItem>
-                    <SelectItem value="marketplace">Marketplace</SelectItem>
-                    <SelectItem value="saas">SaaS</SelectItem>
-                    <SelectItem value="tecnologia">Tecnologia</SelectItem>
+                    <SelectItem value="brasil">🇧🇷 Brasil</SelectItem>
+                    <SelectItem value="usa">🇺🇸 Estados Unidos</SelectItem>
+                    <SelectItem value="europa">🇪🇺 União Europeia</SelectItem>
+                    <SelectItem value="internacional">🌍 Internacional</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div>
+              <Label htmlFor="businessSector">Setor (Opcional)</Label>
+              <Input
+                id="businessSector"
+                value={formData.businessSector}
+                onChange={(e) => handleInputChange('businessSector', e.target.value)}
+                placeholder="Deixe em branco para classificação automática pela IA"
+              />
+              <p className="text-sm text-muted-foreground mt-1">
+                💡 Nossa IA classificará automaticamente baseado na descrição (AgTech, FinTech, HealthTech, IoT, etc.)
+              </p>
             </div>
 
             <div>
