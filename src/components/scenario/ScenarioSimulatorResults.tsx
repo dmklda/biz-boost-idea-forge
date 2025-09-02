@@ -38,16 +38,19 @@ import {
 import { SimulationResults, ScenarioType, useScenarioSimulator } from "@/hooks/useScenarioSimulator";
 import { formatCurrency } from "@/lib/utils";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
+import { useSimulationPDFGenerator } from "@/hooks/useSimulationPDFGenerator";
 
 interface ScenarioSimulatorResultsProps {
   results: SimulationResults;
   onExport?: (format: 'json' | 'csv' | 'pdf') => void;
+  simulationName?: string;
 }
 
-const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResultsProps) => {
+const ScenarioSimulatorResults = ({ results, onExport, simulationName }: ScenarioSimulatorResultsProps) => {
   const [activeScenario, setActiveScenario] = useState<ScenarioType>('realistic');
   const [activeTab, setActiveTab] = useState('overview');
   const { getScenarioInfo, calculateROI, calculatePaybackPeriod, getConfidenceInterval } = useScenarioSimulator();
+  const { generateSimulationPDF, isGeneratingPdf } = useSimulationPDFGenerator();
 
   // Debug logging
   console.log('SimulationResults received:', results);
@@ -198,17 +201,19 @@ const ScenarioSimulatorResults = ({ results, onExport }: ScenarioSimulatorResult
           </div>
           
           {/* Export button */}
-          {onExport && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onExport('json')}
-              className="flex items-center gap-2"
-            >
-              <Download className="h-4 w-4" />
-              Exportar
-            </Button>
-          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => generateSimulationPDF({ 
+              results, 
+              simulationName: simulationName || 'Simulação Financeira'
+            })}
+            disabled={isGeneratingPdf}
+            className="flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            {isGeneratingPdf ? 'Gerando PDF...' : 'Exportar PDF'}
+          </Button>
         </div>
       </div>
 

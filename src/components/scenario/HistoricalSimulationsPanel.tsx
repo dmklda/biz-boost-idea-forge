@@ -16,6 +16,7 @@ import {
 import { toast } from "@/components/ui/sonner";
 import { useScenarioSimulator } from "@/hooks/useScenarioSimulator";
 import { supabase } from "@/integrations/supabase/client";
+import { useSimulationPDFGenerator } from "@/hooks/useSimulationPDFGenerator";
 
 interface SavedSimulation {
   id: string;
@@ -38,6 +39,7 @@ const HistoricalSimulationsPanel = ({ onLoadSimulation }: HistoricalSimulationsP
   const [searchTerm, setSearchTerm] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [exportingId, setExportingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { loadSimulations, exportResults } = useScenarioSimulator();
 
   useEffect(() => {
@@ -118,70 +120,47 @@ const HistoricalSimulationsPanel = ({ onLoadSimulation }: HistoricalSimulationsP
   };
 
   const handleExportSimulation = async (simulation: SavedSimulation) => {
+    console.log('🔄 Starting PDF export for simulation:', simulation.id);
+    
+    // Validate simulation data
+    if (!simulation.simulation_name || !simulation.results) {
+      console.error('❌ No simulation data found');
+      setError('Dados da simulação não encontrados');
+      toast.error('Dados da simulação não estão disponíveis');
+      return;
+    }
+
     try {
-      console.log('📤 Iniciando exportação da simulação:', simulation.simulation_name);
-      console.log('📊 Dados da simulação:', simulation);
+      setExportingId(simulation.id);
+      console.log('📥 Setting export state for ID:', simulation.id);
       
-      // Validar dados da simulação
-      if (!simulation.simulation_name || !simulation.id) {
-        console.error('❌ Dados da simulação inválidos:', { 
-          name: simulation.simulation_name, 
-          id: simulation.id 
-        });
-        toast.error('Dados da simulação estão incompletos');
+      // Validate user authentication
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.error('❌ User not authenticated');
+        toast.error('Você precisa estar logado para exportar');
         return;
       }
+
+      // Use PDF generator
+      const { useSimulationPDFGenerator } = await import('@/hooks/useSimulationPDFGenerator');
+      const pdfGenerator = useSimulationPDFGenerator();
       
-      // Preparar dados para exportação
-      const exportData = {
-        id: simulation.id,
+      await pdfGenerator.generateSimulationPDF({
+        results: simulation.results,
         simulationName: simulation.simulation_name,
-        ideaTitle: simulation.financial_data?.idea_title || simulation.simulation_name,
-        simulationParams: simulation.simulation_params || {},
-        results: simulation.results || {},
-        revenueModel: simulation.revenue_model || 'Não especificado',
-        generatedAt: simulation.financial_data?.generated_at || simulation.created_at,
-        financialData: simulation.financial_data || {},
-        metadata: {
-          createdAt: simulation.created_at,
-          exportedAt: new Date().toISOString(),
-          version: '1.0'
-        }
-      };
-      
-      console.log('📋 Dados preparados para exportação:', exportData);
-      
-      // Gerar arquivo
-      const content = JSON.stringify(exportData, null, 2);
-      const filename = `simulacao-${simulation.simulation_name.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.json`;
-      
-      // Verificar se o browser suporta download
-      if (!('download' in document.createElement('a'))) {
-        console.error('❌ Browser não suporta download automático');
-        toast.error('Seu browser não suporta download automático. Tente outro browser.');
-        return;
-      }
-      
-      // Criar e executar download
-      const blob = new Blob([content], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.style.display = 'none';
-      
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      
-      // Limpar URL do blob
-      setTimeout(() => URL.revokeObjectURL(url), 100);
-      
-      console.log('✅ Exportação concluída:', filename);
-      toast.success('Simulação exportada com sucesso!');
+        companyName: simulation.financial_data?.idea_title || simulation.simulation_name
+      });
+
+      console.log('✅ PDF export completed successfully');
+
     } catch (error: any) {
-      console.error('❌ Erro ao exportar simulação:', error);
-      toast.error(`Erro ao exportar simulação: ${error.message || 'Erro desconhecido'}`);
+      console.error('💥 PDF export error:', error);
+      setError('Erro ao exportar simulação em PDF');
+      toast.error('Ocorreu um erro ao gerar o relatório PDF');
+    } finally {
+      setExportingId(null);
+      console.log('🏁 PDF export process finished');
     }
   };
 

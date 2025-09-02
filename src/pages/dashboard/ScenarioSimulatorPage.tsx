@@ -543,6 +543,7 @@ const ScenarioSimulatorPage = () => {
                     onExport={() => {
                       toast.success('Resultados exportados com sucesso!');
                     }}
+                    simulationName={ideas.find(i => i.id === selectedIdeaId)?.title || 'Simulação Personalizada'}
                   />
                 </div>
               ) : (
