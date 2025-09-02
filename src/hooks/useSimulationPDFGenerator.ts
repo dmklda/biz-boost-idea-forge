@@ -5,7 +5,7 @@ import { SimulationResults, ScenarioType } from '@/hooks/useScenarioSimulator';
 import { formatCurrency } from '@/lib/utils';
 
 interface SimulationPDFOptions {
-  results: SimulationResults;
+  results: SimulationResults | any; // Allow both SimulationResults and raw scenario data
   simulationName: string;
   companyName?: string;
 }
@@ -18,19 +18,46 @@ export const useSimulationPDFGenerator = () => {
     console.log('🔍 Starting PDF generation with:', { 
       hasResults: !!results, 
       hasResultsData: !!results?.results,
+      resultsKeys: results ? Object.keys(results) : null,
       simulationName,
       companyName 
     });
 
-    if (!results || !results.results) {
-      console.error('❌ Invalid simulation data:', results);
+    // Handle different data structures (new vs old format)
+    let simulationData;
+    
+    if (results.results) {
+      // New format: results.results contains the scenarios
+      simulationData = results.results;
+    } else if ((results as any).optimistic || (results as any).realistic || (results as any).pessimistic) {
+      // Direct format: results contains the scenarios directly
+      simulationData = results;
+    } else {
+      console.error('❌ Invalid simulation data structure:', results);
       toast({
         variant: "destructive",
         title: "Erro na exportação",
-        description: "Dados da simulação não estão disponíveis"
+        description: "Estrutura de dados da simulação não reconhecida"
       });
       return;
     }
+
+    // Validate we have at least one valid scenario
+    const hasValidData = simulationData.optimistic || 
+                         simulationData.realistic || 
+                         simulationData.pessimistic;
+
+    if (!hasValidData) {
+      console.error('❌ No valid scenarios found:', simulationData);
+      toast({
+        variant: "destructive",
+        title: "Erro na exportação", 
+        description: "Nenhum cenário válido encontrado na simulação"
+      });
+      return;
+    }
+
+    console.log('✅ Valid simulation data found, proceeding with PDF generation');
 
     try {
       setIsGeneratingPdf(true);
@@ -67,7 +94,7 @@ export const useSimulationPDFGenerator = () => {
         border: [226, 232, 240] as [number, number, number]
       };
 
-      const scenarios = Object.keys(results.results) as ScenarioType[];
+      const scenarios = Object.keys(simulationData) as ScenarioType[];
       
       // Função auxiliar para sanitizar texto
       const sanitizeText = (text: string | undefined | null): string => {
@@ -191,7 +218,7 @@ export const useSimulationPDFGenerator = () => {
         let yPos = addSectionTitle("RESUMO EXECUTIVO", 40);
         
         // KPIs principais em cards
-        const realisticResult = results.results['realistic'] || results.results[scenarios[0]];
+        const realisticResult = simulationData['realistic'] || simulationData[scenarios[0]];
         
         // Card 1: Lucro Operacional
         pdf.setFillColor(240, 248, 255);
@@ -313,24 +340,24 @@ export const useSimulationPDFGenerator = () => {
         // Dados da tabela
         const tableRows = [
           ['Lucro Final', 
-           formatCurrencyValue(results.results['optimistic']?.finalOperationalProfit),
-           formatCurrencyValue(results.results['realistic']?.finalOperationalProfit),
-           formatCurrencyValue(results.results['pessimistic']?.finalOperationalProfit)
+           formatCurrencyValue(simulationData['optimistic']?.finalOperationalProfit),
+           formatCurrencyValue(simulationData['realistic']?.finalOperationalProfit),
+           formatCurrencyValue(simulationData['pessimistic']?.finalOperationalProfit)
           ],
           ['ROI', 
-           formatPercentage(results.results['optimistic']?.roi),
-           formatPercentage(results.results['realistic']?.roi),
-           formatPercentage(results.results['pessimistic']?.roi)
+           formatPercentage(simulationData['optimistic']?.roi),
+           formatPercentage(simulationData['realistic']?.roi),
+           formatPercentage(simulationData['pessimistic']?.roi)
           ],
           ['Payback (meses)', 
-           `${results.results['optimistic']?.paybackPeriod || 'N/A'}`,
-           `${results.results['realistic']?.paybackPeriod || 'N/A'}`,
-           `${results.results['pessimistic']?.paybackPeriod || 'N/A'}`
+           `${simulationData['optimistic']?.paybackPeriod || 'N/A'}`,
+           `${simulationData['realistic']?.paybackPeriod || 'N/A'}`,
+           `${simulationData['pessimistic']?.paybackPeriod || 'N/A'}`
           ],
           ['Prob. Lucro', 
-           formatPercentage((1 - (results.results['optimistic']?.riskMetrics?.probability_of_loss || 0)) * 100),
-           formatPercentage((1 - (results.results['realistic']?.riskMetrics?.probability_of_loss || 0)) * 100),
-           formatPercentage((1 - (results.results['pessimistic']?.riskMetrics?.probability_of_loss || 0)) * 100)
+           formatPercentage((1 - (simulationData['optimistic']?.riskMetrics?.probability_of_loss || 0)) * 100),
+           formatPercentage((1 - (simulationData['realistic']?.riskMetrics?.probability_of_loss || 0)) * 100),
+           formatPercentage((1 - (simulationData['pessimistic']?.riskMetrics?.probability_of_loss || 0)) * 100)
           ]
         ];
         
@@ -403,7 +430,7 @@ export const useSimulationPDFGenerator = () => {
         let yPos = addSectionTitle("ANÁLISE DE RISCOS", 40);
         
         scenarios.forEach(scenario => {
-          const result = results.results[scenario];
+          const result = simulationData[scenario];
           const scenarioColors = {
             optimistic: colors.success,
             realistic: colors.primary,
@@ -544,7 +571,7 @@ export const useSimulationPDFGenerator = () => {
         addNewPage();
         let yPos = addSectionTitle("CONCLUSÕES E RECOMENDAÇÕES", 40);
         
-        const realisticResult = results.results['realistic'] || results.results[scenarios[0]];
+        const realisticResult = simulationData['realistic'] || simulationData[scenarios[0]];
         
         // Viabilidade do projeto
         pdf.setFontSize(14);

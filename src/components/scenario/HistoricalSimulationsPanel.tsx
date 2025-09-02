@@ -143,15 +143,35 @@ const HistoricalSimulationsPanel = ({ onLoadSimulation }: HistoricalSimulationsP
         return;
       }
 
-      // Validate simulation data
-      if (!simulation.results || !simulation.results.results) {
-        console.error('❌ Invalid simulation data structure:', simulation);
-        toast.error('Dados da simulação estão incompletos');
+      // Log simulation structure for debugging
+      console.log('🔍 Simulation data structure:', {
+        hasResults: !!simulation.results,
+        resultsType: typeof simulation.results,
+        resultsKeys: simulation.results ? Object.keys(simulation.results) : null,
+        simulationKeys: Object.keys(simulation)
+      });
+
+      // Validate simulation data - check for scenarios directly
+      if (!simulation.results) {
+        console.error('❌ No results data found:', simulation);
+        toast.error('Dados da simulação não encontrados');
         return;
       }
-      
+
+      // Check if we have at least one scenario with valid data
+      const hasValidScenarios = simulation.results.optimistic || 
+                               simulation.results.realistic || 
+                               simulation.results.pessimistic;
+
+      if (!hasValidScenarios) {
+        console.error('❌ No valid scenarios found in:', simulation.results);
+        toast.error('Cenários da simulação estão incompletos');
+        return;
+      }
+
+      // Adapt data structure for PDF generator - pass scenarios directly
       await generateSimulationPDF({
-        results: simulation.results,
+        results: simulation.results, // Pass the results containing scenarios directly
         simulationName: simulation.simulation_name,
         companyName: simulation.financial_data?.idea_title || simulation.simulation_name
       });
