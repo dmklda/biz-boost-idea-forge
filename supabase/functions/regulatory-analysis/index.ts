@@ -201,57 +201,76 @@ const REGULATORY_DATABASE = {
     }
   }
 };
-serve(async (req)=>{
+serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', {
-      headers: corsHeaders
-    });
+    return new Response(null, { headers: corsHeaders });
   }
   try {
-    const supabaseClient = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_ANON_KEY') ?? '', {
-      global: {
-        headers: {
-          Authorization: req.headers.get('Authorization')
-        }
-      }
-    });
-    const { ideaData, analysisDepth = 'comprehensive', jurisdiction = 'brazil' } = await req.json();
-    if (!ideaData || !ideaData.sector) {
-      throw new Error('ideaData with sector is required');
+    console.log('=== REGULATORY ANALYSIS REQUEST ===');
+    const body = await req.json();
+    console.log('Request body:', JSON.stringify(body, null, 2));
+    
+    const { businessName, businessSector, businessDescription, targetAudience, businessModel, location = 'Brazil', ideaId } = body;
+    // Validate required fields
+    if (!businessName || !businessSector || !businessDescription) {
+      console.error('Missing required fields:', { businessName, businessSector, businessDescription });
+      throw new Error('Campos obrigatórios: nome do negócio, setor e descrição');
     }
-    console.log(`Performing ${analysisDepth} regulatory analysis for ${ideaData.sector} in ${jurisdiction}`);
-    // Get base regulatory data
-    const sectorData = REGULATORY_DATABASE[jurisdiction]?.[ideaData.sector];
+    
+    console.log('=== VALIDATION PASSED ===');
+    console.log('Business data:', { businessName, businessSector, businessDescription, targetAudience, businessModel, location, ideaId });
+    // Get regulatory data for sector
+    const jurisdiction = location.toLowerCase() === 'brazil' ? 'brazil' : 'brazil';
+    const sectorKey = businessSector.toLowerCase();
+    const sectorData = REGULATORY_DATABASE[jurisdiction]?.[sectorKey];
+    
     if (!sectorData) {
-      throw new Error(`Regulatory data not available for sector ${ideaData.sector} in ${jurisdiction}`);
+      console.log(`No specific data for sector ${sectorKey}, using general requirements`);
     }
-    // Filter requirements based on business characteristics
-    const applicableRequirements = filterRequirementsByBusiness(sectorData.requirements, ideaData);
-    const applicableFrameworks = sectorData.frameworks;
-    // Generate regulatory roadmap
-    const roadmap = generateRegulatoryRoadmap(applicableRequirements);
-    // Assess risks
-    const riskAssessment = assessRegulatoryRisks(applicableRequirements, ideaData);
-    // Calculate costs
-    const estimatedCosts = calculateComplianceCosts(applicableRequirements);
-    // Generate AI-powered recommendations
-    const aiAnalysis = await generateAIRegulatoryAnalysis(ideaData, applicableRequirements, applicableFrameworks, analysisDepth);
-    // Get regulatory contacts
-    const regulatoryContacts = getRegulatoryContacts(applicableRequirements, jurisdiction);
+    
+    const requirements = sectorData?.requirements || [];
+    
+    // Generate analysis components
+    const roadmap = generateRegulatoryRoadmap(requirements);
+    const riskAssessment = assessRegulatoryRisks(requirements, { businessSector });
+    const costs = calculateComplianceCosts(requirements);
+    const contacts = getRegulatoryContacts(requirements, jurisdiction);
+    
+    // Generate AI recommendations
+    const recommendations = [
+      'Consulte um advogado especializado em direito regulatório',
+      'Implemente compliance desde o início do projeto',
+      'Monitore mudanças regulatórias constantemente',
+      'Estabeleça relacionamento com órgãos reguladores',
+      'Invista em treinamento da equipe'
+    ];
+
     const result = {
-      sector: ideaData.sector,
-      jurisdiction,
-      requirements: applicableRequirements,
-      frameworks: applicableFrameworks,
-      roadmap,
-      risk_assessment: riskAssessment,
-      estimated_costs: estimatedCosts,
-      recommendations: aiAnalysis.recommendations,
-      next_steps: aiAnalysis.next_steps,
-      regulatory_contacts: regulatoryContacts,
-      generatedAt: new Date().toISOString()
+      requirements,
+      riskAssessment: {
+        overallRisk: riskAssessment.overall_risk,
+        riskFactors: riskAssessment.key_risks,
+        mitigationStrategies: riskAssessment.mitigation_strategies
+      },
+      costs: {
+        initialCompliance: costs.initial_compliance,
+        annualCompliance: costs.annual_maintenance,
+        breakdown: []
+      },
+      roadmap: {
+        phases: roadmap,
+        totalTimeframe: roadmap.length > 0 ? `${roadmap.length} fases` : '0 fases'
+      },
+      recommendations,
+      contacts: contacts.map(c => ({
+        name: c.authority,
+        description: c.purpose,
+        website: c.contact_info
+      }))
     };
-    console.log(`Regulatory analysis completed for ${ideaData.sector}`);
+    
+    console.log('=== ANALYSIS COMPLETED ===');
     return new Response(JSON.stringify(result), {
       headers: {
         ...corsHeaders,

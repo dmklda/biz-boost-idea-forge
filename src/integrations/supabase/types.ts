@@ -830,6 +830,59 @@ export type Database = {
         }
         Relationships: []
       }
+      regulatory_analyses: {
+        Row: {
+          analysis_results: Json
+          business_description: string
+          business_model: string | null
+          business_name: string
+          business_sector: string
+          created_at: string
+          id: string
+          idea_id: string | null
+          location: string
+          target_audience: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analysis_results: Json
+          business_description: string
+          business_model?: string | null
+          business_name: string
+          business_sector: string
+          created_at?: string
+          id?: string
+          idea_id?: string | null
+          location?: string
+          target_audience?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analysis_results?: Json
+          business_description?: string
+          business_model?: string | null
+          business_name?: string
+          business_sector?: string
+          created_at?: string
+          id?: string
+          idea_id?: string | null
+          location?: string
+          target_audience?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regulatory_analyses_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_analyses: {
         Row: {
           analysis_data: Json
