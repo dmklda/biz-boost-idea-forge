@@ -229,15 +229,24 @@ Setores válidos: fintech, healthtech, edtech, agtech, logistics, retail, saas, 
   }
 }
 
-// Detect country from location and user selection
+// Enhanced detect country from location and user selection
 function detectCountry(location: string, countryParam: string): string {
   // First check user selection
   if (countryParam) {
     const countryMap = {
       'brasil': 'brazil',
-      'usa': 'usa', 
+      'argentina': 'argentina',
+      'chile': 'chile', 
+      'colombia': 'colombia',
+      'mexico': 'mexico',
+      'usa': 'usa',
+      'canada': 'canada',
       'europa': 'eu',
-      'internacional': 'brazil' // default to brazil for international
+      'reino_unido': 'uk',
+      'china': 'china',
+      'japao': 'japan',
+      'australia': 'australia',
+      'internacional': 'international'
     };
     return countryMap[countryParam.toLowerCase()] || 'brazil';
   }
@@ -246,9 +255,19 @@ function detectCountry(location: string, countryParam: string): string {
   const locationLower = location.toLowerCase();
   
   if (locationLower.includes('brasil') || locationLower.includes('brazil')) return 'brazil';
+  if (locationLower.includes('argentina')) return 'argentina';
+  if (locationLower.includes('chile')) return 'chile';
+  if (locationLower.includes('colombia') || locationLower.includes('colômbia')) return 'colombia';
+  if (locationLower.includes('mexico') || locationLower.includes('méxico')) return 'mexico';
   if (locationLower.includes('eua') || locationLower.includes('usa') || locationLower.includes('united states')) return 'usa';
+  if (locationLower.includes('canada') || locationLower.includes('canadá')) return 'canada';
   if (locationLower.includes('europa') || locationLower.includes('europe') || locationLower.includes('alemanha') || 
       locationLower.includes('frança') || locationLower.includes('espanha') || locationLower.includes('itália')) return 'eu';
+  if (locationLower.includes('reino unido') || locationLower.includes('united kingdom') || locationLower.includes('uk')) return 'uk';
+  if (locationLower.includes('china')) return 'china';
+  if (locationLower.includes('japan') || locationLower.includes('japao') || locationLower.includes('japão')) return 'japan';
+  if (locationLower.includes('australia') || locationLower.includes('austrália')) return 'australia';
+  if (locationLower.includes('internacional') || locationLower.includes('international') || locationLower.includes('global')) return 'international';
   
   return 'brazil'; // default
 }

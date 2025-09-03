@@ -39,7 +39,6 @@ const RegulatoryAnalysisPage = () => {
     businessDescription: '',
     targetAudience: '',
     businessModel: '',
-    location: '',
     country: 'brasil'
   });
 
@@ -152,9 +151,12 @@ const RegulatoryAnalysisPage = () => {
       businessDescription: selectedIdea.description,
       targetAudience: selectedIdea.audience || formData.targetAudience,
       businessModel: selectedIdea.monetization || formData.businessModel,
-      location: formData.location,
+      location: formData.country,
       ideaId: selectedIdea.id
-    } : formData;
+    } : {
+      ...formData,
+      location: formData.country
+    };
 
     // Validar campos obrigatórios
     if (!currentData.businessName.trim()) {
@@ -694,10 +696,19 @@ const RegulatoryAnalysisPage = () => {
                     <SelectValue placeholder="Selecione o país" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border shadow-lg z-50">
+                    <SelectItem value="internacional">🌍 Global/Internacional</SelectItem>
                     <SelectItem value="brasil">🇧🇷 Brasil</SelectItem>
+                    <SelectItem value="argentina">🇦🇷 Argentina</SelectItem>
+                    <SelectItem value="chile">🇨🇱 Chile</SelectItem>
+                    <SelectItem value="colombia">🇨🇴 Colômbia</SelectItem>
+                    <SelectItem value="mexico">🇲🇽 México</SelectItem>
                     <SelectItem value="usa">🇺🇸 Estados Unidos</SelectItem>
+                    <SelectItem value="canada">🇨🇦 Canadá</SelectItem>
                     <SelectItem value="europa">🇪🇺 União Europeia</SelectItem>
-                    <SelectItem value="internacional">🌍 Internacional</SelectItem>
+                    <SelectItem value="reino_unido">🇬🇧 Reino Unido</SelectItem>
+                    <SelectItem value="china">🇨🇳 China</SelectItem>
+                    <SelectItem value="japao">🇯🇵 Japão</SelectItem>
+                    <SelectItem value="australia">🇦🇺 Austrália</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -749,23 +760,6 @@ const RegulatoryAnalysisPage = () => {
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="location">Localização</Label>
-              <Select 
-                value={formData.location} 
-                onValueChange={(value) => handleInputChange('location', value)}
-              >
-                <SelectTrigger className="bg-background">
-                  <SelectValue placeholder="Selecione a localização" />
-                </SelectTrigger>
-                <SelectContent className="bg-background border shadow-lg z-50">
-                  <SelectItem value="Brazil">Brasil</SelectItem>
-                  <SelectItem value="Argentina">Argentina</SelectItem>
-                  <SelectItem value="Chile">Chile</SelectItem>
-                  <SelectItem value="Colombia">Colômbia</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
 
             {/* Validation Messages */}
             {!formData.businessName.trim() && (
