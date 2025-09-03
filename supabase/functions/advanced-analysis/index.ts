@@ -1,10 +1,17 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.0";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type"
 };
+
+// Get environment variables
+const openAiApiKey = Deno.env.get("OPENAI_API_KEY");
+const serpApiKey = Deno.env.get("SERPAPI_API_KEY");
+const supabaseUrl = Deno.env.get("SUPABASE_URL");
+const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 serve(async (req)=>{
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -28,9 +35,25 @@ serve(async (req)=>{
       });
     }
     console.log(`Processing advanced analysis for idea: ${ideaId} in language: ${userLanguage}`);
+    
+    // Validate API keys
+    if (!openAiApiKey) {
+      console.error('OpenAI API key not found');
+      return new Response(JSON.stringify({ error: 'OpenAI API key not configured' }), {
+        status: 500, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
+    if (!serpApiKey) {
+      console.error('SerpAPI key not found');
+      return new Response(JSON.stringify({ error: 'SerpAPI key not configured' }), {
+        status: 500, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+    
     // Create Supabase client
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     // Remove any existing analysis for this idea to ensure we generate a fresh one
     // This ensures we're not using cached/old data after a re-analysis
@@ -63,11 +86,11 @@ serve(async (req)=>{
     }).limit(1).single();
     console.log("Latest basic analysis data:", basicAnalysisData);
     console.log("Latest idea data:", ideaData);
-    // Prepare a prompt for OpenAI to generate a complete analysis
-    const openAiApiKey = Deno.env.get("OPENAI_API_KEY");
-    if (!openAiApiKey) {
-      throw new Error("Missing OpenAI API key in environment variables");
-    }
+
+    // Perform market research using SerpAPI
+    console.log('Starting market research with SerpAPI...');
+    const marketResearch = await performMarketResearch(ideaData, userLanguage);
+    console.log('Market research completed:', marketResearch);
     // Ensure we use the latest idea and analysis data for generating the prompt
     const inputData = {
       idea: {
@@ -128,6 +151,35 @@ serve(async (req)=>{
     ${languageInstructions}. Generate a comprehensive, UNIQUE business analysis for the following specific idea. This analysis MUST be completely tailored to this particular idea and should NOT contain generic content that could apply to any business:
     
     ${JSON.stringify(inputData, null, 2)}
+    
+    DADOS DE PESQUISA DE MERCADO EM TEMPO REAL:
+    
+    CONCORRENTES IDENTIFICADOS:
+    ${marketResearch.competitors.map((comp: any, index: number) => 
+      `${index + 1}. ${comp.title}\n   Link: ${comp.link}\n   Descrição: ${comp.snippet}\n`
+    ).join('\n')}
+    
+    TENDÊNCIAS DO MERCADO:
+    ${marketResearch.marketTrends.map((trend: any, index: number) => 
+      `${index + 1}. ${trend.title}\n   Fonte: ${trend.link}\n   Conteúdo: ${trend.snippet}\n`
+    ).join('\n')}
+    
+    INFORMAÇÕES DE PREÇOS:
+    ${marketResearch.pricingData.map((price: any, index: number) => 
+      `${index + 1}. ${price.title}\n   Fonte: ${price.link}\n   Informação: ${price.snippet}\n`
+    ).join('\n')}
+    
+    INDICADORES DE DEMANDA:
+    ${marketResearch.demandIndicators.map((demand: any, index: number) => 
+      `${index + 1}. ${demand.title}\n   Fonte: ${demand.link}\n   Contexto: ${demand.snippet}\n`
+    ).join('\n')}
+    
+    NOTÍCIAS E ATUALIZAÇÕES RECENTES:
+    ${marketResearch.newsAndUpdates.map((news: any, index: number) => 
+      `${index + 1}. ${news.title}\n   Data: ${news.date || 'N/A'}\n   Fonte: ${news.link}\n   Resumo: ${news.snippet}\n`
+    ).join('\n')}
+    
+    IMPORTANTE: Use estes dados reais da pesquisa de mercado para enriquecer SIGNIFICATIVAMENTE sua análise. Cite empresas concorrentes reais que foram encontradas, use dados de preços reais quando disponíveis, e incorpore as tendências e notícias atuais na sua análise.
     
     ${domainSpecificInstructions}
     
@@ -229,17 +281,17 @@ serve(async (req)=>{
       ],
       "competitors": [
         {
-          "name": "First competitor name",
+          "name": "First competitor name (use real competitors found in market research)",
           "strengths": ["Strength 1", "Strength 2", "Strength 3"],
           "weaknesses": ["Weakness 1", "Weakness 2", "Weakness 3"]
         },
         {
-          "name": "Second competitor name",
+          "name": "Second competitor name (use real competitors found in market research)",
           "strengths": ["Strength 1", "Strength 2", "Strength 3"],
           "weaknesses": ["Weakness 1", "Weakness 2", "Weakness 3"]
         },
         {
-          "name": "Third competitor name",
+          "name": "Third competitor name (use real competitors found in market research)",
           "strengths": ["Strength 1", "Strength 2"],
           "weaknesses": ["Weakness 1", "Weakness 2", "Weakness 3"]
         }
@@ -541,3 +593,101 @@ serve(async (req)=>{
     });
   }
 });
+
+// Market research function using SerpAPI
+async function performMarketResearch(ideaData: any, userLanguage: string) {
+  const research = {
+    competitors: [],
+    marketTrends: [],
+    pricingData: [],
+    demandIndicators: [],
+    newsAndUpdates: []
+  };
+
+  try {
+    // 1. Search for direct competitors
+    const competitorQuery = `${ideaData.title || ideaData.description} competitors alternatives similar services`;
+    const competitorResults = await searchWithSerpAPI(competitorQuery, 'search');
+    research.competitors = competitorResults?.organic_results?.slice(0, 5) || [];
+
+    // 2. Search for market trends and statistics
+    const sector = ideaData.business_sector || extractSectorFromDescription(ideaData.description);
+    const marketQuery = `${sector} market trends 2024 statistics`;
+    const marketResults = await searchWithSerpAPI(marketQuery, 'search');
+    research.marketTrends = marketResults?.organic_results?.slice(0, 3) || [];
+
+    // 3. Search for pricing information
+    const pricingQuery = `${ideaData.title || ideaData.description} pricing cost how much does it cost`;
+    const pricingResults = await searchWithSerpAPI(pricingQuery, 'search');
+    research.pricingData = pricingResults?.organic_results?.slice(0, 3) || [];
+
+    // 4. Search for demand indicators
+    const demandQuery = `${ideaData.audience || ideaData.target_audience} looking for ${ideaData.title || ideaData.description} need demand`;
+    const demandResults = await searchWithSerpAPI(demandQuery, 'search');
+    research.demandIndicators = demandResults?.organic_results?.slice(0, 3) || [];
+
+    // 5. Search for recent news and updates
+    const newsQuery = `${sector} news updates recent developments`;
+    const newsResults = await searchWithSerpAPI(newsQuery, 'news');
+    research.newsAndUpdates = newsResults?.news_results?.slice(0, 3) || [];
+
+    console.log('Market research completed successfully');
+    return research;
+  } catch (error) {
+    console.error('Error in market research:', error);
+    return research; // Return empty structure as fallback
+  }
+}
+
+async function searchWithSerpAPI(query: string, engine: string = 'search') {
+  try {
+    console.log(`Searching SerpAPI: ${query} (engine: ${engine})`);
+    
+    const params = new URLSearchParams({
+      q: query,
+      engine: engine,
+      api_key: serpApiKey!,
+      num: '5',
+      hl: 'pt-br'
+    });
+
+    const response = await fetch(`https://serpapi.com/search?${params}`);
+    if (!response.ok) {
+      console.error(`SerpAPI error: ${response.status} - ${response.statusText}`);
+      return null;
+    }
+
+    const data = await response.json();
+    console.log(`SerpAPI search successful for: ${query}`);
+    return data;
+  } catch (error) {
+    console.error('SerpAPI search error:', error);
+    return null;
+  }
+}
+
+function extractSectorFromDescription(description: string): string {
+  const lowerDesc = description.toLowerCase();
+  
+  if (lowerDesc.includes('tech') || lowerDesc.includes('software') || lowerDesc.includes('app') || 
+      lowerDesc.includes('aplicativo') || lowerDesc.includes('tecnologia') || lowerDesc.includes('digital')) {
+    return 'technology';
+  } else if (lowerDesc.includes('food') || lowerDesc.includes('restaurant') || lowerDesc.includes('comida') || 
+             lowerDesc.includes('restaurante') || lowerDesc.includes('café') || lowerDesc.includes('delivery')) {
+    return 'food and beverage';
+  } else if (lowerDesc.includes('retail') || lowerDesc.includes('shop') || lowerDesc.includes('store') || 
+             lowerDesc.includes('loja') || lowerDesc.includes('ecommerce') || lowerDesc.includes('e-commerce')) {
+    return 'retail and ecommerce';
+  } else if (lowerDesc.includes('health') || lowerDesc.includes('wellness') || lowerDesc.includes('fitness') || 
+             lowerDesc.includes('saúde') || lowerDesc.includes('bem-estar') || lowerDesc.includes('medical')) {
+    return 'health and wellness';
+  } else if (lowerDesc.includes('education') || lowerDesc.includes('learning') || lowerDesc.includes('teaching') || 
+             lowerDesc.includes('course') || lowerDesc.includes('educação') || lowerDesc.includes('curso')) {
+    return 'education';
+  } else if (lowerDesc.includes('finance') || lowerDesc.includes('bank') || lowerDesc.includes('investment') || 
+             lowerDesc.includes('payment') || lowerDesc.includes('fintech') || lowerDesc.includes('financeiro')) {
+    return 'financial services';
+  } else {
+    return 'business services';
+  }
+}
