@@ -503,7 +503,7 @@ serve(async (req)=>{
         "Authorization": `Bearer ${openAiApiKey}`
       },
       body: JSON.stringify({
-        model: "gpt-5",
+        model: "gpt-4o",
         messages: [
           {
             role: "system",
@@ -514,8 +514,7 @@ serve(async (req)=>{
             content: aiPrompt
           }
         ],
-        temperature: 0.7,
-        max_tokens: 4000
+        max_completion_tokens: 4000
       })
     });
     if (!apiResponse.ok) {
