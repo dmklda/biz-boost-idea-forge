@@ -604,31 +604,75 @@ async function performMarketResearch(ideaData: any, userLanguage: string) {
   };
 
   try {
-    // 1. Search for direct competitors
-    const competitorQuery = `${ideaData.title || ideaData.description} competitors alternatives similar services`;
-    const competitorResults = await searchWithSerpAPI(competitorQuery, 'search');
-    research.competitors = competitorResults?.organic_results?.slice(0, 5) || [];
+    // Perform competitor research
+    const competitorQuery = `${ideaData.title} competitors alternatives similar services`;
+    const competitorResults = await searchWithSerpAPI(competitorQuery, 'organic');
+    if (competitorResults?.organic_results) {
+      research.competitors = competitorResults.organic_results.slice(0, 5).map((result: any) => ({
+        title: result.title,
+        url: result.link,
+        description: result.snippet,
+        source: 'SerpAPI'
+      }));
+    }
 
-    // 2. Search for market trends and statistics
-    const sector = ideaData.business_sector || extractSectorFromDescription(ideaData.description);
-    const marketQuery = `${sector} market trends 2024 statistics`;
-    const marketResults = await searchWithSerpAPI(marketQuery, 'search');
-    research.marketTrends = marketResults?.organic_results?.slice(0, 3) || [];
+    // Search for market trends
+    const sector = extractSectorFromDescription(ideaData.description);
+    const trendsQuery = `${sector} market trends 2024 statistics`;
+    const trendsResults = await searchWithSerpAPI(trendsQuery, 'organic');
+    if (trendsResults?.organic_results) {
+      research.marketTrends = trendsResults.organic_results.slice(0, 3).map((result: any) => ({
+        title: result.title,
+        url: result.link,
+        description: result.snippet,
+        source: 'SerpAPI'
+      }));
+    }
 
-    // 3. Search for pricing information
-    const pricingQuery = `${ideaData.title || ideaData.description} pricing cost how much does it cost`;
-    const pricingResults = await searchWithSerpAPI(pricingQuery, 'search');
-    research.pricingData = pricingResults?.organic_results?.slice(0, 3) || [];
+    // Search for pricing information
+    const pricingQuery = `${ideaData.title} pricing cost how much does it cost`;
+    const pricingResults = await searchWithSerpAPI(pricingQuery, 'organic');
+    if (pricingResults?.organic_results) {
+      research.pricingData = pricingResults.organic_results.slice(0, 3).map((result: any) => ({
+        title: result.title,
+        url: result.link,
+        description: result.snippet,
+        source: 'SerpAPI'
+      }));
+    }
 
-    // 4. Search for demand indicators
-    const demandQuery = `${ideaData.audience || ideaData.target_audience} looking for ${ideaData.title || ideaData.description} need demand`;
-    const demandResults = await searchWithSerpAPI(demandQuery, 'search');
-    research.demandIndicators = demandResults?.organic_results?.slice(0, 3) || [];
+    // Search for demand indicators
+    const demandQuery = `${ideaData.audience} looking for ${ideaData.title} need demand`;
+    const demandResults = await searchWithSerpAPI(demandQuery, 'organic');
+    if (demandResults?.organic_results) {
+      research.demandIndicators = demandResults.organic_results.slice(0, 3).map((result: any) => ({
+        title: result.title,
+        url: result.link,
+        description: result.snippet,
+        source: 'SerpAPI'
+      }));
+    }
 
-    // 5. Search for recent news and updates
+    // Search for recent news and updates
     const newsQuery = `${sector} news updates recent developments`;
     const newsResults = await searchWithSerpAPI(newsQuery, 'news');
-    research.newsAndUpdates = newsResults?.news_results?.slice(0, 3) || [];
+    if (newsResults?.news_results) {
+      research.newsAndUpdates = newsResults.news_results.slice(0, 5).map((result: any) => ({
+        title: result.title,
+        url: result.link,
+        description: result.snippet,
+        source: 'SerpAPI',
+        date: result.date
+      }));
+    } else if (newsResults?.organic_results) {
+      // Fallback to organic results if news results are not available
+      research.newsAndUpdates = newsResults.organic_results.slice(0, 3).map((result: any) => ({
+        title: result.title,
+        url: result.link,
+        description: result.snippet,
+        source: 'SerpAPI'
+      }));
+    }
 
     console.log('Market research completed successfully');
     return research;
@@ -638,21 +682,26 @@ async function performMarketResearch(ideaData: any, userLanguage: string) {
   }
 }
 
-async function searchWithSerpAPI(query: string, engine: string = 'google') {
+async function searchWithSerpAPI(query: string, searchType: string = 'organic') {
   try {
-    console.log(`Searching SerpAPI: ${query} (engine: ${engine})`);
+    console.log(`Searching SerpAPI: ${query} (type: ${searchType})`);
     
     // Clean query to avoid special characters that might cause 400 errors
     const cleanQuery = query.replace(/[^\w\s\-\.]/g, ' ').trim();
     
+    // Build parameters according to SerpAPI documentation
     const params = new URLSearchParams({
       q: cleanQuery,
-      engine: engine,
       api_key: serpApiKey!,
-      num: '5',
+      num: '10',
       hl: 'pt',
       gl: 'br'
     });
+
+    // Add search type modifier for news
+    if (searchType === 'news') {
+      params.append('tbm', 'nws');
+    }
 
     console.log(`SerpAPI request URL: https://serpapi.com/search?${params.toString()}`);
 
@@ -667,7 +716,7 @@ async function searchWithSerpAPI(query: string, engine: string = 'google') {
       if (response.status === 400 && query.length > 50) {
         console.log('Retrying with shorter query...');
         const shortQuery = query.split(' ').slice(0, 5).join(' ');
-        return await searchWithSerpAPI(shortQuery, engine);
+        return await searchWithSerpAPI(shortQuery, searchType);
       }
       
       return null;
@@ -675,7 +724,12 @@ async function searchWithSerpAPI(query: string, engine: string = 'google') {
 
     const data = await response.json();
     console.log(`SerpAPI search successful for: ${query}`);
-    console.log(`SerpAPI results count: ${data.organic_results?.length || 0} organic, ${data.news_results?.length || 0} news`);
+    console.log(`SerpAPI results:`, {
+      organic: data.organic_results?.length || 0,
+      news: data.news_results?.length || 0,
+      related_searches: data.related_searches?.length || 0,
+      knowledge_graph: data.knowledge_graph ? 'Present' : 'None'
+    });
     return data;
   } catch (error) {
     console.error('SerpAPI search error:', error);
