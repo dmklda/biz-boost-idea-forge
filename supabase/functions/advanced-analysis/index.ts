@@ -638,26 +638,44 @@ async function performMarketResearch(ideaData: any, userLanguage: string) {
   }
 }
 
-async function searchWithSerpAPI(query: string, engine: string = 'search') {
+async function searchWithSerpAPI(query: string, engine: string = 'google') {
   try {
     console.log(`Searching SerpAPI: ${query} (engine: ${engine})`);
     
+    // Clean query to avoid special characters that might cause 400 errors
+    const cleanQuery = query.replace(/[^\w\s\-\.]/g, ' ').trim();
+    
     const params = new URLSearchParams({
-      q: query,
+      q: cleanQuery,
       engine: engine,
       api_key: serpApiKey!,
       num: '5',
-      hl: 'pt-br'
+      hl: 'pt',
+      gl: 'br'
     });
 
-    const response = await fetch(`https://serpapi.com/search?${params}`);
+    console.log(`SerpAPI request URL: https://serpapi.com/search?${params.toString()}`);
+
+    const response = await fetch(`https://serpapi.com/search?${params.toString()}`);
+    
     if (!response.ok) {
+      const errorText = await response.text();
       console.error(`SerpAPI error: ${response.status} - ${response.statusText}`);
+      console.error(`SerpAPI error response: ${errorText}`);
+      
+      // Try with simpler query if 400 error
+      if (response.status === 400 && query.length > 50) {
+        console.log('Retrying with shorter query...');
+        const shortQuery = query.split(' ').slice(0, 5).join(' ');
+        return await searchWithSerpAPI(shortQuery, engine);
+      }
+      
       return null;
     }
 
     const data = await response.json();
     console.log(`SerpAPI search successful for: ${query}`);
+    console.log(`SerpAPI results count: ${data.organic_results?.length || 0} organic, ${data.news_results?.length || 0} news`);
     return data;
   } catch (error) {
     console.error('SerpAPI search error:', error);
