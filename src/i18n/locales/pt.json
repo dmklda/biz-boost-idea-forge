@@ -1359,8 +1359,8 @@
     "pricing": {
       "title": "Preços",
       "description": "Nossa API tem planos específicos para diferentes volumes de uso:",
-      "entrepreneur": "Plano Empreendedor: 1.000 requisições/mês por R$99",
-      "business": "Plano Empresarial: Requisições ilimitadas por R$499/mês"
+      "entrepreneur": "Plano Empreendedor: 1.000 requisições/mês por $9.99",
+      "business": "Plano Empresarial: Requisições ilimitadas por $29.99/mês"
     },
     "support": {
       "title": "Suporte",
