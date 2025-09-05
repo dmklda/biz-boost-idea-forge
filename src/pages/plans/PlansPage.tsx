@@ -39,6 +39,12 @@ const PlansPage = () => {
     }
   };
 
+  // Get current user plan
+  const getCurrentUserPlan = (): 'free' | 'entrepreneur' | 'business' | null => {
+    if (!authState.isAuthenticated) return null;
+    return authState.user?.plan || "free";
+  };
+
   const plans = [
     {
       id: "free",
@@ -75,13 +81,13 @@ const PlansPage = () => {
       period: t('pricing.period') || '/mês',
       description: t('pricing.business.description') || 'Para empresas que precisam de análises avançadas e suporte prioritário.',
       features: getFeaturesTranslation('pricing.business.features'),
-      buttonText: t('pricing.business.cta') || 'Falar com Vendas',
+      buttonText: getCurrentUserPlan() === "business" ? "Plano Atual" : t('pricing.business.cta') || 'Falar com Vendas',
       recommended: false,
       color: "from-blue-600/20 via-indigo-600/20 to-blue-600/30"
     }
   ];
   
-  const handleSelectPlan = async (planId: string) => {
+  const handleSelectPlan = async (planId: 'free' | 'entrepreneur' | 'business') => {
     if (!authState.isAuthenticated) {
       toast.error("Você precisa estar logado para selecionar um plano");
       navigate("/login");
@@ -126,10 +132,10 @@ const PlansPage = () => {
         // Update user plan
         const updatedUser = {
           ...authState.user!,
-          plan: "pro" as const
+          plan: "business" as const
         };
         
-        updateUserPlan("pro");
+        updateUserPlan("business");
         toast.success(`Plano ${plans.find(p => p.id === planId)?.name} ativado com sucesso!`);
         
         // Navigate to results page
@@ -145,10 +151,10 @@ const PlansPage = () => {
       try {
         const updatedUser = {
           ...authState.user!,
-          plan: "pro" as const
+          plan: "business" as const
         };
         
-        updateUserPlan("pro");
+        updateUserPlan("business");
         toast.success(`Plano ${plans.find(p => p.id === planId)?.name} ativado com sucesso!`);
         navigate("/dashboard");
       } catch (error) {
@@ -158,12 +164,6 @@ const PlansPage = () => {
     }
   };
 
-  // Get current user plan
-  const getCurrentUserPlan = () => {
-    if (!authState.isAuthenticated) return null;
-    const currentPlan = authState.user?.plan || "free";
-    return currentPlan === "free" ? "free" : "entrepreneur";
-  };
 
   const currentUserPlan = getCurrentUserPlan();
   
@@ -301,8 +301,8 @@ const PlansPage = () => {
                 </CardContent>
                 
                 <CardFooter className="relative z-10">
-                  <Button 
-                    onClick={() => handleSelectPlan(plan.id)}
+                   <Button 
+                    onClick={() => handleSelectPlan(plan.id as 'free' | 'entrepreneur' | 'business')}
                     disabled={currentUserPlan === plan.id}
                     className={`w-full ${
                       currentUserPlan === plan.id

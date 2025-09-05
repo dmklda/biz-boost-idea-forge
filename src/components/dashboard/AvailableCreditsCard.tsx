@@ -28,7 +28,9 @@ export const AvailableCreditsCard = () => {
             <p className="text-sm text-muted-foreground">
               {user?.plan === "free" 
                 ? t("credits.availableCredits.freePlan") 
-                : t("credits.availableCredits.proPlan")}
+                : user?.plan === "entrepreneur"
+                ? t("credits.availableCredits.entrepreneurPlan")
+                : t("credits.availableCredits.businessPlan")}
             </p>
           </div>
         </div>

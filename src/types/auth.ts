@@ -2,9 +2,9 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  surname?: string; // Novo campo
-  display_name?: string; // Novo campo
-  plan: 'free' | 'basic' | 'pro' | 'enterprise';
+  surname?: string;
+  display_name?: string;
+  plan: 'free' | 'entrepreneur' | 'business';
   credits: number;
   createdAt: string;
   first_analysis_done?: boolean;

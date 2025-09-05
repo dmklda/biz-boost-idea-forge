@@ -1,6 +1,8 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { usePlanAccess } from "@/hooks/usePlanAccess";
+import { PlanGate } from "@/components/ui/plan-gate";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -17,6 +19,7 @@ import {
 export const MoreFeaturesPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { hasFeatureAccess, getRequiredPlan } = usePlanAccess();
 
   const availableFeatures = [
     {
@@ -86,6 +89,20 @@ export const MoreFeaturesPage = () => {
 
   const handleFeatureClick = (feature: any) => {
     if (feature.status === "available" && feature.path) {
+      // Check feature access for premium features
+      const premiumFeatures = ['marketplace', 'simulator', 'regulatory', 'benchmarks'];
+      if (premiumFeatures.includes(feature.id)) {
+        const featureMap = {
+          'marketplace': 'marketplace',
+          'simulator': 'simulator', 
+          'regulatory': 'regulatory-analysis',
+          'benchmarks': 'benchmarks'
+        };
+        const mappedFeature = featureMap[feature.id as keyof typeof featureMap];
+        if (!hasFeatureAccess(mappedFeature as any)) {
+          return; // Block access, let the card show plan gate
+        }
+      }
       navigate(feature.path);
     }
   };
@@ -117,6 +134,28 @@ export const MoreFeaturesPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {availableFeatures.map((feature) => {
             const IconComponent = feature.icon;
+            const premiumFeatures = ['marketplace', 'simulator', 'regulatory', 'benchmarks'];
+            const isPremium = premiumFeatures.includes(feature.id);
+            const featureMap = {
+              'marketplace': 'marketplace',
+              'simulator': 'simulator', 
+              'regulatory': 'regulatory-analysis',
+              'benchmarks': 'benchmarks'
+            };
+            const mappedFeature = featureMap[feature.id as keyof typeof featureMap];
+            const hasAccess = !isPremium || hasFeatureAccess(mappedFeature as any);
+
+            if (!hasAccess) {
+              return (
+                <PlanGate
+                  key={feature.id}
+                  requiredPlan={getRequiredPlan(mappedFeature as any)}
+                  feature={feature.title}
+                  description={feature.description}
+                />
+              );
+            }
+
             return (
               <Card 
                 key={feature.id}

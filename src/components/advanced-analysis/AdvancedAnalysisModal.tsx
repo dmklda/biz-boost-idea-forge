@@ -104,7 +104,7 @@ export function AdvancedAnalysisModal({
     if (!analysis || !idea) return;
     
     // Lógica de créditos para download de PDF
-    if (authState.user?.plan !== 'pro') {
+    if (authState.user?.plan !== 'business') {
       const { error: creditError } = await (supabase.rpc as any)('deduct_credits_and_log', {
         p_user_id: authState.user.id,
         p_amount: 1,
