@@ -24,6 +24,7 @@ import ScenarioSimulatorPage from './pages/dashboard/ScenarioSimulatorPage';
 import RegulatoryAnalysisPage from './pages/dashboard/RegulatoryAnalysisPage';
 import BenchmarksPage from './pages/dashboard/BenchmarksPage';
 import { MyContentPage } from "@/pages/dashboard/MyContentPage";
+import { MoreFeaturesPage } from "@/pages/dashboard/MoreFeaturesPage";
 import { CompareIdeasModalProvider } from './components/ideas/CompareIdeasModal';
 import { AuthProvider } from './hooks/useAuth';
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -103,6 +104,7 @@ function App() {
                 <Route path="benchmarks" element={<BenchmarksPage />} />
                 <Route path="creditos" element={<CreditsPage />} />
                 <Route path="configuracoes" element={<UserSettingsPage />} />
+                <Route path="mais-recursos" element={<MoreFeaturesPage />} />
                 <Route path="analise-avancada" element={<AdvancedAnalysisPage />} />
                 <Route path="metricas-avancadas" element={<AdvancedMetricsPage />} />
                 <Route path="central-recursos" element={<ResourceCenterPage />} />
