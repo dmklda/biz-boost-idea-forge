@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { MindMap } from "./MindMap";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
-import { Check, X, TrendingUp, Target, DollarSign, CheckCircle, AlertCircle, Star, Users, BarChart3, Lightbulb, Shield, Zap, Calendar, Wrench, Rocket, Clock } from "lucide-react";
+import { Check, X, TrendingUp, Target, DollarSign, CheckCircle, AlertCircle, Star, Users, BarChart3, Lightbulb, Shield, Zap, Calendar, Wrench, Rocket, Clock, ExternalLink } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface AdvancedAnalysisContentProps {
@@ -623,11 +623,56 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
             <CardContent>
               <div className="space-y-6">
                 {competitors?.map((competitor: any, index: number) => (
-                  <div key={index} className="p-4 border rounded-lg">
-                    <h4 className="font-semibold text-gray-900 mb-3 text-sm md:text-base">{competitor.name}</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div key={index} className="p-6 border rounded-lg bg-gradient-to-br from-purple-50/50 to-pink-50/50">
+                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h4 className="font-semibold text-gray-900 text-sm md:text-base">{competitor.name}</h4>
+                          {competitor.website && (
+                            <a 
+                              href={competitor.website} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:text-blue-800 text-xs md:text-sm underline"
+                            >
+                              Site
+                            </a>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          <Badge 
+                            variant={competitor.type === 'Direct' ? 'destructive' : 'secondary'} 
+                            className="text-xs"
+                          >
+                            {competitor.type === 'Direct' ? 'Concorrente Direto' : 'Concorrente Indireto'}
+                          </Badge>
+                          {competitor.threatLevel && (
+                            <Badge 
+                              variant={
+                                competitor.threatLevel === 'High' ? 'destructive' : 
+                                competitor.threatLevel === 'Medium' ? 'secondary' : 
+                                'outline'
+                              }
+                              className="text-xs"
+                            >
+                              Ameaça: {competitor.threatLevel}
+                            </Badge>
+                          )}
+                          {competitor.marketShare && (
+                            <Badge variant="outline" className="text-xs">
+                              Market Share: {competitor.marketShare}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                       <div>
-                        <h5 className="font-medium text-green-700 mb-2 text-sm md:text-base">Pontos Fortes</h5>
+                        <h5 className="font-medium text-green-700 mb-2 text-sm md:text-base flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          Pontos Fortes
+                        </h5>
                         <ul className="space-y-1">
                           {competitor.strengths?.map((strength: string, i: number) => (
                             <li key={i} className="flex items-start gap-2 text-xs md:text-sm">
@@ -638,7 +683,10 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                         </ul>
                       </div>
                       <div>
-                        <h5 className="font-medium text-red-700 mb-2 text-sm md:text-base">Pontos Fracos</h5>
+                        <h5 className="font-medium text-red-700 mb-2 text-sm md:text-base flex items-center gap-2">
+                          <X className="h-4 w-4" />
+                          Pontos Fracos
+                        </h5>
                         <ul className="space-y-1">
                           {competitor.weaknesses?.map((weakness: string, i: number) => (
                             <li key={i} className="flex items-start gap-2 text-xs md:text-sm">
@@ -649,6 +697,29 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                         </ul>
                       </div>
                     </div>
+
+                    {(competitor.keyFeatures || competitor.pricing) && (
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+                        {competitor.keyFeatures && (
+                          <div>
+                            <h5 className="font-medium text-blue-700 mb-2 text-sm md:text-base">Funcionalidades Principais</h5>
+                            <div className="flex flex-wrap gap-1">
+                              {competitor.keyFeatures.map((feature: string, i: number) => (
+                                <span key={i} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                                  {feature}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {competitor.pricing && (
+                          <div>
+                            <h5 className="font-medium text-purple-700 mb-2 text-sm md:text-base">Preços</h5>
+                            <p className="text-xs md:text-sm text-gray-700">{competitor.pricing}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -672,15 +743,91 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                 </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {tools?.map((tool: any, index: number) => (
-                  <div key={index} className="p-4 border rounded-lg bg-indigo-50">
-                    <div className="text-xs uppercase text-indigo-600 mb-1 font-medium">{tool.category}</div>
-                    <div className="font-medium text-sm md:text-base mb-1 text-gray-900">{tool.name}</div>
-                    <div className="text-xs md:text-sm text-gray-600">{tool.description}</div>
-                </div>
-                ))}
-              </div>
+              {/* Agrupar ferramentas por categoria */}
+              {tools && (() => {
+                const groupedTools = tools.reduce((acc: any, tool: any) => {
+                  const category = tool.category || 'Outros';
+                  if (!acc[category]) acc[category] = [];
+                  acc[category].push(tool);
+                  return acc;
+                }, {});
+
+                return Object.entries(groupedTools).map(([category, categoryTools]: [string, any]) => (
+                  <div key={category} className="mb-8">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full bg-indigo-500"></div>
+                      {category}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {categoryTools.map((tool: any, index: number) => (
+                        <div key={index} className="group p-4 border rounded-lg bg-gradient-to-br from-indigo-50/50 to-purple-50/50 hover:shadow-md transition-all duration-300">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="font-semibold text-sm md:text-base text-gray-900">{tool.name}</div>
+                                {tool.website && (
+                                  <a 
+                                    href={tool.website} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:text-blue-800 text-xs"
+                                    title="Visitar site"
+                                  >
+                                    <ExternalLink className="h-3 w-3" />
+                                  </a>
+                                )}
+                              </div>
+                              <div className="flex flex-wrap gap-1 mb-2">
+                                {tool.priority && (
+                                  <Badge 
+                                    variant={
+                                      tool.priority === 'Essential' ? 'destructive' : 
+                                      tool.priority === 'Recommended' ? 'default' : 
+                                      'outline'
+                                    }
+                                    className="text-xs"
+                                  >
+                                    {tool.priority === 'Essential' ? 'Essencial' : 
+                                     tool.priority === 'Recommended' ? 'Recomendado' : 
+                                     'Opcional'}
+                                  </Badge>
+                                )}
+                                {tool.pricing && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    {tool.pricing.includes('Free') ? '🆓' : 
+                                     tool.pricing.includes('Freemium') ? '💰' : '💳'}
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="text-xs md:text-sm text-gray-600 mb-3">{tool.description}</div>
+                          
+                          {tool.pricing && (
+                            <div className="text-xs text-green-700 font-medium mb-2">
+                              💰 {tool.pricing}
+                            </div>
+                          )}
+                          
+                          {tool.alternatives && tool.alternatives.length > 0 && (
+                            <div className="mt-3 pt-3 border-t border-gray-200">
+                              <div className="text-xs text-gray-500 mb-1">Alternativas:</div>
+                              <div className="flex flex-wrap gap-1">
+                                {tool.alternatives.map((alt: string, i: number) => (
+                                  <span key={i} className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs">
+                                    {alt}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ));
+              })()}
             </CardContent>
           </Card>
         </TabsContent>

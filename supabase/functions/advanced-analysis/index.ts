@@ -179,9 +179,26 @@ serve(async (req)=>{
       `${index + 1}. ${news.title}\n   Data: ${news.date || 'N/A'}\n   Fonte: ${news.link}\n   Resumo: ${news.snippet}\n`
     ).join('\n')}
     
-    IMPORTANTE: Use estes dados reais da pesquisa de mercado para enriquecer SIGNIFICATIVAMENTE sua análise. Cite empresas concorrentes reais que foram encontradas, use dados de preços reais quando disponíveis, e incorpore as tendências e notícias atuais na sua análise.
+    IMPORTANTE: Use estes dados reais da pesquisa de mercado para enriquecer SIGNIFICATIVAMENTE sua análise:
+    
+    PARA A SEÇÃO DE CONCORRENTES:
+    - Use os concorrentes reais encontrados na pesquisa acima
+    - Extraia URLs dos websites quando disponíveis
+    - Analise os snippets para identificar pontos fortes e fracos
+    - Classifique como concorrente direto ou indireto baseado na similaridade
+    - Estime participação de mercado baseada na presença online
+    
+    PARA A SEÇÃO DE FERRAMENTAS:
+    - Sugira ferramentas específicas para o setor identificado
+    - Categorize por função: Marketing, Desenvolvimento, Vendas, Finanças, Operações, Analytics
+    - Priorize como Essencial/Recomendado/Opcional baseado no estágio do negócio
+    - Inclua informações de preços quando mencionadas na pesquisa
+    - Forneça URLs quando possível
     
     ${domainSpecificInstructions}
+    
+    SUGESTÕES DE FERRAMENTAS ESPECÍFICAS PARA O SETOR ${extractSectorFromDescription(inputData.idea.description || "")}:
+    ${getSectorSpecificToolsGuidance(extractSectorFromDescription(inputData.idea.description || ""))}
     
     Make your analysis HIGHLY SPECIFIC to this exact business idea. Reference the exact business concept, problem being solved, target audience, and other specifics from the data provided.
     
@@ -282,18 +299,36 @@ serve(async (req)=>{
       "competitors": [
         {
           "name": "First competitor name (use real competitors found in market research)",
+          "website": "Competitor website URL if available",
+          "type": "Direct/Indirect",
+          "marketShare": "Estimated market share percentage",
+          "threatLevel": "Low/Medium/High",
           "strengths": ["Strength 1", "Strength 2", "Strength 3"],
-          "weaknesses": ["Weakness 1", "Weakness 2", "Weakness 3"]
+          "weaknesses": ["Weakness 1", "Weakness 2", "Weakness 3"],
+          "keyFeatures": ["Feature 1", "Feature 2"],
+          "pricing": "Pricing model information if available"
         },
         {
           "name": "Second competitor name (use real competitors found in market research)",
+          "website": "Competitor website URL if available",
+          "type": "Direct/Indirect",
+          "marketShare": "Estimated market share percentage",
+          "threatLevel": "Low/Medium/High",
           "strengths": ["Strength 1", "Strength 2", "Strength 3"],
-          "weaknesses": ["Weakness 1", "Weakness 2", "Weakness 3"]
+          "weaknesses": ["Weakness 1", "Weakness 2", "Weakness 3"],
+          "keyFeatures": ["Feature 1", "Feature 2"],
+          "pricing": "Pricing model information if available"
         },
         {
           "name": "Third competitor name (use real competitors found in market research)",
+          "website": "Competitor website URL if available",
+          "type": "Direct/Indirect",
+          "marketShare": "Estimated market share percentage",
+          "threatLevel": "Low/Medium/High",
           "strengths": ["Strength 1", "Strength 2"],
-          "weaknesses": ["Weakness 1", "Weakness 2", "Weakness 3"]
+          "weaknesses": ["Weakness 1", "Weakness 2", "Weakness 3"],
+          "keyFeatures": ["Feature 1", "Feature 2"],
+          "pricing": "Pricing model information if available"
         }
       ],
       "swot": {
@@ -337,33 +372,57 @@ serve(async (req)=>{
       "tools": [
         {
            "name": "First tool name",
-           "category": "Tool category",
-          "description": "Description of this tool's purpose"
+           "category": "Marketing/Development/Sales/Finance/Operations/Analytics",
+           "description": "Detailed description of this tool's purpose and benefits",
+           "pricing": "Free/Freemium/Paid - with specific price range if known",
+           "priority": "Essential/Recommended/Optional",
+           "website": "Tool website URL if available",
+           "alternatives": ["Alternative tool 1", "Alternative tool 2"]
         },
         {
            "name": "Second tool name",
-           "category": "Tool category",
-          "description": "Description of this tool's purpose"
+           "category": "Marketing/Development/Sales/Finance/Operations/Analytics",
+           "description": "Detailed description of this tool's purpose and benefits",
+           "pricing": "Free/Freemium/Paid - with specific price range if known",
+           "priority": "Essential/Recommended/Optional",
+           "website": "Tool website URL if available",
+           "alternatives": ["Alternative tool 1", "Alternative tool 2"]
         },
         {
            "name": "Third tool name",
-           "category": "Tool category",
-          "description": "Description of this tool's purpose"
+           "category": "Marketing/Development/Sales/Finance/Operations/Analytics",
+           "description": "Detailed description of this tool's purpose and benefits",
+           "pricing": "Free/Freemium/Paid - with specific price range if known",
+           "priority": "Essential/Recommended/Optional",
+           "website": "Tool website URL if available",
+           "alternatives": ["Alternative tool 1", "Alternative tool 2"]
         },
         {
            "name": "Fourth tool name",
-           "category": "Tool category",
-          "description": "Description of this tool's purpose"
+           "category": "Marketing/Development/Sales/Finance/Operations/Analytics",
+           "description": "Detailed description of this tool's purpose and benefits",
+           "pricing": "Free/Freemium/Paid - with specific price range if known",
+           "priority": "Essential/Recommended/Optional",
+           "website": "Tool website URL if available",
+           "alternatives": ["Alternative tool 1", "Alternative tool 2"]
         },
         {
            "name": "Fifth tool name",
-           "category": "Tool category",
-          "description": "Description of this tool's purpose"
+           "category": "Marketing/Development/Sales/Finance/Operations/Analytics",
+           "description": "Detailed description of this tool's purpose and benefits",
+           "pricing": "Free/Freemium/Paid - with specific price range if known",
+           "priority": "Essential/Recommended/Optional",
+           "website": "Tool website URL if available",
+           "alternatives": ["Alternative tool 1", "Alternative tool 2"]
         },
         {
            "name": "Sixth tool name",
-           "category": "Tool category",
-          "description": "Description of this tool's purpose"
+           "category": "Marketing/Development/Sales/Finance/Operations/Analytics",
+           "description": "Detailed description of this tool's purpose and benefits",
+           "pricing": "Free/Freemium/Paid - with specific price range if known",
+           "priority": "Essential/Recommended/Optional",
+           "website": "Tool website URL if available",
+           "alternatives": ["Alternative tool 1", "Alternative tool 2"]
         }
       ],
       "firstSteps": [
@@ -604,16 +663,40 @@ async function performMarketResearch(ideaData: any, userLanguage: string) {
   };
 
   try {
-    // Perform competitor research
-    const competitorQuery = `${ideaData.title} competitors alternatives similar services`;
-    const competitorResults = await searchWithSerpAPI(competitorQuery, 'organic');
-    if (competitorResults?.organic_results) {
-      research.competitors = competitorResults.organic_results.slice(0, 5).map((result: any) => ({
-        title: result.title,
-        url: result.link,
-        description: result.snippet,
-        source: 'SerpAPI'
-      }));
+    // Perform competitor research with multiple strategies
+    const competitorQueries = [
+      `"${ideaData.title}" competitors alternatives`,
+      `similar to "${ideaData.title}" competitors`,
+      `${extractSectorFromDescription(ideaData.description)} companies like`,
+      `best ${ideaData.title} alternatives`
+    ];
+
+    // Combine results from multiple searches for better competitor discovery
+    let allCompetitorResults: any[] = [];
+    for (const query of competitorQueries) {
+      const results = await searchWithSerpAPI(query, 'organic');
+      if (results?.organic_results) {
+        allCompetitorResults = allCompetitorResults.concat(results.organic_results.slice(0, 3));
+      }
+    }
+
+    if (allCompetitorResults.length > 0) {
+      // Remove duplicates and format competitor data
+      const uniqueCompetitors = allCompetitorResults
+        .filter((result, index, self) => 
+          index === self.findIndex(r => r.link === result.link)
+        )
+        .slice(0, 8) // Get top 8 unique competitors
+        .map((result: any) => ({
+          title: result.title,
+          link: result.link,
+          snippet: result.snippet,
+          source: 'SerpAPI',
+          // Extract domain for analysis
+          domain: result.link ? new URL(result.link).hostname : null
+        }));
+
+      research.competitors = uniqueCompetitors;
     }
 
     // Search for market trends
@@ -760,5 +843,79 @@ function extractSectorFromDescription(description: string): string {
     return 'financial services';
   } else {
     return 'business services';
+  }
+}
+
+function getSectorSpecificToolsGuidance(sector: string): string {
+  switch (sector) {
+    case 'technology':
+      return `
+      Para negócios de tecnologia, recomende ferramentas como:
+      - Development: GitHub, GitLab, VS Code, Docker, AWS/Azure
+      - Analytics: Google Analytics, Mixpanel, Amplitude, Hotjar
+      - Marketing: HubSpot, Mailchimp, Buffer, Canva
+      - Operations: Slack, Trello, Notion, Figma
+      - Finance: Stripe, PayPal, QuickBooks, FreshBooks
+      Priorize ferramentas que suportem desenvolvimento ágil e escalabilidade.`;
+      
+    case 'food and beverage':
+      return `
+      Para negócios de alimentação, recomende ferramentas como:
+      - Operations: Toast POS, Square, Resy, OpenTable
+      - Marketing: Instagram Business, Facebook Ads, Uber Eats, DoorDash
+      - Finance: QuickBooks, FreshBooks, BentoBox
+      - Analytics: Google Analytics, Yelp Business, TripAdvisor
+      - Development: Shopify (e-commerce), WordPress, Canva
+      Foque em ferramentas para gestão de estoque, delivery e experiência do cliente.`;
+      
+    case 'retail and ecommerce':
+      return `
+      Para negócios de varejo/e-commerce, recomende ferramentas como:
+      - Development: Shopify, WooCommerce, Magento, BigCommerce
+      - Marketing: Facebook Ads, Google Ads, Klaviyo, MailChimp
+      - Analytics: Google Analytics, Hotjar, Crazy Egg
+      - Operations: Inventory management tools, ShipStation, Zendesk
+      - Finance: Stripe, PayPal, QuickBooks, Xero
+      Priorize ferramentas para conversão, gestão de inventário e fulfillment.`;
+      
+    case 'health and wellness':
+      return `
+      Para negócios de saúde/bem-estar, recomende ferramentas como:
+      - Operations: Practice management software, Calendly, Acuity
+      - Marketing: Mailchimp, Canva, Instagram Business
+      - Analytics: Google Analytics, patient tracking systems
+      - Development: WordPress, Squarespace, telehealth platforms
+      - Finance: SimplePractice, TherapyNotes, QuickBooks
+      Foque em compliance, privacidade de dados (HIPAA) e agendamento.`;
+      
+    case 'education':
+      return `
+      Para negócios educacionais, recomende ferramentas como:
+      - Development: Teachable, Thinkific, LearnDash, Moodle
+      - Marketing: Mailchimp, Facebook Ads, YouTube, LinkedIn
+      - Analytics: Google Analytics, learning analytics platforms
+      - Operations: Zoom, Google Classroom, Slack, Calendar tools
+      - Finance: Stripe, PayPal, subscription management tools
+      Priorize ferramentas para criação de conteúdo, LMS e engagement.`;
+      
+    case 'financial services':
+      return `
+      Para negócios financeiros, recomende ferramentas como:
+      - Development: Banking APIs, Plaid, Stripe Connect
+      - Analytics: Tableau, Power BI, compliance reporting tools
+      - Marketing: LinkedIn Ads, content marketing platforms
+      - Operations: CRM sistemas, DocuSign, security tools
+      - Finance: Specialized accounting software, audit tools
+      Foque em segurança, compliance e ferramentas regulamentares.`;
+      
+    default:
+      return `
+      Para negócios em geral, recomende ferramentas essenciais como:
+      - Marketing: Google Ads, Facebook Ads, Mailchimp, Canva
+      - Analytics: Google Analytics, social media insights
+      - Operations: Slack, Trello, Google Workspace, Calendly
+      - Development: WordPress, Squarespace, basic web tools
+      - Finance: QuickBooks, Stripe, PayPal, banking tools
+      Adapte as sugestões baseado nas necessidades específicas do negócio.`;
   }
 }
