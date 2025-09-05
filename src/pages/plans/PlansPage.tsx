@@ -20,7 +20,7 @@ const PlansPage = () => {
   const { t } = useTranslation();
   const { formatPrice } = useCurrency();
   const navigate = useNavigate();
-  const { authState } = useAuth();
+  const { authState, updateUserPlan } = useAuth();
   const { createCheckoutSession, isCreatingCheckout } = useSubscription();
   const { getSavedIdeaData } = useIdeaForm();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
