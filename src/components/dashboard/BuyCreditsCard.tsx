@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { toast } from "@/components/ui/sonner";
+import { CreditCard, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 // Tipagem para pacotes de créditos
@@ -14,39 +14,24 @@ interface CreditPackage {
   savings: string;
 }
 
-// Pacotes de crédito disponíveis
+// Pacotes de crédito disponíveis (atualizados para USD)
 const creditPackages: CreditPackage[] = [
-  { id: 1, amount: 5, price: "$24.90", savings: "" },
-  { id: 2, amount: 10, price: "$44.90", savings: "10% de desconto" },
-  { id: 3, amount: 25, price: "$99.90", savings: "20% de desconto" },
+  { id: 1, amount: 5, price: "$2.99", savings: "" },
+  { id: 2, amount: 10, price: "$4.99", savings: "17% OFF" },
+  { id: 3, amount: 25, price: "$9.99", savings: "20% OFF" },
+  { id: 4, amount: 50, price: "$17.99", savings: "28% OFF" },
+  { id: 5, amount: 100, price: "$29.99", savings: "40% OFF" },
 ];
 
 export const BuyCreditsCard = () => {
   const { t } = useTranslation();
-  const { authState, updateUserCredits } = useAuth();
+  const { authState } = useAuth();
+  const { createCheckoutSession, isCreatingCheckout } = useSubscription();
   const { user } = authState;
-  const [isLoading, setIsLoading] = useState<number | null>(null);
   
-  const handleBuyCredits = async (packageId: number, amount: number) => {
+  const handleBuyCredits = async (amount: number) => {
     if (!user) return;
-    
-    // Em um app real, isso redirecionaria para um gateway de pagamento
-    setIsLoading(packageId);
-    
-    try {
-      // Calcular novo valor de créditos
-      const newCredits = user.credits + amount;
-      
-      // Chamada para atualizar créditos
-      updateUserCredits(newCredits);
-      
-      toast.success(t("credits.transactions.addedSuccess"));
-    } catch (error) {
-      console.error("Error buying credits:", error);
-      toast.error(t("credits.buyCredits.error", "Error adding credits"));
-    } finally {
-      setIsLoading(null);
-    }
+    await createCheckoutSession(amount.toString(), 'credits');
   };
 
   return (
@@ -71,15 +56,18 @@ export const BuyCreditsCard = () => {
               )}
             </div>
             <Button 
-              onClick={() => handleBuyCredits(pkg.id, pkg.amount)}
-              disabled={isLoading === pkg.id}
+              onClick={() => handleBuyCredits(pkg.amount)}
+              disabled={isCreatingCheckout}
               className="bg-brand-purple hover:bg-brand-purple/90"
             >
-              {isLoading === pkg.id ? (
-                t("credits.buyCredits.processing")
+              {isCreatingCheckout ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  {t("credits.buyCredits.processing")}
+                </>
               ) : (
                 <>
-                  <Plus className="h-4 w-4 mr-1" />
+                  <CreditCard className="h-4 w-4 mr-2" />
                   {t("credits.buyCredits.buy")}
                 </>
               )}

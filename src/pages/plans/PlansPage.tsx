@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { useIdeaForm } from "@/hooks/useIdeaForm";
 import { useTranslation } from "react-i18next";
 import { useCurrency } from "@/hooks/use-currency";
@@ -19,7 +20,8 @@ const PlansPage = () => {
   const { t } = useTranslation();
   const { formatPrice } = useCurrency();
   const navigate = useNavigate();
-  const { authState, updateUserPlan } = useAuth();
+  const { authState } = useAuth();
+  const { createCheckoutSession, isCreatingCheckout } = useSubscription();
   const { getSavedIdeaData } = useIdeaForm();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [annualBilling, setAnnualBilling] = useState(false);
