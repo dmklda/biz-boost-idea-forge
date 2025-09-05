@@ -7,13 +7,11 @@ import {
   Store, 
   BarChart3, 
   Scale, 
-  TrendingUp, 
-  Trophy, 
-  FileText, 
-  Star,
-  Brain,
-  CreditCard,
-  Settings
+  TrendingUp,
+  BarChart4,
+  Puzzle,
+  Monitor,
+  Palette
 } from "lucide-react";
 
 export const MoreFeaturesPage = () => {
@@ -52,45 +50,36 @@ export const MoreFeaturesPage = () => {
       icon: TrendingUp,
       path: "/dashboard/benchmarks",
       status: "available"
-    },
-    {
-      id: "gamification",
-      title: "Gamificação",
-      description: "Pontuação, níveis e conquistas",
-      icon: Trophy,
-      path: "/dashboard/gamificacao",
-      status: "available"
-    },
-    {
-      id: "drafts",
-      title: "Rascunhos",
-      description: "Ideias salvas para edição posterior",
-      icon: FileText,
-      path: "/dashboard/rascunhos",
-      status: "available"
     }
   ];
 
   const comingSoonFeatures = [
     {
-      id: "advanced-analysis",
-      title: "Análise Avançada",
-      description: "IA + dados reais de mercado",
-      icon: Brain,
+      id: "advanced-metrics",
+      title: "Métricas Avançadas",
+      description: "Analytics e insights detalhados",
+      icon: BarChart4,
       status: "coming-soon"
     },
     {
-      id: "credits",
-      title: "Gerenciar Créditos",
-      description: "Histórico e compra de créditos",
-      icon: CreditCard,
+      id: "integrations",
+      title: "Integrações",
+      description: "Conectar com ferramentas externas",
+      icon: Puzzle,
       status: "coming-soon"
     },
     {
-      id: "advanced-settings",
-      title: "Configurações Avançadas",
-      description: "Preferências e personalizações",
-      icon: Settings,
+      id: "executive-dashboard",
+      title: "Dashboard Executivo",
+      description: "Visão estratégica do negócio",
+      icon: Monitor,
+      status: "coming-soon"
+    },
+    {
+      id: "personalization",
+      title: "Personalização",
+      description: "Customização da interface",
+      icon: Palette,
       status: "coming-soon"
     }
   ];
