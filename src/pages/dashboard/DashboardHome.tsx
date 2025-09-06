@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { 
   BarChart as BarChartIcon, 
   LineChart as LineChartIcon, 
@@ -43,6 +43,7 @@ const DashboardHome = () => {
   const { authState, updateUserCredits } = useAuth();
   const { user } = authState;
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [recentIdeas, setRecentIdeas] = useState<any[]>([]);
   const [ideaCount, setIdeaCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -220,8 +221,8 @@ const DashboardHome = () => {
   }, [fetchUserData]);
   
   const addCredits = () => {
-    // Redirect to credits page for proper purchase flow
-    window.location.href = '/dashboard/creditos';
+    // Navigate to credits page for proper purchase flow
+    navigate('/dashboard/creditos');
   };
   
   return (
