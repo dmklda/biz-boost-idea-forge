@@ -32,7 +32,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'gpt-5-mini-2025-08-07',
         messages: [
           {
             role: 'system',
@@ -78,23 +78,44 @@ Retorne uma paleta de cores completa em JSON.`
 
     if (!response.ok) {
       const error = await response.json();
+      console.error('OpenAI API error:', error);
       throw new Error(error.error?.message || 'Failed to generate color palette');
     }
 
     const data = await response.json();
+    console.log('OpenAI response data:', JSON.stringify(data, null, 2));
+    
+    // Validate OpenAI response structure
+    if (!data.choices || !data.choices[0] || !data.choices[0].message || !data.choices[0].message.content) {
+      console.error('Invalid OpenAI response structure:', data);
+      throw new Error('OpenAI returned invalid response structure');
+    }
+    
     let paletteContent = data.choices[0].message.content.trim();
+    
+    // Check if content is empty
+    if (!paletteContent) {
+      console.error('Empty response from OpenAI');
+      throw new Error('OpenAI returned empty response');
+    }
+    
+    console.log('Raw palette content:', paletteContent);
     
     // Remove code block markers if present
     if (paletteContent.startsWith('```json')) {
       paletteContent = paletteContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+    } else if (paletteContent.startsWith('```')) {
+      paletteContent = paletteContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
     }
     
     let colorPalette;
     try {
       colorPalette = JSON.parse(paletteContent);
+      console.log('Successfully parsed color palette:', colorPalette);
     } catch (parseError) {
       console.error('Failed to parse JSON response:', paletteContent);
-      throw new Error('Invalid response format from AI');
+      console.error('Parse error:', parseError);
+      throw new Error('Invalid response format from AI - unable to parse JSON');
     }
 
     console.log('Color palette generated successfully');
