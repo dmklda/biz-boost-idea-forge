@@ -359,8 +359,8 @@ serve(async (req)=>{
       }
     });
     
-    const { sector, region = 'brazil', companyStage = 'startup', businessModel, targetMetrics } = await req.json();
-    console.log('📊 Request data:', { sector, region, companyStage, businessModel, targetMetrics });
+    const { sector, region = 'brazil', companyStage = 'startup', businessModel, targetMetrics, ideaData } = await req.json();
+    console.log('📊 Request data:', { sector, region, companyStage, businessModel, targetMetrics, ideaData });
     
     if (!sector) {
       throw new Error('Sector is required');
@@ -386,7 +386,18 @@ serve(async (req)=>{
     
     // Generate AI-powered insights
     console.log('🤖 Generating AI insights...');
-    const aiInsights = await generateAIBenchmarkInsights(sector, region, companyStage, benchmarkData, businessModel);
+    const aiInsights = await generateAIBenchmarkInsights(sector, region, companyStage, benchmarkData, businessModel, ideaData);
+    
+    // Get real-time market data
+    console.log('🌐 Fetching real-time market data...');
+    const realTimeData = await fetchRealTimeMarketData(sector, region);
+    
+    // Generate idea comparison if idea data is provided
+    let ideaComparison = null;
+    if (ideaData) {
+      console.log('🎯 Generating idea comparison...');
+      ideaComparison = await generateIdeaComparison(ideaData, benchmarkData);
+    }
     
     // Enrich with comparative analysis
     const enrichedMetrics = await enrichMetricsWithComparison(filteredMetrics, sector, region);
@@ -398,10 +409,12 @@ serve(async (req)=>{
       metrics: enrichedMetrics,
       marketInsights: {
         ...benchmarkData.marketInsights,
-        ...aiInsights.marketInsights
+        ...aiInsights.marketInsights,
+        realTimeData
       },
       financialBenchmarks: benchmarkData.financialBenchmarks,
       operationalBenchmarks: benchmarkData.operationalBenchmarks,
+      ideaComparison,
       generatedAt: new Date().toISOString()
     };
     
@@ -489,7 +502,7 @@ async function enrichMetricsWithComparison(metrics, sector, region) {
   });
 }
 // Generate AI-powered benchmark insights
-async function generateAIBenchmarkInsights(sector, region, companyStage, benchmarkData, businessModel) {
+async function generateAIBenchmarkInsights(sector, region, companyStage, benchmarkData, businessModel, ideaData = null) {
   const openAiApiKey = Deno.env.get('OPENAI_API_KEY');
   if (!openAiApiKey) {
     console.log('⚠️ OpenAI API key not found, skipping AI insights');
@@ -620,4 +633,116 @@ function extractRecommendations(insights) {
     }
   }
   return recommendations.slice(0, 5);
+}
+
+// Fetch real-time market data using Perplexity API
+async function fetchRealTimeMarketData(sector, region) {
+  const perplexityApiKey = Deno.env.get('PERPLEXITY_API_KEY');
+  if (!perplexityApiKey) {
+    console.log('⚠️ Perplexity API key not found, skipping real-time data');
+    return {
+      note: 'Dados em tempo real não disponíveis (API key não configurada)',
+      lastUpdated: new Date().toISOString()
+    };
+  }
+
+  try {
+    const query = `Latest market trends and data for ${sector} industry in ${region} 2024. Recent funding, growth rates, and key market movements.`;
+    
+    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${perplexityApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-sonar-small-128k-online',
+        messages: [
+          {
+            role: 'system',
+            content: 'Provide recent, factual market data and trends. Focus on quantifiable metrics, recent developments, and credible sources.'
+          },
+          {
+            role: 'user',
+            content: query
+          }
+        ],
+        temperature: 0.2,
+        top_p: 0.9,
+        max_tokens: 800,
+        search_recency_filter: 'month'
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Perplexity API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const insights = data.choices[0]?.message?.content;
+
+    return {
+      insights,
+      source: 'Perplexity API - Dados em tempo real',
+      lastUpdated: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('❌ Error fetching real-time data:', error);
+    return {
+      note: 'Erro ao buscar dados em tempo real',
+      error: error.message,
+      lastUpdated: new Date().toISOString()
+    };
+  }
+}
+
+// Generate idea comparison analysis
+async function generateIdeaComparison(ideaData, benchmarkData) {
+  try {
+    const gaps = [];
+    
+    // Analyze key metrics gaps
+    for (const metric of benchmarkData.metrics) {
+      let analysis = '';
+      let performance = 'unknown';
+      let recommendation = '';
+
+      // Basic gap analysis logic
+      if (metric.name.includes('CAC') || metric.name.includes('Acquisition')) {
+        analysis = `Custo de aquisição no setor: ${metric.percentile_50}. Sua ideia de "${ideaData.title}" no segmento ${ideaData.audience || 'indefinido'} pode ter custos ${ideaData.monetization?.includes('free') ? 'menores' : 'similares'}.`;
+        performance = ideaData.monetization?.includes('free') ? 'above' : 'average';
+        recommendation = ideaData.monetization?.includes('free') ? 'Aproveite o modelo freemium para reduzir CAC' : 'Considere estratégias de aquisição orgânica';
+      } else if (metric.name.includes('LTV') || metric.name.includes('Lifetime')) {
+        analysis = `LTV médio no setor: ${metric.percentile_50}. Sua proposta para ${ideaData.audience || 'público geral'} ${ideaData.monetization?.includes('subscription') ? 'tem potencial alto' : 'precisa ser analisada'}.`;
+        performance = ideaData.monetization?.includes('subscription') ? 'above' : 'average';
+        recommendation = ideaData.monetization?.includes('subscription') ? 'Maximize valor por retenção' : 'Considere modelos recorrentes';
+      } else if (metric.name.includes('Churn') || metric.name.includes('Retention')) {
+        analysis = `Taxa média do setor: ${metric.percentile_50}%. Sua ideia "${ideaData.title}" ${ideaData.description?.includes('solução') ? 'resolve problema específico' : 'precisa validar retenção'}.`;
+        performance = ideaData.description?.includes('solução') ? 'above' : 'average';
+        recommendation = 'Foque em solving pain points para melhorar retenção';
+      }
+
+      if (analysis) {
+        gaps.push({
+          metric: metric.name,
+          analysis,
+          performance,
+          recommendation
+        });
+      }
+    }
+
+    return {
+      ideaTitle: ideaData.title,
+      sectorComparison: `Comparação da "${ideaData.title}" com benchmarks do setor`,
+      gaps: gaps.slice(0, 5),
+      overallAssessment: gaps.filter(g => g.performance === 'above').length > gaps.filter(g => g.performance === 'below').length 
+        ? 'Sua ideia tem potencial acima da média do setor'
+        : 'Sua ideia está alinhada com a média do setor',
+      generatedAt: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('❌ Error generating idea comparison:', error);
+    return null;
+  }
 }

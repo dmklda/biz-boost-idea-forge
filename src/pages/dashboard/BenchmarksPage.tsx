@@ -20,7 +20,11 @@ import {
   RefreshCw,
   Download,
   Info,
-  AlertTriangle
+  AlertTriangle,
+  Lightbulb,
+  Plus,
+  Calendar,
+  Tag
 } from "lucide-react";
 import { 
   LineChart, 
@@ -42,6 +46,7 @@ import {
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { IdeaSelector } from "@/components/regulatory-analysis/IdeaSelector";
 
 interface BenchmarkMetric {
   name: string;
@@ -57,6 +62,17 @@ interface BenchmarkMetric {
   importance: 'critical' | 'important' | 'moderate';
 }
 
+interface Idea {
+  id: string;
+  title: string;
+  description: string;
+  audience?: string;
+  monetization?: string;
+  location?: string;
+  created_at: string;
+  status: string;
+}
+
 interface IndustryBenchmark {
   sector: string;
   region: string;
@@ -66,6 +82,8 @@ interface IndustryBenchmark {
   financialBenchmarks: any;
   operationalBenchmarks: any;
   generatedAt: string;
+  ideaComparison?: any;
+  realTimeData?: any;
 }
 
 const BenchmarksPage = () => {
@@ -73,6 +91,8 @@ const BenchmarksPage = () => {
   const { hasFeatureAccess } = usePlanAccess();
   const [isLoading, setIsLoading] = useState(false);
   const [benchmarkResult, setBenchmarkResult] = useState<IndustryBenchmark | null>(null);
+  const [selectedIdea, setSelectedIdea] = useState<Idea | null>(null);
+  const [useExistingIdea, setUseExistingIdea] = useState(true);
   const [formData, setFormData] = useState({
     sector: '',
     region: 'brazil',
@@ -84,7 +104,23 @@ const BenchmarksPage = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleIdeaSelect = (idea: Idea | null) => {
+    setSelectedIdea(idea);
+    if (idea) {
+      // Auto-fill form data from idea
+      setFormData(prev => ({
+        ...prev,
+        businessModel: idea.monetization || prev.businessModel,
+        region: idea.location?.toLowerCase().includes('brasil') ? 'brazil' : prev.region
+      }));
+    }
+  };
+
   const generateBenchmarks = async () => {
+    if (useExistingIdea && !selectedIdea) {
+      toast.error('Por favor, selecione uma ideia');
+      return;
+    }
     if (!formData.sector) {
       toast.error('Por favor, selecione um setor');
       return;
@@ -93,19 +129,34 @@ const BenchmarksPage = () => {
     try {
       setIsLoading(true);
       
+      const requestBody = {
+        sector: formData.sector,
+        region: formData.region,
+        companyStage: formData.companyStage,
+        businessModel: formData.businessModel,
+        ...(useExistingIdea && selectedIdea && {
+          ideaData: {
+            id: selectedIdea.id,
+            title: selectedIdea.title,
+            description: selectedIdea.description,
+            audience: selectedIdea.audience,
+            monetization: selectedIdea.monetization,
+            location: selectedIdea.location
+          }
+        })
+      };
+      
       const { data, error } = await supabase.functions.invoke('industry-benchmarks', {
-        body: {
-          sector: formData.sector,
-          region: formData.region,
-          companyStage: formData.companyStage,
-          businessModel: formData.businessModel
-        }
+        body: requestBody
       });
 
       if (error) throw error;
 
       setBenchmarkResult(data);
-      toast.success('Benchmarks gerados com sucesso!');
+      toast.success(useExistingIdea 
+        ? 'Benchmarks personalizados gerados com sucesso!' 
+        : 'Benchmarks gerados com sucesso!'
+      );
     } catch (error) {
       console.error('Error generating benchmarks:', error);
       toast.error('Erro ao gerar benchmarks');
@@ -198,95 +249,147 @@ const BenchmarksPage = () => {
 
           {!benchmarkResult ? (
             /* Input Form */
-            <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-blue-600" />
-                  Configuração dos Benchmarks
-                </CardTitle>
-                <CardDescription>
-                  Selecione as características do seu negócio para obter benchmarks relevantes
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="sector">Setor *</Label>
-                    <Select value={formData.sector} onValueChange={(value) => handleInputChange('sector', value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o setor" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="fintech">FinTech</SelectItem>
-                        <SelectItem value="healthtech">HealthTech</SelectItem>
-                        <SelectItem value="edtech">EdTech</SelectItem>
-                        <SelectItem value="ecommerce">E-commerce</SelectItem>
-                        <SelectItem value="saas">SaaS</SelectItem>
-                        <SelectItem value="marketplace">Marketplace</SelectItem>
-                      </SelectContent>
-                    </Select>
+            <div className="space-y-6">
+              {/* Idea Selection Toggle */}
+              <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lightbulb className="h-5 w-5 text-blue-600" />
+                    Fonte dos Dados
+                  </CardTitle>
+                  <CardDescription>
+                    Escolha usar uma ideia existente ou criar benchmarks do zero
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex gap-2">
+                    <Button
+                      variant={useExistingIdea ? 'default' : 'outline'}
+                      onClick={() => setUseExistingIdea(true)}
+                      className="flex items-center gap-2"
+                    >
+                      <Lightbulb className="h-4 w-4" />
+                      Usar Ideia Existente
+                    </Button>
+                    <Button
+                      variant={!useExistingIdea ? 'default' : 'outline'}
+                      onClick={() => {
+                        setUseExistingIdea(false);
+                        setSelectedIdea(null);
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Nova Análise
+                    </Button>
                   </div>
                   
-                  <div>
-                    <Label htmlFor="companyStage">Estágio da Empresa</Label>
-                    <Select value={formData.companyStage} onValueChange={(value) => handleInputChange('companyStage', value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="startup">Startup</SelectItem>
-                        <SelectItem value="scaleup">Scale-up</SelectItem>
-                        <SelectItem value="established">Estabelecida</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="region">Região</Label>
-                    <Select value={formData.region} onValueChange={(value) => handleInputChange('region', value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="brazil">Brasil</SelectItem>
-                        <SelectItem value="latam">América Latina</SelectItem>
-                        <SelectItem value="global">Global</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="businessModel">Modelo de Negócio</Label>
-                    <Input
-                      id="businessModel"
-                      value={formData.businessModel}
-                      onChange={(e) => handleInputChange('businessModel', e.target.value)}
-                      placeholder="Ex: SaaS, Marketplace, Freemium"
+                  {useExistingIdea && (
+                    <IdeaSelector
+                      onIdeaSelect={handleIdeaSelect}
+                      selectedIdea={selectedIdea}
                     />
-                  </div>
-                </div>
-
-                <Button 
-                  onClick={generateBenchmarks}
-                  disabled={isLoading || !formData.sector}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                >
-                  {isLoading ? (
-                    <>
-                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                      Gerando Benchmarks...
-                    </>
-                  ) : (
-                    <>
-                      <BarChart3 className="mr-2 h-4 w-4" />
-                      Gerar Benchmarks
-                    </>
                   )}
-                </Button>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+
+              {/* Configuration Form */}
+              <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-blue-600" />
+                    Configuração dos Benchmarks
+                  </CardTitle>
+                  <CardDescription>
+                    {useExistingIdea && selectedIdea 
+                      ? `Benchmarks personalizados para: ${selectedIdea.title}`
+                      : 'Selecione as características do seu negócio para obter benchmarks relevantes'
+                    }
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="sector">Setor *</Label>
+                      <Select value={formData.sector} onValueChange={(value) => handleInputChange('sector', value)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o setor" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="fintech">FinTech</SelectItem>
+                          <SelectItem value="healthtech">HealthTech</SelectItem>
+                          <SelectItem value="edtech">EdTech</SelectItem>
+                          <SelectItem value="ecommerce">E-commerce</SelectItem>
+                          <SelectItem value="saas">SaaS</SelectItem>
+                          <SelectItem value="marketplace">Marketplace</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="companyStage">Estágio da Empresa</Label>
+                      <Select value={formData.companyStage} onValueChange={(value) => handleInputChange('companyStage', value)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="startup">Startup</SelectItem>
+                          <SelectItem value="scaleup">Scale-up</SelectItem>
+                          <SelectItem value="established">Estabelecida</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="region">Região</Label>
+                      <Select value={formData.region} onValueChange={(value) => handleInputChange('region', value)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="brazil">Brasil</SelectItem>
+                          <SelectItem value="latam">América Latina</SelectItem>
+                          <SelectItem value="global">Global</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="businessModel">Modelo de Negócio</Label>
+                      <Input
+                        id="businessModel"
+                        value={formData.businessModel}
+                        onChange={(e) => handleInputChange('businessModel', e.target.value)}
+                        placeholder="Ex: SaaS, Marketplace, Freemium"
+                      />
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={generateBenchmarks}
+                    disabled={isLoading || !formData.sector || (useExistingIdea && !selectedIdea)}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                  >
+                    {isLoading ? (
+                      <>
+                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                        Gerando Benchmarks...
+                      </>
+                    ) : (
+                      <>
+                        <BarChart3 className="mr-2 h-4 w-4" />
+                        {useExistingIdea && selectedIdea 
+                          ? 'Gerar Benchmarks Personalizados' 
+                          : 'Gerar Benchmarks'
+                        }
+                      </>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           ) : (
             /* Benchmark Results */
             <div className="space-y-6">
@@ -351,11 +454,14 @@ const BenchmarksPage = () => {
 
               {/* Detailed Results */}
               <Tabs defaultValue="metrics">
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className={`grid w-full ${benchmarkResult.ideaComparison ? 'grid-cols-5' : 'grid-cols-4'}`}>
                   <TabsTrigger value="metrics">Métricas</TabsTrigger>
                   <TabsTrigger value="financial">Financeiro</TabsTrigger>
                   <TabsTrigger value="operational">Operacional</TabsTrigger>
                   <TabsTrigger value="insights">Insights</TabsTrigger>
+                  {benchmarkResult.ideaComparison && (
+                    <TabsTrigger value="comparison">Comparação</TabsTrigger>
+                  )}
                 </TabsList>
 
                 <TabsContent value="metrics" className="mt-6">
