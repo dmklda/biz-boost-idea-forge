@@ -347,6 +347,9 @@ serve(async (req)=>{
       headers: corsHeaders
     });
   }
+  
+  console.log('🎯 Industry Benchmarks function called');
+  
   try {
     const supabaseClient = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_ANON_KEY') ?? '', {
       global: {
@@ -355,25 +358,39 @@ serve(async (req)=>{
         }
       }
     });
+    
     const { sector, region = 'brazil', companyStage = 'startup', businessModel, targetMetrics } = await req.json();
+    console.log('📊 Request data:', { sector, region, companyStage, businessModel, targetMetrics });
+    
     if (!sector) {
       throw new Error('Sector is required');
     }
-    console.log(`Generating industry benchmarks for ${sector} in ${region} (${companyStage})`);
+    
+    console.log(`🔍 Generating industry benchmarks for ${sector} in ${region} (${companyStage})`);
+    
     // Get base benchmark data
     const benchmarkData = INDUSTRY_BENCHMARKS[region]?.[sector]?.[companyStage];
     if (!benchmarkData) {
+      console.error(`❌ Benchmark data not available for ${sector} in ${region} (${companyStage})`);
       throw new Error(`Benchmark data not available for ${sector} in ${region} (${companyStage})`);
     }
+    
+    console.log('✅ Found benchmark data with', benchmarkData.metrics.length, 'metrics');
+    
     // Filter metrics if specific ones are requested
     let filteredMetrics = benchmarkData.metrics;
     if (targetMetrics && targetMetrics.length > 0) {
       filteredMetrics = benchmarkData.metrics.filter((metric)=>targetMetrics.some((target)=>metric.name.toLowerCase().includes(target.toLowerCase())));
+      console.log('🎯 Filtered to', filteredMetrics.length, 'specific metrics');
     }
+    
     // Generate AI-powered insights
+    console.log('🤖 Generating AI insights...');
     const aiInsights = await generateAIBenchmarkInsights(sector, region, companyStage, benchmarkData, businessModel);
+    
     // Enrich with comparative analysis
     const enrichedMetrics = await enrichMetricsWithComparison(filteredMetrics, sector, region);
+    
     const result = {
       sector,
       region,
@@ -387,7 +404,8 @@ serve(async (req)=>{
       operationalBenchmarks: benchmarkData.operationalBenchmarks,
       generatedAt: new Date().toISOString()
     };
-    console.log(`Industry benchmarks generated for ${sector}`);
+    
+    console.log(`✅ Industry benchmarks generated successfully for ${sector}`);
     return new Response(JSON.stringify(result), {
       headers: {
         ...corsHeaders,
@@ -395,7 +413,43 @@ serve(async (req)=>{
       }
     });
   } catch (error) {
-    console.error('Error in industry-benchmarks function:', error);
+    console.error('❌ Error in industry-benchmarks function:', error);
+    
+    // Return fallback data with basic benchmarks even when AI fails
+    try {
+      const { sector, region = 'brazil', companyStage = 'startup' } = await req.json();
+      const benchmarkData = INDUSTRY_BENCHMARKS[region]?.[sector]?.[companyStage];
+      
+      if (benchmarkData) {
+        console.log('🔄 Returning fallback data without AI insights');
+        const fallbackResult = {
+          sector,
+          region,
+          companyStage,
+          metrics: benchmarkData.metrics,
+          marketInsights: {
+            ...benchmarkData.marketInsights,
+            aiInsights: 'Análise de IA temporariamente indisponível. Dados baseados em benchmarks estáticos.',
+            emergingTrends: [],
+            strategicRecommendations: []
+          },
+          financialBenchmarks: benchmarkData.financialBenchmarks,
+          operationalBenchmarks: benchmarkData.operationalBenchmarks,
+          generatedAt: new Date().toISOString(),
+          fallbackMode: true
+        };
+        
+        return new Response(JSON.stringify(fallbackResult), {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json'
+          }
+        });
+      }
+    } catch (fallbackError) {
+      console.error('❌ Fallback also failed:', fallbackError);
+    }
+    
     return new Response(JSON.stringify({
       error: error.message,
       benchmarks: null
@@ -438,10 +492,18 @@ async function enrichMetricsWithComparison(metrics, sector, region) {
 async function generateAIBenchmarkInsights(sector, region, companyStage, benchmarkData, businessModel) {
   const openAiApiKey = Deno.env.get('OPENAI_API_KEY');
   if (!openAiApiKey) {
+    console.log('⚠️ OpenAI API key not found, skipping AI insights');
     return {
-      marketInsights: {}
+      marketInsights: {
+        aiInsights: 'Análise de IA não disponível (API key não configurada)',
+        emergingTrends: [],
+        strategicRecommendations: []
+      }
     };
   }
+  
+  console.log('🤖 Calling OpenAI for AI insights...');
+  
   const prompt = `
   Analise o setor ${sector} no ${region} para empresas em estágio ${companyStage}.
   
@@ -463,6 +525,7 @@ async function generateAIBenchmarkInsights(sector, region, companyStage, benchma
   
   Seja específico e prático para o contexto brasileiro.
   `;
+  
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -471,7 +534,7 @@ async function generateAIBenchmarkInsights(sector, region, companyStage, benchma
         'Authorization': `Bearer ${openAiApiKey}`
       },
       body: JSON.stringify({
-        model: 'gpt-5',
+        model: 'gpt-5-2025-08-07',
         messages: [
           {
             role: 'user',
@@ -481,8 +544,29 @@ async function generateAIBenchmarkInsights(sector, region, companyStage, benchma
         max_completion_tokens: 800
       })
     });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ OpenAI API error:', response.status, errorText);
+      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
+    }
+    
     const result = await response.json();
+    console.log('✅ OpenAI response received');
+    
     const insights = result.choices[0]?.message?.content || '';
+    
+    if (!insights) {
+      console.log('⚠️ Empty insights from OpenAI');
+      return {
+        marketInsights: {
+          aiInsights: 'Análise de IA temporariamente indisponível',
+          emergingTrends: [],
+          strategicRecommendations: []
+        }
+      };
+    }
+    
     return {
       marketInsights: {
         aiInsights: insights,
@@ -491,9 +575,13 @@ async function generateAIBenchmarkInsights(sector, region, companyStage, benchma
       }
     };
   } catch (error) {
-    console.error('Error generating AI insights:', error);
+    console.error('❌ Error generating AI insights:', error);
     return {
-      marketInsights: {}
+      marketInsights: {
+        aiInsights: 'Análise de IA temporariamente indisponível devido a erro técnico',
+        emergingTrends: [],
+        strategicRecommendations: []
+      }
     };
   }
 }
