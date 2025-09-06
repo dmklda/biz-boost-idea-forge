@@ -55,6 +55,21 @@ const ToolsPage = () => {
   const [isBusinessPlanModalOpen, setIsBusinessPlanModalOpen] = useState(false);
   const [isSEOModalOpen, setIsSEOModalOpen] = useState(false);
   const [isLandingPageModalOpen, setIsLandingPageModalOpen] = useState(false);
+  const [isContentMarketingModalOpen, setIsContentMarketingModalOpen] = useState(false);
+  const [isTrendAnalysisModalOpen, setIsTrendAnalysisModalOpen] = useState(false);
+  const [isRevenueForecastModalOpen, setIsRevenueForecastModalOpen] = useState(false);
+  const [isRoadmapModalOpen, setIsRoadmapModalOpen] = useState(false);
+  const [isStartupKitModalOpen, setIsStartupKitModalOpen] = useState(false);
+  const [isInvestmentSimulatorModalOpen, setIsInvestmentSimulatorModalOpen] = useState(false);
+  const [isPostGeneratorModalOpen, setIsPostGeneratorModalOpen] = useState(false);
+  const [isSocialMediaPlannerModalOpen, setIsSocialMediaPlannerModalOpen] = useState(false);
+  const [isProcessAutomationModalOpen, setIsProcessAutomationModalOpen] = useState(false);
+  const [isInvoiceGeneratorModalOpen, setIsInvoiceGeneratorModalOpen] = useState(false);
+  const [isPricingModelModalOpen, setIsPricingModelModalOpen] = useState(false);
+  const [isMarketTimingModalOpen, setIsMarketTimingModalOpen] = useState(false);
+  const [isCacLtvModalOpen, setIsCacLtvModalOpen] = useState(false);
+  const [isAiImageEditorModalOpen, setIsAiImageEditorModalOpen] = useState(false);
+  const [isReportCreatorModalOpen, setIsReportCreatorModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
@@ -203,11 +218,12 @@ const ToolsPage = () => {
       title: "Pesquisa de Usuários",
       description: "Entenda melhor seu público-alvo",
       icon: Users,
-      action: () => console.log("User Research - Coming soon"),
+      action: () => setIsUserResearchModalOpen(true),
       color: "from-cyan-500 to-blue-500",
       category: "analysis",
-      credits: 6,
-      status: "coming-soon"
+      credits: getFeatureCost('user-research'),
+      status: "available",
+      feature: "user-research"
     },
 
     // Marketing Digital
@@ -215,31 +231,33 @@ const ToolsPage = () => {
       title: "Estratégia de Marketing",
       description: "Desenvolva estratégias de marketing digital",
       icon: Target,
-      action: () => console.log("Marketing Strategy - Coming soon"),
+      action: () => setIsMarketingStrategyModalOpen(true),
       color: "from-pink-500 to-rose-500",
       category: "marketing",
-      credits: 8,
-      status: "coming-soon"
+      credits: getFeatureCost('marketing-strategy'),
+      status: "available",
+      feature: "marketing-strategy"
     },
     {
       title: "Gerador de Conteúdo",
       description: "Crie conteúdo para redes sociais e blog",
       icon: MessageSquare,
-      action: () => console.log("Content Generator - Coming soon"),
+      action: () => setIsContentMarketingModalOpen(true),
       color: "from-violet-500 to-purple-500",
       category: "marketing",
-      credits: 4,
-      status: "coming-soon"
+      credits: getFeatureCost('content-marketing'),
+      status: "available",
+      feature: "content-marketing"
     },
     {
       title: "Gerador de Posts",
       description: "Crie posts otimizados para redes sociais",
       icon: Megaphone,
-      action: () => console.log("Post Generator - Coming soon"),
+      action: () => setIsPostGeneratorModalOpen(true),
       color: "from-blue-500 to-indigo-500",
       category: "marketing",
       credits: 3,
-      status: "coming-soon"
+      status: "available"
     },
     {
       title: "SEO Analyzer",
@@ -255,11 +273,11 @@ const ToolsPage = () => {
       title: "Social Media Planner",
       description: "Planeje e organize suas redes sociais",
       icon: Calendar,
-      action: () => console.log("Social Media Planner - Coming soon"),
+      action: () => setIsSocialMediaPlannerModalOpen(true),
       color: "from-blue-500 to-indigo-500",
       category: "marketing",
       credits: 6,
-      status: "coming-soon"
+      status: "available"
     },
 
     // Negócios e Estratégia
@@ -277,31 +295,32 @@ const ToolsPage = () => {
       title: "Automação de Processos",
       description: "Identifique oportunidades de automação",
       icon: Zap,
-      action: () => console.log("Process Automation - Coming soon"),
+      action: () => setIsProcessAutomationModalOpen(true),
       color: "from-sky-500 to-cyan-500",
       category: "business",
       credits: 9,
-      status: "coming-soon"
+      status: "available"
     },
     {
       title: "Roadmap Generator",
       description: "Crie roadmaps de produto e desenvolvimento",
       icon: Rocket,
-      action: () => console.log("Roadmap Generator - Coming soon"),
+      action: () => setIsRoadmapModalOpen(true),
       color: "from-green-500 to-teal-500",
       category: "business",
-      credits: 8,
-      status: "coming-soon"
+      credits: getFeatureCost('roadmap-generator'),
+      status: "available",
+      feature: "roadmap-generator"
     },
     {
       title: "Gerador de Faturas",
       description: "Crie faturas e documentos financeiros profissionais",
       icon: Receipt,
-      action: () => console.log("Invoice Generator - Coming soon"),
+      action: () => setIsInvoiceGeneratorModalOpen(true),
       color: "from-orange-500 to-amber-500",
       category: "business",
       credits: 4,
-      status: "coming-soon"
+      status: "available"
     },
 
     // Ferramentas Avançadas
@@ -309,31 +328,33 @@ const ToolsPage = () => {
       title: "Análise de Tendências",
       description: "Identifique tendências de mercado e oportunidades",
       icon: LineChart,
-      action: () => console.log("Trend Analysis - Coming soon"),
+      action: () => setIsTrendAnalysisModalOpen(true),
       color: "from-orange-500 to-amber-500",
       category: "advanced",
-      credits: 10,
-      status: "coming-soon"
+      credits: getFeatureCost('trend-analysis'),
+      status: "available",
+      feature: "trend-analysis"
     },
     {
       title: "Previsão de Receita",
       description: "Projete receitas futuras com base em dados",
       icon: PieChart,
-      action: () => console.log("Revenue Forecast - Coming soon"),
+      action: () => setIsRevenueForecastModalOpen(true),
       color: "from-indigo-500 to-blue-500",
       category: "advanced",
-      credits: 12,
-      status: "coming-soon"
+      credits: getFeatureCost('revenue-forecast'),
+      status: "available",
+      feature: "revenue-forecast"
     },
     {
       title: "Modelo de Pricing",
       description: "Defina estratégias de precificação inteligentes",
       icon: Star,
-      action: () => console.log("Pricing Model - Coming soon"),
+      action: () => setIsPricingModelModalOpen(true),
       color: "from-rose-500 to-pink-500",
       category: "advanced",
       credits: 9,
-      status: "coming-soon"
+      status: "available"
     },
 
     // FERRAMENTAS ÚNICAS E INOVADORAS
@@ -341,21 +362,23 @@ const ToolsPage = () => {
       title: "Kit Completo de Startup",
       description: "Gere nome, missão, visão, pitch e cronograma em um só lugar",
       icon: Rocket,
-      action: () => console.log("Startup Kit - Coming soon"),
+      action: () => setIsStartupKitModalOpen(true),
       color: "from-purple-600 to-pink-600",
       category: "unique",
-      credits: 15,
-      status: "coming-soon"
+      credits: getFeatureCost('startup-kit'),
+      status: "available",
+      feature: "startup-kit"
     },
     {
       title: "Simulador de Investimento",
       description: "Simule rounds de investimento e diluição de equity",
       icon: Calculator,
-      action: () => console.log("Investment Simulator - Coming soon"),
+      action: () => setIsInvestmentSimulatorModalOpen(true),
       color: "from-green-600 to-emerald-600",
       category: "unique",
-      credits: 12,
-      status: "coming-soon"
+      credits: getFeatureCost('investment-simulator'),
+      status: "available",
+      feature: "investment-simulator"
     },
     {
       title: "Gerador de Landing Page",
@@ -371,21 +394,43 @@ const ToolsPage = () => {
       title: "Análise de Timing de Mercado",
       description: "Determine o momento ideal para lançar sua startup",
       icon: TrendingUp,
-      action: () => console.log("Market Timing - Coming soon"),
+      action: () => setIsMarketTimingModalOpen(true),
       color: "from-indigo-600 to-purple-600",
       category: "unique",
       credits: 14,
-      status: "coming-soon"
+      status: "available"
     },
     {
       title: "Calculadora CAC/LTV",
       description: "Calcule métricas essenciais para startups",
       icon: Calculator,
-      action: () => console.log("CAC/LTV Calculator - Coming soon"),
+      action: () => setIsCacLtvModalOpen(true),
       color: "from-orange-600 to-red-600",
       category: "unique",
       credits: 8,
-      status: "coming-soon"
+      status: "available"
+    },
+
+    // Additional New Tools
+    {
+      title: "Criador de Relatórios",
+      description: "Gere relatórios executivos e analíticos profissionais",
+      icon: BarChart3,
+      action: () => setIsReportCreatorModalOpen(true),
+      color: "from-emerald-500 to-green-500",
+      category: "documentation",
+      credits: 7,
+      status: "available"
+    },
+    {
+      title: "Editor de Imagens com IA",
+      description: "Edite e aprimore imagens usando inteligência artificial",
+      icon: ImageIcon,
+      action: () => setIsAiImageEditorModalOpen(true),
+      color: "from-violet-500 to-purple-500",
+      category: "design",
+      credits: 4,
+      status: "available"
     }
   ];
 
@@ -586,6 +631,66 @@ const ToolsPage = () => {
       <LandingPageGeneratorModal 
         open={isLandingPageModalOpen} 
         onOpenChange={setIsLandingPageModalOpen} 
+      />
+      <ContentMarketingModal 
+        open={isContentMarketingModalOpen} 
+        onOpenChange={setIsContentMarketingModalOpen} 
+      />
+      <TrendAnalysisModal 
+        open={isTrendAnalysisModalOpen} 
+        onOpenChange={setIsTrendAnalysisModalOpen} 
+      />
+      <RevenueForecastModal 
+        open={isRevenueForecastModalOpen} 
+        onOpenChange={setIsRevenueForecastModalOpen} 
+      />
+      <RoadmapGeneratorModal 
+        open={isRoadmapModalOpen} 
+        onOpenChange={setIsRoadmapModalOpen} 
+      />
+      <StartupKitModal 
+        open={isStartupKitModalOpen} 
+        onOpenChange={setIsStartupKitModalOpen} 
+      />
+      <InvestmentSimulatorModal 
+        open={isInvestmentSimulatorModalOpen} 
+        onOpenChange={setIsInvestmentSimulatorModalOpen} 
+      />
+      <PostGeneratorModal 
+        open={isPostGeneratorModalOpen} 
+        onOpenChange={setIsPostGeneratorModalOpen} 
+      />
+      <SocialMediaPlannerModal 
+        open={isSocialMediaPlannerModalOpen} 
+        onOpenChange={setIsSocialMediaPlannerModalOpen} 
+      />
+      <ProcessAutomationModal 
+        open={isProcessAutomationModalOpen} 
+        onOpenChange={setIsProcessAutomationModalOpen} 
+      />
+      <InvoiceGeneratorModal 
+        open={isInvoiceGeneratorModalOpen} 
+        onOpenChange={setIsInvoiceGeneratorModalOpen} 
+      />
+      <PricingModelModal 
+        open={isPricingModelModalOpen} 
+        onOpenChange={setIsPricingModelModalOpen} 
+      />
+      <MarketTimingModal 
+        open={isMarketTimingModalOpen} 
+        onOpenChange={setIsMarketTimingModalOpen} 
+      />
+      <CacLtvModal 
+        open={isCacLtvModalOpen} 
+        onOpenChange={setIsCacLtvModalOpen} 
+      />
+      <AiImageEditorModal 
+        open={isAiImageEditorModalOpen} 
+        onOpenChange={setIsAiImageEditorModalOpen} 
+      />
+      <ReportCreatorModal 
+        open={isReportCreatorModalOpen} 
+        onOpenChange={setIsReportCreatorModalOpen} 
       />
     </div>
   );
