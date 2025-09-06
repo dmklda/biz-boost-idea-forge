@@ -159,7 +159,8 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
       onReset={handleReset}
       showReset={!!palette}
       maxWidth="5xl"
-      showCreditWarning={false}
+      creditCost={2}
+      showCreditWarning={true}
     >
       {palette ? (
         <ScrollArea className="h-[70vh] pr-4">
