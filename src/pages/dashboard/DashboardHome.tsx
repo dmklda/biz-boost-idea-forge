@@ -220,12 +220,8 @@ const DashboardHome = () => {
   }, [fetchUserData]);
   
   const addCredits = () => {
-    // In a real app, this would redirect to a payment gateway
-    // For demo purposes, we'll just add credits directly
-    if (user) {
-      updateUserCredits(user.credits + 5);
-      toast.success("Créditos adicionados com sucesso!");
-    }
+    // Redirect to credits page for proper purchase flow
+    window.location.href = '/dashboard/creditos';
   };
   
   return (
