@@ -786,6 +786,148 @@ const BenchmarksPage = () => {
                     </Card>
                   </div>
                 </TabsContent>
+
+                {benchmarkResult.ideaComparison && (
+                  <TabsContent value="comparison" className="mt-6">
+                    <div className="space-y-6">
+                      <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg">
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <BarChart3 className="h-5 w-5 text-blue-600" />
+                            Sua Ideia vs. Benchmarks do Setor
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Idea Details */}
+                            <div className="space-y-4">
+                              <h3 className="text-lg font-semibold mb-3">Sua Ideia</h3>
+                              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
+                                  {benchmarkResult.ideaComparison.idea.title}
+                                </h4>
+                                <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                                  {benchmarkResult.ideaComparison.idea.description}
+                                </p>
+                                <div className="text-xs text-blue-600 dark:text-blue-400">
+                                  <strong>Público:</strong> {benchmarkResult.ideaComparison.idea.audience}
+                                </div>
+                                <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                                  <strong>Monetização:</strong> {benchmarkResult.ideaComparison.idea.monetization}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Sector Benchmarks */}
+                            <div className="space-y-4">
+                              <h3 className="text-lg font-semibold mb-3">Benchmarks do Setor</h3>
+                              <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                                <div className="grid grid-cols-2 gap-3 text-sm">
+                                  <div>
+                                    <span className="text-gray-600 dark:text-gray-400">Setor:</span>
+                                    <p className="font-medium">{benchmarkResult.sector}</p>
+                                  </div>
+                                  <div>
+                                    <span className="text-gray-600 dark:text-gray-400">Região:</span>
+                                    <p className="font-medium">{benchmarkResult.region}</p>
+                                  </div>
+                                  <div>
+                                    <span className="text-gray-600 dark:text-gray-400">Crescimento:</span>
+                                    <p className="font-medium text-green-600">{benchmarkResult.marketInsights.growthRate}%</p>
+                                  </div>
+                                  <div>
+                                    <span className="text-gray-600 dark:text-gray-400">Competição:</span>
+                                    <Badge className={getImportanceColor(benchmarkResult.marketInsights.competitionLevel)}>
+                                      {benchmarkResult.marketInsights.competitionLevel}
+                                    </Badge>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Comparative Analysis */}
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg">
+                          <CardHeader>
+                            <CardTitle className="text-green-600">Pontos Fortes</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <ul className="space-y-2">
+                              {benchmarkResult.ideaComparison.strengths.map((strength: string, index: number) => (
+                                <li key={index} className="flex items-start gap-2">
+                                  <Zap className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                  <span className="text-sm">{strength}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg">
+                          <CardHeader>
+                            <CardTitle className="text-orange-600">Pontos de Atenção</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <ul className="space-y-2">
+                              {benchmarkResult.ideaComparison.weaknesses.map((weakness: string, index: number) => (
+                                <li key={index} className="flex items-start gap-2">
+                                  <AlertTriangle className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                                  <span className="text-sm">{weakness}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      {/* Recommendations */}
+                      <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg">
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <Target className="h-5 w-5 text-purple-600" />
+                            Recomendações Estratégicas
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <ul className="space-y-3">
+                            {benchmarkResult.ideaComparison.recommendations.map((recommendation: string, index: number) => (
+                              <li key={index} className="flex items-start gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                                <div className="bg-purple-100 dark:bg-purple-800 rounded-full p-1 mt-0.5">
+                                  <Info className="h-3 w-3 text-purple-600" />
+                                </div>
+                                <span className="text-sm text-purple-900 dark:text-purple-100">{recommendation}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </CardContent>
+                      </Card>
+
+                      {/* Metrics Comparison Chart */}
+                      <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg">
+                        <CardHeader>
+                          <CardTitle>Comparação de Métricas Chave</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <ResponsiveContainer width="100%" height={300}>
+                            <BarChart data={benchmarkResult.ideaComparison.metricsComparison || []}>
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="metric" />
+                              <YAxis />
+                              <Tooltip />
+                              <Legend />
+                              <Bar dataKey="yourIdea" fill="#3B82F6" name="Sua Ideia" />
+                              <Bar dataKey="sectorAverage" fill="#10B981" name="Média do Setor" />
+                              <Bar dataKey="topPerformer" fill="#8B5CF6" name="Top Performer" />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </TabsContent>
+                )}
               </Tabs>
 
               {/* Action Buttons */}
