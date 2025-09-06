@@ -9,7 +9,13 @@ export type FeatureType =
   | 'advanced-analysis'
   | 'logo-generator'
   | 'prd-mvp'
-  | 'pdf-export';
+  | 'pdf-export'
+  | 'user-research'
+  | 'valuation-calculator'
+  | 'marketing-strategy'
+  | 'business-plan'
+  | 'seo-analyzer'
+  | 'landing-page-generator';
 
 const FEATURE_PLAN_REQUIREMENTS: Record<FeatureType, PlanType[]> = {
   'marketplace': ['entrepreneur', 'business'],
@@ -19,7 +25,13 @@ const FEATURE_PLAN_REQUIREMENTS: Record<FeatureType, PlanType[]> = {
   'advanced-analysis': ['free', 'entrepreneur', 'business'], // Now available to all plans
   'logo-generator': ['free', 'entrepreneur', 'business'],
   'prd-mvp': ['free', 'entrepreneur', 'business'],
-  'pdf-export': ['entrepreneur', 'business']
+  'pdf-export': ['entrepreneur', 'business'],
+  'user-research': ['free', 'entrepreneur', 'business'],
+  'valuation-calculator': ['free', 'entrepreneur', 'business'],
+  'marketing-strategy': ['free', 'entrepreneur', 'business'],
+  'business-plan': ['free', 'entrepreneur', 'business'],
+  'seo-analyzer': ['free', 'entrepreneur', 'business'],
+  'landing-page-generator': ['free', 'entrepreneur', 'business']
 };
 
 const PLAN_CREDITS: Record<PlanType, { initial: number; monthly: number }> = {
@@ -39,7 +51,13 @@ const FEATURE_COSTS: Record<FeatureType | 'basic-analysis' | 'reanalysis' | 'com
   'prd-mvp': 5,
   'benchmarks': 2,
   'pdf-export': 1,
-  'marketplace': 0
+  'marketplace': 0,
+  'user-research': 6,
+  'valuation-calculator': 7,
+  'marketing-strategy': 8,
+  'business-plan': 12,
+  'seo-analyzer': 5,
+  'landing-page-generator': 18
 };
 
 export const usePlanAccess = () => {

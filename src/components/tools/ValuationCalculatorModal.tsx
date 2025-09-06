@@ -21,7 +21,22 @@ export const ValuationCalculatorModal = ({ open, onOpenChange }: ValuationCalcul
   const [valuation, setValuation] = useState<any>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const { authState } = useAuth();
-  const { hasCredits, deductCredits } = usePlanAccess();
+  const { hasCredits } = usePlanAccess();
+
+  const deductCredits = async (featureType: string, itemId: string) => {
+    try {
+      const { data, error } = await supabase.rpc('deduct_credits_and_log', {
+        p_user_id: authState.user?.id,
+        p_amount: 7,
+        p_feature: featureType,
+        p_item_id: itemId,
+        p_description: 'Análise de valuation gerada'
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error deducting credits:', error);
+    }
+  };
 
   const handleGenerate = async () => {
     if (!selectedIdea) {

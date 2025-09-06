@@ -145,11 +145,11 @@ const ToolsPage = () => {
       title: "Plano de Negócios",
       description: "Crie um plano de negócios completo e detalhado",
       icon: BookOpen,
-      action: () => console.log("Business Plan - Coming soon"),
+      action: () => setIsBusinessPlanModalOpen(true),
       color: "from-teal-500 to-cyan-500",
       category: "documentation",
       credits: 12,
-      status: "coming-soon"
+      status: "available"
     },
     {
       title: "Criador de Relatórios",
@@ -239,11 +239,11 @@ const ToolsPage = () => {
       title: "SEO Analyzer",
       description: "Otimize sua presença online",
       icon: Search,
-      action: () => console.log("SEO Analyzer - Coming soon"),
+      action: () => setIsSEOModalOpen(true),
       color: "from-teal-500 to-green-500",
       category: "marketing",
       credits: 5,
-      status: "coming-soon"
+      status: "available"
     },
     {
       title: "Social Media Planner",
@@ -355,11 +355,11 @@ const ToolsPage = () => {
       title: "Gerador de Landing Page",
       description: "Crie código HTML/CSS de landing pages otimizadas",
       icon: Globe,
-      action: () => console.log("Landing Page Generator - Coming soon"),
+      action: () => setIsLandingPageModalOpen(true),
       color: "from-blue-600 to-cyan-600",
       category: "unique",
       credits: 18,
-      status: "coming-soon"
+      status: "available"
     },
     {
       title: "Análise de Timing de Mercado",

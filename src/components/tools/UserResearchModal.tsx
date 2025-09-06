@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +23,21 @@ export const UserResearchModal = ({ open, onOpenChange }: UserResearchModalProps
   const { authState } = useAuth();
   const { hasCredits } = usePlanAccess();
 
+  const deductCredits = async (featureType: string, itemId: string) => {
+    try {
+      const { data, error } = await supabase.rpc('deduct_credits_and_log', {
+        p_user_id: authState.user?.id,
+        p_amount: 6,
+        p_feature: featureType,
+        p_item_id: itemId,
+        p_description: 'Pesquisa de usuários gerada'
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error deducting credits:', error);
+    }
+  };
+
   const handleGenerate = async () => {
     if (!selectedIdea) {
       toast.error("Selecione uma ideia primeiro");
@@ -43,7 +58,7 @@ export const UserResearchModal = ({ open, onOpenChange }: UserResearchModalProps
       if (error) throw error;
 
       setResearch(data.research);
-      // Credits deducted via edge function
+      await deductCredits('user-research', selectedIdea.id);
       toast.success("Pesquisa de usuários gerada com sucesso!");
     } catch (error) {
       console.error('Error:', error);

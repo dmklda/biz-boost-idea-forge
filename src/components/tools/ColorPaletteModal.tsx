@@ -137,16 +137,7 @@ export const ColorPaletteModal: React.FC<ColorPaletteModalProps> = ({
         </DialogHeader>
 
         <div className="space-y-6">
-          <IdeaSelector 
-            selectedIdea={selectedIdea}
-            onSelectIdea={setSelectedIdea}
-            customIdea={customIdea}
-            onCustomIdeaChange={setCustomIdea}
-            useCustom={useCustom}
-            onUseCustomChange={setUseCustom}
-            label="Selecione uma ideia para gerar paleta de cores"
-            placeholder="Ex: App de delivery para pets que conecta donos com cuidadores locais..."
-          />
+          <IdeaSelector onSelect={setSelectedIdea} />
 
           <div className="flex gap-3">
             <Button 
