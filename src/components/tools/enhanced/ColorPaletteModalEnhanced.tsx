@@ -35,8 +35,12 @@ interface ColorPalette {
   };
   accentColors: string[];
   gradients: string[];
-  colorMeaning: string;
-  usageGuidelines: string[];
+  colorMeaning: {
+    [key: string]: string;
+  };
+  usageGuidelines: {
+    [key: string]: string;
+  };
   brandPersonality: string;
 }
 
@@ -279,7 +283,14 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
                   <CardTitle className="text-base">Significado das Cores</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm">{palette.colorMeaning}</p>
+                  <div className="space-y-2">
+                    {Object.entries(palette.colorMeaning || {}).map(([color, meaning]) => (
+                      <div key={color} className="flex items-start gap-2">
+                        <Badge variant="secondary" className="mt-0.5 shrink-0 capitalize">{color}</Badge>
+                        <span className="text-sm">{meaning}</span>
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
 
@@ -299,14 +310,17 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
                 <CardTitle className="text-base">Diretrizes de Uso</CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-2">
-                  {palette.usageGuidelines?.map((guideline, index) => (
-                    <li key={index} className="flex items-start gap-2">
+                <div className="space-y-3">
+                  {Object.entries(palette.usageGuidelines || {}).map(([category, guideline]) => (
+                    <div key={category} className="flex items-start gap-2">
                       <Badge variant="secondary" className="mt-0.5 shrink-0">💡</Badge>
-                      <span className="text-sm">{guideline}</span>
-                    </li>
+                      <div>
+                        <span className="text-sm font-medium capitalize">{category.replace(/([A-Z])/g, ' $1').trim()}:</span>
+                        <p className="text-sm text-muted-foreground mt-1">{guideline}</p>
+                      </div>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </CardContent>
             </Card>
           </div>
