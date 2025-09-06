@@ -43,8 +43,8 @@ const PlansPage = () => {
 
   // Get current user plan
   const getCurrentUserPlan = (): 'free' | 'entrepreneur' | 'business' | null => {
-    if (!authState.isAuthenticated) return null;
-    return authState.user?.plan || "free";
+    if (!authState.user) return null;
+    return authState.user.plan; // Return the exact plan from user data
   };
 
   const plans = [
@@ -83,7 +83,7 @@ const PlansPage = () => {
       period: t('pricing.period') || '/month',
       description: t('pricing.business.description') || 'Para empresas que precisam de análises avançadas e suporte prioritário.',
       features: getFeaturesTranslation('pricing.business.features'),
-      buttonText: getCurrentUserPlan() === "business" ? "Plano Atual" : t('pricing.business.cta') || 'Falar com Vendas',
+      buttonText: t('pricing.business.cta') || 'Assinar Agora',
       recommended: false,
       color: "from-blue-600/20 via-indigo-600/20 to-blue-600/30"
     }
@@ -98,9 +98,8 @@ const PlansPage = () => {
 
     // Check if user is already on this plan
     const currentPlan = authState.user?.plan || "free";
-    const userPlanId = currentPlan === "free" ? "free" : "entrepreneur";
     
-    if (planId === userPlanId) {
+    if (planId === currentPlan) {
       toast.info(`Você já está no plano ${plans.find(p => p.id === planId)?.name}!`);
       return;
     }
@@ -132,12 +131,7 @@ const PlansPage = () => {
         await new Promise(resolve => setTimeout(resolve, 2000));
         
         // Update user plan
-        const updatedUser = {
-          ...authState.user!,
-          plan: "business" as const
-        };
-        
-        updateUserPlan("business");
+        updateUserPlan(planId);
         toast.success(`Plano ${plans.find(p => p.id === planId)?.name} ativado com sucesso!`);
         
         // Navigate to results page
@@ -151,12 +145,7 @@ const PlansPage = () => {
     } else {
       // No saved data, just upgrade plan
       try {
-        const updatedUser = {
-          ...authState.user!,
-          plan: "business" as const
-        };
-        
-        updateUserPlan("business");
+        updateUserPlan(planId);
         toast.success(`Plano ${plans.find(p => p.id === planId)?.name} ativado com sucesso!`);
         navigate("/dashboard");
       } catch (error) {

@@ -978,10 +978,10 @@
       "name": "Gratuito",
       "description": "Para iniciantes que querem validar sua primeira ideia.",
       "features": [
-        "1 análise de ideia",
-        "Resultados básicos",
-        "Sugestões de nome e slogan",
-        "Avaliação de viabilidade"
+        "3 créditos iniciais",
+        "1 análise gratuita (primeira)",
+        "Funcionalidades básicas: Análise de ideias",
+        "Histórico limitado"
       ],
       "cta": "Começar Grátis"
     },
@@ -989,11 +989,12 @@
       "name": "Empreendedor",
       "description": "Para empreendedores sérios que querem análises detalhadas.",
       "features": [
-        "Análises ilimitadas",
-        "Relatórios completos",
-        "Análise de concorrência",
-        "Sugestões de MVP",
-        "Stack tecnológico recomendado"
+        "50 créditos mensais",
+        "Todas funcionalidades básicas",
+        "Marketplace (publicar validações)",
+        "Simulador de Cenários",
+        "Análise Regulatória",
+        "Ferramentas básicas (Logo, PRD/MVP)"
       ],
       "cta": "Assinar Agora"
     },
@@ -1001,13 +1002,14 @@
       "name": "Empresarial",
       "description": "Para empresas que precisam de análises avançadas e suporte prioritário.",
       "features": [
-        "Tudo do plano Empreendedor",
-        "Análises de equipe",
+        "200 créditos mensais",
+        "Todas funcionalidades anteriores",
+        "Benchmarks Setoriais",
+        "Análise Avançada com dados reais",
         "Suporte prioritário",
-        "Integrações via API",
-        "Relatórios personalizados"
+        "Exportação PDF ilimitada"
       ],
-      "cta": "Falar com Vendas"
+      "cta": "Assinar Agora"
     }
   },
   "cta": {
