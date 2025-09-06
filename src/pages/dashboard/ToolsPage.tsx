@@ -117,8 +117,9 @@ const ToolsPage = () => {
       action: () => setIsBusinessNameModalOpen(true),
       color: "from-green-500 to-emerald-500",
       category: "design",
-      credits: 3,
-      status: "available"
+      credits: getFeatureCost('business-name-generator'),
+      status: "available",
+      feature: "business-name-generator"
     },
     {
       title: "Paleta de Cores",
