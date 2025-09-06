@@ -1,15 +1,15 @@
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { IdeaSelector } from "../shared/IdeaSelector";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { Copy, Sparkles, RefreshCw } from "lucide-react";
+import { Copy, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { ToolModalBase } from "@/components/shared/ToolModalBase";
+import { EnhancedIdeaSelector } from "@/components/shared/EnhancedIdeaSelector";
 
 interface BusinessNameGeneratorModalProps {
   open: boolean;
@@ -27,6 +27,19 @@ export const BusinessNameGeneratorModal: React.FC<BusinessNameGeneratorModalProp
   const [useCustom, setUseCustom] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedNames, setGeneratedNames] = useState<string[]>([]);
+  
+  const handleIdeaSelect = (idea: any) => {
+    setSelectedIdea(idea);
+    setUseCustom(false);
+  };
+  
+  const handleCustomIdeaChange = (value: string) => {
+    setCustomIdea(value);
+  };
+  
+  const handleUseCustomIdeaChange = (value: boolean) => {
+    setUseCustom(value);
+  };
 
   const handleGenerate = async () => {
     if (!user) {
@@ -87,72 +100,67 @@ export const BusinessNameGeneratorModal: React.FC<BusinessNameGeneratorModalProp
     setUseCustom(false);
   };
 
+  // Icon for the modal
+  const nameIcon = <Sparkles className="h-5 w-5 text-primary" />;
+  
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            Gerador de Nomes para Startup
-          </DialogTitle>
-        </DialogHeader>
+    <ToolModalBase
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Gerador de Nomes para Startup"
+      icon={nameIcon}
+      isGenerating={isGenerating}
+      generatingText="Gerando nomes..."
+      actionText="Gerar Nomes"
+      onAction={handleGenerate}
+      actionDisabled={isGenerating || (!useCustom && !selectedIdea) || (useCustom && !customIdea.trim())}
+      resetText="Resetar"
+      onReset={handleReset}
+      showReset={generatedNames.length > 0}
+      maxWidth="4xl"
+      showCreditWarning={false}
+    >
+      <div className="space-y-6">
+        <EnhancedIdeaSelector 
+          onSelect={handleIdeaSelect} 
+          allowCustomIdea={true}
+          customIdeaValue={customIdea}
+          onCustomIdeaChange={handleCustomIdeaChange}
+          useCustomIdea={useCustom}
+          onUseCustomIdeaChange={handleUseCustomIdeaChange}
+        />
 
-        <div className="space-y-6">
-          <IdeaSelector onSelect={setSelectedIdea} />
-
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button 
-              onClick={handleGenerate} 
-              disabled={isGenerating || (!useCustom && !selectedIdea) || (useCustom && !customIdea.trim())}
-              className="flex-1 sm:flex-none flex items-center gap-2"
-            >
-              {isGenerating ? (
-                <RefreshCw className="h-4 w-4 animate-spin" />
-              ) : (
-                <Sparkles className="h-4 w-4" />
-              )}
-              {isGenerating ? "Gerando..." : "Gerar Nomes"}
-            </Button>
-            
-            {generatedNames.length > 0 && (
-              <Button variant="outline" onClick={handleReset} className="flex-1 sm:flex-none">
-                Resetar
-              </Button>
-            )}
-          </div>
-
-          {generatedNames.length > 0 && (
-            <div className="space-y-4">
-              <Label className="text-base font-semibold">Nomes Sugeridos:</Label>
-              <div className="grid gap-3">
-                {generatedNames.map((name, index) => (
-                  <Card key={index} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-lg break-words">{name}</h3>
-                          <Badge variant="secondary" className="mt-1">
-                            Sugestão {index + 1}
-                          </Badge>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => copyToClipboard(name)}
-                          className="flex items-center gap-2 w-full sm:w-auto"
-                        >
-                          <Copy className="h-4 w-4" />
-                          Copiar
-                        </Button>
+        {generatedNames.length > 0 && (
+          <div className="space-y-4 mt-6">
+            <Label className="text-base font-semibold">Nomes Sugeridos:</Label>
+            <div className="grid gap-3">
+              {generatedNames.map((name, index) => (
+                <Card key={index} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg break-words">{name}</h3>
+                        <Badge variant="secondary" className="mt-1">
+                          Sugestão {index + 1}
+                        </Badge>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => copyToClipboard(name)}
+                        className="flex items-center gap-2 w-full sm:w-auto"
+                      >
+                        <Copy className="h-4 w-4" />
+                        Copiar
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+          </div>
+        )}
+      </div>
+    </ToolModalBase>
   );
 };

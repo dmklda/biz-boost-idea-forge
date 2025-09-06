@@ -1,3 +1,9 @@
+/**
+ * Exemplo de implementação da página de ferramentas com os modais melhorados
+ * 
+ * Este arquivo demonstra como substituir os modais antigos pelos novos modais
+ * melhorados com responsividade e design mobile-first.
+ */
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,11 +14,24 @@ import {
   Palette, FileText, Lightbulb, BarChart3, TrendingUp, Users, DollarSign, Target, 
   Presentation, Briefcase, Search, Calculator, MessageSquare, Zap, Globe, 
   PieChart, LineChart, Calendar, Megaphone, BookOpen, Settings2, Rocket, 
-  Shield, Eye, Star, Edit, Receipt, ImageIcon
+  Shield, Eye, Star, Edit, Receipt, ImageIcon, Package
 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { usePlanAccess } from "@/hooks/usePlanAccess";
+import { CreditGuard } from "@/components/CreditGuard";
+
+// Importando os modais melhorados
+import {
+  RoadmapGeneratorModalEnhanced,
+  PRDMVPGeneratorModalEnhanced,
+  InvestmentSimulatorModalEnhanced,
+  StartupKitModalEnhanced,
+  RevenueForecastModalEnhanced
+} from "@/components/tools/enhanced";
+
+// Importando os modais originais para as ferramentas que ainda não foram melhoradas
 import { LogoGeneratorModal } from "@/components/tools/LogoGeneratorModal";
-import { PRDMVPGeneratorModalEnhanced as PRDMVPGeneratorModal } from "@/components/tools/enhanced";
 import { BusinessNameGeneratorModal } from "@/components/tools/BusinessNameGeneratorModal";
 import { MarketAnalysisModal } from "@/components/tools/MarketAnalysisModal";
 import { BusinessModelCanvasModal } from "@/components/tools/BusinessModelCanvasModal";
@@ -28,13 +47,6 @@ import { SEOAnalyzerModal } from "@/components/tools/SEOAnalyzerModal";
 import { LandingPageGeneratorModal } from "@/components/tools/LandingPageGeneratorModal";
 import { ContentMarketingModal } from "@/components/tools/ContentMarketingModal";
 import { TrendAnalysisModal } from "@/components/tools/TrendAnalysisModal";
-// Importando as versões melhoradas das ferramentas
-import { RevenueForecastModalEnhanced as RevenueForecastModal } from "@/components/tools/enhanced";
-import { RoadmapGeneratorModalEnhanced as RoadmapGeneratorModal } from "@/components/tools/enhanced";
-import { StartupKitModalEnhanced as StartupKitModal } from "@/components/tools/enhanced";
-import { InvestmentSimulatorModalEnhanced as InvestmentSimulatorModal } from "@/components/tools/enhanced";
-// Importando as ferramentas originais para as demais
-import { PostGeneratorModal } from "@/components/tools/PostGeneratorModal";
 import { SocialMediaPlannerModal } from "@/components/tools/SocialMediaPlannerModal";
 import { ProcessAutomationModal } from "@/components/tools/ProcessAutomationModal";
 import { InvoiceGeneratorModal } from "@/components/tools/InvoiceGeneratorModal";
@@ -44,13 +56,12 @@ import { CacLtvModal } from "@/components/tools/CacLtvModal";
 import { AiImageEditorModal } from "@/components/tools/AiImageEditorModal";
 import { ReportCreatorModal } from "@/components/tools/ReportCreatorModal";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
-import { usePlanAccess } from "@/hooks/usePlanAccess";
-import { CreditGuard } from "@/components/CreditGuard";
 
-const ToolsPage = () => {
+const ToolsPageEnhanced = () => {
   const { authState } = useAuth();
   const { hasFeatureAccess, getFeatureCost, canAccessFeature, hasCredits } = usePlanAccess();
+  
+  // Estados para controlar a abertura dos modais
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
   const [isPRDModalOpen, setIsPRDModalOpen] = useState(false);
   const [isBusinessNameModalOpen, setIsBusinessNameModalOpen] = useState(false);
@@ -72,7 +83,6 @@ const ToolsPage = () => {
   const [isRoadmapModalOpen, setIsRoadmapModalOpen] = useState(false);
   const [isStartupKitModalOpen, setIsStartupKitModalOpen] = useState(false);
   const [isInvestmentSimulatorModalOpen, setIsInvestmentSimulatorModalOpen] = useState(false);
-  const [isPostGeneratorModalOpen, setIsPostGeneratorModalOpen] = useState(false);
   const [isSocialMediaPlannerModalOpen, setIsSocialMediaPlannerModalOpen] = useState(false);
   const [isProcessAutomationModalOpen, setIsProcessAutomationModalOpen] = useState(false);
   const [isInvoiceGeneratorModalOpen, setIsInvoiceGeneratorModalOpen] = useState(false);
@@ -81,217 +91,61 @@ const ToolsPage = () => {
   const [isCacLtvModalOpen, setIsCacLtvModalOpen] = useState(false);
   const [isAiImageEditorModalOpen, setIsAiImageEditorModalOpen] = useState(false);
   const [isReportCreatorModalOpen, setIsReportCreatorModalOpen] = useState(false);
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
-
-  const handleLogoOpen = () => {
-    setIsLogoModalOpen(true);
-  };
-
-  const handlePRDOpen = () => {
-    setIsPRDModalOpen(true);
-  };
 
   const handleToolClick = (toolName: string, action: () => void) => {
     console.log(`Tool clicked: ${toolName}`);
     action();
   };
 
+  // Definição das ferramentas
   const allTools = [
     // Design e Branding
     {
       title: "Gerador de Logo",
-      description: "Crie logos profissionais para sua startup usando IA",
+      description: "Crie logos profissionais para sua startup",
       icon: Palette,
-      action: handleLogoOpen,
-      color: "from-purple-500 to-pink-500",
-      category: "design",
-      credits: getFeatureCost('logo-generator'),
-      status: "available",
-      feature: "logo-generator"
-    },
-    {
-      title: "Gerador de Nomes",
-      description: "Encontre o nome perfeito para sua startup",
-      icon: Lightbulb,
-      action: () => setIsBusinessNameModalOpen(true),
-      color: "from-green-500 to-emerald-500",
+      action: () => setIsLogoModalOpen(true),
+      color: "from-pink-500 to-rose-500",
       category: "design",
       credits: 3,
       status: "available"
     },
     {
-      title: "Paleta de Cores",
-      description: "Gere paletas de cores harmoniosas para sua marca",
-      icon: Eye,
-      action: () => setIsColorPaletteModalOpen(true),
-      color: "from-cyan-500 to-blue-500",
+      title: "Gerador de Nome",
+      description: "Encontre o nome perfeito para seu negócio",
+      icon: Lightbulb,
+      action: () => setIsBusinessNameModalOpen(true),
+      color: "from-yellow-500 to-amber-500",
       category: "design",
       credits: 2,
       status: "available"
     },
-
     // Documentação
     {
       title: "PRD/MVP Generator",
-      description: "Gere documentos técnicos detalhados para sua ideia",
+      description: "Crie documentos de requisitos ou MVP",
       icon: FileText,
-      action: handlePRDOpen,
-      color: "from-blue-500 to-cyan-500",
-      category: "documentation",
-      credits: getFeatureCost('prd-mvp'),
-        status: "available",
-      feature: "prd-mvp"
-    },
-    {
-      title: "Business Model Canvas",
-      description: "Crie um modelo de negócio visual e estruturado",
-      icon: Briefcase,
-      action: () => setIsBusinessModelCanvasModalOpen(true),
-      color: "from-orange-500 to-red-500",
-      category: "documentation",
-      credits: 6,
-      status: "available"
-    },
-    {
-      title: "Pitch Deck Generator",
-      description: "Gere apresentações profissionais para investidores",
-      icon: Presentation,
-      action: () => setIsPitchDeckModalOpen(true),
-      color: "from-indigo-500 to-purple-500",
-      category: "documentation",
-      credits: 10,
-      status: "available"
-    },
-    {
-      title: "Plano de Negócios",
-      description: "Crie um plano de negócios completo e detalhado",
-      icon: BookOpen,
-      action: () => setIsBusinessPlanModalOpen(true),
-      color: "from-teal-500 to-cyan-500",
-      category: "documentation",
-      credits: 12,
-      status: "available"
-    },
-
-    // Análise e Pesquisa
-    {
-      title: "Análise de Mercado",
-      description: "Pesquise e analise seu mercado-alvo",
-      icon: TrendingUp,
-      action: () => setIsMarketAnalysisModalOpen(true),
-      color: "from-emerald-500 to-teal-500",
-      category: "analysis",
-      credits: 9,
-      status: "available"
-    },
-    {
-      title: "Análise Financeira",
-      description: "Projete finanças e modelo de receita",
-      icon: DollarSign,
-      action: () => setIsFinancialAnalysisModalOpen(true),
-      color: "from-yellow-500 to-orange-500",
-      category: "analysis",
-      credits: 8,
-      status: "available"
-    },
-    {
-      title: "Análise de Concorrentes",
-      description: "Identifique e analise seus principais concorrentes",
-      icon: Shield,
-      action: () => setIsCompetitorAnalysisModalOpen(true),
-      color: "from-red-500 to-pink-500",
-      category: "analysis",
-      credits: 7,
-      status: "available"
-    },
-    {
-      title: "Pesquisa de Usuários",
-      description: "Entenda melhor seu público-alvo",
-      icon: Users,
-      action: () => setIsUserResearchModalOpen(true),
-      color: "from-cyan-500 to-blue-500",
-      category: "analysis",
-      credits: getFeatureCost('user-research'),
-      status: "available",
-      feature: "user-research"
-    },
-
-    // Marketing Digital
-    {
-      title: "Estratégia de Marketing",
-      description: "Desenvolva estratégias de marketing digital",
-      icon: Target,
-      action: () => setIsMarketingStrategyModalOpen(true),
-      color: "from-pink-500 to-rose-500",
-      category: "marketing",
-      credits: getFeatureCost('marketing-strategy'),
-      status: "available",
-      feature: "marketing-strategy"
-    },
-    {
-      title: "Gerador de Conteúdo",
-      description: "Crie conteúdo para redes sociais e blog",
-      icon: MessageSquare,
-      action: () => setIsContentMarketingModalOpen(true),
-      color: "from-violet-500 to-purple-500",
-      category: "marketing",
-      credits: getFeatureCost('content-marketing'),
-      status: "available",
-      feature: "content-marketing"
-    },
-    {
-      title: "Gerador de Posts",
-      description: "Crie posts otimizados para redes sociais",
-      icon: Megaphone,
-      action: () => setIsPostGeneratorModalOpen(true),
+      action: () => setIsPRDModalOpen(true),
       color: "from-blue-500 to-indigo-500",
-      category: "marketing",
-      credits: 3,
-      status: "available"
-    },
-    {
-      title: "SEO Analyzer",
-      description: "Otimize sua presença online",
-      icon: Search,
-      action: () => setIsSEOModalOpen(true),
-      color: "from-teal-500 to-green-500",
-      category: "marketing",
+      category: "documentation",
       credits: 5,
       status: "available"
     },
+    // Análise
     {
-      title: "Social Media Planner",
-      description: "Planeje e organize suas redes sociais",
-      icon: Calendar,
-      action: () => setIsSocialMediaPlannerModalOpen(true),
-      color: "from-blue-500 to-indigo-500",
-      category: "marketing",
-      credits: 6,
-      status: "available"
-    },
-
-    // Negócios e Estratégia
-    {
-      title: "Calculadora de Valuation",
-      description: "Estime o valor da sua startup",
-      icon: Calculator,
-      action: () => setIsValuationModalOpen(true),
-      color: "from-amber-500 to-yellow-500",
-      category: "business",
+      title: "Análise de Mercado",
+      description: "Entenda seu mercado e oportunidades",
+      icon: BarChart3,
+      action: () => setIsMarketAnalysisModalOpen(true),
+      color: "from-green-500 to-emerald-500",
+      category: "analysis",
       credits: 7,
       status: "available"
     },
-    {
-      title: "Automação de Processos",
-      description: "Identifique oportunidades de automação",
-      icon: Zap,
-      action: () => setIsProcessAutomationModalOpen(true),
-      color: "from-sky-500 to-cyan-500",
-      category: "business",
-      credits: 9,
-      status: "available"
-    },
+    // Ferramentas Melhoradas
     {
       title: "Roadmap Generator",
       description: "Crie roadmaps de produto e desenvolvimento",
@@ -304,117 +158,50 @@ const ToolsPage = () => {
       feature: "roadmap-generator"
     },
     {
-      title: "Gerador de Faturas",
-      description: "Crie faturas e documentos financeiros profissionais",
-      icon: Receipt,
-      action: () => setIsInvoiceGeneratorModalOpen(true),
+      title: "Kit Completo de Startup",
+      description: "Pacote completo para iniciar sua startup",
+      icon: Package,
+      action: () => setIsStartupKitModalOpen(true),
       color: "from-orange-500 to-amber-500",
       category: "business",
-      credits: 4,
-      status: "available"
-    },
-
-    // Ferramentas Avançadas
-    {
-      title: "Análise de Tendências",
-      description: "Identifique tendências de mercado e oportunidades",
-      icon: LineChart,
-      action: () => setIsTrendAnalysisModalOpen(true),
-      color: "from-orange-500 to-amber-500",
-      category: "advanced",
-      credits: getFeatureCost('trend-analysis'),
-      status: "available",
-      feature: "trend-analysis"
-    },
-    {
-      title: "Previsão de Receita",
-      description: "Projete receitas futuras com base em dados",
-      icon: PieChart,
-      action: () => setIsRevenueForecastModalOpen(true),
-      color: "from-indigo-500 to-blue-500",
-      category: "advanced",
-      credits: getFeatureCost('revenue-forecast'),
-      status: "available",
-      feature: "revenue-forecast"
-    },
-    {
-      title: "Modelo de Pricing",
-      description: "Defina estratégias de precificação inteligentes",
-      icon: Star,
-      action: () => setIsPricingModelModalOpen(true),
-      color: "from-rose-500 to-pink-500",
-      category: "advanced",
-      credits: 9,
-      status: "available"
-    },
-
-    // FERRAMENTAS ÚNICAS E INOVADORAS
-    {
-      title: "Kit Completo de Startup",
-      description: "Gere nome, missão, visão, pitch e cronograma em um só lugar",
-      icon: Rocket,
-      action: () => setIsStartupKitModalOpen(true),
-      color: "from-purple-600 to-pink-600",
-      category: "unique",
       credits: getFeatureCost('startup-kit'),
       status: "available",
       feature: "startup-kit"
     },
     {
       title: "Simulador de Investimento",
-      description: "Simule rounds de investimento e diluição de equity",
+      description: "Simule rodadas de investimento e valuation",
       icon: Calculator,
       action: () => setIsInvestmentSimulatorModalOpen(true),
-      color: "from-green-600 to-emerald-600",
-      category: "unique",
+      color: "from-blue-500 to-sky-500",
+      category: "business",
       credits: getFeatureCost('investment-simulator'),
       status: "available",
       feature: "investment-simulator"
     },
     {
-      title: "Gerador de Landing Page",
-      description: "Crie código HTML/CSS de landing pages otimizadas",
-      icon: Globe,
-      action: () => setIsLandingPageModalOpen(true),
-      color: "from-blue-600 to-cyan-600",
-      category: "unique",
-      credits: 18,
-      status: "available"
+      title: "Previsão de Receita",
+      description: "Projete receitas futuras com base em dados",
+      icon: LineChart,
+      action: () => setIsRevenueForecastModalOpen(true),
+      color: "from-green-500 to-emerald-500",
+      category: "business",
+      credits: getFeatureCost('revenue-forecast'),
+      status: "available",
+      feature: "revenue-forecast"
     },
-    {
-      title: "Análise de Timing de Mercado",
-      description: "Determine o momento ideal para lançar sua startup",
-      icon: TrendingUp,
-      action: () => setIsMarketTimingModalOpen(true),
-      color: "from-indigo-600 to-purple-600",
-      category: "unique",
-      credits: 14,
-      status: "available"
-    },
-    {
-      title: "Calculadora CAC/LTV",
-      description: "Calcule métricas essenciais para startups",
-      icon: Calculator,
-      action: () => setIsCacLtvModalOpen(true),
-      color: "from-orange-600 to-red-600",
-      category: "unique",
-      credits: 8,
-      status: "available"
-    },
-
   ];
 
+  // Categorias de ferramentas
   const categories = [
-    { id: "all", name: "Todos", shortName: "Todos", count: allTools.length },
+    { id: "all", name: "Todas", shortName: "Todas", count: allTools.length },
     { id: "design", name: "Design", shortName: "Design", count: allTools.filter(t => t.category === "design").length },
     { id: "documentation", name: "Documentação", shortName: "Docs", count: allTools.filter(t => t.category === "documentation").length },
     { id: "analysis", name: "Análise", shortName: "Análise", count: allTools.filter(t => t.category === "analysis").length },
-    { id: "marketing", name: "Marketing", shortName: "Marketing", count: allTools.filter(t => t.category === "marketing").length },
     { id: "business", name: "Negócios", shortName: "Negócios", count: allTools.filter(t => t.category === "business").length },
-    { id: "advanced", name: "Avançadas", shortName: "Avançadas", count: allTools.filter(t => t.category === "advanced").length },
-    { id: "unique", name: "Exclusivas", shortName: "Exclusivas", count: allTools.filter(t => t.category === "unique").length }
   ];
 
+  // Filtragem de ferramentas
   const filteredTools = allTools.filter(tool => {
     const matchesSearch = tool.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          tool.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -422,32 +209,25 @@ const ToolsPage = () => {
     return matchesSearch && matchesCategory;
   });
 
+  // Renderização de um card de ferramenta
   const renderToolCard = (tool: any, index: number) => {
-    const hasEnoughCredits = tool.feature ? hasCredits(tool.feature) : true;
-    
+    const hasEnoughCredits = tool.feature ? hasCredits(tool.feature) : authState.user?.credits >= tool.credits;
+
     return (
-      <Card key={index} className="relative overflow-hidden hover:shadow-lg transition-all duration-200 group">
-        <div className={`absolute inset-0 bg-gradient-to-br ${tool.color} opacity-5 group-hover:opacity-10 transition-opacity`} />
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg bg-gradient-to-br ${tool.color} group-hover:scale-110 transition-transform`}>
-                <tool.icon className="h-6 w-6 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-base truncate">{tool.title}</div>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant={tool.status === "available" ? "default" : "secondary"} className="text-xs">
-                    {tool.status === "available" ? "Disponível" : "Em breve"}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground font-medium">
-                    {tool.credits} créditos
-                  </span>
-                </div>
-              </div>
+      <Card 
+        key={index} 
+        className="overflow-hidden relative hover:shadow-md transition-shadow"
+      >
+        <div className={`absolute inset-0 bg-gradient-to-r ${tool.color} opacity-10 pointer-events-none`} />
+        <CardHeader className="pb-2">
+          <div className="flex items-start justify-between">
+            <div className="p-2 rounded-lg bg-gradient-to-r ${tool.color}">
+              <tool.icon className="h-5 w-5 text-white" />
             </div>
-          </CardTitle>
-          <CardDescription className="text-sm leading-relaxed">
+            <Badge variant="outline">{tool.credits} créditos</Badge>
+          </div>
+          <CardTitle className="text-lg mt-2">{tool.title}</CardTitle>
+          <CardDescription>
             {tool.description}
           </CardDescription>
         </CardHeader>
@@ -541,14 +321,12 @@ const ToolsPage = () => {
         ))}
       </Tabs>
 
-      {/* Modals */}
+      {/* Modais das Ferramentas */}
+      
+      {/* Modais Originais */}
       <LogoGeneratorModal 
         open={isLogoModalOpen} 
         onOpenChange={setIsLogoModalOpen} 
-      />
-      <PRDMVPGeneratorModal 
-        open={isPRDModalOpen} 
-        onOpenChange={setIsPRDModalOpen} 
       />
       <BusinessNameGeneratorModal 
         open={isBusinessNameModalOpen} 
@@ -610,26 +388,6 @@ const ToolsPage = () => {
         open={isTrendAnalysisModalOpen} 
         onOpenChange={setIsTrendAnalysisModalOpen} 
       />
-      <RevenueForecastModal 
-        open={isRevenueForecastModalOpen} 
-        onOpenChange={setIsRevenueForecastModalOpen} 
-      />
-      <RoadmapGeneratorModal 
-        open={isRoadmapModalOpen} 
-        onOpenChange={setIsRoadmapModalOpen} 
-      />
-      <StartupKitModal 
-        open={isStartupKitModalOpen} 
-        onOpenChange={setIsStartupKitModalOpen} 
-      />
-      <InvestmentSimulatorModal 
-        open={isInvestmentSimulatorModalOpen} 
-        onOpenChange={setIsInvestmentSimulatorModalOpen} 
-      />
-      <PostGeneratorModal 
-        open={isPostGeneratorModalOpen} 
-        onOpenChange={setIsPostGeneratorModalOpen} 
-      />
       <SocialMediaPlannerModal 
         open={isSocialMediaPlannerModalOpen} 
         onOpenChange={setIsSocialMediaPlannerModalOpen} 
@@ -662,8 +420,30 @@ const ToolsPage = () => {
         open={isReportCreatorModalOpen} 
         onOpenChange={setIsReportCreatorModalOpen} 
       />
+      
+      {/* Modais Melhorados */}
+      <PRDMVPGeneratorModalEnhanced 
+        open={isPRDModalOpen} 
+        onOpenChange={setIsPRDModalOpen} 
+      />
+      <RoadmapGeneratorModalEnhanced 
+        open={isRoadmapModalOpen} 
+        onOpenChange={setIsRoadmapModalOpen} 
+      />
+      <StartupKitModalEnhanced 
+        open={isStartupKitModalOpen} 
+        onOpenChange={setIsStartupKitModalOpen} 
+      />
+      <InvestmentSimulatorModalEnhanced 
+        open={isInvestmentSimulatorModalOpen} 
+        onOpenChange={setIsInvestmentSimulatorModalOpen} 
+      />
+      <RevenueForecastModalEnhanced 
+        open={isRevenueForecastModalOpen} 
+        onOpenChange={setIsRevenueForecastModalOpen} 
+      />
     </div>
   );
 };
 
-export default ToolsPage;
+export default ToolsPageEnhanced;
