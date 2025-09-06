@@ -787,7 +787,7 @@ const BenchmarksPage = () => {
                   </div>
                 </TabsContent>
 
-                {benchmarkResult.ideaComparison && (
+                {benchmarkResult.ideaComparison && benchmarkResult.ideaComparison.idea && (
                   <TabsContent value="comparison" className="mt-6">
                     <div className="space-y-6">
                       <Card className="backdrop-blur-sm bg-white/70 dark:bg-slate-800/70 border-0 shadow-lg">
@@ -804,16 +804,16 @@ const BenchmarksPage = () => {
                               <h3 className="text-lg font-semibold mb-3">Sua Ideia</h3>
                               <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                                 <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-                                  {benchmarkResult.ideaComparison.idea.title}
+                                  {benchmarkResult.ideaComparison.idea?.title || 'Título não disponível'}
                                 </h4>
                                 <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
-                                  {benchmarkResult.ideaComparison.idea.description}
+                                  {benchmarkResult.ideaComparison.idea?.description || 'Descrição não disponível'}
                                 </p>
                                 <div className="text-xs text-blue-600 dark:text-blue-400">
-                                  <strong>Público:</strong> {benchmarkResult.ideaComparison.idea.audience}
+                                  <strong>Público:</strong> {benchmarkResult.ideaComparison.idea?.audience || 'Não especificado'}
                                 </div>
                                 <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                                  <strong>Monetização:</strong> {benchmarkResult.ideaComparison.idea.monetization}
+                                  <strong>Monetização:</strong> {benchmarkResult.ideaComparison.idea?.monetization || 'Não especificado'}
                                 </div>
                               </div>
                             </div>
@@ -856,12 +856,15 @@ const BenchmarksPage = () => {
                           </CardHeader>
                           <CardContent>
                             <ul className="space-y-2">
-                              {benchmarkResult.ideaComparison.strengths.map((strength: string, index: number) => (
+                              {(benchmarkResult.ideaComparison.strengths || []).map((strength: string, index: number) => (
                                 <li key={index} className="flex items-start gap-2">
                                   <Zap className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                                   <span className="text-sm">{strength}</span>
                                 </li>
                               ))}
+                              {(!benchmarkResult.ideaComparison.strengths || benchmarkResult.ideaComparison.strengths.length === 0) && (
+                                <li className="text-sm text-gray-500">Nenhum ponto forte identificado</li>
+                              )}
                             </ul>
                           </CardContent>
                         </Card>
@@ -872,12 +875,15 @@ const BenchmarksPage = () => {
                           </CardHeader>
                           <CardContent>
                             <ul className="space-y-2">
-                              {benchmarkResult.ideaComparison.weaknesses.map((weakness: string, index: number) => (
+                              {(benchmarkResult.ideaComparison.weaknesses || []).map((weakness: string, index: number) => (
                                 <li key={index} className="flex items-start gap-2">
                                   <AlertTriangle className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
                                   <span className="text-sm">{weakness}</span>
                                 </li>
                               ))}
+                              {(!benchmarkResult.ideaComparison.weaknesses || benchmarkResult.ideaComparison.weaknesses.length === 0) && (
+                                <li className="text-sm text-gray-500">Nenhum ponto de atenção identificado</li>
+                              )}
                             </ul>
                           </CardContent>
                         </Card>
@@ -893,7 +899,7 @@ const BenchmarksPage = () => {
                         </CardHeader>
                         <CardContent>
                           <ul className="space-y-3">
-                            {benchmarkResult.ideaComparison.recommendations.map((recommendation: string, index: number) => (
+                            {(benchmarkResult.ideaComparison.recommendations || []).map((recommendation: string, index: number) => (
                               <li key={index} className="flex items-start gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                                 <div className="bg-purple-100 dark:bg-purple-800 rounded-full p-1 mt-0.5">
                                   <Info className="h-3 w-3 text-purple-600" />
@@ -901,6 +907,9 @@ const BenchmarksPage = () => {
                                 <span className="text-sm text-purple-900 dark:text-purple-100">{recommendation}</span>
                               </li>
                             ))}
+                            {(!benchmarkResult.ideaComparison.recommendations || benchmarkResult.ideaComparison.recommendations.length === 0) && (
+                              <li className="text-sm text-gray-500">Nenhuma recomendação disponível</li>
+                            )}
                           </ul>
                         </CardContent>
                       </Card>
