@@ -96,7 +96,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
       const generatedName = data.name;
       setCustomName(generatedName);
       setNameSource("custom");
-      toast.success('Nome gerado com sucesso!');
+      toast.success(`Nome gerado: "${generatedName}"`);
     } catch (error) {
       console.error('Error generating name:', error);
       toast.error('Erro ao gerar nome');
@@ -243,7 +243,9 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
   ];
 
   const logoIcon = <Palette className="h-5 w-5" />;
-  const isFormValid = mode === "idea" ? !!selectedIdea : !!(freeName && freeDescription);
+  const isFormValid = mode === "idea" ? 
+    !!selectedIdea && (nameSource !== "custom" || customName.trim()) : 
+    !!(freeName && freeDescription);
 
   return (
     <ToolModalBase
