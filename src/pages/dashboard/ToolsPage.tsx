@@ -17,6 +17,9 @@ import { BusinessNameGeneratorModal } from "@/components/tools/BusinessNameGener
 import { MarketAnalysisModal } from "@/components/tools/MarketAnalysisModal";
 import { BusinessModelCanvasModal } from "@/components/tools/BusinessModelCanvasModal";
 import { FinancialAnalysisModal } from "@/components/tools/FinancialAnalysisModal";
+import { PitchDeckModal } from "@/components/tools/PitchDeckModal";
+import { CompetitorAnalysisModal } from "@/components/tools/CompetitorAnalysisModal";
+import { ColorPaletteModal } from "@/components/tools/ColorPaletteModal";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlanAccess } from "@/hooks/usePlanAccess";
@@ -31,6 +34,9 @@ const ToolsPage = () => {
   const [isMarketAnalysisModalOpen, setIsMarketAnalysisModalOpen] = useState(false);
   const [isBusinessModelCanvasModalOpen, setIsBusinessModelCanvasModalOpen] = useState(false);
   const [isFinancialAnalysisModalOpen, setIsFinancialAnalysisModalOpen] = useState(false);
+  const [isPitchDeckModalOpen, setIsPitchDeckModalOpen] = useState(false);
+  const [isCompetitorAnalysisModalOpen, setIsCompetitorAnalysisModalOpen] = useState(false);
+  const [isColorPaletteModalOpen, setIsColorPaletteModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
@@ -74,11 +80,11 @@ const ToolsPage = () => {
       title: "Paleta de Cores",
       description: "Gere paletas de cores harmoniosas para sua marca",
       icon: Eye,
-      action: () => console.log("Color Palette - Coming soon"),
+      action: () => setIsColorPaletteModalOpen(true),
       color: "from-cyan-500 to-blue-500",
       category: "design",
       credits: 2,
-      status: "coming-soon"
+      status: "available"
     },
     {
       title: "Editor de Imagens com IA",
@@ -117,11 +123,11 @@ const ToolsPage = () => {
       title: "Pitch Deck Generator",
       description: "Gere apresentações profissionais para investidores",
       icon: Presentation,
-      action: () => console.log("Pitch Deck - Coming soon"),
+      action: () => setIsPitchDeckModalOpen(true),
       color: "from-indigo-500 to-purple-500",
       category: "documentation",
       credits: 10,
-      status: "coming-soon"
+      status: "available"
     },
     {
       title: "Plano de Negócios",
@@ -169,11 +175,11 @@ const ToolsPage = () => {
       title: "Análise de Concorrentes",
       description: "Identifique e analise seus principais concorrentes",
       icon: Shield,
-      action: () => console.log("Competitor Analysis - Coming soon"),
+      action: () => setIsCompetitorAnalysisModalOpen(true),
       color: "from-red-500 to-pink-500",
       category: "analysis",
       credits: 7,
-      status: "coming-soon"
+      status: "available"
     },
     {
       title: "Pesquisa de Usuários",
@@ -310,6 +316,58 @@ const ToolsPage = () => {
       category: "advanced",
       credits: 9,
       status: "coming-soon"
+    },
+
+    // FERRAMENTAS ÚNICAS E INOVADORAS
+    {
+      title: "Kit Completo de Startup",
+      description: "Gere nome, missão, visão, pitch e cronograma em um só lugar",
+      icon: Rocket,
+      action: () => console.log("Startup Kit - Coming soon"),
+      color: "from-purple-600 to-pink-600",
+      category: "unique",
+      credits: 15,
+      status: "coming-soon"
+    },
+    {
+      title: "Simulador de Investimento",
+      description: "Simule rounds de investimento e diluição de equity",
+      icon: Calculator,
+      action: () => console.log("Investment Simulator - Coming soon"),
+      color: "from-green-600 to-emerald-600",
+      category: "unique",
+      credits: 12,
+      status: "coming-soon"
+    },
+    {
+      title: "Gerador de Landing Page",
+      description: "Crie código HTML/CSS de landing pages otimizadas",
+      icon: Globe,
+      action: () => console.log("Landing Page Generator - Coming soon"),
+      color: "from-blue-600 to-cyan-600",
+      category: "unique",
+      credits: 18,
+      status: "coming-soon"
+    },
+    {
+      title: "Análise de Timing de Mercado",
+      description: "Determine o momento ideal para lançar sua startup",
+      icon: TrendingUp,
+      action: () => console.log("Market Timing - Coming soon"),
+      color: "from-indigo-600 to-purple-600",
+      category: "unique",
+      credits: 14,
+      status: "coming-soon"
+    },
+    {
+      title: "Calculadora CAC/LTV",
+      description: "Calcule métricas essenciais para startups",
+      icon: Calculator,
+      action: () => console.log("CAC/LTV Calculator - Coming soon"),
+      color: "from-orange-600 to-red-600",
+      category: "unique",
+      credits: 8,
+      status: "coming-soon"
     }
   ];
 
@@ -320,7 +378,8 @@ const ToolsPage = () => {
     { id: "analysis", name: "Análise", shortName: "Análise", count: allTools.filter(t => t.category === "analysis").length },
     { id: "marketing", name: "Marketing", shortName: "Marketing", count: allTools.filter(t => t.category === "marketing").length },
     { id: "business", name: "Negócios", shortName: "Negócios", count: allTools.filter(t => t.category === "business").length },
-    { id: "advanced", name: "Avançadas", shortName: "Avançadas", count: allTools.filter(t => t.category === "advanced").length }
+    { id: "advanced", name: "Avançadas", shortName: "Avançadas", count: allTools.filter(t => t.category === "advanced").length },
+    { id: "unique", name: "Exclusivas", shortName: "Exclusivas", count: allTools.filter(t => t.category === "unique").length }
   ];
 
   const filteredTools = allTools.filter(tool => {
@@ -473,6 +532,18 @@ const ToolsPage = () => {
       <FinancialAnalysisModal 
         open={isFinancialAnalysisModalOpen} 
         onOpenChange={setIsFinancialAnalysisModalOpen} 
+      />
+      <PitchDeckModal 
+        open={isPitchDeckModalOpen} 
+        onOpenChange={setIsPitchDeckModalOpen} 
+      />
+      <CompetitorAnalysisModal 
+        open={isCompetitorAnalysisModalOpen} 
+        onOpenChange={setIsCompetitorAnalysisModalOpen} 
+      />
+      <ColorPaletteModal 
+        open={isColorPaletteModalOpen} 
+        onOpenChange={setIsColorPaletteModalOpen} 
       />
     </div>
   );
