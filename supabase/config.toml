@@ -50,6 +50,33 @@ verify_jwt = true
 [functions.generate-prd-mvp]
 verify_jwt = true
 
+[functions.generate-post-generator]
+verify_jwt = true
+
+[functions.generate-social-media-planner]
+verify_jwt = true
+
+[functions.generate-ai-image-editor]
+verify_jwt = true
+
+[functions.generate-report-creator]
+verify_jwt = true
+
+[functions.generate-process-automation]
+verify_jwt = true
+
+[functions.generate-invoice-generator]
+verify_jwt = true
+
+[functions.generate-pricing-model]
+verify_jwt = true
+
+[functions.generate-market-timing]
+verify_jwt = true
+
+[functions.generate-cac-ltv]
+verify_jwt = true
+
 [functions.gpt-chat]
 verify_jwt = true
 
