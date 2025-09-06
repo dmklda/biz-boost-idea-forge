@@ -30,14 +30,6 @@ export const CreditGuard: React.FC<CreditGuardProps> = ({
       navigate('/login');
       return;
     }
-
-    // For features that require specific plans, check both plan access and credits
-    if (feature !== 'basic-analysis' && feature !== 'reanalysis' && feature !== 'comparison') {
-      if (!hasFeatureAccess(feature as any)) {
-        setShowUpgradeModal(true);
-        return;
-      }
-    }
     
     // Check if user has enough credits for this feature
     if (!hasCredits(feature)) {
@@ -94,70 +86,91 @@ export const CreditGuard: React.FC<CreditGuardProps> = ({
       {childrenWithProps}
       
       <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <CreditCard className="h-5 w-5 text-brand-purple" />
+        <DialogContent className="sm:max-w-2xl lg:max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="text-center sm:text-left">
+            <DialogTitle className="flex items-center justify-center sm:justify-start gap-3 text-xl sm:text-2xl">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-brand-purple to-brand-blue">
+                <CreditCard className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              </div>
               Créditos Insuficientes
             </DialogTitle>
-            <DialogDescription>
-              Você precisa de {cost} crédito{cost > 1 ? 's' : ''} para usar esta funcionalidade. 
-              Você tem {userCredits} crédito{userCredits !== 1 ? 's' : ''} disponível{userCredits !== 1 ? 'is' : ''}.
+            <DialogDescription className="text-center sm:text-left text-sm sm:text-base mt-2">
+              Você precisa de <span className="font-semibold text-brand-purple">{cost} crédito{cost > 1 ? 's' : ''}</span> para usar esta funcionalidade. 
+              <br />
+              Você tem <span className="font-semibold">{userCredits} crédito{userCredits !== 1 ? 's' : ''}</span> disponível{userCredits !== 1 ? 'is' : ''}.
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-6">
+          <div className="space-y-8 mt-6">
             {userPlan === 'free' ? (
               <>
-                <div className="text-center py-4">
-                  <h3 className="text-lg font-semibold mb-2">Escolha seu plano e tenha créditos mensais</h3>
-                  <p className="text-muted-foreground">
-                    Upgrade para um plano pago e receba créditos todos os meses
+                <div className="text-center">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-brand-purple/10 to-brand-blue/10 border border-brand-purple/20 mb-4">
+                    <Zap className="h-4 w-4 text-brand-purple" />
+                    <span className="text-sm font-medium text-brand-purple">Upgrade Recomendado</span>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-bold mb-2">Escolha seu plano e tenha créditos mensais</h3>
+                  <p className="text-muted-foreground text-sm sm:text-base">
+                    Upgrade para um plano pago e receba créditos todos os meses automaticamente
                   </p>
                 </div>
                 
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid gap-6 md:grid-cols-2">
                   {plans.map((plan) => (
                     <Card 
                       key={plan.id} 
-                      className={`relative cursor-pointer transition-all hover:scale-[1.02] ${
-                        plan.recommended ? 'ring-2 ring-brand-purple/30' : ''
+                      className={`relative cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group ${
+                        plan.recommended 
+                          ? 'ring-2 ring-brand-purple/30 shadow-lg border-brand-purple/20' 
+                          : 'hover:border-brand-purple/20'
                       }`}
                       onClick={() => handleUpgrade(plan.id)}
                     >
                       {plan.recommended && (
-                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                          <Badge className="bg-brand-purple text-white">
-                            <Zap className="h-3 w-3 mr-1" />
-                            Recomendado
+                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                          <Badge className="bg-gradient-to-r from-brand-purple to-brand-blue text-white shadow-lg px-3 py-1">
+                            <Zap className="h-3 w-3 mr-1.5" />
+                            Mais Popular
                           </Badge>
                         </div>
                       )}
                       
-                      <CardHeader>
-                        <CardTitle className="flex items-center justify-between">
-                          {plan.name}
-                          <span className="text-2xl font-bold">{plan.price}</span>
+                      <CardHeader className="pb-4">
+                        <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <span className="text-xl font-bold">{plan.name}</span>
+                          <div className="text-right">
+                            <span className="text-2xl sm:text-3xl font-bold text-brand-purple">{plan.price}</span>
+                            <span className="text-sm text-muted-foreground block">/mês</span>
+                          </div>
                         </CardTitle>
-                        <CardDescription>{plan.description}</CardDescription>
-                        <div className="text-brand-purple font-semibold">{plan.credits}</div>
+                        <CardDescription className="text-sm">{plan.description}</CardDescription>
+                        <div className="inline-flex items-center gap-2 mt-3 p-2 rounded-lg bg-brand-purple/5 border border-brand-purple/10">
+                          <CreditCard className="h-4 w-4 text-brand-purple" />
+                          <span className="text-brand-purple font-semibold text-sm">{plan.credits}</span>
+                        </div>
                       </CardHeader>
                       
-                      <CardContent>
-                        <ul className="space-y-2">
+                      <CardContent className="pt-0">
+                        <ul className="space-y-3 mb-6">
                           {plan.features.map((feature, index) => (
-                            <li key={index} className="flex items-center gap-2 text-sm">
-                              <ArrowRight className="h-3 w-3 text-brand-purple" />
-                              {feature}
+                            <li key={index} className="flex items-start gap-3 text-sm">
+                              <div className="mt-0.5 p-0.5 rounded-full bg-brand-purple/10">
+                                <ArrowRight className="h-3 w-3 text-brand-purple" />
+                              </div>
+                              <span className="leading-5">{feature}</span>
                             </li>
                           ))}
                         </ul>
                         
                         <Button 
-                          className="w-full mt-4"
+                          className={`w-full h-11 font-semibold transition-all ${
+                            plan.recommended 
+                              ? "bg-gradient-to-r from-brand-purple to-brand-blue hover:from-brand-purple/90 hover:to-brand-blue/90 shadow-lg" 
+                              : ""
+                          }`}
                           variant={plan.recommended ? "default" : "outline"}
                         >
-                          Escolher Plano
+                          {plan.recommended ? "Escolher Plano Recomendado" : "Escolher Plano"}
                         </Button>
                       </CardContent>
                     </Card>
@@ -166,26 +179,33 @@ export const CreditGuard: React.FC<CreditGuardProps> = ({
               </>
             ) : (
               <>
-                <div className="text-center py-4">
-                  <h3 className="text-lg font-semibold mb-2">Comprar Créditos Adicionais</h3>
-                  <p className="text-muted-foreground">
-                    Você pode comprar créditos adicionais para continuar usando as funcionalidades
+                <div className="text-center">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-brand-blue/10 to-brand-purple/10 border border-brand-blue/20 mb-4">
+                    <CreditCard className="h-4 w-4 text-brand-blue" />
+                    <span className="text-sm font-medium text-brand-blue">Compra Rápida</span>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-bold mb-2">Comprar Créditos Adicionais</h3>
+                  <p className="text-muted-foreground text-sm sm:text-base">
+                    Compre créditos extras para continuar usando todas as funcionalidades
                   </p>
                 </div>
                 
-                <Card className="cursor-pointer transition-all hover:scale-[1.02]" onClick={handleBuyCredits}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <CreditCard className="h-5 w-5 text-brand-purple" />
-                      Comprar Créditos
-                    </CardTitle>
-                    <CardDescription>
-                      Pacotes de créditos avulsos para usar quando precisar
+                <Card className="cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:border-brand-blue/30 group" onClick={handleBuyCredits}>
+                  <CardHeader className="text-center">
+                    <div className="mx-auto w-12 h-12 rounded-full bg-gradient-to-br from-brand-blue to-brand-purple flex items-center justify-center mb-3">
+                      <CreditCard className="h-6 w-6 text-white" />
+                    </div>
+                    <CardTitle className="text-xl">Pacotes de Créditos</CardTitle>
+                    <CardDescription className="text-sm">
+                      Diversos pacotes disponíveis com diferentes quantidades de créditos
                     </CardDescription>
                   </CardHeader>
                   
-                  <CardContent>
-                    <Button className="w-full">
+                  <CardContent className="text-center">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-blue/10 border border-brand-blue/20 mb-4">
+                      <span className="text-xs font-medium text-brand-blue">A partir de R$ 2,99</span>
+                    </div>
+                    <Button className="w-full h-11 bg-gradient-to-r from-brand-blue to-brand-purple hover:from-brand-blue/90 hover:to-brand-purple/90 font-semibold">
                       Ver Pacotes de Créditos
                     </Button>
                   </CardContent>
@@ -193,9 +213,13 @@ export const CreditGuard: React.FC<CreditGuardProps> = ({
               </>
             )}
             
-            <div className="flex gap-2 pt-4">
-              <Button variant="outline" onClick={() => setShowUpgradeModal(false)} className="flex-1">
-                Cancelar
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowUpgradeModal(false)} 
+                className="flex-1 h-11"
+              >
+                Talvez Depois
               </Button>
             </div>
           </div>

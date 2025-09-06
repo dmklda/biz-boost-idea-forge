@@ -17,8 +17,8 @@ const FEATURE_PLAN_REQUIREMENTS: Record<FeatureType, PlanType[]> = {
   'regulatory-analysis': ['entrepreneur', 'business'],
   'benchmarks': ['business'],
   'advanced-analysis': ['business'],
-  'logo-generator': ['entrepreneur', 'business'],
-  'prd-mvp': ['entrepreneur', 'business'],
+  'logo-generator': ['free', 'entrepreneur', 'business'], // Now available to all plans
+  'prd-mvp': ['free', 'entrepreneur', 'business'], // Now available to all plans
   'pdf-export': ['entrepreneur', 'business']
 };
 

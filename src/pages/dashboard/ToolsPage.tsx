@@ -20,7 +20,7 @@ import { CreditGuard } from "@/components/CreditGuard";
 
 const ToolsPage = () => {
   const { authState } = useAuth();
-  const { hasFeatureAccess, getFeatureCost, canAccessFeature } = usePlanAccess();
+  const { hasFeatureAccess, getFeatureCost, canAccessFeature, hasCredits } = usePlanAccess();
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
   const [isPRDModalOpen, setIsPRDModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -50,8 +50,7 @@ const ToolsPage = () => {
       category: "design",
       credits: getFeatureCost('logo-generator'),
       status: "available",
-      feature: "logo-generator",
-      planRequired: hasFeatureAccess('logo-generator') ? null : "Entrepreneur"
+      feature: "logo-generator"
     },
     {
       title: "Gerador de Nomes",
@@ -94,8 +93,7 @@ const ToolsPage = () => {
       category: "documentation",
       credits: getFeatureCost('prd-mvp'),
       status: "available",
-      feature: "prd-mvp",
-      planRequired: hasFeatureAccess('prd-mvp') ? null : "Entrepreneur"
+      feature: "prd-mvp"
     },
     {
       title: "Business Model Canvas",
@@ -325,8 +323,7 @@ const ToolsPage = () => {
   });
 
   const renderToolCard = (tool: any, index: number) => {
-    const hasAccess = tool.feature ? canAccessFeature(tool.feature) : true;
-    const needsUpgrade = tool.planRequired && !hasFeatureAccess(tool.feature);
+    const hasEnoughCredits = tool.feature ? hasCredits(tool.feature) : true;
     
     return (
       <Card key={index} className="relative overflow-hidden hover:shadow-lg transition-all duration-200 group">
@@ -343,11 +340,6 @@ const ToolsPage = () => {
                   <Badge variant={tool.status === "available" ? "default" : "secondary"} className="text-xs">
                     {tool.status === "available" ? "Disponível" : "Em breve"}
                   </Badge>
-                  {tool.planRequired && (
-                    <Badge variant="outline" className="text-xs">
-                      {tool.planRequired}+
-                    </Badge>
-                  )}
                   <span className="text-xs text-muted-foreground font-medium">
                     {tool.credits} créditos
                   </span>
@@ -360,13 +352,13 @@ const ToolsPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-0">
-          {tool.feature && !hasAccess ? (
+          {tool.feature && !hasEnoughCredits ? (
             <CreditGuard feature={tool.feature}>
               <Button 
                 className="w-full relative z-10" 
                 variant="outline"
               >
-                {needsUpgrade ? `Upgrade para ${tool.planRequired}` : "Comprar Créditos"}
+                Comprar Créditos ({tool.credits})
               </Button>
             </CreditGuard>
           ) : (
