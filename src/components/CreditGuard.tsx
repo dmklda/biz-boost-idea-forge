@@ -92,7 +92,7 @@ export const CreditGuard: React.FC<CreditGuardProps> = ({
               <div className="p-2 rounded-lg bg-gradient-to-br from-brand-purple to-brand-blue">
                 <CreditCard className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
-              Créditos Insuficientes
+              Créditos Insuficientes 💳
             </DialogTitle>
             <DialogDescription className="text-center sm:text-left text-sm sm:text-base mt-2">
               Você precisa de <span className="font-semibold text-brand-purple">{cost} crédito{cost > 1 ? 's' : ''}</span> para usar esta funcionalidade. 
