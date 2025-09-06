@@ -133,7 +133,7 @@ export const ProcessAutomationModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Zap className="h-5 w-5" />
@@ -147,7 +147,7 @@ export const ProcessAutomationModal = ({
 
         {!results ? (
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="business_idea">Ideia de Negócio *</Label>
                 <Textarea
@@ -256,7 +256,7 @@ export const ProcessAutomationModal = ({
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-primary" />
                       <span className="text-sm">
@@ -319,7 +319,7 @@ export const ProcessAutomationModal = ({
                           <p className="text-sm">{opportunity.automation_solution}</p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                           <div>
                             <h5 className="font-medium text-sm mb-1">Tempo Economizado:</h5>
                             <p className="text-sm text-green-600">{opportunity.time_saved}</p>
@@ -374,7 +374,7 @@ export const ProcessAutomationModal = ({
                     {results.tools_comparison.map((tool, index) => (
                       <div key={index} className="border rounded-lg p-3">
                         <h5 className="font-medium mb-2">{tool.tool_name}</h5>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 text-sm">
                           <div>
                             <strong>Recursos:</strong>
                             <ul className="mt-1 space-y-1">

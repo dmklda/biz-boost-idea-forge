@@ -137,7 +137,7 @@ export const ReportCreatorModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <BarChart3 className="h-5 w-5" />
@@ -151,7 +151,7 @@ export const ReportCreatorModal = ({
 
         {!results ? (
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="business_idea">Ideia de Negócio *</Label>
                 <Textarea
@@ -284,7 +284,7 @@ export const ReportCreatorModal = ({
                 {results.report_metadata && (
                   <div className="border-t pt-4">
                     <h5 className="font-medium text-sm mb-2">Detalhes do Relatório:</h5>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Páginas:</span>
                         <div className="font-medium">{results.report_metadata.pages}</div>

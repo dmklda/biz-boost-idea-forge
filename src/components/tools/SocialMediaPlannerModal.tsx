@@ -114,7 +114,7 @@ export const SocialMediaPlannerModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
@@ -128,7 +128,7 @@ export const SocialMediaPlannerModal = ({
 
         {!results ? (
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="business_idea">Ideia de Negócio *</Label>
                 <Textarea
@@ -223,7 +223,7 @@ export const SocialMediaPlannerModal = ({
                   <Target className="h-4 w-4" />
                   Estratégias por Plataforma
                 </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {results.strategies.map((strategy, index) => (
                     <Card key={index}>
                       <CardHeader>
