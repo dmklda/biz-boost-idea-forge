@@ -20,6 +20,12 @@ import { FinancialAnalysisModal } from "@/components/tools/FinancialAnalysisModa
 import { PitchDeckModal } from "@/components/tools/PitchDeckModal";
 import { CompetitorAnalysisModal } from "@/components/tools/CompetitorAnalysisModal";
 import { ColorPaletteModal } from "@/components/tools/ColorPaletteModal";
+import { UserResearchModal } from "@/components/tools/UserResearchModal";
+import { ValuationCalculatorModal } from "@/components/tools/ValuationCalculatorModal";
+import { MarketingStrategyModal } from "@/components/tools/MarketingStrategyModal";
+import { BusinessPlanModal } from "@/components/tools/BusinessPlanModal";
+import { SEOAnalyzerModal } from "@/components/tools/SEOAnalyzerModal";
+import { LandingPageGeneratorModal } from "@/components/tools/LandingPageGeneratorModal";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlanAccess } from "@/hooks/usePlanAccess";
@@ -37,6 +43,12 @@ const ToolsPage = () => {
   const [isPitchDeckModalOpen, setIsPitchDeckModalOpen] = useState(false);
   const [isCompetitorAnalysisModalOpen, setIsCompetitorAnalysisModalOpen] = useState(false);
   const [isColorPaletteModalOpen, setIsColorPaletteModalOpen] = useState(false);
+  const [isUserResearchModalOpen, setIsUserResearchModalOpen] = useState(false);
+  const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
+  const [isMarketingStrategyModalOpen, setIsMarketingStrategyModalOpen] = useState(false);
+  const [isBusinessPlanModalOpen, setIsBusinessPlanModalOpen] = useState(false);
+  const [isSEOModalOpen, setIsSEOModalOpen] = useState(false);
+  const [isLandingPageModalOpen, setIsLandingPageModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
@@ -249,11 +261,11 @@ const ToolsPage = () => {
       title: "Calculadora de Valuation",
       description: "Estime o valor da sua startup",
       icon: Calculator,
-      action: () => console.log("Valuation Calculator - Coming soon"),
+      action: () => setIsValuationModalOpen(true),
       color: "from-amber-500 to-yellow-500",
       category: "business",
       credits: 7,
-      status: "coming-soon"
+      status: "available"
     },
     {
       title: "Automação de Processos",
@@ -544,6 +556,30 @@ const ToolsPage = () => {
       <ColorPaletteModal 
         open={isColorPaletteModalOpen} 
         onOpenChange={setIsColorPaletteModalOpen} 
+      />
+      <UserResearchModal 
+        open={isUserResearchModalOpen} 
+        onOpenChange={setIsUserResearchModalOpen} 
+      />
+      <ValuationCalculatorModal 
+        open={isValuationModalOpen} 
+        onOpenChange={setIsValuationModalOpen} 
+      />
+      <MarketingStrategyModal 
+        open={isMarketingStrategyModalOpen} 
+        onOpenChange={setIsMarketingStrategyModalOpen} 
+      />
+      <BusinessPlanModal 
+        open={isBusinessPlanModalOpen} 
+        onOpenChange={setIsBusinessPlanModalOpen} 
+      />
+      <SEOAnalyzerModal 
+        open={isSEOModalOpen} 
+        onOpenChange={setIsSEOModalOpen} 
+      />
+      <LandingPageGeneratorModal 
+        open={isLandingPageModalOpen} 
+        onOpenChange={setIsLandingPageModalOpen} 
       />
     </div>
   );
