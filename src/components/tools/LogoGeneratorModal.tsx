@@ -94,9 +94,13 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
       if (error) throw error;
 
       const generatedName = data.name;
-      setCustomName(generatedName);
-      setNameSource("custom");
-      toast.success('Nome gerado com sucesso!');
+      if (generatedName && generatedName.trim()) {
+        setCustomName(generatedName);
+        setNameSource("custom");
+        toast.success(`Nome gerado: "${generatedName}". Agora você pode editar ou usar este nome no logo.`);
+      } else {
+        throw new Error('Nome não foi gerado corretamente');
+      }
     } catch (error) {
       console.error('Error generating name:', error);
       toast.error('Erro ao gerar nome');
@@ -443,14 +447,20 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                           </Label>
                         </div>
 
-                        {nameSource === "custom" && (
-                          <Input
-                            placeholder="Digite o nome para aparecer no logo"
-                            value={customName}
-                            onChange={(e) => setCustomName(e.target.value)}
-                            className="ml-6"
-                          />
-                        )}
+                         {nameSource === "custom" && (
+                          <div className="ml-6 space-y-2">
+                            <Input
+                              placeholder="Digite o nome para aparecer no logo"
+                              value={customName}
+                              onChange={(e) => setCustomName(e.target.value)}
+                            />
+                            {customName && (
+                              <p className="text-xs text-muted-foreground">
+                                Nome que será usado: "{customName}"
+                              </p>
+                            )}
+                          </div>
+                         )}
                       </div>
                     </div>
                   </div>

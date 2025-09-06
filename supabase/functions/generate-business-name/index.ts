@@ -28,7 +28,7 @@ serve(async (req)=>{
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'gpt-5-mini-2025-08-07',
         messages: [
           {
             role: 'system',
@@ -55,7 +55,14 @@ Retorne apenas o nome, sem explicações adicionais.`
     }
     const data = await response.json();
     const generatedName = data.choices[0].message.content.trim();
+    
     console.log('Business name generated successfully:', generatedName);
+    
+    // Validate that the name is not empty
+    if (!generatedName || generatedName.length === 0) {
+      throw new Error('Generated name is empty');
+    }
+    
     return new Response(JSON.stringify({
       name: generatedName
     }), {
