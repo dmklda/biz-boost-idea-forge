@@ -113,7 +113,7 @@ export const PRDMVPGeneratorModalEnhanced = ({ open, onOpenChange }: PRDMVPGener
       showReset={!!generatedDocument}
       creditCost={5}
       maxWidth={generatedDocument ? "4xl" : "2xl"}
-      description="Crie documentos PRD (Product Requirements Document) ou MVP (Minimum Viable Product) profissionais baseados nas suas ideias existentes."
+      
     >
       {generatedDocument ? (
         <div className="space-y-4">

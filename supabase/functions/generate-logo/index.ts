@@ -12,9 +12,9 @@ serve(async (req)=>{
     });
   }
   try {
-    const { idea, logoStyle, colorScheme, logoType, customPrompt, background, outputFormat, quality } = await req.json();
-    if (!idea) {
-      throw new Error('Idea is required');
+    const { idea, logoStyle, colorScheme, logoType, customPrompt, background, outputFormat, quality, mode } = await req.json();
+    if (!idea || !idea.title || !idea.description) {
+      throw new Error('Idea with title and description is required');
     }
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
@@ -52,14 +52,26 @@ serve(async (req)=>{
       text_and_icon: "combination of text and icon/symbol working together harmoniously"
     };
     let prompt = `Create a professional ${styleDescriptions[logoStyle]} logo for "${idea.title}" - ${idea.description}. `;
+    
     if (idea.audience) {
       prompt += `Target audience: ${idea.audience}. `;
     }
+    
+    if (idea.industry) {
+      prompt += `Industry/Sector: ${idea.industry}. `;
+    }
+    
     prompt += `Style: ${typeDescriptions[logoType]}. `;
     prompt += `Color scheme: ${colorDescriptions[colorScheme]}. `;
+    
     if (customPrompt) {
       prompt += `Additional requirements: ${customPrompt}. `;
     }
+    
+    if (mode === 'free') {
+      prompt += "This is a free-form logo creation. ";
+    }
+    
     prompt += "The logo should be clean, scalable, memorable, and work well in both large and small sizes. Create a high-quality, professional logo suitable for business use.";
     console.log(`Generating logo for idea: ${idea.title}`);
     console.log(`Prompt: ${prompt}`);
@@ -120,12 +132,15 @@ serve(async (req)=>{
       quality: logoQuality,
       ideaTitle: idea.title,
       ideaDescription: idea.description,
+      audience: idea.audience,
+      industry: idea.industry,
+      mode: mode || 'idea',
       prompt,
       model: 'gpt-image-1'
     };
     const { data: savedContent, error: saveError } = await supabase.from('generated_content').insert({
       user_id: user.id,
-      idea_id: idea.id,
+      idea_id: idea.id === 'free-logo' ? null : idea.id,
       content_type: 'logo',
       title: `Logo - ${idea.title}`,
       content_data: contentData,
