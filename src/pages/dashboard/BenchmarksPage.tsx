@@ -316,12 +316,12 @@ const BenchmarksPage = () => {
                           <SelectValue placeholder="Selecione o setor" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="saas">SaaS</SelectItem>
+                          <SelectItem value="ecommerce">E-commerce</SelectItem>
+                          <SelectItem value="marketplace">Marketplace</SelectItem>
                           <SelectItem value="fintech">FinTech</SelectItem>
                           <SelectItem value="healthtech">HealthTech</SelectItem>
                           <SelectItem value="edtech">EdTech</SelectItem>
-                          <SelectItem value="ecommerce">E-commerce</SelectItem>
-                          <SelectItem value="saas">SaaS</SelectItem>
-                          <SelectItem value="marketplace">Marketplace</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
