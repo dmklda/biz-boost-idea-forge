@@ -99,20 +99,20 @@ export const TrendAnalysisModal = ({ open, onOpenChange }: TrendAnalysisModalPro
   if (generatedAnalysis) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-green-500" />
+              <TrendingUp className="h-5 w-5 text-primary" />
               Análise de Tendências
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="flex gap-2">
-              <Button onClick={copyToClipboard} variant="outline" size="sm">
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={copyToClipboard} variant="outline" size="sm" className="flex-1 sm:flex-none">
                 <Copy className="h-4 w-4 mr-2" />
                 Copiar
               </Button>
-              <Button onClick={downloadAnalysis} variant="outline" size="sm">
+              <Button onClick={downloadAnalysis} variant="outline" size="sm" className="flex-1 sm:flex-none">
                 <Download className="h-4 w-4 mr-2" />
                 Download JSON
               </Button>
@@ -120,6 +120,7 @@ export const TrendAnalysisModal = ({ open, onOpenChange }: TrendAnalysisModalPro
                 onClick={() => setGeneratedAnalysis(null)} 
                 variant="outline" 
                 size="sm"
+                className="flex-1 sm:flex-none"
               >
                 Nova Análise
               </Button>
@@ -188,10 +189,10 @@ export const TrendAnalysisModal = ({ open, onOpenChange }: TrendAnalysisModalPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-green-500" />
+            <TrendingUp className="h-5 w-5 text-primary" />
             Análise de Tendências
           </DialogTitle>
         </DialogHeader>
@@ -199,7 +200,7 @@ export const TrendAnalysisModal = ({ open, onOpenChange }: TrendAnalysisModalPro
         <div className="space-y-6">
           <IdeaSelector onSelect={setSelectedIdea} />
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium mb-2 block">Indústria</label>
               <Select value={industry} onValueChange={setIndustry}>
@@ -235,15 +236,15 @@ export const TrendAnalysisModal = ({ open, onOpenChange }: TrendAnalysisModalPro
             </div>
           </div>
 
-          <div className="flex justify-between items-center pt-4">
-            <div className="text-sm text-gray-600">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4">
+            <div className="text-sm text-muted-foreground">
               Custo: {getFeatureCost('trend-analysis')} créditos
             </div>
             
             <Button 
               onClick={handleGenerate}
               disabled={!selectedIdea || isGenerating || !hasCredits('trend-analysis')}
-              className="min-w-[140px]"
+              className="w-full sm:w-auto min-w-[140px]"
             >
               {isGenerating ? (
                 <>

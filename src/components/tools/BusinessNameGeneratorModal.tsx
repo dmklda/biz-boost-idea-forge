@@ -89,10 +89,10 @@ export const BusinessNameGeneratorModal: React.FC<BusinessNameGeneratorModalProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-yellow-500" />
+            <Sparkles className="h-5 w-5 text-primary" />
             Gerador de Nomes para Startup
           </DialogTitle>
         </DialogHeader>
@@ -100,11 +100,11 @@ export const BusinessNameGeneratorModal: React.FC<BusinessNameGeneratorModalProp
         <div className="space-y-6">
           <IdeaSelector onSelect={setSelectedIdea} />
 
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <Button 
               onClick={handleGenerate} 
               disabled={isGenerating || (!useCustom && !selectedIdea) || (useCustom && !customIdea.trim())}
-              className="flex items-center gap-2"
+              className="flex-1 sm:flex-none flex items-center gap-2"
             >
               {isGenerating ? (
                 <RefreshCw className="h-4 w-4 animate-spin" />
@@ -115,7 +115,7 @@ export const BusinessNameGeneratorModal: React.FC<BusinessNameGeneratorModalProp
             </Button>
             
             {generatedNames.length > 0 && (
-              <Button variant="outline" onClick={handleReset}>
+              <Button variant="outline" onClick={handleReset} className="flex-1 sm:flex-none">
                 Resetar
               </Button>
             )}
@@ -128,9 +128,9 @@ export const BusinessNameGeneratorModal: React.FC<BusinessNameGeneratorModalProp
                 {generatedNames.map((name, index) => (
                   <Card key={index} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-semibold text-lg">{name}</h3>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-lg break-words">{name}</h3>
                           <Badge variant="secondary" className="mt-1">
                             Sugestão {index + 1}
                           </Badge>
@@ -139,7 +139,7 @@ export const BusinessNameGeneratorModal: React.FC<BusinessNameGeneratorModalProp
                           size="sm"
                           variant="outline"
                           onClick={() => copyToClipboard(name)}
-                          className="flex items-center gap-2"
+                          className="flex items-center gap-2 w-full sm:w-auto"
                         >
                           <Copy className="h-4 w-4" />
                           Copiar

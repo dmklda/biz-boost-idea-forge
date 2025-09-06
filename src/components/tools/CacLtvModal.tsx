@@ -160,10 +160,10 @@ export const CacLtvModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Calculator className="h-5 w-5" />
+            <Calculator className="h-5 w-5 text-primary" />
             Calculadora CAC/LTV
           </DialogTitle>
           <DialogDescription>
@@ -174,8 +174,8 @@ export const CacLtvModal = ({
 
         {!results ? (
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="space-y-2 lg:col-span-2">
                 <Label htmlFor="business_idea">Ideia de Negócio *</Label>
                 <Textarea
                   id="business_idea"
@@ -308,14 +308,14 @@ export const CacLtvModal = ({
             </div>
 
             {/* Métricas Principais */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[results.cac, results.ltv, results.ltv_cac_ratio, results.payback_period].map((metric, index) => (
                 <Card key={index}>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium">{metric?.metric}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold mb-2">
+                    <div className="text-xl sm:text-2xl font-bold mb-2">
                       {metric?.value?.toFixed(metric.unit === '%' ? 1 : 0)}{metric?.unit}
                     </div>
                     <Badge className={getStatusColor(metric?.status || '')} variant="secondary">
@@ -340,7 +340,7 @@ export const CacLtvModal = ({
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                     <div>
                       <div className="font-medium">Custos de Marketing</div>
                       <div className="text-muted-foreground">R$ {results.detailed_breakdown.marketing_costs?.toFixed(0)}/mês</div>
@@ -381,7 +381,7 @@ export const CacLtvModal = ({
                   <CardTitle className="text-base">Benchmarks da Indústria</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
                       <div className="text-sm font-medium">Indústria</div>
                       <div className="text-lg font-bold">{results.industry_benchmarks.industry}</div>

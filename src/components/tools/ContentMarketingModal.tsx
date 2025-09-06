@@ -101,20 +101,20 @@ export const ContentMarketingModal = ({ open, onOpenChange }: ContentMarketingMo
   if (generatedContent) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-blue-500" />
+              <Sparkles className="h-5 w-5 text-primary" />
               Conteúdo de Marketing Gerado
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="flex gap-2">
-              <Button onClick={copyToClipboard} variant="outline" size="sm">
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={copyToClipboard} variant="outline" size="sm" className="flex-1 sm:flex-none">
                 <Copy className="h-4 w-4 mr-2" />
                 Copiar
               </Button>
-              <Button onClick={downloadContent} variant="outline" size="sm">
+              <Button onClick={downloadContent} variant="outline" size="sm" className="flex-1 sm:flex-none">
                 <Download className="h-4 w-4 mr-2" />
                 Download JSON
               </Button>
@@ -122,6 +122,7 @@ export const ContentMarketingModal = ({ open, onOpenChange }: ContentMarketingMo
                 onClick={() => setGeneratedContent(null)} 
                 variant="outline" 
                 size="sm"
+                className="flex-1 sm:flex-none"
               >
                 Gerar Novo
               </Button>
@@ -183,10 +184,10 @@ export const ContentMarketingModal = ({ open, onOpenChange }: ContentMarketingMo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-blue-500" />
+            <Sparkles className="h-5 w-5 text-primary" />
             Gerador de Conteúdo de Marketing
           </DialogTitle>
         </DialogHeader>
@@ -194,7 +195,7 @@ export const ContentMarketingModal = ({ open, onOpenChange }: ContentMarketingMo
         <div className="space-y-6">
           <IdeaSelector onSelect={setSelectedIdea} />
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className="text-sm font-medium mb-2 block">Tipo de Conteúdo</label>
               <Select value={contentType} onValueChange={setContentType}>
@@ -245,15 +246,15 @@ export const ContentMarketingModal = ({ open, onOpenChange }: ContentMarketingMo
             </div>
           </div>
 
-          <div className="flex justify-between items-center pt-4">
-            <div className="text-sm text-gray-600">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4">
+            <div className="text-sm text-muted-foreground">
               Custo: {getFeatureCost('content-marketing')} créditos
             </div>
             
             <Button 
               onClick={handleGenerate}
               disabled={!selectedIdea || !contentType || isGenerating || !hasCredits('content-marketing')}
-              className="min-w-[140px]"
+              className="w-full sm:w-auto min-w-[140px]"
             >
               {isGenerating ? (
                 <>

@@ -70,10 +70,10 @@ export const SEOAnalyzerModal = ({ open, onOpenChange }: SEOAnalyzerModalProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5" />
+            <Search className="h-5 w-5 text-primary" />
             SEO Analyzer
           </DialogTitle>
         </DialogHeader>
@@ -106,7 +106,7 @@ export const SEOAnalyzerModal = ({ open, onOpenChange }: SEOAnalyzerModalProps) 
 
           {seoAnalysis && (
             <Tabs defaultValue="keywords" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
                 <TabsTrigger value="keywords">Palavras-chave</TabsTrigger>
                 <TabsTrigger value="content">Conteúdo</TabsTrigger>
                 <TabsTrigger value="technical">Técnico</TabsTrigger>
@@ -114,7 +114,7 @@ export const SEOAnalyzerModal = ({ open, onOpenChange }: SEOAnalyzerModalProps) 
               </TabsList>
 
               <TabsContent value="keywords" className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 lg:grid-cols-2">
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
@@ -265,13 +265,13 @@ export const SEOAnalyzerModal = ({ open, onOpenChange }: SEOAnalyzerModalProps) 
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Métricas para Acompanhar</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-2 md:grid-cols-2">
-                      {seoAnalysis.metrics?.map((metric: string, index: number) => (
+                   <Card>
+                     <CardHeader>
+                       <CardTitle>Métricas para Acompanhar</CardTitle>
+                     </CardHeader>
+                     <CardContent>
+                       <div className="grid gap-2 sm:grid-cols-2">
+                         {seoAnalysis.metrics?.map((metric: string, index: number) => (
                         <div key={index} className="flex items-center gap-2">
                           <TrendingUp className="h-4 w-4 text-primary" />
                           <span className="text-sm">{metric}</span>

@@ -70,10 +70,10 @@ export const UserResearchModal = ({ open, onOpenChange }: UserResearchModalProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
+            <Users className="h-5 w-5 text-primary" />
             Pesquisa de Usuários
           </DialogTitle>
         </DialogHeader>
@@ -106,7 +106,7 @@ export const UserResearchModal = ({ open, onOpenChange }: UserResearchModalProps
 
           {research && (
             <Tabs defaultValue="personas" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
                 <TabsTrigger value="personas">Personas</TabsTrigger>
                 <TabsTrigger value="journey">Jornada</TabsTrigger>
                 <TabsTrigger value="research">Pesquisa</TabsTrigger>
@@ -114,7 +114,7 @@ export const UserResearchModal = ({ open, onOpenChange }: UserResearchModalProps
               </TabsList>
 
               <TabsContent value="personas" className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 lg:grid-cols-2">
                   {research.personas?.map((persona: any, index: number) => (
                     <Card key={index}>
                       <CardHeader>
@@ -177,7 +177,7 @@ export const UserResearchModal = ({ open, onOpenChange }: UserResearchModalProps
               </TabsContent>
 
               <TabsContent value="research" className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 lg:grid-cols-2">
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
