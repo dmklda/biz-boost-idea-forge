@@ -15,6 +15,7 @@ export { PRDMVPGeneratorModalEnhanced } from './PRDMVPGeneratorModalEnhanced';
 export { InvestmentSimulatorModalEnhanced } from './InvestmentSimulatorModalEnhanced';
 export { StartupKitModalEnhanced } from './StartupKitModalEnhanced';
 export { RevenueForecastModalEnhanced } from './RevenueForecastModalEnhanced';
+export { ColorPaletteModalEnhanced } from './ColorPaletteModalEnhanced';
 
 // Exemplo de como substituir as importações nas páginas:
 // 

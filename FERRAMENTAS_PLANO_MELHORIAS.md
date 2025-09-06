@@ -40,20 +40,27 @@ Este documento descreve o plano de melhorias para todas as ferramentas da plataf
   - Feedback visual de seleção
   - Layout responsivo
 
-### 2. Melhorias Específicas Implementadas
+### Ferramentas Melhoradas
 
-- **LogoGeneratorModal**:
+### 1. LogoGeneratorModal
   - Redesenhado com layout responsivo
   - Adicionado suporte para ideias personalizadas
   - Melhorado feedback visual durante geração
   - Adicionadas opções avançadas para GPT-Image-1
   - Melhorada a visualização do logo gerado
 
-- **BusinessNameGeneratorModal**:
+### 2. BusinessNameGeneratorModal
   - Redesenhado com layout responsivo
   - Adicionado suporte para ideias personalizadas
   - Melhorado feedback visual durante geração
   - Melhorada a visualização dos nomes gerados
+  
+### 3. ColorPaletteModal
+  - Redesenhado com layout totalmente responsivo
+  - Adicionado suporte para ideias personalizadas
+  - Melhorado feedback visual durante geração
+  - Adicionada área de rolagem para conteúdo extenso
+  - Melhorada a visualização das cores e informações
 
 ## Plano de Implementação para Demais Ferramentas
 

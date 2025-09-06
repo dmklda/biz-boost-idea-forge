@@ -19,7 +19,7 @@ import { BusinessModelCanvasModal } from "@/components/tools/BusinessModelCanvas
 import { FinancialAnalysisModal } from "@/components/tools/FinancialAnalysisModal";
 import { PitchDeckModal } from "@/components/tools/PitchDeckModal";
 import { CompetitorAnalysisModal } from "@/components/tools/CompetitorAnalysisModal";
-import { ColorPaletteModal } from "@/components/tools/ColorPaletteModal";
+import { ColorPaletteModalEnhanced as ColorPaletteModal } from "@/components/tools/enhanced";
 import { UserResearchModal } from "@/components/tools/UserResearchModal";
 import { ValuationCalculatorModal } from "@/components/tools/ValuationCalculatorModal";
 import { MarketingStrategyModal } from "@/components/tools/MarketingStrategyModal";
