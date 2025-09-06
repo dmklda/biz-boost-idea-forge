@@ -16,9 +16,9 @@ const FEATURE_PLAN_REQUIREMENTS: Record<FeatureType, PlanType[]> = {
   'simulator': ['entrepreneur', 'business'],
   'regulatory-analysis': ['entrepreneur', 'business'],
   'benchmarks': ['business'],
-  'advanced-analysis': ['business'],
-  'logo-generator': ['free', 'entrepreneur', 'business'], // Now available to all plans
-  'prd-mvp': ['free', 'entrepreneur', 'business'], // Now available to all plans
+  'advanced-analysis': ['free', 'entrepreneur', 'business'], // Now available to all plans
+  'logo-generator': ['free', 'entrepreneur', 'business'],
+  'prd-mvp': ['free', 'entrepreneur', 'business'],
   'pdf-export': ['entrepreneur', 'business']
 };
 
@@ -31,7 +31,7 @@ const PLAN_CREDITS: Record<PlanType, { initial: number; monthly: number }> = {
 const FEATURE_COSTS: Record<FeatureType | 'basic-analysis' | 'reanalysis' | 'comparison', number> = {
   'basic-analysis': 1,
   'reanalysis': 1,
-  'advanced-analysis': 3,
+  'advanced-analysis': 10,
   'regulatory-analysis': 2,
   'simulator': 2,
   'comparison': 1,

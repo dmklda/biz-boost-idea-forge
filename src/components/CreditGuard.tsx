@@ -182,34 +182,76 @@ export const CreditGuard: React.FC<CreditGuardProps> = ({
                 <div className="text-center">
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-brand-blue/10 to-brand-purple/10 border border-brand-blue/20 mb-4">
                     <CreditCard className="h-4 w-4 text-brand-blue" />
-                    <span className="text-sm font-medium text-brand-blue">Compra Rápida</span>
+                    <span className="text-sm font-medium text-brand-blue">Opções de Crédito</span>
                   </div>
-                  <h3 className="text-lg sm:text-xl font-bold mb-2">Comprar Créditos Adicionais</h3>
+                  <h3 className="text-lg sm:text-xl font-bold mb-2">Como deseja obter mais créditos?</h3>
                   <p className="text-muted-foreground text-sm sm:text-base">
-                    Compre créditos extras para continuar usando todas as funcionalidades
+                    Escolha entre comprar créditos avulsos ou fazer upgrade do seu plano
                   </p>
                 </div>
                 
-                <Card className="cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:border-brand-blue/30 group" onClick={handleBuyCredits}>
-                  <CardHeader className="text-center">
-                    <div className="mx-auto w-12 h-12 rounded-full bg-gradient-to-br from-brand-blue to-brand-purple flex items-center justify-center mb-3">
-                      <CreditCard className="h-6 w-6 text-white" />
+                <div className="grid gap-6 md:grid-cols-2">
+                  {/* Credit Purchase Option */}
+                  <Card className="cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:border-brand-blue/30 group" onClick={handleBuyCredits}>
+                    <CardHeader className="text-center">
+                      <div className="mx-auto w-12 h-12 rounded-full bg-gradient-to-br from-brand-blue to-brand-purple flex items-center justify-center mb-3">
+                        <CreditCard className="h-6 w-6 text-white" />
+                      </div>
+                      <CardTitle className="text-lg">💳 Comprar Créditos</CardTitle>
+                      <CardDescription className="text-sm">
+                        Compre apenas os créditos que precisa agora
+                      </CardDescription>
+                    </CardHeader>
+                    
+                    <CardContent className="text-center">
+                      <div className="space-y-2 mb-4">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-blue/10 border border-brand-blue/20">
+                          <span className="text-xs font-medium text-brand-blue">A partir de R$ 2,99</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Pagamento único • Sem compromisso mensal
+                        </p>
+                      </div>
+                      <Button className="w-full h-10 bg-gradient-to-r from-brand-blue to-brand-purple hover:from-brand-blue/90 hover:to-brand-purple/90 font-semibold">
+                        Ver Pacotes
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Upgrade Option */}
+                  <Card className="cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:border-brand-purple/30 group relative" onClick={() => handleUpgrade('entrepreneur')}>
+                    <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
+                      <Badge className="bg-gradient-to-r from-brand-purple to-brand-blue text-white shadow-lg px-2 py-1 text-xs">
+                        Melhor Valor
+                      </Badge>
                     </div>
-                    <CardTitle className="text-xl">Pacotes de Créditos</CardTitle>
-                    <CardDescription className="text-sm">
-                      Diversos pacotes disponíveis com diferentes quantidades de créditos
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent className="text-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-blue/10 border border-brand-blue/20 mb-4">
-                      <span className="text-xs font-medium text-brand-blue">A partir de R$ 2,99</span>
-                    </div>
-                    <Button className="w-full h-11 bg-gradient-to-r from-brand-blue to-brand-purple hover:from-brand-blue/90 hover:to-brand-purple/90 font-semibold">
-                      Ver Pacotes de Créditos
-                    </Button>
-                  </CardContent>
-                </Card>
+                    
+                    <CardHeader className="text-center pt-6">
+                      <div className="mx-auto w-12 h-12 rounded-full bg-gradient-to-br from-brand-purple to-brand-blue flex items-center justify-center mb-3">
+                        <Zap className="h-6 w-6 text-white" />
+                      </div>
+                      <CardTitle className="text-lg">🚀 Fazer Upgrade</CardTitle>
+                      <CardDescription className="text-sm">
+                        Tenha créditos mensais inclusos
+                      </CardDescription>
+                    </CardHeader>
+                    
+                    <CardContent className="text-center">
+                      <div className="space-y-2 mb-4">
+                        <div className="text-lg font-bold text-brand-purple">R$ 47/mês</div>
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-purple/10 border border-brand-purple/20">
+                          <span className="text-xs font-medium text-brand-purple">100 créditos mensais</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Renovação automática • Cancele quando quiser
+                        </p>
+                      </div>
+                      <Button className="w-full h-10 bg-gradient-to-r from-brand-purple to-brand-blue hover:from-brand-purple/90 hover:to-brand-blue/90 font-semibold">
+                        Fazer Upgrade
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
               </>
             )}
             
