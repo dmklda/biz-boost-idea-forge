@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -50,10 +50,10 @@ interface AutomationResults {
   }>;
 }
 
-export const ProcessAutomationModal: React.FC<ProcessAutomationModalProps> = ({
+export const ProcessAutomationModal = ({
   open,
   onOpenChange,
-}) => {
+}: ProcessAutomationModalProps) => {
   const { authState } = useAuth();
   const { getFeatureCost } = usePlanAccess();
   const [isLoading, setIsLoading] = useState(false);

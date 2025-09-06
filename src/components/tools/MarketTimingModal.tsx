@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -54,10 +54,10 @@ interface TimingResults {
   risk_mitigation: string[];
 }
 
-export const MarketTimingModal: React.FC<MarketTimingModalProps> = ({
+export const MarketTimingModal = ({
   open,
   onOpenChange,
-}) => {
+}: MarketTimingModalProps) => {
   const { authState } = useAuth();
   const { getFeatureCost } = usePlanAccess();
   const [isLoading, setIsLoading] = useState(false);

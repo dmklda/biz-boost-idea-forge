@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -45,10 +45,10 @@ interface ReportResults {
   };
 }
 
-export const ReportCreatorModal: React.FC<ReportCreatorModalProps> = ({
+export const ReportCreatorModal = ({
   open,
   onOpenChange,
-}) => {
+}: ReportCreatorModalProps) => {
   const { authState } = useAuth();
   const { getFeatureCost } = usePlanAccess();
   const [isLoading, setIsLoading] = useState(false);

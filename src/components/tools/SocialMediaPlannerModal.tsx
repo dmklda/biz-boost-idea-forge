@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -51,10 +51,10 @@ interface PlannerResults {
   };
 }
 
-export const SocialMediaPlannerModal: React.FC<SocialMediaPlannerModalProps> = ({
+export const SocialMediaPlannerModal = ({
   open,
   onOpenChange,
-}) => {
+}: SocialMediaPlannerModalProps) => {
   const { authState } = useAuth();
   const { getFeatureCost } = usePlanAccess();
   const [isLoading, setIsLoading] = useState(false);

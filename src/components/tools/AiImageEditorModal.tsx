@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -36,10 +36,10 @@ interface EditResults {
   };
 }
 
-export const AiImageEditorModal: React.FC<AiImageEditorModalProps> = ({
+export const AiImageEditorModal = ({
   open,
   onOpenChange,
-}) => {
+}: AiImageEditorModalProps) => {
   const { authState } = useAuth();
   const { getFeatureCost } = usePlanAccess();
   const [isLoading, setIsLoading] = useState(false);

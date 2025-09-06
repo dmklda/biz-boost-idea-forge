@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -41,10 +41,10 @@ interface PostResults {
   }>;
 }
 
-export const PostGeneratorModal: React.FC<PostGeneratorModalProps> = ({
+export const PostGeneratorModal = ({
   open,
   onOpenChange,
-}) => {
+}: PostGeneratorModalProps) => {
   const { authState } = useAuth();
   const { getFeatureCost } = usePlanAccess();
   const [isLoading, setIsLoading] = useState(false);

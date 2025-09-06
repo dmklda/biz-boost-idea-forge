@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -60,10 +60,10 @@ interface PricingResults {
   };
 }
 
-export const PricingModelModal: React.FC<PricingModelModalProps> = ({
+export const PricingModelModal = ({
   open,
   onOpenChange,
-}) => {
+}: PricingModelModalProps) => {
   const { authState } = useAuth();
   const { getFeatureCost } = usePlanAccess();
   const [isLoading, setIsLoading] = useState(false);

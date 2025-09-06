@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -56,10 +56,10 @@ interface InvoiceData {
   html_template: string;
 }
 
-export const InvoiceGeneratorModal: React.FC<InvoiceGeneratorModalProps> = ({
+export const InvoiceGeneratorModal = ({
   open,
   onOpenChange,
-}) => {
+}: InvoiceGeneratorModalProps) => {
   const { authState } = useAuth();
   const { getFeatureCost } = usePlanAccess();
   const [isLoading, setIsLoading] = useState(false);
