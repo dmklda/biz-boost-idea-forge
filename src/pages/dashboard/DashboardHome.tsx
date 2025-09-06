@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { 
   BarChart as BarChartIcon, 
   LineChart as LineChartIcon, 
@@ -42,6 +42,7 @@ const DashboardHome = () => {
   const { t } = useTranslation();
   const { authState, updateUserCredits } = useAuth();
   const { user } = authState;
+  const [searchParams, setSearchParams] = useSearchParams();
   const [recentIdeas, setRecentIdeas] = useState<any[]>([]);
   const [ideaCount, setIdeaCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -66,6 +67,31 @@ const DashboardHome = () => {
     if (isAnalyzing && !open) return;
     setIsAnalysisDialogOpen(open);
   }, [isAnalyzing]);
+
+  // Process payment success URLs
+  useEffect(() => {
+    const payment = searchParams.get('payment');
+    const type = searchParams.get('type');
+    
+    if (payment === 'success') {
+      if (type === 'credits') {
+        toast.success('Créditos adquiridos com sucesso! 🎉');
+      } else {
+        toast.success('Plano atualizado com sucesso! 🎉');
+      }
+      
+      // Clean up URL parameters
+      setSearchParams(new URLSearchParams());
+      
+      // Refresh user data to show updated credits/plan
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } else if (payment === 'cancelled') {
+      toast.info('Pagamento cancelado.');
+      setSearchParams(new URLSearchParams());
+    }
+  }, [searchParams, setSearchParams]);
 
   // Refactor fetchUserData into a function that can be called multiple times
   const fetchUserData = useCallback(async () => {

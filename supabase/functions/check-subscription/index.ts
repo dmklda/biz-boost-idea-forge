@@ -121,12 +121,54 @@ serve(async (req) => {
       updated_at: new Date().toISOString(),
     }, { onConflict: 'email' });
 
-    // Update user's plan in profiles table
+    // Update user's plan in profiles table and add monthly credits if needed
     if (hasActiveSub && subscriptionTier) {
+      // Get current user profile
+      const { data: currentProfile } = await supabaseClient
+        .from("profiles")
+        .select("plan, credits")
+        .eq("id", user.id)
+        .single();
+
+      // Update plan
       await supabaseClient.from("profiles").update({
         plan: subscriptionTier
       }).eq('id', user.id);
+
+      // Add monthly credits if this is a new subscription or plan upgrade
+      if (!currentProfile || currentProfile.plan !== subscriptionTier) {
+        let monthlyCredits = 0;
+        if (subscriptionTier === "entrepreneur") {
+          monthlyCredits = 50;
+        } else if (subscriptionTier === "business") {
+          monthlyCredits = 200;
+        }
+
+        if (monthlyCredits > 0) {
+          await supabaseClient
+            .from("profiles")
+            .update({ credits: (currentProfile?.credits || 0) + monthlyCredits })
+            .eq("id", user.id);
+
+          // Log the credit addition
+          await supabaseClient.from("credit_transactions").insert({
+            user_id: user.id,
+            amount: monthlyCredits,
+            description: `Monthly credits for ${subscriptionTier} plan`,
+            feature: "monthly_credits"
+          });
+
+          logStep("Added monthly credits", { userId: user.id, credits: monthlyCredits });
+        }
+      }
+
       logStep("Updated user plan in profiles", { userId: user.id, plan: subscriptionTier });
+    } else if (!hasActiveSub) {
+      // No active subscription, revert to free plan
+      await supabaseClient.from("profiles").update({
+        plan: "free"
+      }).eq('id', user.id);
+      logStep("Reverted user to free plan", { userId: user.id });
     }
 
     logStep("Updated database with subscription info", { subscribed: hasActiveSub, subscriptionTier });

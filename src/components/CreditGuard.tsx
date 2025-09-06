@@ -20,7 +20,7 @@ export const CreditGuard: React.FC<CreditGuardProps> = ({
   children 
 }) => {
   const { authState } = useAuth();
-  const { hasCredits, getFeatureCost, userCredits, userPlan } = usePlanAccess();
+  const { hasCredits, getFeatureCost, canAccessFeature, hasFeatureAccess, userCredits, userPlan } = usePlanAccess();
   const navigate = useNavigate();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
@@ -31,13 +31,21 @@ export const CreditGuard: React.FC<CreditGuardProps> = ({
       return;
     }
 
-    // Check if user has credits for this feature
+    // For features that require specific plans, check both plan access and credits
+    if (feature !== 'basic-analysis' && feature !== 'reanalysis' && feature !== 'comparison') {
+      if (!hasFeatureAccess(feature as any)) {
+        setShowUpgradeModal(true);
+        return;
+      }
+    }
+    
+    // Check if user has enough credits for this feature
     if (!hasCredits(feature)) {
       setShowUpgradeModal(true);
       return;
     }
 
-    // User has credits, proceed with the feature
+    // User has access and credits, proceed with the feature
     if (onProceed) {
       onProceed();
     }

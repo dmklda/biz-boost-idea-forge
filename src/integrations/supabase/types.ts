@@ -1465,6 +1465,16 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      handle_stripe_payment: {
+        Args: {
+          amount_total: number
+          customer_id: string
+          metadata: Json
+          payment_status: string
+          session_id: string
+        }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

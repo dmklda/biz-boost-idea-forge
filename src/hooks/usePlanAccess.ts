@@ -73,7 +73,21 @@ export const usePlanAccess = () => {
       return true;
     }
     
+    // Check if user has enough credits
     return user.credits >= cost;
+  };
+
+  const canAccessFeature = (feature: FeatureType): boolean => {
+    if (!user) return false;
+    
+    // Check plan access first
+    const requiredPlans = FEATURE_PLAN_REQUIREMENTS[feature];
+    const hasPlanAccess = requiredPlans.includes(user.plan);
+    
+    // Then check credits if needed
+    const hasEnoughCredits = hasCredits(feature);
+    
+    return hasPlanAccess && hasEnoughCredits;
   };
 
   const getFeatureCost = (feature: FeatureType | 'basic-analysis' | 'reanalysis' | 'comparison'): number => {
@@ -104,6 +118,7 @@ export const usePlanAccess = () => {
     getFeatureCost,
     getPlanCredits,
     getCurrentPlanCredits,
+    canAccessFeature,
     userPlan: user?.plan || 'free',
     userCredits: user?.credits || 0
   };

@@ -4,33 +4,76 @@ project_id = "aebuzslludwlpcbdpljx"
 [api]
 enabled = true
 port = 54321
-schemas = []
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[auth]
+enabled = true
+port = 9999
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://loving-production.up.railway.app"]
+jwt_expiry = 3600
+refresh_token_rotation_enabled = true
+anonymous_users_enabled = false
+enable_signup = true
+email_double_confirm_changes_enabled = true
 
 [db]
 port = 54322
 
-[studio]
-port = 54323
-
-[inbucket]
-port = 54324
-
-[auth]
-enabled = true
-site_url = "http://localhost:3000"
-
 [storage]
 enabled = true
+port = 54323
 
-[realtime]
-enabled = true
+[functions.advanced-analysis]
+verify_jwt = true
 
-[analytics]
-enabled = true
+[functions.analyze-idea]
+verify_jwt = true
+
+[functions.compare-ideas]
+verify_jwt = true
+
+[functions.customer-portal]
+verify_jwt = true
+
+[functions.generate-business-name]
+verify_jwt = true
+
+[functions.generate-daily-insights]
+verify_jwt = true
+
+[functions.generate-logo]
+verify_jwt = true
+
+[functions.generate-prd-mvp]
+verify_jwt = true
 
 [functions.gpt-chat]
 verify_jwt = true
 
-[functions.advanced-analysis]
+[functions.industry-benchmarks]
 verify_jwt = true
+
+[functions.match-adopters]
+verify_jwt = true
+
+[functions.regulatory-analysis]
+verify_jwt = true
+
+[functions.scenario-simulator]
+verify_jwt = true
+
+[functions.sector-analysis]
+verify_jwt = true
+
+[functions.check-subscription]
+verify_jwt = true
+
+[functions.create-checkout]
+verify_jwt = true
+
+[functions.stripe-webhook]
+verify_jwt = false
 
