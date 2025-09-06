@@ -41,19 +41,61 @@ verify_jwt = true
 [functions.generate-business-name]
 verify_jwt = true
 
+[functions.generate-business-model-canvas]
+verify_jwt = true
+
+[functions.generate-business-plan]
+verify_jwt = true
+
+[functions.generate-cac-ltv]
+verify_jwt = true
+
+[functions.generate-color-palette]
+verify_jwt = true
+
+[functions.generate-competitor-analysis]
+verify_jwt = true
+
+[functions.generate-content-marketing]
+verify_jwt = true
+
 [functions.generate-daily-insights]
+verify_jwt = true
+
+[functions.generate-financial-analysis]
+verify_jwt = true
+
+[functions.generate-investment-simulator]
+verify_jwt = true
+
+[functions.generate-landing-page]
 verify_jwt = true
 
 [functions.generate-logo]
 verify_jwt = true
 
-[functions.generate-prd-mvp]
+[functions.generate-market-analysis]
+verify_jwt = true
+
+[functions.generate-market-timing]
+verify_jwt = true
+
+[functions.generate-marketing-strategy]
+verify_jwt = true
+
+[functions.generate-pitch-deck]
 verify_jwt = true
 
 [functions.generate-post-generator]
 verify_jwt = true
 
-[functions.generate-social-media-planner]
+[functions.generate-prd-mvp]
+verify_jwt = true
+
+[functions.generate-pricing-model]
+verify_jwt = true
+
+[functions.generate-process-automation]
 verify_jwt = true
 
 [functions.generate-ai-image-editor]
@@ -62,19 +104,31 @@ verify_jwt = true
 [functions.generate-report-creator]
 verify_jwt = true
 
-[functions.generate-process-automation]
-verify_jwt = true
-
 [functions.generate-invoice-generator]
 verify_jwt = true
 
-[functions.generate-pricing-model]
+[functions.generate-revenue-forecast]
 verify_jwt = true
 
-[functions.generate-market-timing]
+[functions.generate-roadmap]
 verify_jwt = true
 
-[functions.generate-cac-ltv]
+[functions.generate-seo-analysis]
+verify_jwt = true
+
+[functions.generate-social-media-planner]
+verify_jwt = true
+
+[functions.generate-startup-kit]
+verify_jwt = true
+
+[functions.generate-trend-analysis]
+verify_jwt = true
+
+[functions.generate-user-research]
+verify_jwt = true
+
+[functions.generate-valuation-calculator]
 verify_jwt = true
 
 [functions.gpt-chat]

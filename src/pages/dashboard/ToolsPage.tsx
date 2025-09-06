@@ -128,16 +128,6 @@ const ToolsPage = () => {
       credits: 2,
       status: "available"
     },
-    {
-      title: "Editor de Imagens com IA",
-      description: "Edite e aprimore imagens usando inteligência artificial",
-      icon: ImageIcon,
-      action: () => console.log("AI Image Editor - Coming soon"),
-      color: "from-violet-500 to-purple-500",
-      category: "design",
-      credits: 4,
-      status: "coming-soon"
-    },
 
     // Documentação
     {
@@ -180,16 +170,6 @@ const ToolsPage = () => {
       category: "documentation",
       credits: 12,
       status: "available"
-    },
-    {
-      title: "Criador de Relatórios",
-      description: "Gere relatórios executivos e analíticos profissionais",
-      icon: BarChart3,
-      action: () => console.log("Report Creator - Coming soon"),
-      color: "from-emerald-500 to-green-500",
-      category: "documentation",
-      credits: 7,
-      status: "coming-soon"
     },
 
     // Análise e Pesquisa
@@ -420,27 +400,6 @@ const ToolsPage = () => {
       status: "available"
     },
 
-    // Additional New Tools
-    {
-      title: "Criador de Relatórios",
-      description: "Gere relatórios executivos e analíticos profissionais",
-      icon: BarChart3,
-      action: () => setIsReportCreatorModalOpen(true),
-      color: "from-emerald-500 to-green-500",
-      category: "documentation",
-      credits: 7,
-      status: "available"
-    },
-    {
-      title: "Editor de Imagens com IA",
-      description: "Edite e aprimore imagens usando inteligência artificial",
-      icon: ImageIcon,
-      action: () => setIsAiImageEditorModalOpen(true),
-      color: "from-violet-500 to-purple-500",
-      category: "design",
-      credits: 4,
-      status: "available"
-    }
   ];
 
   const categories = [
