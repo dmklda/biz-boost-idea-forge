@@ -794,7 +794,7 @@ const UserSettingsPage = () => {
                   
                   <div className="pt-2">
                     {profile.plan === "free" ? (
-                      <Button className="bg-brand-purple hover:bg-brand-purple/90" onClick={() => toast.info("Faça upgrade para o plano premium e desbloqueie todos os recursos!")}>
+                      <Button className="bg-brand-purple hover:bg-brand-purple/90" onClick={() => toast.info("Faça upgrade para um plano pago e desbloqueie todos os recursos!")}>
                         <Link to="/planos">{t('settings.upgradePlan')}</Link>
                       </Button>
                     ) : (

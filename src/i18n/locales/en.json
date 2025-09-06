@@ -60,6 +60,11 @@
       "cta": "Hire Now"
     }
   },
+  "credits": {
+    "businessPlan": "Business Plan",
+    "entrepreneurPlan": "Entrepreneur Plan",
+    "freePlan": "Free Plan"
+  },
   "header": {
     "howItWorks": "How It Works",
     "benefits": "Benefits",

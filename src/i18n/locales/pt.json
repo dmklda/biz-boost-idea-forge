@@ -604,7 +604,9 @@
     "availableCredits": {
     "title": "Créditos Disponíveis",
     "description": "Você pode usar créditos para gerar ideias, análises e mais recursos dentro da plataforma.",
-    "proPlan": "O plano Pro oferece mais créditos e funcionalidades ilimitadas."
+    "businessPlan": "O plano Business oferece mais créditos e funcionalidades ilimitadas.",
+    "entrepreneurPlan": "O plano Entrepreneur oferece créditos mensais e funcionalidades avançadas.",
+    "freePlan": "O plano gratuito oferece créditos limitados."
   },
     "confirmTitle": "Confirme o uso de créditos",
     "confirmReanalyze": "Esta ação irá deduzir 1 crédito da sua conta. Deseja continuar?",
@@ -986,7 +988,7 @@
       "cta": "Começar Grátis"
     },
     "entrepreneur": {
-      "name": "Empreendedor",
+      "name": "Entrepreneur",
       "description": "Para empreendedores sérios que querem análises detalhadas.",
       "features": [
         "50 créditos mensais",
@@ -999,7 +1001,7 @@
       "cta": "Assinar Agora"
     },
     "business": {
-      "name": "Empresarial",
+      "name": "Business",
       "description": "Para empresas que precisam de análises avançadas e suporte prioritário.",
       "features": [
         "200 créditos mensais",
@@ -1095,7 +1097,8 @@
       "addCredits": "Adicionar créditos",
       "yourPlan": "Seu Plano",
       "free": "Gratuito",
-      "premium": "Premium",
+      "entrepreneur": "Entrepreneur", 
+      "business": "Business",
       "upgrade": "Fazer upgrade"
     },
     "tabs": {

@@ -255,7 +255,8 @@ const DashboardLayout = () => {
                       {isEarlyAdopter && <Badge variant="secondary" className="text-xs">Early Adopter</Badge>}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {authState.user?.plan === "free" ? "Plano Free" : "Plano Premium"} • Nível {userLevel?.current_level || 1}
+                      {authState.user?.plan === "free" ? "Plano Free" : 
+                       authState.user?.plan === "entrepreneur" ? "Plano Entrepreneur" : "Plano Business"} • Nível {userLevel?.current_level || 1}
                     </div>
                   </div>}
                 {/* Avatar consistente com landing */}
@@ -280,7 +281,8 @@ const DashboardLayout = () => {
                           {isEarlyAdopter && <Badge variant="secondary" className="text-xs">Early Adopter</Badge>}
                         </div>
                         <span className="text-xs text-muted-foreground font-normal">
-                          {authState.user?.plan === "free" ? "Plano Free" : "Plano Premium"} • Nível {userLevel?.current_level || 1}
+                          {authState.user?.plan === "free" ? "Plano Free" : 
+                           authState.user?.plan === "entrepreneur" ? "Plano Entrepreneur" : "Plano Business"} • Nível {userLevel?.current_level || 1}
                         </span>
                       </div>
                     </DropdownMenuLabel>

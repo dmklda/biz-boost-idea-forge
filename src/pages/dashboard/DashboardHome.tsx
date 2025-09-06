@@ -304,7 +304,7 @@ const DashboardHome = () => {
               {user?.plan === "free" ? t('dashboard.statistics.free') : t('dashboard.statistics.premium')}
             </div>
             {user?.plan === "free" && (
-              <Link to="/planos" onClick={() => toast.info("Faça upgrade para o plano premium e desbloqueie todos os recursos!")}> 
+              <Link to="/planos" onClick={() => toast.info("Faça upgrade para um plano pago e desbloqueie todos os recursos!")}> 
                 <Button variant="link" size="sm" className="p-0 h-auto text-xs text-brand-purple">
                   {t('dashboard.statistics.upgrade')}
                 </Button>
