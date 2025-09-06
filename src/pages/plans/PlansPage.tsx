@@ -44,6 +44,7 @@ const PlansPage = () => {
   // Get current user plan
   const getCurrentUserPlan = (): 'free' | 'entrepreneur' | 'business' | null => {
     if (!authState.user) return null;
+    console.log("Getting current user plan:", authState.user.plan);
     return authState.user.plan; // Return the exact plan from user data
   };
 
@@ -90,6 +91,10 @@ const PlansPage = () => {
   ];
   
   const handleSelectPlan = async (planId: 'free' | 'entrepreneur' | 'business') => {
+    console.log("handleSelectPlan called with planId:", planId);
+    console.log("authState:", authState);
+    console.log("isCreatingCheckout:", isCreatingCheckout);
+    
     if (!authState.isAuthenticated) {
       toast.error("Você precisa estar logado para selecionar um plano");
       navigate("/login");
@@ -98,6 +103,7 @@ const PlansPage = () => {
 
     // Check if user is already on this plan
     const currentPlan = authState.user?.plan || "free";
+    console.log("Current plan:", currentPlan, "Selected plan:", planId);
     
     if (planId === currentPlan) {
       toast.info(`Você já está no plano ${plans.find(p => p.id === planId)?.name}!`);
@@ -115,10 +121,12 @@ const PlansPage = () => {
       setIsAnalyzing(true);
       const planType = planId === "entrepreneur" ? "entrepreneur" : "business";
       
+      console.log("Creating checkout session for plan:", planType);
       toast.info("Redirecionando para o checkout...");
       
       // Create Stripe checkout session
-      await createCheckoutSession(planType, "subscription");
+      const result = await createCheckoutSession(planType, "subscription");
+      console.log("Checkout session result:", result);
       
       // The createCheckoutSession will handle the redirection
       // After successful payment, user will be redirected back

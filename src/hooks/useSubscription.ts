@@ -46,6 +46,9 @@ export const useSubscription = () => {
   };
 
   const createCheckoutSession = async (planType: string, paymentType: 'subscription' | 'credits') => {
+    console.log('createCheckoutSession called with:', { planType, paymentType });
+    console.log('authState.isAuthenticated:', authState.isAuthenticated);
+    
     if (!authState.isAuthenticated) {
       toast({
         title: "Login necessário",
@@ -57,9 +60,12 @@ export const useSubscription = () => {
 
     setIsCreatingCheckout(true);
     try {
+      console.log('Invoking create-checkout function...');
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { planType, paymentType }
       });
+
+      console.log('Supabase function response:', { data, error });
 
       if (error) {
         console.error('Error creating checkout:', error);
@@ -72,12 +78,20 @@ export const useSubscription = () => {
       }
 
       if (data?.url) {
+        console.log('Opening checkout URL:', data.url);
         // Open Stripe checkout in a new tab
         window.open(data.url, '_blank');
         
         toast({
           title: "Redirecionando...",
           description: "Você será redirecionado para o checkout",
+        });
+      } else {
+        console.error('No URL returned from checkout session');
+        toast({
+          title: "Erro",
+          description: "Nenhuma URL de checkout retornada",
+          variant: "destructive"
         });
       }
     } catch (error) {
