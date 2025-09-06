@@ -1499,6 +1499,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      set_initial_plan_credits: {
+        Args: { new_plan: string; user_id_param: string }
+        Returns: undefined
+      }
       update_user_credits: {
         Args: { amount: number; user_id: string }
         Returns: undefined
