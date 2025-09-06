@@ -112,9 +112,25 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
   const handleGenerate = async () => {
     if (!authState.user) return;
     
-    if (mode === "idea" && !selectedIdea) return;
+    
+    // Enhanced validation with better error messages
+    if (mode === "idea" && !selectedIdea) {
+      toast.error('Selecione uma ideia para gerar o logo');
+      return;
+    }
+    
+    if (mode === "idea" && nameSource === "custom" && !customName.trim()) {
+      toast.error('Digite um nome personalizado para o logo');
+      return;
+    }
+    
+    if (mode === "idea" && nameSource === "generated" && !selectedIdea?.generated_name) {
+      toast.error('Esta ideia não possui um nome gerado. Use outro tipo de nome ou gere um novo.');
+      return;
+    }
+    
     if (mode === "free" && (!freeName || !freeDescription)) {
-      toast.error('Nome e descrição são obrigatórios');
+      toast.error('Nome e descrição são obrigatórios para o modo livre');
       return;
     }
 
@@ -247,7 +263,29 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
   ];
 
   const logoIcon = <Palette className="h-5 w-5" />;
-  const isFormValid = mode === "idea" ? !!selectedIdea : !!(freeName && freeDescription);
+  
+  // Improved form validation logic
+  const isFormValid = (() => {
+    if (mode === "idea") {
+      if (!selectedIdea) return false;
+      
+      // If using custom name, ensure it's not empty
+      if (nameSource === "custom") {
+        return customName.trim().length > 0;
+      }
+      
+      // For other name sources, check if they have valid names
+      if (nameSource === "generated") {
+        return !!selectedIdea.generated_name;
+      }
+      
+      // For original name source, always valid if idea exists
+      return true;
+    } else {
+      // Free mode validation
+      return !!(freeName && freeDescription);
+    }
+  })();
 
   return (
     <ToolModalBase
@@ -444,6 +482,11 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                           />
                           <Label htmlFor="name-custom" className="text-sm">
                             Usar nome personalizado
+                            {nameSource === "custom" && customName && (
+                              <span className="block text-xs text-green-600 mt-1">
+                                ✓ Nome definido: "{customName}"
+                              </span>
+                            )}
                           </Label>
                         </div>
 
@@ -453,10 +496,16 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                               placeholder="Digite o nome para aparecer no logo"
                               value={customName}
                               onChange={(e) => setCustomName(e.target.value)}
+                              className={customName.trim() ? "border-green-500" : ""}
                             />
-                            {customName && (
-                              <p className="text-xs text-muted-foreground">
-                                Nome que será usado: "{customName}"
+                            {!customName.trim() && (
+                              <p className="text-xs text-red-500">
+                                ⚠️ Nome é obrigatório quando usar nome personalizado
+                              </p>
+                            )}
+                            {customName.trim() && (
+                              <p className="text-xs text-green-600">
+                                ✓ Nome válido: "{customName}"
                               </p>
                             )}
                           </div>
