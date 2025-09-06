@@ -85,6 +85,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
     
     console.log('🔄 Iniciando geração de nome para:', selectedIdea.title);
     setIsGeneratingName(true);
+    
     try {
       const { data, error } = await supabase.functions.invoke('generate-business-name', {
         body: { idea: selectedIdea }
@@ -100,18 +101,20 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
       
       if (generatedName && generatedName.trim()) {
         // Automaticamente mudar para nome personalizado e preencher o campo
-        setCustomName(generatedName.trim());
+        const trimmedName = generatedName.trim();
+        setCustomName(trimmedName);
         setNameSource("custom");
-        console.log('🎯 Mudando para nome personalizado:', generatedName.trim());
+        console.log('🎯 Nome definido como personalizado:', trimmedName);
+        
         toast({
           title: "Nome gerado com sucesso!",
-          description: `"${generatedName}". Clique em "Usar nome personalizado" para editar se necessário.`,
+          description: `"${trimmedName}" foi gerado e está pronto para uso.`,
         });
       } else {
         console.error('❌ Nome gerado está vazio:', data);
         toast({
           title: "Erro",
-          description: "Nome gerado está vazio. Tente novamente.",
+          description: "Não foi possível gerar um nome. Tente novamente.",
           variant: "destructive",
         });
       }
@@ -126,21 +129,6 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
       setIsGeneratingName(false);
     }
   };
-
-  // Use effect to auto-focus the custom name field after generation
-  useEffect(() => {
-    if (nameSource === "custom" && customName) {
-      console.log('🎯 Nome personalizado ativo:', customName);
-      // Find and focus the custom name input
-      setTimeout(() => {
-        const customInput = document.getElementById('customName');
-        if (customInput) {
-          customInput.focus();
-          console.log('✅ Focando campo de nome personalizado');
-        }
-      }, 100);
-    }
-  }, [nameSource, customName]);
 
   const handleGenerate = async () => {
     if (!authState.user) return;
@@ -460,257 +448,231 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
             </CardContent>
           </Card>
 
-          {isFormValid && (
+          {mode === "idea" && selectedIdea && (
             <div className="space-y-6">
-              {mode === "idea" && selectedIdea && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between flex-wrap gap-2">
-                        <Label className="text-base font-medium">Nome para o Logo</Label>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={generateNameFromIdea}
-                          disabled={!selectedIdea || isGeneratingName}
-                          className="text-xs"
-                        >
-                          {isGeneratingName ? (
-                            <span className="animate-pulse">Gerando...</span>
-                          ) : (
-                            <>
-                              <Sparkles className="h-3 w-3 mr-1" />
-                              Gerar Nome
-                            </>
-                          )}
-                        </Button>
+              {/* Informações da Ideia - sempre visível */}
+              <Card className="border-accent/20 bg-accent/5">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Sparkles className="h-5 w-5" />
+                    Informações da Ideia
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Título</Label>
+                      <p className="text-sm font-medium">{selectedIdea.title}</p>
+                    </div>
+                    {selectedIdea.audience && (
+                      <div>
+                        <Label className="text-sm font-medium text-muted-foreground">Público-alvo</Label>
+                        <p className="text-sm">{selectedIdea.audience}</p>
                       </div>
-                      
-                      <div className="space-y-3 bg-muted/50 p-3 rounded-md">
-                        {/* Nome Original - sempre visível */}
-                        <div className={`p-3 rounded border transition-all ${
-                          nameSource === "original" 
-                            ? "bg-primary/10 border-primary ring-1 ring-primary/20" 
-                            : "bg-background border-border hover:border-primary/50"
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Descrição</Label>
+                    <p className="text-sm">{selectedIdea.description}</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Opções de Nome - sempre visível */}
+              <Card className="border-primary/20 bg-primary/5">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Palette className="h-5 w-5" />
+                    Opções de Nome para o Logo
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <Label className="text-base font-medium">Escolha o nome que será usado:</Label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={generateNameFromIdea}
+                        disabled={!selectedIdea || isGeneratingName}
+                        className="text-xs"
+                      >
+                        {isGeneratingName ? (
+                          <>
+                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current mr-2"></div>
+                            Gerando...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="h-3 w-3 mr-1" />
+                            Gerar Nome
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      {/* Original name option */}
+                      <div className={`flex items-start gap-3 p-3 border rounded-lg transition-colors ${
+                        nameSource === "original" ? "bg-primary/10 border-primary/30" : "border-border"
+                      }`}>
+                        <input
+                          type="radio"
+                          id="original"
+                          name="nameSource"
+                          value="original"
+                          checked={nameSource === "original"}
+                          onChange={(e) => setNameSource(e.target.value as any)}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <label htmlFor="original" className="cursor-pointer">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-medium">Usar nome original</span>
+                              {nameSource === "original" && <span className="text-xs text-primary">✓ Selecionado</span>}
+                            </div>
+                            <div className="text-sm text-muted-foreground bg-muted/50 p-2 rounded border">
+                              {selectedIdea.title}
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Generated name option */}
+                      {selectedIdea.generated_name && (
+                        <div className={`flex items-start gap-3 p-3 border rounded-lg transition-colors ${
+                          nameSource === "generated" ? "bg-primary/10 border-primary/30" : "border-border"
                         }`}>
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="radio"
-                              id="name-original"
-                              name="nameSource"
-                              value="original"
-                              checked={nameSource === "original"}
-                              onChange={(e) => setNameSource(e.target.value as "original")}
-                              className="rounded border-gray-300"
-                            />
-                            <Label htmlFor="name-original" className="text-sm flex-1 cursor-pointer">
-                              <span className="font-medium">Usar nome original da ideia</span>
-                              <span className="block text-xs text-muted-foreground mt-1">
-                                📝 "{selectedIdea.title}"
-                              </span>
-                              {nameSource === "original" && (
-                                <span className="block text-xs text-primary mt-1">
-                                  ✓ Este nome será usado no logo
-                                </span>
-                              )}
-                            </Label>
+                          <input
+                            type="radio"
+                            id="generated"
+                            name="nameSource"
+                            value="generated"
+                            checked={nameSource === "generated"}
+                            onChange={(e) => setNameSource(e.target.value as any)}
+                            className="mt-1"
+                          />
+                          <div className="flex-1">
+                            <label htmlFor="generated" className="cursor-pointer">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-medium">Usar nome gerado anteriormente</span>
+                                {nameSource === "generated" && <span className="text-xs text-primary">✓ Selecionado</span>}
+                              </div>
+                              <div className="text-sm text-muted-foreground bg-muted/50 p-2 rounded border">
+                                {selectedIdea.generated_name}
+                              </div>
+                            </label>
                           </div>
                         </div>
+                      )}
 
-                        {/* Nome Gerado (se existir) - sempre visível se disponível */}
-                        {selectedIdea.generated_name && (
-                          <div className={`p-3 rounded border transition-all ${
-                            nameSource === "generated" 
-                              ? "bg-primary/10 border-primary ring-1 ring-primary/20" 
-                              : "bg-background border-border hover:border-primary/50"
-                          }`}>
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="radio"
-                                id="name-generated"
-                                name="nameSource"
-                                value="generated"
-                                checked={nameSource === "generated"}
-                                onChange={(e) => setNameSource(e.target.value as "generated")}
-                                className="rounded border-gray-300"
-                              />
-                              <Label htmlFor="name-generated" className="text-sm flex-1 cursor-pointer">
-                                <span className="font-medium">Usar nome gerado automaticamente</span>
-                                <span className="block text-xs text-muted-foreground mt-1">
-                                  🤖 "{selectedIdea.generated_name}"
-                                </span>
-                                {nameSource === "generated" && (
-                                  <span className="block text-xs text-primary mt-1">
-                                    ✓ Este nome será usado no logo
-                                  </span>
-                                )}
-                              </Label>
+                      {/* Custom name option */}
+                      <div className={`flex items-start gap-3 p-3 border rounded-lg transition-colors ${
+                        nameSource === "custom" ? "bg-primary/10 border-primary/30" : "border-border"
+                      }`}>
+                        <input
+                          type="radio"
+                          id="custom"
+                          name="nameSource"
+                          value="custom"
+                          checked={nameSource === "custom"}
+                          onChange={(e) => setNameSource(e.target.value as any)}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <label htmlFor="custom" className="cursor-pointer">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-medium">Usar nome personalizado</span>
+                              {nameSource === "custom" && <span className="text-xs text-primary">✓ Selecionado</span>}
                             </div>
-                          </div>
-                        )}
-
-                        {/* Nome Personalizado - sempre visível */}
-                        <div className={`p-3 rounded border transition-all ${
-                          nameSource === "custom" 
-                            ? "bg-primary/10 border-primary ring-1 ring-primary/20" 
-                            : "bg-background border-border hover:border-primary/50"
-                        }`}>
-                          <div className="space-y-3">
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="radio"
-                                id="name-custom"
-                                name="nameSource"
-                                value="custom"
-                                checked={nameSource === "custom"}
-                                onChange={(e) => setNameSource(e.target.value as "custom")}
-                                className="rounded border-gray-300"
-                              />
-                              <Label htmlFor="name-custom" className="text-sm cursor-pointer">
-                                <span className="font-medium">Usar nome personalizado</span>
-                                {nameSource === "custom" && customName.trim() && (
-                                  <span className="block text-xs text-primary mt-1">
-                                    ✓ Este nome será usado no logo: "{customName}"
-                                  </span>
-                                )}
-                                {nameSource === "custom" && !customName.trim() && (
-                                  <span className="block text-xs text-amber-600 mt-1">
-                                    ⚠️ Digite um nome para usar esta opção
-                                  </span>
-                                )}
-                              </Label>
-                            </div>
-                            
-                            {/* Campo sempre visível quando nome personalizado está selecionado */}
-                            {nameSource === "custom" && (
-                              <div className="ml-6 space-y-2 animate-in slide-in-from-top-2 duration-200">
-                                <Input
-                                  id="customName"
-                                  placeholder="Digite o nome para aparecer no logo"
-                                  value={customName}
-                                  onChange={(e) => setCustomName(e.target.value)}
-                                  className={`transition-colors ${
-                                    customName.trim() 
-                                      ? "border-green-500 focus:border-green-600" 
-                                      : "border-amber-400 focus:border-amber-500"
-                                  }`}
-                                  autoFocus
-                                />
-                                {!customName.trim() && (
-                                  <p className="text-xs text-amber-600 flex items-center gap-1">
-                                    <span>⚠️</span>
-                                    <span>Digite um nome para continuar</span>
-                                  </p>
-                                )}
-                                {customName.trim() && (
-                                  <p className="text-xs text-green-600 flex items-center gap-1">
-                                    <span>✓</span>
-                                    <span>Nome válido! Este será usado no logo.</span>
-                                  </p>
-                                )}
-                              </div>
+                          </label>
+                          <div className="mt-2">
+                            <Input
+                              id="customName"
+                              placeholder="Digite um nome personalizado para o logo"
+                              value={customName}
+                              onChange={(e) => setCustomName(e.target.value)}
+                              className="w-full"
+                            />
+                            {nameSource === "custom" && !customName.trim() && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Campo obrigatório quando esta opção está selecionada
+                              </p>
                             )}
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
-                  <div className="space-y-4">
+          {isFormValid && (
+            <div className="space-y-6">
+              <Card className="border-muted-foreground/20">
+                <CardHeader>
+                  <CardTitle>Configurações do Logo</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label>Informações da Ideia</Label>
-                      <div className="bg-muted/50 p-3 rounded-md space-y-2 text-sm">
-                        <div>
-                          <span className="font-medium">Título:</span> {selectedIdea.title}
-                        </div>
-                        <div>
-                          <span className="font-medium">Descrição:</span> {selectedIdea.description}
-                        </div>
-                        {selectedIdea.audience && (
-                          <div>
-                            <span className="font-medium">Público:</span> {selectedIdea.audience}
-                          </div>
-                        )}
-                      </div>
+                      <Label>Tipo de Logo</Label>
+                      <Select value={logoType} onValueChange={setLogoType}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {logoTypes.map((type) => (
+                            <SelectItem key={type.value} value={type.value}>
+                              <div>
+                                <div className="font-medium">{type.label}</div>
+                                <div className="text-xs text-muted-foreground">{type.description}</div>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                  </div>
-                </div>
-              )}
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Tipo de Logo</Label>
-                    <Select value={logoType} onValueChange={setLogoType}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {logoTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            <div className="flex flex-col">
-                              <span className="font-medium">{type.label}</span>
-                              <span className="text-xs text-muted-foreground">{type.description}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    <div className="space-y-2">
+                      <Label>Estilo do Logo</Label>
+                      <Select value={logoStyle} onValueChange={setLogoStyle}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {logoStyles.map((style) => (
+                            <SelectItem key={style.value} value={style.value}>
+                              <div>
+                                <div className="font-medium">{style.label}</div>
+                                <div className="text-xs text-muted-foreground">{style.description}</div>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label>Estilo do Logo</Label>
-                    <Select value={logoStyle} onValueChange={setLogoStyle}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {logoStyles.map((style) => (
-                          <SelectItem key={style.value} value={style.value}>
-                            <div className="flex flex-col">
-                              <span className="font-medium">{style.label}</span>
-                              <span className="text-xs text-muted-foreground">{style.description}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Esquema de Cores</Label>
-                    <Select value={colorScheme} onValueChange={setColorScheme}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {colorSchemes.map((scheme) => (
-                          <SelectItem key={scheme.value} value={scheme.value}>
-                            <div className="flex flex-col">
-                              <span className="font-medium">{scheme.label}</span>
-                              <span className="text-xs text-muted-foreground">{scheme.description}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-3">
-                    <Label className="text-base font-medium">Configurações Avançadas</Label>
-                    
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="transparent-bg" className="text-sm">
-                        Fundo Transparente
-                      </Label>
-                      <Switch
-                        id="transparent-bg"
-                        checked={transparentBackground}
-                        onCheckedChange={setTransparentBackground}
-                      />
+                    <div className="space-y-2">
+                      <Label>Esquema de Cores</Label>
+                      <Select value={colorScheme} onValueChange={setColorScheme}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {colorSchemes.map((scheme) => (
+                            <SelectItem key={scheme.value} value={scheme.value}>
+                              <div>
+                                <div className="font-medium">{scheme.label}</div>
+                                <div className="text-xs text-muted-foreground">{scheme.description}</div>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="space-y-2">
@@ -722,9 +684,9 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                         <SelectContent>
                           {outputFormats.map((format) => (
                             <SelectItem key={format.value} value={format.value}>
-                              <div className="flex flex-col">
-                                <span className="font-medium">{format.label}</span>
-                                <span className="text-xs text-muted-foreground">{format.description}</span>
+                              <div>
+                                <div className="font-medium">{format.label}</div>
+                                <div className="text-xs text-muted-foreground">{format.description}</div>
                               </div>
                             </SelectItem>
                           ))}
@@ -741,30 +703,41 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                         <SelectContent>
                           {qualityLevels.map((level) => (
                             <SelectItem key={level.value} value={level.value}>
-                              <div className="flex flex-col">
-                                <span className="font-medium">{level.label}</span>
-                                <span className="text-xs text-muted-foreground">{level.description}</span>
+                              <div>
+                                <div className="font-medium">{level.label}</div>
+                                <div className="text-xs text-muted-foreground">{level.description}</div>
                               </div>
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="customPrompt">Prompt Personalizado (Opcional)</Label>
-                <Textarea
-                  id="customPrompt"
-                  placeholder="Adicione instruções específicas para o design do logo..."
-                  value={customPrompt}
-                  onChange={(e) => setCustomPrompt(e.target.value)}
-                  rows={3}
-                  className="resize-none"
-                />
-              </div>
+                    <div className="space-y-3">
+                      <Label>Opções Avançadas</Label>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={transparentBackground}
+                          onCheckedChange={setTransparentBackground}
+                        />
+                        <Label className="text-sm">Fundo transparente</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="customPrompt">Prompt Personalizado (Opcional)</Label>
+                    <Textarea
+                      id="customPrompt"
+                      placeholder="Adicione detalhes específicos sobre como quer que o logo seja..."
+                      value={customPrompt}
+                      onChange={(e) => setCustomPrompt(e.target.value)}
+                      rows={3}
+                      className="resize-none"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
         </div>
