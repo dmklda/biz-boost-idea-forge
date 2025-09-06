@@ -105,53 +105,29 @@ const PlansPage = () => {
     }
 
     if (planId === "free") {
-      // Downgrade to free plan
-      try {
-        const updatedUser = {
-          ...authState.user!,
-          plan: "free" as const
-        };
-        
-        updateUserPlan("free");
-        toast.success("Plano alterado para Gratuito!");
-      } catch (error) {
-        console.error("Error downgrading plan:", error);
-        toast.error("Erro ao alterar o plano. Tente novamente.");
-      }
+      // Downgrade to free plan (only possible through support)
+      toast.info("Para fazer downgrade para o plano gratuito, entre em contato com o suporte.");
       return;
     }
 
-    // Check if there's saved idea data to continue analysis
-    const savedData = getSavedIdeaData();
-    if (savedData) {
+    // For paid plans, use Stripe checkout
+    try {
       setIsAnalyzing(true);
+      const planType = planId === "entrepreneur" ? "entrepreneur" : "business";
       
-      try {
-        // Simulate plan upgrade
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Update user plan
-        updateUserPlan(planId);
-        toast.success(`Plano ${plans.find(p => p.id === planId)?.name} ativado com sucesso!`);
-        
-        // Navigate to results page
-        navigate("/resultados");
-      } catch (error) {
-        console.error("Error upgrading plan:", error);
-        toast.error("Erro ao ativar o plano. Tente novamente.");
-      } finally {
-        setIsAnalyzing(false);
-      }
-    } else {
-      // No saved data, just upgrade plan
-      try {
-        updateUserPlan(planId);
-        toast.success(`Plano ${plans.find(p => p.id === planId)?.name} ativado com sucesso!`);
-        navigate("/dashboard");
-      } catch (error) {
-        console.error("Error upgrading plan:", error);
-        toast.error("Erro ao ativar o plano. Tente novamente.");
-      }
+      toast.info("Redirecionando para o checkout...");
+      
+      // Create Stripe checkout session
+      await createCheckoutSession(planType, "subscription");
+      
+      // The createCheckoutSession will handle the redirection
+      // After successful payment, user will be redirected back
+      
+    } catch (error) {
+      console.error("Error creating checkout session:", error);
+      toast.error("Erro ao criar sessão de pagamento. Tente novamente.");
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 

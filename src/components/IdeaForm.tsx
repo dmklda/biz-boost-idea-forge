@@ -9,6 +9,8 @@ import { useFormSubmission } from "./idea-form/useFormSubmission";
 import { CreditConfirmModal } from "./idea-form/CreditConfirmModal";
 import { useLocation } from "react-router-dom";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import { AuthGuard } from "./AuthGuard";
+import { CreditGuard } from "./CreditGuard";
 
 interface IdeaFormProps {
   ideaId?: string;
@@ -77,10 +79,20 @@ const FormContainer: React.FC<{
   
   const formContent = (
     <>
-      <form onSubmit={handleSubmit}>
-        <FormStepsContainer />
-        <SaveDraftButton />
-      </form>
+      <AuthGuard 
+        message="Faça login para analisar suas ideias e acessar funcionalidades exclusivas"
+        onProceed={() => {}}
+      >
+        <CreditGuard 
+          feature={isReanalyzing ? "reanalysis" : "basic-analysis"}
+          onProceed={() => {}}
+        >
+          <form onSubmit={handleSubmit}>
+            <FormStepsContainer />
+            <SaveDraftButton />
+          </form>
+        </CreditGuard>
+      </AuthGuard>
       
       <CreditConfirmModal
         isOpen={showCreditConfirm}

@@ -4,7 +4,7 @@ import Hero from "../components/Hero";
 import Features from "../components/Features";
 import AdvancedFeatures from "../components/AdvancedFeatures";
 import HowItWorks from "../components/HowItWorks";
-import IdeaForm from "../components/IdeaForm";
+import { SmartIdeaForm } from "../components/SmartIdeaForm";
 import Testimonials from "../components/Testimonials";
 import Pricing from "../components/Pricing";
 import CTA from "../components/CTA";
@@ -43,7 +43,7 @@ const Index = () => {
           <Testimonials />
           <Pricing />
           <div id="form">
-            <IdeaForm />
+            <SmartIdeaForm />
           </div>
           <CTA />
         </main>
