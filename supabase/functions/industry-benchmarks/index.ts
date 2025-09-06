@@ -706,7 +706,32 @@ async function fetchRealTimeMarketData(sector, region) {
   }
 
   try {
-    const query = `Latest market trends and data for ${sector} industry in ${region} 2024. Recent funding, growth rates, and key market movements.`;
+    console.log(`🌐 Fetching real-time data for ${sector} in ${region}...`);
+    
+    // Optimized query for better results
+    const query = `Current market size, growth rate, and recent investment trends for ${sector} sector in Brazil 2024. Include startup funding data and market opportunities.`;
+    
+    const requestPayload = {
+      model: 'llama-3.1-sonar-small-128k-online',
+      messages: [
+        {
+          role: 'system',
+          content: 'Be precise and concise. Provide recent market data with specific numbers, growth rates, and funding information. Focus on factual, quantifiable metrics.'
+        },
+        {
+          role: 'user',
+          content: query
+        }
+      ],
+      temperature: 0.2,
+      top_p: 0.9,
+      max_tokens: 1000,
+      search_recency_filter: 'month',
+      frequency_penalty: 1,
+      presence_penalty: 0
+    };
+
+    console.log('📤 Perplexity request payload:', JSON.stringify(requestPayload, null, 2));
     
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
@@ -714,32 +739,31 @@ async function fetchRealTimeMarketData(sector, region) {
         'Authorization': `Bearer ${perplexityApiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: 'llama-3.1-sonar-small-128k-online',
-        messages: [
-          {
-            role: 'system',
-            content: 'Provide recent, factual market data and trends. Focus on quantifiable metrics, recent developments, and credible sources.'
-          },
-          {
-            role: 'user',
-            content: query
-          }
-        ],
-        temperature: 0.2,
-        top_p: 0.9,
-        max_tokens: 800,
-        search_recency_filter: 'month'
-      }),
+      body: JSON.stringify(requestPayload),
     });
 
+    console.log(`📥 Perplexity response status: ${response.status}`);
+    
     if (!response.ok) {
-      throw new Error(`Perplexity API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('❌ Perplexity API error details:', errorText);
+      throw new Error(`Perplexity API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
-    const insights = data.choices[0]?.message?.content;
+    console.log('📊 Perplexity response data:', JSON.stringify(data, null, 2));
+    
+    const insights = data.choices?.[0]?.message?.content;
 
+    if (!insights) {
+      console.log('⚠️ No insights received from Perplexity');
+      return {
+        note: 'Dados em tempo real temporariamente indisponíveis',
+        lastUpdated: new Date().toISOString()
+      };
+    }
+
+    console.log('✅ Real-time data fetched successfully');
     return {
       insights,
       source: 'Perplexity API - Dados em tempo real',
