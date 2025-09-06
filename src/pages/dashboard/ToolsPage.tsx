@@ -124,7 +124,7 @@ const ToolsPage = () => {
       color: "from-blue-500 to-cyan-500",
       category: "documentation",
       credits: getFeatureCost('prd-mvp'),
-      status: "available",
+        status: "available",
       feature: "prd-mvp"
     },
     {

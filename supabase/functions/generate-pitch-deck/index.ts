@@ -32,7 +32,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -73,7 +73,7 @@ ${idea.monetization ? `Monetização: ${idea.monetization}` : ''}
 Retorne um pitch deck completo em JSON.`
           }
         ],
-        max_completion_tokens: 3000
+        max_tokens: 3000
       })
     });
 

@@ -32,7 +32,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -63,7 +63,7 @@ ${idea.location ? `Localização: ${idea.location}` : ''}
 Retorne uma análise SEO completa em JSON.`
           }
         ],
-        max_completion_tokens: 2000
+        max_tokens: 2000
       })
     });
 
