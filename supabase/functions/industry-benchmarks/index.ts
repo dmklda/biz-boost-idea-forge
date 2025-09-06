@@ -350,6 +350,27 @@ serve(async (req)=>{
   
   console.log('🎯 Industry Benchmarks function called');
   
+  // READ REQUEST BODY ONLY ONCE to avoid "Body already consumed" error
+  let requestData;
+  try {
+    requestData = await req.json();
+    console.log('📊 Request data:', requestData);
+  } catch (parseError) {
+    console.error('❌ Failed to parse request body:', parseError);
+    return new Response(JSON.stringify({
+      error: 'Invalid request body. Expected JSON.',
+      details: parseError.message
+    }), {
+      status: 400,
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json'
+      }
+    });
+  }
+  
+  const { sector, region = 'brazil', companyStage = 'startup', businessModel, targetMetrics, ideaData } = requestData;
+  
   try {
     const supabaseClient = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_ANON_KEY') ?? '', {
       global: {
@@ -359,22 +380,32 @@ serve(async (req)=>{
       }
     });
     
-    const { sector, region = 'brazil', companyStage = 'startup', businessModel, targetMetrics, ideaData } = await req.json();
-    console.log('📊 Request data:', { sector, region, companyStage, businessModel, targetMetrics, ideaData });
-    
     if (!sector) {
       throw new Error('Sector is required');
     }
     
     console.log(`🔍 Generating industry benchmarks for ${sector} in ${region} (${companyStage})`);
     
-    // Get base benchmark data
-    const benchmarkData = INDUSTRY_BENCHMARKS[region]?.[sector]?.[companyStage];
-    if (!benchmarkData) {
+    // Validate sector availability
+    const availableSectors = Object.keys(INDUSTRY_BENCHMARKS[region] || {});
+    if (!INDUSTRY_BENCHMARKS[region]?.[sector]?.[companyStage]) {
       console.error(`❌ Benchmark data not available for ${sector} in ${region} (${companyStage})`);
-      throw new Error(`Benchmark data not available for ${sector} in ${region} (${companyStage})`);
+      console.log('📋 Available sectors:', availableSectors);
+      
+      return new Response(JSON.stringify({
+        error: `Benchmark data not available for "${sector}" in ${region} (${companyStage})`,
+        availableSectors,
+        suggestion: 'Please choose from available sectors or contact support to add new sector data.'
+      }), {
+        status: 400,
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
+      });
     }
     
+    const benchmarkData = INDUSTRY_BENCHMARKS[region][sector][companyStage];
     console.log('✅ Found benchmark data with', benchmarkData.metrics.length, 'metrics');
     
     // Filter metrics if specific ones are requested
@@ -384,39 +415,67 @@ serve(async (req)=>{
       console.log('🎯 Filtered to', filteredMetrics.length, 'specific metrics');
     }
     
-    // Generate AI-powered insights
-    console.log('🤖 Generating AI insights...');
-    const aiInsights = await generateAIBenchmarkInsights(sector, region, companyStage, benchmarkData, businessModel, ideaData);
-    
-    // Get real-time market data
-    console.log('🌐 Fetching real-time market data...');
-    const realTimeData = await fetchRealTimeMarketData(sector, region);
-    
-    // Generate idea comparison if idea data is provided
-    let ideaComparison = null;
-    if (ideaData) {
-      console.log('🎯 Generating idea comparison...');
-      ideaComparison = await generateIdeaComparison(ideaData, benchmarkData);
-    }
-    
-    // Enrich with comparative analysis
-    const enrichedMetrics = await enrichMetricsWithComparison(filteredMetrics, sector, region);
-    
-    const result = {
+    // Initialize result with basic data
+    let result = {
       sector,
       region,
       companyStage,
-      metrics: enrichedMetrics,
+      metrics: filteredMetrics,
       marketInsights: {
         ...benchmarkData.marketInsights,
-        ...aiInsights.marketInsights,
-        realTimeData
+        aiInsights: null,
+        emergingTrends: [],
+        strategicRecommendations: [],
+        realTimeData: null
       },
       financialBenchmarks: benchmarkData.financialBenchmarks,
       operationalBenchmarks: benchmarkData.operationalBenchmarks,
-      ideaComparison,
-      generatedAt: new Date().toISOString()
+      ideaComparison: null,
+      generatedAt: new Date().toISOString(),
+      fallbackMode: false
     };
+    
+    // Try to enhance with AI insights (non-blocking)
+    try {
+      console.log('🤖 Generating AI insights...');
+      const aiInsights = await generateAIBenchmarkInsights(sector, region, companyStage, benchmarkData, businessModel, ideaData);
+      result.marketInsights = {
+        ...result.marketInsights,
+        ...aiInsights.marketInsights
+      };
+      console.log('✅ AI insights generated successfully');
+    } catch (aiError) {
+      console.warn('⚠️ AI insights failed, continuing without them:', aiError.message);
+      result.marketInsights.aiInsights = 'Análise de IA temporariamente indisponível. Dados baseados em benchmarks estáticos.';
+    }
+    
+    // Try to get real-time market data (non-blocking)
+    try {
+      console.log('🌐 Fetching real-time market data...');
+      const realTimeData = await fetchRealTimeMarketData(sector, region);
+      result.marketInsights.realTimeData = realTimeData;
+      console.log('✅ Real-time data fetched successfully');
+    } catch (realtimeError) {
+      console.warn('⚠️ Real-time data failed, continuing without it:', realtimeError.message);
+    }
+    
+    // Try to generate idea comparison if idea data is provided (non-blocking)
+    if (ideaData) {
+      try {
+        console.log('🎯 Generating idea comparison...');
+        result.ideaComparison = await generateIdeaComparison(ideaData, benchmarkData);
+        console.log('✅ Idea comparison generated successfully');
+      } catch (comparisonError) {
+        console.warn('⚠️ Idea comparison failed, continuing without it:', comparisonError.message);
+      }
+    }
+    
+    // Enrich metrics with comparative analysis
+    try {
+      result.metrics = await enrichMetricsWithComparison(filteredMetrics, sector, region);
+    } catch (enrichError) {
+      console.warn('⚠️ Metrics enrichment failed, using basic metrics:', enrichError.message);
+    }
     
     console.log(`✅ Industry benchmarks generated successfully for ${sector}`);
     return new Response(JSON.stringify(result), {
@@ -425,46 +484,46 @@ serve(async (req)=>{
         'Content-Type': 'application/json'
       }
     });
+    
   } catch (error) {
     console.error('❌ Error in industry-benchmarks function:', error);
     
-    // Return fallback data with basic benchmarks even when AI fails
-    try {
-      const { sector, region = 'brazil', companyStage = 'startup' } = await req.json();
-      const benchmarkData = INDUSTRY_BENCHMARKS[region]?.[sector]?.[companyStage];
+    // Return fallback data with basic benchmarks
+    const benchmarkData = INDUSTRY_BENCHMARKS[region]?.[sector]?.[companyStage];
+    
+    if (benchmarkData) {
+      console.log('🔄 Returning fallback data without enhancements');
+      const fallbackResult = {
+        sector,
+        region,
+        companyStage,
+        metrics: benchmarkData.metrics,
+        marketInsights: {
+          ...benchmarkData.marketInsights,
+          aiInsights: 'Análise de IA temporariamente indisponível. Dados baseados em benchmarks estáticos.',
+          emergingTrends: [],
+          strategicRecommendations: [],
+          realTimeData: null
+        },
+        financialBenchmarks: benchmarkData.financialBenchmarks,
+        operationalBenchmarks: benchmarkData.operationalBenchmarks,
+        ideaComparison: null,
+        generatedAt: new Date().toISOString(),
+        fallbackMode: true
+      };
       
-      if (benchmarkData) {
-        console.log('🔄 Returning fallback data without AI insights');
-        const fallbackResult = {
-          sector,
-          region,
-          companyStage,
-          metrics: benchmarkData.metrics,
-          marketInsights: {
-            ...benchmarkData.marketInsights,
-            aiInsights: 'Análise de IA temporariamente indisponível. Dados baseados em benchmarks estáticos.',
-            emergingTrends: [],
-            strategicRecommendations: []
-          },
-          financialBenchmarks: benchmarkData.financialBenchmarks,
-          operationalBenchmarks: benchmarkData.operationalBenchmarks,
-          generatedAt: new Date().toISOString(),
-          fallbackMode: true
-        };
-        
-        return new Response(JSON.stringify(fallbackResult), {
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'application/json'
-          }
-        });
-      }
-    } catch (fallbackError) {
-      console.error('❌ Fallback also failed:', fallbackError);
+      return new Response(JSON.stringify(fallbackResult), {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
+      });
     }
     
+    // Final fallback
     return new Response(JSON.stringify({
       error: error.message,
+      availableSectors: Object.keys(INDUSTRY_BENCHMARKS[region] || {}),
       benchmarks: null
     }), {
       status: 500,
