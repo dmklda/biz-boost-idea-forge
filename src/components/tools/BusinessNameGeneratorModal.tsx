@@ -133,7 +133,7 @@ export const BusinessNameGeneratorModal: React.FC<BusinessNameGeneratorModalProp
       icon={nameIcon}
       isGenerating={isGenerating}
       generatingText="Gerando nomes..."
-      actionText={`Gerar Nomes (${getFeatureCost('business-name-generator')} créditos)`}
+      actionText="Gerar Nomes"
       onAction={handleGenerate}
       actionDisabled={isGenerating || (!useCustom && !selectedIdea) || (useCustom && !customIdea.trim()) || !hasCredits('business-name-generator')}
       resetText="Resetar"
