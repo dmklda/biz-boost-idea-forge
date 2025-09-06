@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "react-i18next";
+import { usePlanAccess } from "@/hooks/usePlanAccess";
+import { CreditGuard } from "@/components/CreditGuard";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -35,6 +37,7 @@ import { ValidationResponseModal } from "@/components/marketplace/ValidationResp
 const MarketplacePage = () => {
   const { t } = useTranslation();
   const { authState } = useAuth();
+  const { hasFeatureAccess } = usePlanAccess();
   const [activeTab, setActiveTab] = useState("browse");
   const { 
     validationRequests, 
@@ -143,6 +146,31 @@ const MarketplacePage = () => {
     };
     return categories[category as keyof typeof categories] || category;
   };
+
+  // Check plan access
+  if (!hasFeatureAccess('marketplace')) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="mb-8">
+              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 dark:from-white dark:via-blue-100 dark:to-purple-100 bg-clip-text text-transparent mb-4">
+                Marketplace de Validação
+              </h1>
+              <p className="text-lg text-slate-600 dark:text-slate-400">
+                Este recurso está disponível para os planos Entrepreneur e Business.
+              </p>
+            </div>
+            <CreditGuard feature="marketplace">
+              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
+                Desbloquear Marketplace
+              </Button>
+            </CreditGuard>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">

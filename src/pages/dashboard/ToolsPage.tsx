@@ -15,9 +15,12 @@ import { LogoGeneratorModal } from "@/components/tools/LogoGeneratorModal";
 import { PRDMVPGeneratorModal } from "@/components/tools/PRDMVPGeneratorModal";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { usePlanAccess } from "@/hooks/usePlanAccess";
+import { CreditGuard } from "@/components/CreditGuard";
 
 const ToolsPage = () => {
   const { authState } = useAuth();
+  const { hasFeatureAccess, getFeatureCost, canAccessFeature } = usePlanAccess();
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
   const [isPRDModalOpen, setIsPRDModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -45,8 +48,10 @@ const ToolsPage = () => {
       action: handleLogoOpen,
       color: "from-purple-500 to-pink-500",
       category: "design",
-      credits: 5,
-      status: "available"
+      credits: getFeatureCost('logo-generator'),
+      status: "available",
+      feature: "logo-generator",
+      planRequired: hasFeatureAccess('logo-generator') ? null : "Entrepreneur"
     },
     {
       title: "Gerador de Nomes",
@@ -87,8 +92,10 @@ const ToolsPage = () => {
       action: handlePRDOpen,
       color: "from-blue-500 to-cyan-500",
       category: "documentation",
-      credits: 8,
-      status: "available"
+      credits: getFeatureCost('prd-mvp'),
+      status: "available",
+      feature: "prd-mvp",
+      planRequired: hasFeatureAccess('prd-mvp') ? null : "Entrepreneur"
     },
     {
       title: "Business Model Canvas",
@@ -317,56 +324,73 @@ const ToolsPage = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const renderToolCard = (tool: any, index: number) => (
-    <Card key={index} className="relative overflow-hidden hover:shadow-lg transition-all duration-200 group">
-      <div className={`absolute inset-0 bg-gradient-to-br ${tool.color} opacity-5 group-hover:opacity-10 transition-opacity`} />
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg bg-gradient-to-br ${tool.color} group-hover:scale-110 transition-transform`}>
-              <tool.icon className="h-6 w-6 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="font-semibold text-base truncate">{tool.title}</div>
-              <div className="flex items-center gap-2 mt-1">
-                <Badge variant={tool.status === "available" ? "default" : "secondary"} className="text-xs">
-                  {tool.status === "available" ? "Disponível" : "Em breve"}
-                </Badge>
-                <span className="text-xs text-muted-foreground font-medium">
-                  {tool.credits} créditos
-                </span>
+  const renderToolCard = (tool: any, index: number) => {
+    const hasAccess = tool.feature ? canAccessFeature(tool.feature) : true;
+    const needsUpgrade = tool.planRequired && !hasFeatureAccess(tool.feature);
+    
+    return (
+      <Card key={index} className="relative overflow-hidden hover:shadow-lg transition-all duration-200 group">
+        <div className={`absolute inset-0 bg-gradient-to-br ${tool.color} opacity-5 group-hover:opacity-10 transition-opacity`} />
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg bg-gradient-to-br ${tool.color} group-hover:scale-110 transition-transform`}>
+                <tool.icon className="h-6 w-6 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-base truncate">{tool.title}</div>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant={tool.status === "available" ? "default" : "secondary"} className="text-xs">
+                    {tool.status === "available" ? "Disponível" : "Em breve"}
+                  </Badge>
+                  {tool.planRequired && (
+                    <Badge variant="outline" className="text-xs">
+                      {tool.planRequired}+
+                    </Badge>
+                  )}
+                  <span className="text-xs text-muted-foreground font-medium">
+                    {tool.credits} créditos
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        </CardTitle>
-        <CardDescription className="text-sm leading-relaxed">
-          {tool.description}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <Button 
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (tool.status === "coming-soon") {
-              toast.info("Funcionalidade em breve!");
-              return;
-            }
-            if (tool.credits > (authState.user?.credits || 0)) {
-              toast.error("Você não possui créditos suficientes para usar esta ferramenta.");
-              return;
-            }
-            handleToolClick(tool.title, tool.action);
-          }}
-          className="w-full relative z-10" 
-          disabled={tool.status === "coming-soon"}
-          variant={tool.status === "available" ? "default" : "outline"}
-        >
-          {tool.status === "available" ? "Usar ferramenta" : "Em breve"}
-        </Button>
-      </CardContent>
-    </Card>
-  );
+          </CardTitle>
+          <CardDescription className="text-sm leading-relaxed">
+            {tool.description}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          {tool.feature && !hasAccess ? (
+            <CreditGuard feature={tool.feature}>
+              <Button 
+                className="w-full relative z-10" 
+                variant="outline"
+              >
+                {needsUpgrade ? `Upgrade para ${tool.planRequired}` : "Comprar Créditos"}
+              </Button>
+            </CreditGuard>
+          ) : (
+            <Button 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (tool.status === "coming-soon") {
+                  toast.info("Funcionalidade em breve!");
+                  return;
+                }
+                handleToolClick(tool.title, tool.action);
+              }}
+              className="w-full relative z-10" 
+              disabled={tool.status === "coming-soon"}
+              variant={tool.status === "available" ? "default" : "outline"}
+            >
+              {tool.status === "available" ? "Usar ferramenta" : "Em breve"}
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <div className="space-y-6">

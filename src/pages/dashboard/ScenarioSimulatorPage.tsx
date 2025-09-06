@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { usePlanAccess } from "@/hooks/usePlanAccess";
+import { CreditGuard } from "@/components/CreditGuard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -31,6 +33,7 @@ interface IdeaWithAnalysis {
 }
 
 const ScenarioSimulatorPage = () => {
+  const { hasFeatureAccess } = usePlanAccess();
   const [activeTab, setActiveTab] = useState('builder');
   const [simulationResults, setSimulationResults] = useState(null);
   const [variables, setVariables] = useState<SimulationVariable[]>([]);
@@ -362,6 +365,31 @@ const ScenarioSimulatorPage = () => {
       toast.error('Erro ao carregar simulação');
     }
   };
+
+  // Check plan access
+  if (!hasFeatureAccess('simulator')) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="mb-8">
+              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 dark:from-white dark:via-blue-100 dark:to-purple-100 bg-clip-text text-transparent mb-4">
+                Simulador de Cenários Monte Carlo
+              </h1>
+              <p className="text-lg text-slate-600 dark:text-slate-400">
+                Este recurso está disponível para os planos Entrepreneur e Business.
+              </p>
+            </div>
+            <CreditGuard feature="simulator">
+              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
+                Desbloquear Simulador
+              </Button>
+            </CreditGuard>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">

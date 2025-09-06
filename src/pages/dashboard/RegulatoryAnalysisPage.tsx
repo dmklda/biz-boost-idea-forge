@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { usePlanAccess } from '@/hooks/usePlanAccess';
+import { CreditGuard } from '@/components/CreditGuard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,6 +35,7 @@ interface RegulatoryAnalysisResult {
 }
 
 const RegulatoryAnalysisPage = () => {
+  const { hasFeatureAccess } = usePlanAccess();
   const [formData, setFormData] = useState({
     businessName: '',
     businessSector: '',
@@ -288,6 +291,27 @@ const RegulatoryAnalysisPage = () => {
       currency: 'BRL'
     }).format(value);
   };
+
+  // Check plan access first
+  if (!hasFeatureAccess('regulatory-analysis')) {
+    return (
+      <div className="container mx-auto p-6 space-y-6">
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold">Análise Regulatória</h1>
+            <p className="text-muted-foreground">
+              Este recurso está disponível para os planos Entrepreneur e Business.
+            </p>
+          </div>
+          <CreditGuard feature="regulatory-analysis">
+            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
+              Desbloquear Análise Regulatória
+            </Button>
+          </CreditGuard>
+        </div>
+      </div>
+    );
+  }
 
   if (currentView === 'history') {
     return (

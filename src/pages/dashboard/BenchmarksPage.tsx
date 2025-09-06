@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { usePlanAccess } from "@/hooks/usePlanAccess";
+import { CreditGuard } from "@/components/CreditGuard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -68,6 +70,7 @@ interface IndustryBenchmark {
 
 const BenchmarksPage = () => {
   const { authState } = useAuth();
+  const { hasFeatureAccess } = usePlanAccess();
   const [isLoading, setIsLoading] = useState(false);
   const [benchmarkResult, setBenchmarkResult] = useState<IndustryBenchmark | null>(null);
   const [formData, setFormData] = useState({
@@ -153,6 +156,31 @@ const BenchmarksPage = () => {
     metric: metric.name.split(' ')[0],
     value: (metric.value / metric.percentile_90) * 100 // Normalize to 0-100
   })) || [];
+
+  // Check plan access
+  if (!hasFeatureAccess('benchmarks')) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="mb-8">
+              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 dark:from-white dark:via-blue-100 dark:to-purple-100 bg-clip-text text-transparent mb-4">
+                Benchmarks da Indústria
+              </h1>
+              <p className="text-lg text-slate-600 dark:text-slate-400">
+                Este recurso está disponível apenas para o plano Business.
+              </p>
+            </div>
+            <CreditGuard feature="benchmarks">
+              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
+                Desbloquear Benchmarks
+              </Button>
+            </CreditGuard>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
