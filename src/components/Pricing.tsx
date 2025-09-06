@@ -6,12 +6,14 @@ import { useTranslation } from 'react-i18next';
 import { useCurrency } from "@/hooks/use-currency";
 import { useState } from "react";
 import { Badge } from "./ui/badge";
+import { usePlanActions } from "@/hooks/usePlanActions";
 
 const Pricing = () => {
   const { t } = useTranslation();
   const { formatPrice } = useCurrency();
   const [annualBilling, setAnnualBilling] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const { handlePlanSelection } = usePlanActions();
 
   // Explicitly define the plan features as a string array
   interface PlanFeatures {
@@ -25,6 +27,7 @@ const Pricing = () => {
     cta: string;
     popular: boolean;
     gradient?: string;
+    planType: 'free' | 'entrepreneur' | 'business';
   }
   
   // Helper function to safely get features with fallback
@@ -54,7 +57,8 @@ const Pricing = () => {
       features: getFeaturesTranslation('pricing.free.features'),
       cta: t('pricing.free.cta') || 'Start Free',
       popular: false,
-      gradient: "from-gray-400/20 to-gray-500/30"
+      gradient: "from-gray-400/20 to-gray-500/30",
+      planType: 'free' as const
     },
     {
       name: t('pricing.entrepreneur.name') || 'Entrepreneur',
@@ -66,7 +70,8 @@ const Pricing = () => {
       features: getFeaturesTranslation('pricing.entrepreneur.features'),
       cta: t('pricing.entrepreneur.cta') || 'Subscribe Now',
       popular: true,
-      gradient: "from-brand-purple/20 via-indigo-500/20 to-brand-purple/30"
+      gradient: "from-brand-purple/20 via-indigo-500/20 to-brand-purple/30",
+      planType: 'entrepreneur' as const
     },
     {
       name: t('pricing.business.name') || 'Business',
@@ -78,7 +83,8 @@ const Pricing = () => {
       features: getFeaturesTranslation('pricing.business.features'),
       cta: t('pricing.business.cta') || 'Get Started',
       popular: false,
-      gradient: "from-blue-600/20 via-indigo-600/20 to-blue-600/30"
+      gradient: "from-blue-600/20 via-indigo-600/20 to-blue-600/30",
+      planType: 'business' as const
     }
   ];
 
@@ -178,6 +184,7 @@ const Pricing = () => {
                         ? "btn-premium" 
                         : "bg-foreground/10 hover:bg-foreground/20 text-foreground backdrop-blur-sm"
                     }`}
+                    onClick={() => handlePlanSelection(plan.planType)}
                   >
                     {plan.cta}
                   </Button>
