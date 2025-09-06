@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
+import { usePlanAccess } from "@/hooks/usePlanAccess";
 import { toast } from "sonner";
 import { Copy, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +22,7 @@ export const BusinessNameGeneratorModal: React.FC<BusinessNameGeneratorModalProp
   onOpenChange
 }) => {
   const { authState } = useAuth();
+  const { hasCredits, getFeatureCost } = usePlanAccess();
   const user = authState.user;
   const [selectedIdea, setSelectedIdea] = useState<any>(null);
   const [customIdea, setCustomIdea] = useState("");
@@ -57,12 +59,32 @@ export const BusinessNameGeneratorModal: React.FC<BusinessNameGeneratorModalProp
       return;
     }
 
+    // Check if user has enough credits
+    if (!hasCredits('business-name-generator')) {
+      toast.error("Créditos insuficientes para gerar nomes");
+      return;
+    }
+
     setIsGenerating(true);
     
     try {
       const ideaData = useCustom 
         ? { title: "Ideia personalizada", description: customIdea }
         : selectedIdea;
+
+      // Deduct credits first
+      const { data: creditsData, error: creditsError } = await supabase.rpc(
+        'deduct_credits_and_log',
+        {
+          p_user_id: user.id,
+          p_amount: getFeatureCost('business-name-generator'),
+          p_feature: 'business-name-generator',
+          p_item_id: selectedIdea?.id || null,
+          p_description: `Geração de nomes para: ${ideaData.title}`
+        }
+      );
+
+      if (creditsError) throw creditsError;
 
       // Generate multiple names at once
       const names = [];
@@ -111,14 +133,14 @@ export const BusinessNameGeneratorModal: React.FC<BusinessNameGeneratorModalProp
       icon={nameIcon}
       isGenerating={isGenerating}
       generatingText="Gerando nomes..."
-      actionText="Gerar Nomes"
+      actionText={`Gerar Nomes (${getFeatureCost('business-name-generator')} créditos)`}
       onAction={handleGenerate}
-      actionDisabled={isGenerating || (!useCustom && !selectedIdea) || (useCustom && !customIdea.trim())}
+      actionDisabled={isGenerating || (!useCustom && !selectedIdea) || (useCustom && !customIdea.trim()) || !hasCredits('business-name-generator')}
       resetText="Resetar"
       onReset={handleReset}
       showReset={generatedNames.length > 0}
       maxWidth="4xl"
-      showCreditWarning={false}
+      creditCost={getFeatureCost('business-name-generator')}
     >
       <div className="space-y-6">
         <EnhancedIdeaSelector 

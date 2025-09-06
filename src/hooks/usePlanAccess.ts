@@ -8,6 +8,7 @@ export type FeatureType =
   | 'benchmarks'
   | 'advanced-analysis'
   | 'logo-generator'
+  | 'business-name-generator'
   | 'prd-mvp'
   | 'pdf-export'
   | 'user-research'
@@ -30,6 +31,7 @@ const FEATURE_PLAN_REQUIREMENTS: Record<FeatureType, PlanType[]> = {
   'benchmarks': ['business'],
   'advanced-analysis': ['free', 'entrepreneur', 'business'], // Now available to all plans
   'logo-generator': ['free', 'entrepreneur', 'business'],
+  'business-name-generator': ['free', 'entrepreneur', 'business'],
   'prd-mvp': ['free', 'entrepreneur', 'business'],
   'pdf-export': ['entrepreneur', 'business'],
   'user-research': ['free', 'entrepreneur', 'business'],
@@ -59,7 +61,8 @@ const FEATURE_COSTS: Record<FeatureType | 'basic-analysis' | 'reanalysis' | 'com
   'regulatory-analysis': 2,
   'simulator': 2,
   'comparison': 1,
-  'logo-generator': 3,
+  'logo-generator': 10,
+  'business-name-generator': 2,
   'prd-mvp': 5,
   'benchmarks': 2,
   'pdf-export': 1,

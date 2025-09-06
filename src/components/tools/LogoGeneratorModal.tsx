@@ -206,7 +206,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
         'deduct_credits_and_log',
         {
           p_user_id: authState.user.id,
-          p_amount: 3,
+          p_amount: 10,
           p_feature: 'logo_generation',
           p_item_id: itemId,
           p_description: description
@@ -339,13 +339,13 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
       icon={logoIcon}
       isGenerating={isGenerating}
       generatingText="Gerando logo com GPT-Image-1..."
-      actionText="Gerar Logo com GPT-Image-1 (3 créditos)"
+      actionText="Gerar Logo com GPT-Image-1 (10 créditos)"
       onAction={handleGenerate}
-      actionDisabled={!isFormValid || isGenerating || !authState.user || authState.user.credits < 3}
+      actionDisabled={!isFormValid || isGenerating || !authState.user || authState.user.credits < 10}
       resetText="Gerar Novo Logo"
       onReset={() => setGeneratedLogo("")}
       showReset={!!generatedLogo}
-      creditCost={3}
+      creditCost={10}
       maxWidth="4xl"
     >
       {generatedLogo ? (
