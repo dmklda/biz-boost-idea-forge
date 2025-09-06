@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { idea, contentType, platform, tone } = await req.json();
+    const { idea, timeHorizon, revenueModel } = await req.json();
     
     if (!idea) {
       throw new Error('Idea is required');
@@ -34,46 +34,72 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are a content marketing expert. Return your response in valid JSON format.`
+            content: `You are a financial forecasting expert specializing in startup revenue modeling. You create detailed, realistic financial projections based on market analysis and business models. Return your response in valid JSON format.`
           },
           {
             role: 'user',
-            content: `Generate ${contentType} content for: "${idea.title}" - ${idea.description}
+            content: `Create a detailed revenue forecast for: "${idea.title}" - ${idea.description}
+            
+Time Horizon: ${timeHorizon || '3 years'}
+Revenue Model: ${revenueModel || idea.monetization || 'Subscription'}
+Target Market: ${idea.audience || 'General market'}
+Budget: ${idea.budget || 'Not specified'}
+
+Generate comprehensive revenue projections including:
+1. Monthly/quarterly projections for each year
+2. Three scenarios: conservative, realistic, optimistic
+3. Key metrics (CAC, LTV, churn rate, etc.)
+4. Revenue streams breakdown
+5. Growth assumptions and drivers
+6. Unit economics
+7. Seasonal factors
+8. Market penetration rates
 
 Return as JSON: {
-  "contentPieces": [],
-  "headlines": [],
-  "callToActions": [],
-  "hashtags": [],
-  "seoKeywords": []
+  "projections": {
+    "conservative": {},
+    "realistic": {},
+    "optimistic": {}
+  },
+  "keyMetrics": {},
+  "revenueStreams": [],
+  "growthDrivers": [],
+  "unitEconomics": {},
+  "seasonalFactors": [],
+  "assumptions": []
 }`
           }
         ],
-        temperature: 0.7,
-        max_tokens: 2000,
+        temperature: 0.3,
+        max_tokens: 2500,
       }),
     });
 
     const data = await response.json();
     
     if (!response.ok) {
+      console.error('OpenAI API error:', data);
       throw new Error(`OpenAI API error: ${data.error?.message || 'Unknown error'}`);
     }
 
     const content = data.choices[0].message.content;
+    
+    // Clean up the response and parse JSON
     let cleanContent = content.replace(/```json\n?/, '').replace(/\n?```$/, '').trim();
     
     try {
       const parsedContent = JSON.parse(cleanContent);
-      return new Response(JSON.stringify({ content: parsedContent }), {
+      return new Response(JSON.stringify({ forecast: parsedContent }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     } catch (parseError) {
-      return new Response(JSON.stringify({ content: cleanContent }), {
+      console.error('JSON parsing error:', parseError);
+      return new Response(JSON.stringify({ forecast: cleanContent }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
   } catch (error) {
+    console.error('Error in generate-revenue-forecast function:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

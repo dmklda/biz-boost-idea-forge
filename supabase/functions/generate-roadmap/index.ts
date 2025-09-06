@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { idea, contentType, platform, tone } = await req.json();
+    const { idea, roadmapType, duration, team } = await req.json();
     
     if (!idea) {
       throw new Error('Idea is required');
@@ -34,46 +34,71 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are a content marketing expert. Return your response in valid JSON format.`
+            content: `You are a product roadmap expert specializing in startup development planning. You create detailed, actionable roadmaps with clear milestones and timelines. Return your response in valid JSON format.`
           },
           {
             role: 'user',
-            content: `Generate ${contentType} content for: "${idea.title}" - ${idea.description}
+            content: `Create a detailed development roadmap for: "${idea.title}" - ${idea.description}
+            
+Roadmap Type: ${roadmapType || 'Product Development'}
+Duration: ${duration || '12 months'}
+Team Size: ${team || 'Small startup team'}
+Budget: ${idea.budget || 'Bootstrapped'}
+
+Generate a comprehensive roadmap including:
+1. Phases/milestones with timeline
+2. Deliverables for each phase
+3. Resource requirements
+4. Dependencies and risk factors
+5. Key performance indicators
+6. Go-to-market strategy timeline
+7. MVP features vs future releases
+8. Technology stack recommendations
 
 Return as JSON: {
-  "contentPieces": [],
-  "headlines": [],
-  "callToActions": [],
-  "hashtags": [],
-  "seoKeywords": []
+  "phases": [],
+  "timeline": {},
+  "deliverables": {},
+  "resources": {},
+  "dependencies": [],
+  "kpis": [],
+  "goToMarket": {},
+  "mvpFeatures": [],
+  "futureReleases": [],
+  "techStack": []
 }`
           }
         ],
-        temperature: 0.7,
-        max_tokens: 2000,
+        temperature: 0.4,
+        max_tokens: 2500,
       }),
     });
 
     const data = await response.json();
     
     if (!response.ok) {
+      console.error('OpenAI API error:', data);
       throw new Error(`OpenAI API error: ${data.error?.message || 'Unknown error'}`);
     }
 
     const content = data.choices[0].message.content;
+    
+    // Clean up the response and parse JSON
     let cleanContent = content.replace(/```json\n?/, '').replace(/\n?```$/, '').trim();
     
     try {
       const parsedContent = JSON.parse(cleanContent);
-      return new Response(JSON.stringify({ content: parsedContent }), {
+      return new Response(JSON.stringify({ roadmap: parsedContent }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     } catch (parseError) {
-      return new Response(JSON.stringify({ content: cleanContent }), {
+      console.error('JSON parsing error:', parseError);
+      return new Response(JSON.stringify({ roadmap: cleanContent }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
   } catch (error) {
+    console.error('Error in generate-roadmap function:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

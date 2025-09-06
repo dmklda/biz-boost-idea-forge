@@ -26,6 +26,12 @@ import { MarketingStrategyModal } from "@/components/tools/MarketingStrategyModa
 import { BusinessPlanModal } from "@/components/tools/BusinessPlanModal";
 import { SEOAnalyzerModal } from "@/components/tools/SEOAnalyzerModal";
 import { LandingPageGeneratorModal } from "@/components/tools/LandingPageGeneratorModal";
+import { ContentMarketingModal } from "@/components/tools/ContentMarketingModal";
+import { TrendAnalysisModal } from "@/components/tools/TrendAnalysisModal";
+import { RevenueForecastModal } from "@/components/tools/RevenueForecastModal";
+import { RoadmapGeneratorModal } from "@/components/tools/RoadmapGeneratorModal";
+import { StartupKitModal } from "@/components/tools/StartupKitModal";
+import { InvestmentSimulatorModal } from "@/components/tools/InvestmentSimulatorModal";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlanAccess } from "@/hooks/usePlanAccess";

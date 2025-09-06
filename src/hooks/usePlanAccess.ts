@@ -15,7 +15,13 @@ export type FeatureType =
   | 'marketing-strategy'
   | 'business-plan'
   | 'seo-analyzer'
-  | 'landing-page-generator';
+  | 'landing-page-generator'
+  | 'content-marketing'
+  | 'trend-analysis'
+  | 'revenue-forecast'
+  | 'roadmap-generator'
+  | 'startup-kit'
+  | 'investment-simulator';
 
 const FEATURE_PLAN_REQUIREMENTS: Record<FeatureType, PlanType[]> = {
   'marketplace': ['entrepreneur', 'business'],
@@ -31,7 +37,13 @@ const FEATURE_PLAN_REQUIREMENTS: Record<FeatureType, PlanType[]> = {
   'marketing-strategy': ['free', 'entrepreneur', 'business'],
   'business-plan': ['free', 'entrepreneur', 'business'],
   'seo-analyzer': ['free', 'entrepreneur', 'business'],
-  'landing-page-generator': ['free', 'entrepreneur', 'business']
+  'landing-page-generator': ['free', 'entrepreneur', 'business'],
+  'content-marketing': ['free', 'entrepreneur', 'business'],
+  'trend-analysis': ['entrepreneur', 'business'],
+  'revenue-forecast': ['entrepreneur', 'business'],
+  'roadmap-generator': ['free', 'entrepreneur', 'business'],
+  'startup-kit': ['entrepreneur', 'business'],
+  'investment-simulator': ['entrepreneur', 'business']
 };
 
 const PLAN_CREDITS: Record<PlanType, { initial: number; monthly: number }> = {
@@ -57,7 +69,13 @@ const FEATURE_COSTS: Record<FeatureType | 'basic-analysis' | 'reanalysis' | 'com
   'marketing-strategy': 8,
   'business-plan': 12,
   'seo-analyzer': 5,
-  'landing-page-generator': 18
+  'landing-page-generator': 18,
+  'content-marketing': 4,
+  'trend-analysis': 8,
+  'revenue-forecast': 9,
+  'roadmap-generator': 7,
+  'startup-kit': 15,
+  'investment-simulator': 10
 };
 
 export const usePlanAccess = () => {
