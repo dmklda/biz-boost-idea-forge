@@ -13,6 +13,10 @@ import {
 import { useState } from "react";
 import { LogoGeneratorModal } from "@/components/tools/LogoGeneratorModal";
 import { PRDMVPGeneratorModal } from "@/components/tools/PRDMVPGeneratorModal";
+import { BusinessNameGeneratorModal } from "@/components/tools/BusinessNameGeneratorModal";
+import { MarketAnalysisModal } from "@/components/tools/MarketAnalysisModal";
+import { BusinessModelCanvasModal } from "@/components/tools/BusinessModelCanvasModal";
+import { FinancialAnalysisModal } from "@/components/tools/FinancialAnalysisModal";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlanAccess } from "@/hooks/usePlanAccess";
@@ -23,6 +27,10 @@ const ToolsPage = () => {
   const { hasFeatureAccess, getFeatureCost, canAccessFeature, hasCredits } = usePlanAccess();
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
   const [isPRDModalOpen, setIsPRDModalOpen] = useState(false);
+  const [isBusinessNameModalOpen, setIsBusinessNameModalOpen] = useState(false);
+  const [isMarketAnalysisModalOpen, setIsMarketAnalysisModalOpen] = useState(false);
+  const [isBusinessModelCanvasModalOpen, setIsBusinessModelCanvasModalOpen] = useState(false);
+  const [isFinancialAnalysisModalOpen, setIsFinancialAnalysisModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
@@ -56,11 +64,11 @@ const ToolsPage = () => {
       title: "Gerador de Nomes",
       description: "Encontre o nome perfeito para sua startup",
       icon: Lightbulb,
-      action: () => console.log("Name generator - Coming soon"),
+      action: () => setIsBusinessNameModalOpen(true),
       color: "from-green-500 to-emerald-500",
       category: "design",
       credits: 3,
-      status: "coming-soon"
+      status: "available"
     },
     {
       title: "Paleta de Cores",
@@ -99,11 +107,11 @@ const ToolsPage = () => {
       title: "Business Model Canvas",
       description: "Crie um modelo de negócio visual e estruturado",
       icon: Briefcase,
-      action: () => console.log("Business Model Canvas - Coming soon"),
+      action: () => setIsBusinessModelCanvasModalOpen(true),
       color: "from-orange-500 to-red-500",
       category: "documentation",
       credits: 6,
-      status: "coming-soon"
+      status: "available"
     },
     {
       title: "Pitch Deck Generator",
@@ -141,21 +149,21 @@ const ToolsPage = () => {
       title: "Análise de Mercado",
       description: "Pesquise e analise seu mercado-alvo",
       icon: TrendingUp,
-      action: () => console.log("Market Analysis - Coming soon"),
+      action: () => setIsMarketAnalysisModalOpen(true),
       color: "from-emerald-500 to-teal-500",
       category: "analysis",
       credits: 9,
-      status: "coming-soon"
+      status: "available"
     },
     {
       title: "Análise Financeira",
       description: "Projete finanças e modelo de receita",
       icon: DollarSign,
-      action: () => console.log("Financial Analysis - Coming soon"),
+      action: () => setIsFinancialAnalysisModalOpen(true),
       color: "from-yellow-500 to-orange-500",
       category: "analysis",
       credits: 8,
-      status: "coming-soon"
+      status: "available"
     },
     {
       title: "Análise de Concorrentes",
@@ -449,6 +457,22 @@ const ToolsPage = () => {
       <PRDMVPGeneratorModal 
         open={isPRDModalOpen} 
         onOpenChange={setIsPRDModalOpen} 
+      />
+      <BusinessNameGeneratorModal 
+        open={isBusinessNameModalOpen} 
+        onOpenChange={setIsBusinessNameModalOpen} 
+      />
+      <MarketAnalysisModal 
+        open={isMarketAnalysisModalOpen} 
+        onOpenChange={setIsMarketAnalysisModalOpen} 
+      />
+      <BusinessModelCanvasModal 
+        open={isBusinessModelCanvasModalOpen} 
+        onOpenChange={setIsBusinessModelCanvasModalOpen} 
+      />
+      <FinancialAnalysisModal 
+        open={isFinancialAnalysisModalOpen} 
+        onOpenChange={setIsFinancialAnalysisModalOpen} 
       />
     </div>
   );
