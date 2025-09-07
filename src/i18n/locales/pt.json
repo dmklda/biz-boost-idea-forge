@@ -429,6 +429,7 @@
       "name": "Campanhas de Email",
       "description": "Crie campanhas de email marketing eficazes"
     },
+    
     "toolCost": "Custo da Ferramenta",
     "toolCostDescription": "Esta ferramenta consome <strong>{{cost}} créditos</strong> por uso. Você possui <strong>{{available}} créditos</strong> disponíveis.",
     "notEnoughCredits": "Créditos insuficientes.",
