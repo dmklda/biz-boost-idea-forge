@@ -107,22 +107,22 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
         console.log('🎯 Nome definido como personalizado:', trimmedName);
         
         toast({
-          title: "Nome gerado com sucesso!",
-          description: `"${trimmedName}" foi gerado e está pronto para uso.`,
+          title: t("logoGenerator.toast.nameGeneratedSuccess", "Nome gerado com sucesso!"),
+          description: t("logoGenerator.toast.nameGeneratedDescription", "\"{{name}}\" foi gerado e está pronto para uso.", { name: trimmedName }),
         });
       } else {
         console.error('❌ Nome gerado está vazio:', data);
         toast({
-          title: "Erro",
-          description: "Não foi possível gerar um nome. Tente novamente.",
+          title: t("logoGenerator.toast.error", "Erro"),
+          description: t("logoGenerator.toast.nameGenerationFailed", "Não foi possível gerar um nome. Tente novamente."),
           variant: "destructive",
         });
       }
     } catch (error) {
       console.error('❌ Erro ao gerar nome:', error);
       toast({
-        title: "Erro",
-        description: "Erro ao gerar nome. Verifique sua conexão e tente novamente.",
+        title: t("logoGenerator.toast.error", "Erro"),
+        description: t("logoGenerator.toast.connectionError", "Erro ao gerar nome. Verifique sua conexão e tente novamente."),
         variant: "destructive",
       });
     } finally {
@@ -137,8 +137,8 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
     // Enhanced validation with better error messages
     if (mode === "idea" && !selectedIdea) {
       toast({
-        title: "Erro",
-        description: "Selecione uma ideia para gerar o logo",
+        title: t("logoGenerator.toast.error", "Erro"),
+        description: t("logoGenerator.toast.selectIdea", "Selecione uma ideia para gerar o logo"),
         variant: "destructive",
       });
       return;
@@ -146,8 +146,8 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
     
     if (mode === "idea" && nameSource === "custom" && !customName.trim()) {
       toast({
-        title: "Erro",
-        description: "Digite um nome personalizado para o logo",
+        title: t("logoGenerator.toast.error", "Erro"),
+        description: t("logoGenerator.toast.enterCustomName", "Digite um nome personalizado para o logo"),
         variant: "destructive",
       });
       return;
@@ -155,8 +155,8 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
     
     if (mode === "idea" && nameSource === "generated" && !selectedIdea?.generated_name) {
       toast({
-        title: "Erro",
-        description: "Esta ideia não possui um nome gerado. Use outro tipo de nome ou gere um novo.",
+        title: t("logoGenerator.toast.error", "Erro"),
+        description: t("logoGenerator.toast.noGeneratedName", "Esta ideia não possui um nome gerado. Use outro tipo de nome ou gere um novo."),
         variant: "destructive",
       });
       return;
@@ -164,8 +164,8 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
     
     if (mode === "free" && (!freeName || !freeDescription)) {
       toast({
-        title: "Erro",
-        description: "Nome e descrição são obrigatórios para o modo livre",
+        title: t("logoGenerator.toast.error", "Erro"),
+        description: t("logoGenerator.toast.requiredFieldsFree", "Nome e descrição são obrigatórios para o modo livre"),
         variant: "destructive",
       });
       return;
@@ -233,14 +233,14 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
 
       setGeneratedLogo(data.logoUrl);
       toast({
-        title: "Sucesso!",
-        description: "Logo gerado e salvo em 'Meus Conteúdos'!",
+        title: t("logoGenerator.toast.success", "Sucesso!"),
+        description: t("logoGenerator.toast.logoGenerated", "Logo gerado e salvo em 'Meus Conteúdos'!"),
       });
     } catch (error) {
       console.error('Error generating logo:', error);
       toast({
-        title: "Erro",
-        description: "Erro ao gerar logo",
+        title: t("logoGenerator.toast.error", "Erro"),
+        description: t("logoGenerator.toast.logoGenerationError", "Erro ao gerar logo"),
         variant: "destructive",
       });
     } finally {
@@ -335,14 +335,14 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
     <ToolModalBase
       open={open}
       onOpenChange={onOpenChange}
-      title="Gerador de Logotipos - GPT-Image-1"
+      title={t("logoGenerator.title", "Gerador de Logotipos - GPT-Image-1")}
       icon={logoIcon}
       isGenerating={isGenerating}
-      generatingText="Gerando logo com GPT-Image-1..."
-      actionText="Gerar Logo com GPT-Image-1 (10 créditos)"
+      generatingText={t("logoGenerator.generating", "Gerando logo...")}
+      actionText={t("logoGenerator.actions.generate", "Gerar Logo com GPT-Image-1 (10 créditos)")}
       onAction={handleGenerate}
       actionDisabled={!isFormValid || isGenerating || !authState.user || authState.user.credits < 10}
-      resetText="Gerar Novo Logo"
+      resetText={t("logoGenerator.actions.new", "Gerar Novo Logo")}
       onReset={() => setGeneratedLogo("")}
       showReset={!!generatedLogo}
       creditCost={10}
@@ -354,7 +354,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
             <div className="border rounded-lg p-4 bg-background">
               <img
                 src={generatedLogo}
-                alt="Logo gerado"
+                alt={t("logoGenerator.logoAlt", "Logo gerado")}
                 className="max-w-full max-h-64 object-contain"
               />
             </div>
@@ -363,7 +363,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
           <div className="flex flex-col sm:flex-row gap-2 justify-center">
             <Button onClick={downloadLogo} variant="outline" className="w-full sm:w-auto">
               <Download className="h-4 w-4 mr-2" />
-              Baixar Logo
+              {t("logoGenerator.actions.download", "Baixar Logo")}
             </Button>
           </div>
         </div>
@@ -373,7 +373,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Palette className="h-5 w-5" />
-                Escolha o Modo de Criação
+                {t("logoGenerator.sections.creationMode", "Escolha o Modo de Criação")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -381,18 +381,18 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="idea" className="flex items-center gap-2">
                     <Sparkles className="h-4 w-4" />
-                    Baseado em Ideia
+                    {t("logoGenerator.modes.ideaBased", "Baseado em Ideia")}
                   </TabsTrigger>
                   <TabsTrigger value="free" className="flex items-center gap-2">
                     <Palette className="h-4 w-4" />
-                    Criação Livre
+                    {t("logoGenerator.modes.freeCreation", "Criação Livre")}
                   </TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="idea" className="mt-4">
                   <div className="space-y-4">
                     <p className="text-sm text-muted-foreground">
-                      Crie um logo baseado em uma das suas ideias já analisadas.
+                      {t("logoGenerator.descriptions.ideaBased", "Crie um logo baseado em uma das suas ideias já analisadas.")}
                     </p>
                     <EnhancedIdeaSelector onSelect={handleIdeaSelect} />
                   </div>
@@ -401,43 +401,43 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                 <TabsContent value="free" className="mt-4">
                   <div className="space-y-4">
                     <p className="text-sm text-muted-foreground">
-                      Crie um logo completamente novo fornecendo as informações básicas.
+                      {t("logoGenerator.descriptions.freeCreation", "Crie um logo completamente novo fornecendo as informações básicas.")}
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="freeName">Nome da Empresa/Projeto *</Label>
+                        <Label htmlFor="freeName">{t("logoGenerator.fields.companyName", "Nome da Empresa/Projeto *")}</Label>
                         <Input
                           id="freeName"
-                          placeholder="Ex: TechStart, Café Aroma..."
+                          placeholder={t("logoGenerator.placeholders.companyName", "Ex: TechStart, Café Aroma...")}
                           value={freeName}
                           onChange={(e) => setFreeName(e.target.value)}
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="freeIndustry">Setor/Indústria</Label>
+                        <Label htmlFor="freeIndustry">{t("logoGenerator.fields.industry", "Setor/Indústria")}</Label>
                         <Input
                           id="freeIndustry"
-                          placeholder="Ex: Tecnologia, Alimentação..."
+                          placeholder={t("logoGenerator.placeholders.industry", "Ex: Tecnologia, Alimentação...")}
                           value={freeIndustry}
                           onChange={(e) => setFreeIndustry(e.target.value)}
                         />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="freeDescription">Descrição do Negócio *</Label>
+                      <Label htmlFor="freeDescription">{t("logoGenerator.fields.businessDescription", "Descrição do Negócio *")}</Label>
                       <Textarea
                         id="freeDescription"
-                        placeholder="Descreva o que sua empresa/projeto faz, seus valores, missão..."
+                        placeholder={t("logoGenerator.placeholders.businessDescription", "Descreva o que sua empresa/projeto faz, seus valores, missão...")}
                         value={freeDescription}
                         onChange={(e) => setFreeDescription(e.target.value)}
                         rows={3}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="freeAudience">Público-Alvo</Label>
+                      <Label htmlFor="freeAudience">{t("logoGenerator.fields.targetAudience", "Público-Alvo")}</Label>
                       <Input
                         id="freeAudience"
-                        placeholder="Ex: Jovens profissionais, famílias..."
+                        placeholder={t("logoGenerator.placeholders.targetAudience", "Ex: Jovens profissionais, famílias...")}
                         value={freeAudience}
                         onChange={(e) => setFreeAudience(e.target.value)}
                       />
@@ -455,24 +455,24 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Sparkles className="h-5 w-5" />
-                    Informações da Ideia
+                    {t("logoGenerator.sections.ideaInfo", "Informações da Ideia")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-sm font-medium text-muted-foreground">Título</Label>
+                      <Label className="text-sm font-medium text-muted-foreground">{t("logoGenerator.fields.title", "Título")}</Label>
                       <p className="text-sm font-medium">{selectedIdea.title}</p>
                     </div>
                     {selectedIdea.audience && (
                       <div>
-                        <Label className="text-sm font-medium text-muted-foreground">Público-alvo</Label>
+                        <Label className="text-sm font-medium text-muted-foreground">{t("logoGenerator.fields.targetAudience", "Público-alvo")}</Label>
                         <p className="text-sm">{selectedIdea.audience}</p>
                       </div>
                     )}
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground">Descrição</Label>
+                    <Label className="text-sm font-medium text-muted-foreground">{t("logoGenerator.fields.description", "Descrição")}</Label>
                     <p className="text-sm">{selectedIdea.description}</p>
                   </div>
                 </CardContent>
@@ -483,13 +483,13 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Palette className="h-5 w-5" />
-                    Opções de Nome para o Logo
+                    {t("logoGenerator.sections.nameOptions", "Opções de Nome para o Logo")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between flex-wrap gap-2">
-                      <Label className="text-base font-medium">Escolha o nome que será usado:</Label>
+                      <Label className="text-base font-medium">{t("logoGenerator.labels.chooseName", "Escolha o nome que será usado:")}</Label>
                       <Button
                         type="button"
                         variant="outline"
@@ -501,12 +501,12 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                         {isGeneratingName ? (
                           <>
                             <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current mr-2"></div>
-                            Gerando...
+                            {t("logoGenerator.actions.generating", "Gerando...")}
                           </>
                         ) : (
                           <>
                             <Sparkles className="h-3 w-3 mr-1" />
-                            Gerar Nome
+                            {t("logoGenerator.actions.generateName", "Gerar Nome")}
                           </>
                         )}
                       </Button>
@@ -529,8 +529,8 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                         <div className="flex-1">
                           <label htmlFor="original" className="cursor-pointer">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="font-medium">Usar nome original</span>
-                              {nameSource === "original" && <span className="text-xs text-primary">✓ Selecionado</span>}
+                              <span className="font-medium">{t("logoGenerator.nameOptions.original", "Usar nome original")}</span>
+                              {nameSource === "original" && <span className="text-xs text-primary">{t("logoGenerator.labels.selected", "✓ Selecionado")}</span>}
                             </div>
                             <div className="text-sm text-muted-foreground bg-muted/50 p-2 rounded border">
                               {selectedIdea.title}
@@ -556,8 +556,8 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                           <div className="flex-1">
                             <label htmlFor="generated" className="cursor-pointer">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="font-medium">Usar nome gerado anteriormente</span>
-                                {nameSource === "generated" && <span className="text-xs text-primary">✓ Selecionado</span>}
+                                <span className="font-medium">{t("logoGenerator.nameOptions.generated", "Usar nome gerado anteriormente")}</span>
+                                {nameSource === "generated" && <span className="text-xs text-primary">{t("logoGenerator.labels.selected", "✓ Selecionado")}</span>}
                               </div>
                               <div className="text-sm text-muted-foreground bg-muted/50 p-2 rounded border">
                                 {selectedIdea.generated_name}
@@ -583,21 +583,21 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                         <div className="flex-1">
                           <label htmlFor="custom" className="cursor-pointer">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="font-medium">Usar nome personalizado</span>
-                              {nameSource === "custom" && <span className="text-xs text-primary">✓ Selecionado</span>}
+                              <span className="font-medium">{t("logoGenerator.nameOptions.custom", "Usar nome personalizado")}</span>
+                              {nameSource === "custom" && <span className="text-xs text-primary">{t("logoGenerator.labels.selected", "✓ Selecionado")}</span>}
                             </div>
                           </label>
                           <div className="mt-2">
                             <Input
                               id="customName"
-                              placeholder="Digite um nome personalizado para o logo"
+                              placeholder={t("logoGenerator.placeholders.customName", "Digite um nome personalizado para o logo")}
                               value={customName}
                               onChange={(e) => setCustomName(e.target.value)}
                               className="w-full"
                             />
                             {nameSource === "custom" && !customName.trim() && (
                               <p className="text-xs text-muted-foreground mt-1">
-                                Campo obrigatório quando esta opção está selecionada
+                                {t("logoGenerator.validations.requiredField", "Campo obrigatório quando esta opção está selecionada")}
                               </p>
                             )}
                           </div>
@@ -614,12 +614,12 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
             <div className="space-y-6">
               <Card className="border-muted-foreground/20">
                 <CardHeader>
-                  <CardTitle>Configurações do Logo</CardTitle>
+                  <CardTitle>{t("logoGenerator.sections.logoSettings", "Configurações do Logo")}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label>Tipo de Logo</Label>
+                      <Label>{t("logoGenerator.fields.logoType", "Tipo de Logo")}</Label>
                       <Select value={logoType} onValueChange={setLogoType}>
                         <SelectTrigger>
                           <SelectValue />
@@ -638,7 +638,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Estilo do Logo</Label>
+                      <Label>{t("logoGenerator.fields.logoStyle", "Estilo do Logo")}</Label>
                       <Select value={logoStyle} onValueChange={setLogoStyle}>
                         <SelectTrigger>
                           <SelectValue />
@@ -657,7 +657,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Esquema de Cores</Label>
+                      <Label>{t("logoGenerator.fields.colorScheme", "Esquema de Cores")}</Label>
                       <Select value={colorScheme} onValueChange={setColorScheme}>
                         <SelectTrigger>
                           <SelectValue />
@@ -676,7 +676,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Formato de Saída</Label>
+                      <Label>{t("logoGenerator.fields.outputFormat", "Formato de Saída")}</Label>
                       <Select value={outputFormat} onValueChange={setOutputFormat}>
                         <SelectTrigger>
                           <SelectValue />
@@ -695,7 +695,7 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Qualidade</Label>
+                      <Label>{t("logoGenerator.fields.quality", "Qualidade")}</Label>
                       <Select value={quality} onValueChange={setQuality}>
                         <SelectTrigger>
                           <SelectValue />
@@ -714,22 +714,22 @@ export const LogoGeneratorModal = ({ open, onOpenChange }: LogoGeneratorModalPro
                     </div>
 
                     <div className="space-y-3">
-                      <Label>Opções Avançadas</Label>
+                      <Label>{t("logoGenerator.sections.advancedOptions", "Opções Avançadas")}</Label>
                       <div className="flex items-center space-x-2">
                         <Switch
                           checked={transparentBackground}
                           onCheckedChange={setTransparentBackground}
                         />
-                        <Label className="text-sm">Fundo transparente</Label>
+                        <Label className="text-sm">{t("logoGenerator.options.transparentBackground", "Fundo transparente")}</Label>
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="customPrompt">Prompt Personalizado (Opcional)</Label>
+                    <Label htmlFor="customPrompt">{t("logoGenerator.fields.customPrompt", "Prompt Personalizado (Opcional)")}</Label>
                     <Textarea
                       id="customPrompt"
-                      placeholder="Adicione detalhes específicos sobre como quer que o logo seja..."
+                      placeholder={t("logoGenerator.placeholders.customPrompt", "Adicione detalhes específicos sobre como quer que o logo seja...")}
                       value={customPrompt}
                       onChange={(e) => setCustomPrompt(e.target.value)}
                       rows={3}

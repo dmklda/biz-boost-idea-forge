@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useTranslation } from "react-i18next";
 
 interface Idea {
   id: string;
@@ -36,6 +37,7 @@ export const EnhancedIdeaSelector: React.FC<EnhancedIdeaSelectorProps> = ({
   useCustomIdea = false,
   onUseCustomIdeaChange
 }) => {
+  const { t } = useTranslation();
   const { authState } = useAuth();
   const user = authState.user;
   const [ideas, setIdeas] = useState<Idea[]>([]);
@@ -99,7 +101,7 @@ export const EnhancedIdeaSelector: React.FC<EnhancedIdeaSelectorProps> = ({
   if (isLoading) {
     return (
       <div className="text-center py-4">
-        <div className="text-sm text-muted-foreground">Carregando suas ideias...</div>
+        <div className="text-sm text-muted-foreground">{t("common.loadingIdeas", "Carregando suas ideias...")}</div>
       </div>
     );
   }
@@ -111,12 +113,12 @@ export const EnhancedIdeaSelector: React.FC<EnhancedIdeaSelectorProps> = ({
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="saved" className="flex items-center gap-1">
               <Lightbulb className="h-4 w-4" />
-              <span>Ideias Salvas</span>
+              <span>{t("ideas.savedIdeas", "Ideias Salvas")}</span>
               <Badge variant="secondary" className="ml-1">{ideas.length}</Badge>
             </TabsTrigger>
             <TabsTrigger value="custom" className="flex items-center gap-1">
               <Plus className="h-4 w-4" />
-              <span>Ideia Personalizada</span>
+              <span>{t("ideas.customIdea", "Ideia Personalizada")}</span>
             </TabsTrigger>
           </TabsList>
           
@@ -124,9 +126,9 @@ export const EnhancedIdeaSelector: React.FC<EnhancedIdeaSelectorProps> = ({
             {ideas.length === 0 ? (
               <div className="text-center py-8">
                 <Lightbulb className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Nenhuma ideia encontrada</h3>
+                <h3 className="text-lg font-semibold mb-2">{t("ideas.noIdeasFound", "Nenhuma ideia encontrada")}</h3>
                 <p className="text-muted-foreground">
-                  Crie uma ideia primeiro para usar esta ferramenta
+                  {t("ideas.createFirstIdea", "Crie uma ideia primeiro para usar esta ferramenta")}
                 </p>
               </div>
             ) : (
@@ -134,7 +136,7 @@ export const EnhancedIdeaSelector: React.FC<EnhancedIdeaSelectorProps> = ({
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                   <Input
-                    placeholder="Buscar nas suas ideias..."
+                    placeholder={t("ideas.searchIdeas", "Buscar nas suas ideias...")}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10"
@@ -163,7 +165,7 @@ export const EnhancedIdeaSelector: React.FC<EnhancedIdeaSelectorProps> = ({
                               </Badge>
                               {selectedIdea?.id === idea.id && (
                                 <Badge variant="default" className="text-xs">
-                                  Selecionada
+                                  {t("ideas.selected", "Selecionada")}
                                 </Badge>
                               )}
                             </div>
@@ -176,7 +178,7 @@ export const EnhancedIdeaSelector: React.FC<EnhancedIdeaSelectorProps> = ({
                       <div className="text-center py-8">
                         <Search className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                         <p className="text-muted-foreground">
-                          Nenhuma ideia encontrada com este termo
+                          {t("ideas.noMatchingIdeas", "Nenhuma ideia encontrada com este termo")}
                         </p>
                       </div>
                     )}
@@ -189,10 +191,10 @@ export const EnhancedIdeaSelector: React.FC<EnhancedIdeaSelectorProps> = ({
           <TabsContent value="custom" className="mt-4">
             <div className="space-y-4">
               <div>
-                <Label htmlFor="custom-idea" className="text-base font-medium">Descreva sua ideia</Label>
+                <Label htmlFor="custom-idea" className="text-base font-medium">{t("ideas.describeYourIdea", "Descreva sua ideia")}</Label>
                 <Textarea
                   id="custom-idea"
-                  placeholder="Descreva sua ideia de negócio em detalhes..."
+                  placeholder={t("ideas.describeBusinessIdea", "Descreva sua ideia de negócio em detalhes...")}
                   value={customIdeaValue}
                   onChange={handleCustomIdeaChange}
                   className="mt-2 min-h-[150px] resize-none"
@@ -200,12 +202,12 @@ export const EnhancedIdeaSelector: React.FC<EnhancedIdeaSelectorProps> = ({
               </div>
               
               <div className="text-sm text-muted-foreground">
-                <p>Dicas para uma boa descrição:</p>
+                <p>{t("ideas.tipsForDescription", "Dicas para uma boa descrição:")}</p>
                 <ul className="list-disc pl-5 mt-1 space-y-1">
-                  <li>Explique o problema que sua ideia resolve</li>
-                  <li>Descreva seu público-alvo</li>
-                  <li>Mencione como pretende monetizar</li>
-                  <li>Inclua diferenciais competitivos</li>
+                  <li>{t("ideas.tipProblem", "Explique o problema que sua ideia resolve")}</li>
+                  <li>{t("ideas.tipAudience", "Descreva seu público-alvo")}</li>
+                  <li>{t("ideas.tipMonetization", "Mencione como pretende monetizar")}</li>
+                  <li>{t("ideas.tipCompetitive", "Inclua diferenciais competitivos")}</li>
                 </ul>
               </div>
             </div>
@@ -216,22 +218,22 @@ export const EnhancedIdeaSelector: React.FC<EnhancedIdeaSelectorProps> = ({
           {ideas.length === 0 ? (
             <div className="text-center py-8">
               <Lightbulb className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Nenhuma ideia encontrada</h3>
-              <p className="text-muted-foreground">
-                Crie uma ideia primeiro para usar esta ferramenta
-              </p>
+              <h3 className="text-lg font-semibold mb-2">{t("ideas.noIdeasFound", "Nenhuma ideia encontrada")}</h3>
+                <p className="text-muted-foreground">
+                  {t("ideas.createFirstIdea", "Crie uma ideia primeiro para usar esta ferramenta")}
+                </p>
             </div>
           ) : (
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-4">
                 <Lightbulb className="h-5 w-5" />
-                <h3 className="font-semibold">Selecione uma ideia:</h3>
+                <h3 className="font-semibold">{t("ideas.selectIdea", "Selecione uma ideia:")}</h3>
               </div>
               
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
-                  placeholder="Buscar nas suas ideias..."
+                  placeholder={t("ideas.searchIdeas", "Buscar nas suas ideias...")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -260,7 +262,7 @@ export const EnhancedIdeaSelector: React.FC<EnhancedIdeaSelectorProps> = ({
                             </Badge>
                             {selectedIdea?.id === idea.id && (
                               <Badge variant="default" className="text-xs">
-                                Selecionada
+                                {t("ideas.selected", "Selecionada")}
                               </Badge>
                             )}
                           </div>
@@ -273,7 +275,7 @@ export const EnhancedIdeaSelector: React.FC<EnhancedIdeaSelectorProps> = ({
                     <div className="text-center py-8">
                       <Search className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                       <p className="text-muted-foreground">
-                        Nenhuma ideia encontrada com este termo
+                        {t("ideas.noMatchingIdeas", "Nenhuma ideia encontrada com este termo")}
                       </p>
                     </div>
                   )}

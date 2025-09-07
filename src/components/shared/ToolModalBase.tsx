@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "react-i18next";
 
 interface ToolModalBaseProps {
   open: boolean;
@@ -32,7 +33,7 @@ export const ToolModalBase: React.FC<ToolModalBaseProps> = ({
   icon,
   isLoading = false,
   isGenerating = false,
-  generatingText = "Gerando...",
+  generatingText,
   actionText = "Gerar",
   onAction,
   actionDisabled = false,
@@ -44,9 +45,13 @@ export const ToolModalBase: React.FC<ToolModalBaseProps> = ({
   maxWidth = "4xl",
   showCreditWarning = true,
 }) => {
+  const { t } = useTranslation();
   const { authState } = useAuth();
   const user = authState.user;
   const hasEnoughCredits = user && user.credits >= creditCost;
+  
+  // Set default value for generatingText using translation
+  const defaultGeneratingText = t("tools.generating", "Gerando...");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -61,7 +66,7 @@ export const ToolModalBase: React.FC<ToolModalBaseProps> = ({
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-            <p className="text-muted-foreground">Carregando...</p>
+            <p className="text-muted-foreground">{t("common.loading", "Carregando...")}</p>
           </div>
         ) : (
           <div className="space-y-6">
@@ -77,7 +82,7 @@ export const ToolModalBase: React.FC<ToolModalBaseProps> = ({
                   {isGenerating ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      {generatingText}
+                      {generatingText || defaultGeneratingText}
                     </>
                   ) : (
                     <>
@@ -105,25 +110,29 @@ export const ToolModalBase: React.FC<ToolModalBaseProps> = ({
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm flex items-center gap-2">
                     <span className="text-brand-purple">💳</span>
-                    Custo da Ferramenta
+                    {t("tools.toolCost", "Custo da Ferramenta")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <p className="text-sm text-muted-foreground">
-                    Esta ferramenta consome <strong>{creditCost} créditos</strong> por uso.
-                    Você possui <strong>{user?.credits || 0} créditos</strong> disponíveis.
-                  </p>
+                  <p className="text-sm text-muted-foreground"
+                    dangerouslySetInnerHTML={{
+                      __html: t("tools.toolCostDescription", "Esta ferramenta consome <strong>{{cost}} créditos</strong> por uso. Você possui <strong>{{available}} créditos</strong> disponíveis.", {
+                        cost: creditCost,
+                        available: user?.credits || 0
+                      })
+                    }}
+                  />
 
                   {!hasEnoughCredits && (
                     <div className="mt-2">
                       <p className="text-sm text-destructive">
-                        Créditos insuficientes.{" "}
+                        {t("tools.notEnoughCredits", "Créditos insuficientes.")}{" "}
                         <Button
                           variant="link"
                           className="p-0 h-auto text-sm"
                           onClick={() => window.location.href = "/dashboard/configuracoes?tab=credits"}
                         >
-                          Comprar mais créditos
+                          {t("tools.buyMoreCredits", "Comprar mais créditos")}
                         </Button>
                       </p>
                     </div>

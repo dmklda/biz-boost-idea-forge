@@ -36,35 +36,35 @@ export const MobileBottomNav = () => {
 
   const menuItems = [
     {
-      title: t('nav.dashboard'),
+      title: t('ideas.nav.dashboard'),
       icon: LayoutDashboard,
       path: '/dashboard',
       onClick: undefined,
       badge: false
     }, 
     {
-      title: t('nav.ideas'),
+      title: t('ideas.nav.ideas'),
       icon: Lightbulb,
       path: '/dashboard/ideias',
       onClick: undefined,
       badge: false
     }, 
     {
-      title: t('nav.tools', 'Ferramentas'),
+      title: t('ideas.nav.tools', 'Ferramentas'), 
       icon: Wrench,
       path: '/dashboard/ferramentas',
       onClick: undefined,
       badge: false
     },
     {
-      title: "Conteúdos",
+      title: t('ideas.nav.content', "Meus Conteúdos"),
       icon: Archive,
       path: '/dashboard/conteudos',
       onClick: undefined,
       badge: false
     }, 
     {
-      title: "Ver Mais",
+      title: t('ideas.nav.more', "Ver Mais"),
       icon: MoreHorizontal,
       path: '/dashboard/mais-recursos',
       onClick: undefined,

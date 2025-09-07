@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
-import { FileText, Copy, Download } from "lucide-react";
+import { FileText, Copy, Download, CheckCircle, Target, Users, Calendar } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { ToolModalBase } from "@/components/shared/ToolModalBase";
 import { EnhancedIdeaSelector } from "@/components/shared/EnhancedIdeaSelector";
@@ -24,7 +26,7 @@ export const PRDMVPGeneratorModalEnhanced = ({ open, onOpenChange }: PRDMVPGener
   const [documentType, setDocumentType] = useState<"prd" | "mvp">("prd");
   const [customRequirements, setCustomRequirements] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedDocument, setGeneratedDocument] = useState("");
+  const [generatedDocument, setGeneratedDocument] = useState<any>(null);
 
   const handleIdeaSelect = (idea: any) => {
     setSelectedIdea(idea);
@@ -60,7 +62,18 @@ export const PRDMVPGeneratorModalEnhanced = ({ open, onOpenChange }: PRDMVPGener
 
       if (error) throw error;
 
-      setGeneratedDocument(data.document);
+      // Parse JSON response if it's a string
+      let parsedDocument = data.document;
+      if (typeof data.document === 'string') {
+        try {
+          parsedDocument = JSON.parse(data.document);
+        } catch (parseError) {
+          // If parsing fails, treat as plain text
+          parsedDocument = { content: data.document };
+        }
+      }
+      
+      setGeneratedDocument(parsedDocument);
       toast.success(`${documentType.toUpperCase()} gerado com sucesso!`);
     } catch (error) {
       console.error('Error generating document:', error);
@@ -74,24 +87,73 @@ export const PRDMVPGeneratorModalEnhanced = ({ open, onOpenChange }: PRDMVPGener
     setSelectedIdea(null);
     setDocumentType("prd");
     setCustomRequirements("");
-    setGeneratedDocument("");
+    setGeneratedDocument(null);
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(generatedDocument);
-    toast.success('Documento copiado para a área de transferência!');
+    if (generatedDocument) {
+      const textContent = typeof generatedDocument === 'string' 
+        ? generatedDocument 
+        : JSON.stringify(generatedDocument, null, 2);
+      navigator.clipboard.writeText(textContent);
+      toast.success('Documento copiado para a área de transferência!');
+    }
   };
 
   const downloadDocument = () => {
-    const blob = new Blob([generatedDocument], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${documentType}_${selectedIdea?.title || 'documento'}.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    if (generatedDocument) {
+      const textContent = typeof generatedDocument === 'string' 
+        ? generatedDocument 
+        : JSON.stringify(generatedDocument, null, 2);
+      const blob = new Blob([textContent], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${documentType}_${selectedIdea?.title || 'documento'}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  // Function to render document sections visually
+  const renderDocumentSection = (title: string, content: any, icon: React.ReactNode) => {
+    if (!content) return null;
+    
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            {icon}
+            {title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {Array.isArray(content) ? (
+            <div className="space-y-2">
+              {content.map((item: any, index: number) => (
+                <div key={index} className="flex items-start gap-2">
+                  <Badge variant="outline" className="mt-1">{index + 1}</Badge>
+                  <span className="text-sm">{typeof item === 'string' ? item : item.title || item.name || JSON.stringify(item)}</span>
+                </div>
+              ))}
+            </div>
+          ) : typeof content === 'object' ? (
+            <div className="space-y-2">
+              {Object.entries(content).map(([key, value]: [string, any]) => (
+                <div key={key} className="border-l-2 border-blue-200 pl-3">
+                  <h4 className="font-medium text-sm capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</h4>
+                  <p className="text-sm text-muted-foreground">{typeof value === 'string' ? value : JSON.stringify(value)}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm whitespace-pre-wrap">{content}</p>
+          )}
+        </CardContent>
+      </Card>
+    );
   };
 
   // Icon for the modal
@@ -105,7 +167,7 @@ export const PRDMVPGeneratorModalEnhanced = ({ open, onOpenChange }: PRDMVPGener
       icon={documentIcon}
       isGenerating={isGenerating}
       generatingText={`Gerando ${documentType.toUpperCase()}...`}
-      actionText={`Gerar ${documentType.toUpperCase()} (5 créditos)`}
+      actionText={`Gerar ${documentType.toUpperCase()}`}
       onAction={handleGenerate}
       actionDisabled={!selectedIdea || isGenerating || !authState.user || authState.user.credits < 5}
       resetText="Novo Documento"
@@ -124,15 +186,62 @@ export const PRDMVPGeneratorModalEnhanced = ({ open, onOpenChange }: PRDMVPGener
             </Button>
             <Button onClick={downloadDocument} variant="outline" size="sm">
               <Download className="h-4 w-4 mr-2" />
-              Baixar
+              Baixar JSON
             </Button>
           </div>
 
           <ScrollArea className="h-[60vh]">
-            <div className="bg-muted/50 rounded-lg p-4 pr-8">
-              <pre className="whitespace-pre-wrap text-sm font-mono">
-                {generatedDocument}
-              </pre>
+            <div className="grid gap-4 pr-4">
+              {/* Document Title */}
+              {generatedDocument.title && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-blue-500" />
+                      {generatedDocument.title}
+                    </CardTitle>
+                    {generatedDocument.description && (
+                      <p className="text-sm text-muted-foreground">{generatedDocument.description}</p>
+                    )}
+                  </CardHeader>
+                </Card>
+              )}
+
+              {/* Overview */}
+              {renderDocumentSection("Visão Geral", generatedDocument.overview || generatedDocument.summary, <Target className="h-4 w-4" />)}
+              
+              {/* Objectives */}
+              {renderDocumentSection("Objetivos", generatedDocument.objectives || generatedDocument.goals, <CheckCircle className="h-4 w-4" />)}
+              
+              {/* Features */}
+              {renderDocumentSection("Funcionalidades", generatedDocument.features || generatedDocument.requirements, <FileText className="h-4 w-4" />)}
+              
+              {/* User Stories */}
+              {renderDocumentSection("Histórias de Usuário", generatedDocument.userStories || generatedDocument.stories, <Users className="h-4 w-4" />)}
+              
+              {/* Technical Requirements */}
+              {renderDocumentSection("Requisitos Técnicos", generatedDocument.technicalRequirements || generatedDocument.techSpecs, <FileText className="h-4 w-4" />)}
+              
+              {/* Timeline */}
+              {renderDocumentSection("Cronograma", generatedDocument.timeline || generatedDocument.schedule, <Calendar className="h-4 w-4" />)}
+              
+              {/* MVP Features */}
+              {renderDocumentSection("Features do MVP", generatedDocument.mvpFeatures || generatedDocument.mvp, <Target className="h-4 w-4" />)}
+              
+              {/* Success Metrics */}
+              {renderDocumentSection("Métricas de Sucesso", generatedDocument.successMetrics || generatedDocument.metrics, <CheckCircle className="h-4 w-4" />)}
+              
+              {/* Risks */}
+              {renderDocumentSection("Riscos e Mitigações", generatedDocument.risks || generatedDocument.challenges, <FileText className="h-4 w-4" />)}
+              
+              {/* Any other content */}
+              {generatedDocument.content && (
+                <Card>
+                  <CardContent className="pt-6">
+                    <pre className="whitespace-pre-wrap text-sm">{generatedDocument.content}</pre>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </ScrollArea>
         </div>

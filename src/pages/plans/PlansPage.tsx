@@ -47,6 +47,12 @@ const PlansPage = () => {
     console.log("Getting current user plan:", authState.user.plan);
     return authState.user.plan; // Return the exact plan from user data
   };
+  
+  // Get translated plan name based on plan ID
+  const getTranslatedPlanName = (planId: 'free' | 'entrepreneur' | 'business' | null): string => {
+    if (!planId) return '';
+    return t(`pricing.${planId}.name`) || '';
+  };
 
   const plans = [
     {
@@ -96,7 +102,7 @@ const PlansPage = () => {
     console.log("isCreatingCheckout:", isCreatingCheckout);
     
     if (!authState.isAuthenticated) {
-      toast.error("Você precisa estar logado para selecionar um plano");
+      toast.error(t("pricing.errors.loginRequired", "Você precisa estar logado para selecionar um plano"));
       navigate("/login");
       return;
     }
@@ -106,13 +112,15 @@ const PlansPage = () => {
     console.log("Current plan:", currentPlan, "Selected plan:", planId);
     
     if (planId === currentPlan) {
-      toast.info(`Você já está no plano ${plans.find(p => p.id === planId)?.name}!`);
+      toast.info(t("pricing.errors.alreadySubscribed", "Você já está no plano {{planName}}!", {
+        planName: plans.find(p => p.id === planId)?.name
+      }));
       return;
     }
 
     if (planId === "free") {
       // Downgrade to free plan (only possible through support)
-      toast.info("Para fazer downgrade para o plano gratuito, entre em contato com o suporte.");
+      toast.info(t("pricing.errors.downgradeContact", "Para fazer downgrade para o plano gratuito, entre em contato com o suporte."));
       return;
     }
 
@@ -122,7 +130,7 @@ const PlansPage = () => {
       const planType = planId === "entrepreneur" ? "entrepreneur" : "business";
       
       console.log("Creating checkout session for plan:", planType);
-      toast.info("Redirecionando para o checkout...");
+      toast.info(t("pricing.checkout.redirecting", "Redirecionando para o checkout..."));
       
       // Create Stripe checkout session
       const result = await createCheckoutSession(planType, "subscription");
@@ -133,7 +141,7 @@ const PlansPage = () => {
       
     } catch (error) {
       console.error("Error creating checkout session:", error);
-      toast.error("Erro ao criar sessão de pagamento. Tente novamente.");
+      toast.error(t("pricing.errors.checkoutFailed", "Erro ao criar sessão de pagamento. Tente novamente."));
     } finally {
       setIsAnalyzing(false);
     }
@@ -162,10 +170,21 @@ const PlansPage = () => {
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-poppins mb-6 bg-gradient-to-r from-brand-purple to-indigo-500 bg-clip-text text-transparent">
               {t('pricing.title') || 'Planos e Preços'}
             </h1>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-10">
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-6">
               {authState.user ? `Olá ${authState.user.name}, ` : ""}
               {t('pricing.subtitle') || 'Escolha o plano que melhor se adequa às suas necessidades empreendedoras'}
             </p>
+            
+            {authState.user && (
+              <div className="flex items-center justify-center mb-6">
+                <div className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-4 py-2 rounded-full flex items-center">
+                  <Check className="h-4 w-4 mr-2" />
+                  <span>
+                    {t('pricing.yourCurrentPlan', 'Seu plano atual')}: <strong>{getTranslatedPlanName(currentUserPlan)}</strong>
+                  </span>
+                </div>
+              </div>
+            )}
             
             <div className="flex items-center justify-center mb-12">
               <span className={`mr-4 text-sm font-medium ${!annualBilling ? 'text-brand-purple' : 'text-muted-foreground'}`}>
@@ -212,7 +231,7 @@ const PlansPage = () => {
                   <div className="absolute top-0 left-0">
                     <div className="bg-green-500 text-white px-4 py-1 rounded-br-xl rounded-tl-lg shadow-md flex items-center space-x-1">
                       <Check className="h-4 w-4 mr-1" />
-                      Plano Atual
+                      {t("pricing.currentPlan", "Plano Atual")}
                     </div>
                   </div>
                 )}
@@ -287,7 +306,7 @@ const PlansPage = () => {
                         : "bg-foreground/10 hover:bg-foreground/20 text-foreground"
                     }`}
                   >
-                    {currentUserPlan === plan.id ? "Plano Atual" : plan.buttonText}
+                    {currentUserPlan === plan.id ? t("pricing.currentPlan", "Plano Atual") : plan.buttonText}
                   </Button>
                 </CardFooter>
               </Card>

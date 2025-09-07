@@ -1,4 +1,50 @@
 {
+  "colorPalette": {
+    "title": "カラーパレットジェネレーター",
+    "generating": "パレットを生成中...",
+    "actions": {
+      "generate": "パレットを生成",
+      "new": "新しいパレット"
+    },
+    "errors": {
+      "loginRequired": "ログインが必要です",
+      "selectIdea": "アイデアを選択するか説明を入力してください",
+      "enterDescription": "アイデアの説明を入力してください",
+      "generation": "パレットの生成中にエラーが発生しました。もう一度お試しください。"
+    },
+    "success": {
+      "generated": "カラーパレットが正常に生成されました！",
+      "colorCopied": "カラー {{color}} をコピーしました！"
+    },
+    "tooltips": {
+      "clickToCopy": "クリックしてコピー: {{color}}"
+    },
+    "sections": {
+      "primaryColors": "プライマリカラー",
+      "secondaryColors": "セカンダリカラー",
+      "neutralColors": "ニュートラルカラー",
+      "accentColors": "アクセントカラー",
+      "gradients": "推奨グラデーション",
+      "colorMeaning": "色の意味",
+      "brandPersonality": "ブランドの個性",
+      "usageGuidelines": "使用ガイドライン"
+    },
+    "colors": {
+      "primary": "プライマリ",
+      "primaryLight": "ライトプライマリ",
+      "primaryDark": "ダークプライマリ",
+      "secondary": "セカンダリ",
+      "secondaryLight": "ライトセカンダリ",
+      "secondaryDark": "ダークセカンダリ",
+      "white": "ホワイト",
+      "lightGray": "ライトグレー",
+      "mediumGray": "ミディアムグレー",
+      "darkGray": "ダークグレー",
+      "black": "ブラック",
+      "accent": "アクセント {{number}}",
+      "gradient": "グラデーション {{number}}"
+    }
+  },
   "common": {
     "welcome": "ようこそ",
     "loading": "読み込み中...",
@@ -80,7 +126,8 @@
     "share": "共有",
     "info": "情報",
     "details": "詳細",
-    "summary": "概要"
+    "summary": "概要",
+    "loadingIdeas": "アイデアを読み込み中..."
   },
   "nav": {
     "home": "ホーム",
@@ -232,7 +279,18 @@
       "recommendedFocus": "推奨される焦点"
     },
     "addedToFavorites": "お気に入りに追加されました",
-    "removedFromFavorites": "お気に入りから削除されました"
+    "removedFromFavorites": "お気に入りから削除されました",
+    "savedIdeas": "保存されたアイデア",
+    "customIdea": "カスタムアイデア",
+    "searchIdeas": "アイデアを検索...",
+    "describeYourIdea": "アイデアを説明してください",
+    "describeBusinessIdea": "ビジネスアイデアを詳しく説明してください...",
+    "tipsForDescription": "良い説明のためのヒント:",
+    "tipProblem": "アイデアが解決する問題を説明してください",
+    "tipAudience": "ターゲットオーディエンスを説明してください",
+    "tipMonetization": "収益化の方法を言及してください",
+    "tipCompetitive": "競争優位性を含めてください",
+    "noMatchingIdeas": "この用語に一致するアイデアが見つかりません"
   },
   "credits": {
     "title": "クレジット",

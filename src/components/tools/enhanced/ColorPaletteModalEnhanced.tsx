@@ -9,6 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { ToolModalBase } from "@/components/shared/ToolModalBase";
 import { EnhancedIdeaSelector } from "@/components/shared/EnhancedIdeaSelector";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useTranslation } from "react-i18next";
+import { usePlanAccess } from "@/hooks/usePlanAccess";
 
 interface ColorPaletteModalProps {
   open: boolean;
@@ -48,8 +50,10 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
   open,
   onOpenChange
 }) => {
+  const { t } = useTranslation();
   const { authState } = useAuth();
   const user = authState.user;
+  const { getFeatureCost } = usePlanAccess();
   const [selectedIdea, setSelectedIdea] = useState<any>(null);
   const [customIdea, setCustomIdea] = useState("");
   const [useCustom, setUseCustom] = useState(false);
@@ -71,17 +75,17 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
 
   const handleGenerate = async () => {
     if (!user) {
-      toast.error("Você precisa estar logado");
+      toast.error(t("colorPalette.errors.loginRequired", "Você precisa estar logado"));
       return;
     }
 
     if (!useCustom && !selectedIdea) {
-      toast.error("Selecione uma ideia ou digite uma descrição");
+      toast.error(t("colorPalette.errors.selectIdea", "Selecione uma ideia ou digite uma descrição"));
       return;
     }
 
     if (useCustom && !customIdea.trim()) {
-      toast.error("Digite uma descrição da sua ideia");
+      toast.error(t("colorPalette.errors.enterDescription", "Digite uma descrição da sua ideia"));
       return;
     }
 
@@ -89,8 +93,21 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
     
     try {
       const ideaData = useCustom 
-        ? { title: "Ideia personalizada", description: customIdea }
+        ? { title: t("colorPalette.customIdea", "Ideia personalizada"), description: customIdea }
         : selectedIdea;
+
+      // Deduzir créditos
+      const creditCost = 2; // Custo da ferramenta
+      const { data: creditsData, error: creditsError } = await supabase.rpc('deduct_credits_and_log', {
+        p_user_id: user.id,
+        p_amount: creditCost,
+        p_feature: 'color-palette',
+        p_description: t("colorPalette.creditDescription", "Paleta de cores para {{title}}", { title: ideaData.title })
+      });
+
+      if (creditsError) {
+        throw new Error(creditsError.message);
+      }
 
       const { data, error } = await supabase.functions.invoke('generate-color-palette', {
         body: { idea: ideaData, brandStyle: 'modern' }
@@ -99,10 +116,10 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
       if (error) throw error;
       
       setPalette(data.palette);
-      toast.success("Paleta de cores gerada com sucesso!");
+      toast.success(t("colorPalette.success.generated", "Paleta de cores gerada com sucesso!"));
     } catch (error) {
-      console.error('Error generating color palette:', error);
-      toast.error("Erro ao gerar paleta. Tente novamente.");
+      console.error(t("colorPalette.console.error", "Error generating color palette:"), error);
+      toast.error(t("colorPalette.errors.generation", "Erro ao gerar paleta. Tente novamente."));
     } finally {
       setIsGenerating(false);
     }
@@ -117,7 +134,7 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
 
   const copyColor = (color: string) => {
     navigator.clipboard.writeText(color);
-    toast.success(`Cor ${color} copiada!`);
+    toast.success(t("colorPalette.success.colorCopied", "Cor {{color}} copiada!", { color }));
   };
 
   const ColorBox: React.FC<{ color: string; label: string; size?: 'sm' | 'md' | 'lg' }> = ({ 
@@ -137,7 +154,7 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
           className={`${sizeClasses[size]} rounded-lg cursor-pointer border border-border hover:scale-105 transition-transform mx-auto`}
           style={{ backgroundColor: color }}
           onClick={() => copyColor(color)}
-          title={`Clique para copiar: ${color}`}
+          title={t("colorPalette.tooltips.clickToCopy", "Clique para copiar: {{color}}", { color })}
         />
         <p className="text-xs font-medium mt-1 truncate">{label}</p>
         <p className="text-xs text-muted-foreground truncate">{color}</p>
@@ -152,14 +169,14 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
     <ToolModalBase
       open={open}
       onOpenChange={onOpenChange}
-      title="Gerador de Paleta de Cores"
+      title={t("colorPalette.title", "Gerador de Paleta de Cores")}
       icon={paletteIcon}
       isGenerating={isGenerating}
-      generatingText="Gerando paleta..."
-      actionText="Gerar Paleta"
+      generatingText={t("colorPalette.generating", "Gerando paleta...")}
+      actionText={t("colorPalette.actions.generate", "Gerar Paleta")}
       onAction={handleGenerate}
       actionDisabled={isGenerating || (!useCustom && !selectedIdea) || (useCustom && !customIdea.trim())}
-      resetText="Nova Paleta"
+      resetText={t("colorPalette.actions.new", "Nova Paleta")}
       onReset={handleReset}
       showReset={!!palette}
       maxWidth="5xl"
@@ -172,22 +189,22 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
             {/* Primary Palette */}
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Cores Primárias</CardTitle>
+                <CardTitle className="text-base">{t("colorPalette.sections.primaryColors", "Cores Primárias")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <ColorBox 
                     color={palette.primaryPalette.primary} 
-                    label="Primária" 
+                    label={t("colorPalette.colors.primary", "Primária")} 
                     size="lg"
                   />
                   <ColorBox 
                     color={palette.primaryPalette.primaryLight} 
-                    label="Primária Clara" 
+                    label={t("colorPalette.colors.primaryLight", "Primária Clara")} 
                   />
                   <ColorBox 
                     color={palette.primaryPalette.primaryDark} 
-                    label="Primária Escura" 
+                    label={t("colorPalette.colors.primaryDark", "Primária Escura")} 
                   />
                 </div>
               </CardContent>
@@ -196,22 +213,22 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
             {/* Secondary Palette */}
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Cores Secundárias</CardTitle>
+                <CardTitle className="text-base">{t("colorPalette.sections.secondaryColors", "Cores Secundárias")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <ColorBox 
                     color={palette.secondaryPalette.secondary} 
-                    label="Secundária" 
+                    label={t("colorPalette.colors.secondary", "Secundária")} 
                     size="lg"
                   />
                   <ColorBox 
                     color={palette.secondaryPalette.secondaryLight} 
-                    label="Secundária Clara" 
+                    label={t("colorPalette.colors.secondaryLight", "Secundária Clara")} 
                   />
                   <ColorBox 
                     color={palette.secondaryPalette.secondaryDark} 
-                    label="Secundária Escura" 
+                    label={t("colorPalette.colors.secondaryDark", "Secundária Escura")} 
                   />
                 </div>
               </CardContent>
@@ -220,15 +237,15 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
             {/* Neutral Palette */}
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Cores Neutras</CardTitle>
+                <CardTitle className="text-base">{t("colorPalette.sections.neutralColors", "Cores Neutras")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                  <ColorBox color={palette.neutralPalette.white} label="Branco" />
-                  <ColorBox color={palette.neutralPalette.lightGray} label="Cinza Claro" />
-                  <ColorBox color={palette.neutralPalette.mediumGray} label="Cinza Médio" />
-                  <ColorBox color={palette.neutralPalette.darkGray} label="Cinza Escuro" />
-                  <ColorBox color={palette.neutralPalette.black} label="Preto" />
+                  <ColorBox color={palette.neutralPalette.white} label={t("colorPalette.colors.white", "Branco")} />
+                  <ColorBox color={palette.neutralPalette.lightGray} label={t("colorPalette.colors.lightGray", "Cinza Claro")} />
+                  <ColorBox color={palette.neutralPalette.mediumGray} label={t("colorPalette.colors.mediumGray", "Cinza Médio")} />
+                  <ColorBox color={palette.neutralPalette.darkGray} label={t("colorPalette.colors.darkGray", "Cinza Escuro")} />
+                  <ColorBox color={palette.neutralPalette.black} label={t("colorPalette.colors.black", "Preto")} />
                 </div>
               </CardContent>
             </Card>
@@ -236,7 +253,7 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
             {/* Accent Colors */}
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Cores de Destaque</CardTitle>
+                <CardTitle className="text-base">{t("colorPalette.sections.accentColors", "Cores de Destaque")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -244,7 +261,7 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
                     <ColorBox 
                       key={index}
                       color={color} 
-                      label={`Destaque ${index + 1}`} 
+                      label={t("colorPalette.colors.accent", "Destaque {{number}}", { number: index + 1 })} 
                     />
                   ))}
                 </div>
@@ -254,7 +271,7 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
             {/* Gradients */}
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Gradientes Sugeridos</CardTitle>
+                <CardTitle className="text-base">{t("colorPalette.sections.gradients", "Gradientes Sugeridos")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4">
@@ -264,10 +281,10 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
                         className="h-12 w-full rounded-lg cursor-pointer border border-border hover:scale-105 transition-transform"
                         style={{ background: gradient }}
                         onClick={() => copyColor(gradient)}
-                        title={`Clique para copiar: ${gradient}`}
+                        title={t("colorPalette.tooltips.clickToCopy", "Clique para copiar: {{color}}", { color: gradient })}
                       />
                       <div className="flex justify-between items-center mt-1">
-                        <p className="text-xs font-medium">Gradiente {index + 1}</p>
+                        <p className="text-xs font-medium">{t("colorPalette.colors.gradient", "Gradiente {{number}}", { number: index + 1 })}</p>
                         <p className="text-xs text-muted-foreground truncate max-w-[200px]">{gradient}</p>
                       </div>
                     </div>
@@ -280,7 +297,7 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
             <div className="grid gap-4 sm:grid-cols-2">
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Significado das Cores</CardTitle>
+                  <CardTitle className="text-base">{t("colorPalette.sections.colorMeaning", "Significado das Cores")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -296,7 +313,7 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
 
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Personalidade da Marca</CardTitle>
+                  <CardTitle className="text-base">{t("colorPalette.sections.brandPersonality", "Personalidade da Marca")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm">{palette.brandPersonality}</p>
@@ -307,7 +324,7 @@ export const ColorPaletteModalEnhanced: React.FC<ColorPaletteModalProps> = ({
             {/* Usage Guidelines */}
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Diretrizes de Uso</CardTitle>
+                <CardTitle className="text-base">{t("colorPalette.sections.usageGuidelines", "Diretrizes de Uso")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">

@@ -1,4 +1,209 @@
 {
+  "colorPalette": {
+    "title": "Gerador de Paleta de Cores",
+    "generating": "Gerando paleta...",
+    "customIdea": "Ideia personalizada",
+    "creditDescription": "Paleta de cores para {{title}}",
+    "actions": {
+      "generate": "Gerar Paleta",
+      "new": "Nova Paleta"
+    },
+  "perfil": {
+    "title": "Meu Perfil",
+    "subtitle": "Gerencie suas informações pessoais e configurações da conta",
+    "personalInformation": {
+      "title": "Informações Pessoais",
+      "name": "Nome Completo",
+      "email": "Email",
+      "phone": "Telefone",
+      "country": "País",
+      "preferredLanguage": "Idioma Preferido"
+    },
+    "accountSettings": {
+      "title": "Configurações da Conta",
+      "changePassword": "Alterar Senha",
+      "currentPassword": "Senha Atual",
+      "newPassword": "Nova Senha",
+      "confirmPassword": "Confirmar Nova Senha",
+      "twoFactor": "Autenticação de Dois Fatores",
+      "enabled": "Habilitado",
+      "disabled": "Desabilitado"
+    },
+    "notifications": {
+      "title": "Preferências de Notificação",
+      "analysis": "Notificações de Análise",
+      "marketing": "Notificações de Marketing",
+      "newsletter": "Newsletter",
+      "productUpdates": "Atualizações do Produto"
+    },
+    "dangerZone": {
+      "title": "Zona de Perigo",
+      "deleteAccount": "Excluir Conta",
+      "deleteWarning": "Esta ação não pode ser desfeita. Todos os seus dados serão removidos permanentemente.",
+      "confirmDelete": "Sim, excluir minha conta"
+    },
+    "save": "Salvar Alterações"
+  },
+  "metrics": {
+    "title": "Métricas Avançadas",
+    "subtitle": "Análise detalhada e insights sobre seus projetos",
+    "exportData": "Exportar Dados",
+    "exportSuccess": "Dados exportados com sucesso",
+    "timeRange": "Período de Tempo",
+    "selectTimeRange": "Selecionar período de tempo",
+    "last7Days": "Últimos 7 dias",
+    "last30Days": "Últimos 30 dias",
+    "last90Days": "Últimos 90 dias",
+    "lastYear": "Último ano",
+    "allTime": "Todo o tempo",
+    "granularity": "Granularidade",
+    "selectGranularity": "Selecionar granularidade",
+    "daily": "Diário",
+    "weekly": "Semanal",
+    "monthly": "Mensal",
+    "totalAnalyses": "Total de Análises",
+    "averageScore": "Pontuação Média",
+    "topCategory": "Categoria Principal",
+    "viableIdeas": "Ideias Viáveis",
+    "trends": "Tendências",
+    "distribution": "Distribuição",
+    "performance": "Desempenho",
+    "analysisAndScoreTrend": "Tendência de Análise e Pontuação",
+    "analysisAndScoreTrendDesc": "Evolução da contagem de análises e pontuação média ao longo do tempo",
+    "analyses": "Análises",
+    "ideaCount": "Contagem de Ideias",
+    "scoreDistribution": "Distribuição de Pontuação",
+    "scoreDistributionDesc": "Distribuição de pontuações por intervalos",
+    "categoryDistribution": "Distribuição por Categoria",
+    "categoryDistributionDesc": "Distribuição percentual de ideias por categoria",
+    "ideaRadar": "Radar de Ideias",
+    "ideaRadarDesc": "Desempenho em diferentes dimensões de análise",
+    "performanceInsights": "Insights de Desempenho",
+    "performanceInsightsDesc": "Análise do desempenho das suas ideias",
+    "topPerforming": "Melhor Desempenho",
+    "improvementNeeded": "Necessita Melhoria",
+    "recommendations": "Recomendações"
+  },
+  "errors": {
+      "loginRequired": "Você precisa estar logado",
+      "selectIdea": "Selecione uma ideia ou digite uma descrição",
+      "enterDescription": "Digite uma descrição da sua ideia",
+      "generation": "Erro ao gerar paleta. Tente novamente."
+    },
+    "success": {
+      "generated": "Paleta de cores gerada com sucesso!",
+      "colorCopied": "Cor {{color}} copiada!"
+    },
+    "tooltips": {
+      "clickToCopy": "Clique para copiar: {{color}}"
+    },
+    "console": {
+      "error": "Erro ao gerar paleta de cores:"
+    },
+    "sections": {
+      "primaryColors": "Cores Primárias",
+      "secondaryColors": "Cores Secundárias",
+      "neutralColors": "Cores Neutras",
+      "accentColors": "Cores de Destaque",
+      "gradients": "Gradientes Sugeridos",
+      "colorMeaning": "Significado das Cores",
+      "brandPersonality": "Personalidade da Marca",
+      "usageGuidelines": "Diretrizes de Uso"
+    },
+    "colors": {
+      "primary": "Primária",
+      "primaryLight": "Primária Clara",
+      "primaryDark": "Primária Escura",
+      "secondary": "Secundária",
+      "secondaryLight": "Secundária Clara",
+      "secondaryDark": "Secundária Escura",
+      "white": "Branco",
+      "lightGray": "Cinza Claro",
+      "mediumGray": "Cinza Médio",
+      "darkGray": "Cinza Escuro",
+      "black": "Preto",
+      "accent": "Destaque {{number}}",
+      "gradient": "Gradiente {{number}}"
+    }
+  },
+  "logoGenerator": {
+    "title": "Gerador de Logotipos",
+    "generating": "Gerando logo com ...",
+    "logoAlt": "Logo gerado",
+    "actions": {
+      "generate": "Gerar Logo com ",
+      "new": "Gerar Novo Logo",
+      "download": "Baixar Logo",
+      "generateName": "Gerar Nome",
+      "generating": "Gerando..."
+    },
+    "sections": {
+      "creationMode": "Escolha o Modo de Criação",
+      "ideaInfo": "Informações da Ideia",
+      "nameOptions": "Opções de Nome para o Logo",
+      "logoSettings": "Configurações do Logo",
+      "advancedOptions": "Opções Avançadas"
+    },
+    "modes": {
+      "ideaBased": "Baseado em Ideia",
+      "freeCreation": "Criação Livre"
+    },
+    "descriptions": {
+      "ideaBased": "Crie um logo baseado em uma das suas ideias já analisadas.",
+      "freeCreation": "Crie um logo completamente novo fornecendo as informações básicas."
+    },
+    "fields": {
+      "companyName": "Nome da Empresa/Projeto *",
+      "industry": "Setor/Indústria",
+      "businessDescription": "Descrição do Negócio *",
+      "targetAudience": "Público-Alvo",
+      "title": "Título",
+      "description": "Descrição",
+      "logoType": "Tipo de Logo",
+      "logoStyle": "Estilo do Logo",
+      "colorScheme": "Esquema de Cores",
+      "outputFormat": "Formato de Saída",
+      "quality": "Qualidade",
+      "customPrompt": "Prompt Personalizado (Opcional)"
+    },
+    "placeholders": {
+      "companyName": "Ex: TechStart, Café Aroma...",
+      "industry": "Ex: Tecnologia, Alimentação...",
+      "businessDescription": "Descreva o que sua empresa/projeto faz, seus valores, missão...",
+      "targetAudience": "Ex: Jovens profissionais, famílias...",
+      "customName": "Digite um nome personalizado para o logo",
+      "customPrompt": "Adicione detalhes específicos sobre como quer que o logo seja..."
+    },
+    "nameOptions": {
+      "original": "Usar nome original",
+      "generated": "Usar nome gerado anteriormente",
+      "custom": "Usar nome personalizado"
+    },
+    "labels": {
+      "chooseName": "Escolha o nome que será usado:",
+      "selected": "✓ Selecionado"
+    },
+    "options": {
+      "transparentBackground": "Fundo transparente"
+    },
+    "validations": {
+      "requiredField": "Campo obrigatório quando esta opção está selecionada"
+    },
+    "toast": {
+      "error": "Erro",
+      "success": "Sucesso!",
+      "nameGeneratedSuccess": "Nome gerado com sucesso!",
+      "nameGeneratedDescription": "\"{{name}}\" foi gerado e está pronto para uso.",
+      "nameGenerationFailed": "Não foi possível gerar um nome. Tente novamente.",
+      "connectionError": "Erro ao gerar nome. Verifique sua conexão e tente novamente.",
+      "selectIdea": "Selecione uma ideia para gerar o logo",
+      "enterCustomName": "Digite um nome personalizado para o logo",
+      "noGeneratedName": "Esta ideia não possui um nome gerado. Use outro tipo de nome ou gere um novo.",
+      "requiredFieldsFree": "Nome e descrição são obrigatórios para o modo livre",
+      "logoGenerated": "Logo gerado e salvo em 'Meus Conteúdos'!",
+      "logoGenerationError": "Erro ao gerar logo"
+    }
+  },
   "loading": {
     "wait": "Isso pode levar alguns segundos. Por favor, aguarde...",
     "tip1": "Dica: Foque no problema real do seu cliente!",
@@ -9,6 +214,12 @@
     "tip6": "Motivação: Cada passo é um avanço rumo ao seu sonho!"
   },
   "common": {
+    "cost": "Custo",
+    "credits": "créditos",
+    "costDescription": "Esta ferramenta consome <strong>{{cost}} créditos</strong> por uso. Você possui <strong>{{available}} créditos</strong> disponíveis.",
+    "notEnoughCredits": "Créditos insuficientes.",
+    "buyMoreCredits": "Comprar mais créditos",
+    "loadingIdeas": "Carregando suas ideias...",
     "loading": "Carregando...",
     "welcome": "Bem-vindo",
     "error": "Erro",
@@ -145,7 +356,15 @@
     "drafts": "Rascunhos",
     "tools": "Ferramentas",
     "backToHome": "Voltar para o início",
-    "backToDashboard": "Voltar para o Dashboard"
+    "backToDashboard": "Voltar para o Dashboard",
+    "content": "Meus Conteúdos",
+    "gamification": "Gamificação",
+    "marketplace": "Marketplace",
+    "earlyAdopter": "Dashboard Early Adopter",
+    "simulator": "Simulador",
+    "regulatoryAnalysis": "Análise Regulatória",
+    "benchmarks": "Benchmarks",
+    "more": "Ver Mais"
   },
   "tools": {
     "title": "Ferramentas",
@@ -209,7 +428,12 @@
     "emailCampaigns": {
       "name": "Campanhas de Email",
       "description": "Crie campanhas de email marketing eficazes"
-    }
+    },
+    "toolCost": "Custo da Ferramenta",
+    "toolCostDescription": "Esta ferramenta consome <strong>{{cost}} créditos</strong> por uso. Você possui <strong>{{available}} créditos</strong> disponíveis.",
+    "notEnoughCredits": "Créditos insuficientes.",
+    "buyMoreCredits": "Comprar mais créditos",
+    "generating": "Gerando..."
   },
   "results": {
     "swotBar": "Resumo SWOT",
@@ -652,6 +876,17 @@
     "description": "A Startup Ideia é a plataforma completa para validar, analisar e impulsionar negócios inovadores."
   },
   "ideas": {
+    "searchIdeas": "Buscar nas suas ideias...",
+    "customIdea": "Ideia Personalizada",
+    "noMatchingIdeas": "Nenhuma ideia encontrada com este termo",
+    "describeYourIdea": "Descreva sua ideia",
+    "describeBusinessIdea": "Descreva sua ideia de negócio em detalhes...",
+    "tipsForDescription": "Dicas para uma boa descrição:",
+    "tipProblem": "Explique o problema que sua ideia resolve",
+    "selectIdea": "Selecione uma ideia",
+    "createValidation": "Criar Validação",
+    "createValidationDescription": "Crie uma validação para sua ideia",
+    "createValidationButton": "Criar Validação",
     "title": "Ideias",
     "subtitle": "Gerencie e analise suas ideias de negócio",
     "stats": {
@@ -703,15 +938,58 @@
     },
     "filterByTags": "Filtrar por etiquetas",
     "addedToFavorites": "Adicionado aos favoritos",
-    "removedFromFavorites": "Removido dos favoritos"
+    "removedFromFavorites": "Removido dos favoritos",
+    "edit": "Editar",
+    "delete": "Excluir",
+  "nav": {
+    "home": "Início",
+    "dashboard": "Dashboard",
+    "settings": "Configurações",
+    "profile": "Perfil",
+    "logout": "Sair",
+    "login": "Entrar",
+    "signup": "Cadastrar",
+    "credits": "Créditos",
+    "ideas": "Ideias",
+    "metrics": "Métricas",
+    "resources": "Recursos",
+    "history": "Histórico",
+    "drafts": "Rascunhos",
+    "tools": "Ferramentas",
+    "backToHome": "Voltar para o início",
+    "backToDashboard": "Voltar para o Dashboard",
+    "content": "Meus Conteúdos",
+    "gamification": "Gamificação",
+    "marketplace": "Marketplace",
+    "earlyAdopter": "Dashboard Early Adopter",
+    "simulator": "Simulador",
+    "regulatoryAnalysis": "Análise Regulatória",
+    "benchmarks": "Benchmarks",
+    "more": "Ver Mais"
+  }
   },
   "tags": {
     "title": "Etiquetas",
-    "create": "Criar etiqueta",
-    "add": "Adicionar etiqueta",
+    "add": "Adicionar etiquetas",
+    "create": "Criar nova etiqueta",
+    "edit": "Editar etiqueta",
+    "delete": "Excluir etiqueta",
+    "empty": "Nenhuma etiqueta criada ainda",
     "nameLabel": "Nome da etiqueta",
-    "namePlaceholder": "Digite o nome da etiqueta...",
+    "namePlaceholder": "Digite o nome da etiqueta",
     "colorLabel": "Cor da etiqueta",
+    "success": {
+      "created": "Etiqueta criada com sucesso",
+      "updated": "Etiqueta atualizada com sucesso",
+      "deleted": "Etiqueta excluída com sucesso"
+    },
+    "errors": {
+      "emptyName": "O nome da etiqueta não pode estar vazio",
+      "duplicate": "Já existe uma etiqueta com este nome",
+      "createFailed": "Falha ao criar etiqueta",
+      "updateFailed": "Falha ao atualizar etiqueta",
+      "deleteFailed": "Falha ao excluir etiqueta"
+    },
     "emptyState": {
       "title": "Você ainda não tem etiquetas",
       "button": "Criar minha primeira etiqueta"
@@ -727,8 +1005,7 @@
     "emptyStateTags": {
       "title": "Você ainda não tem etiquetas",
       "button": "Criar minha primeira etiqueta"
-    }, 
-    "empty": "Nenhuma etiqueta encontrada"
+    }
   },
   "advancedAnalysis": {
     "button": "Análise Avançada",
@@ -976,6 +1253,17 @@
     "mostPopular": "Mais Popular",
     "monthly": "Mensal",
     "annually": "Anual",
+    "currentPlan": "Plano Atual",
+    "yourCurrentPlan": "Seu plano atual",
+    "errors": {
+      "loginRequired": "Você precisa estar logado para selecionar um plano",
+      "alreadySubscribed": "Você já está no plano {{planName}}!",
+      "downgradeContact": "Para fazer downgrade para o plano gratuito, entre em contato com o suporte.",
+      "checkoutFailed": "Erro ao criar sessão de pagamento. Tente novamente."
+    },
+    "checkout": {
+      "redirecting": "Redirecionando para o checkout..."
+    },
     "free": {
       "name": "Gratuito",
       "description": "Para iniciantes que querem validar sua primeira ideia.",
@@ -988,7 +1276,7 @@
       "cta": "Começar Grátis"
     },
     "entrepreneur": {
-      "name": "Entrepreneur",
+      "name": "Empreendedor",
       "description": "Para empreendedores sérios que querem análises detalhadas.",
       "features": [
         "50 créditos mensais",
@@ -1001,7 +1289,7 @@
       "cta": "Assinar Agora"
     },
     "business": {
-      "name": "Business",
+      "name": "Empresarial",
       "description": "Para empresas que precisam de análises avançadas e suporte prioritário.",
       "features": [
         "200 créditos mensais",
@@ -1097,8 +1385,8 @@
       "addCredits": "Adicionar créditos",
       "yourPlan": "Seu Plano",
       "free": "Gratuito",
-      "entrepreneur": "Entrepreneur", 
-      "business": "Business",
+      "entrepreneur": "Empreendedor", 
+      "business": "Empresarial",
       "upgrade": "Fazer upgrade"
     },
     "tabs": {

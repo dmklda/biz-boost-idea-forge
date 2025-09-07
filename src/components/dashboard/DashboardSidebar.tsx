@@ -36,13 +36,13 @@ export const DashboardSidebar = ({
 
   const menuItems = [
     {
-      title: t('nav.dashboard'),
+      title: t('ideas.nav.dashboard'),
       icon: Home,
       path: '/dashboard',
       onClick: undefined
     }, 
     {
-      title: t('nav.ideas'),
+      title: t('ideas.nav.ideas'),
       icon: Calendar,
       path: '/dashboard/ideias',
       onClick: undefined
@@ -54,67 +54,67 @@ export const DashboardSidebar = ({
       onClick: handleNewAnalysis
     }, 
     {
-      title: t('nav.drafts', "Rascunhos"),
+      title: t('ideas.nav.drafts', "Drafts"),
       icon: Save,
       path: '/dashboard/rascunhos',
       onClick: undefined
     },
     {
-      title: t('nav.tools', 'Ferramentas'),
+      title: t('ideas.nav.tools', 'Tools'),
       icon: Wrench,
       path: '/dashboard/ferramentas',
       onClick: undefined
     },
     {
-      title: "Meus Conteúdos",
+      title: t('ideas.nav.content', "Meus Conteúdos"),
       icon: Archive,
       path: '/dashboard/conteudos',
       onClick: undefined
     },
     {
-      title: "Gamificação",
+      title: t('ideas.nav.gamification', "Gamification"),
       icon: Trophy,
       path: '/dashboard/gamificacao',
       onClick: undefined
     },
     {
-      title: "Marketplace",
+      title: t('ideas.nav.marketplace', "Marketplace"),
       icon: Users,
       path: '/dashboard/marketplace',
       onClick: undefined
     },
     ...(isEarlyAdopter ? [{
-      title: "Dashboard Early Adopter",
+      title: t('ideas.nav.earlyAdopter', "Early Adopter Dashboard"),
       icon: Star,
       path: '/dashboard/early-adopter',
       onClick: undefined
     }] : []),
     {
-      title: "Simulador",
+      title: t('ideas.nav.simulator', "Simulator"),
       icon: BarChart3,
       path: '/dashboard/simulador',
       onClick: undefined
     },
     {
-      title: "Análise Regulatória",
+      title: t('ideas.nav.regulatoryAnalysis', "Regulatory Analysis"),
       icon: Shield,
       path: '/dashboard/analise-regulatoria',
       onClick: undefined
     },
     {
-      title: "Benchmarks",
+      title: t('ideas.nav.benchmarks', "Benchmarks"),
       icon: Target,
       path: '/dashboard/benchmarks',
       onClick: undefined
     }, 
     {
-      title: t('header.plans'),
+      title: t('header.plans', "Plans"),
       icon: BarChart,
       path: '/planos',
       onClick: undefined
     }, 
     {
-      title: t('nav.profile'),
+      title: t('ideas.nav.profile'),
       icon: Settings,
       path: '/dashboard/configuracoes',
       onClick: undefined
@@ -177,7 +177,7 @@ export const DashboardSidebar = ({
           onClick={handleLogout}
         >
           <LogOut className={cn("h-5 w-5", collapsed ? "" : "mr-3")} />
-          {!collapsed && <span>{t('nav.logout')}</span>}
+          {!collapsed && <span>{t('ideas.nav.logout')}</span>}
         </Button>
       </div>
 

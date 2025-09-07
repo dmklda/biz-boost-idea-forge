@@ -1,4 +1,142 @@
 {
+  "colorPalette": {
+    "title": "Color Palette Generator",
+    "generating": "Generating palette...",
+    "customIdea": "Custom idea",
+    "creditDescription": "Color palette for {{title}}",
+    "actions": {
+      "generate": "Generate Palette",
+      "new": "New Palette"
+    },
+    "errors": {
+      "loginRequired": "You need to be logged in",
+      "selectIdea": "Select an idea or enter a description",
+      "enterDescription": "Enter a description of your idea",
+      "generation": "Error generating palette. Please try again."
+    },
+    "success": {
+      "generated": "Color palette generated successfully!",
+      "colorCopied": "Color {{color}} copied!"
+    },
+    "tooltips": {
+      "clickToCopy": "Click to copy: {{color}}"
+    },
+    "console": {
+      "error": "Error generating color palette:"
+    },
+    "sections": {
+      "primaryColors": "Primary Colors",
+      "secondaryColors": "Secondary Colors",
+      "neutralColors": "Neutral Colors",
+      "accentColors": "Accent Colors",
+      "gradients": "Suggested Gradients",
+      "colorMeaning": "Color Meaning",
+      "brandPersonality": "Brand Personality",
+      "usageGuidelines": "Usage Guidelines"
+    },
+    "colors": {
+      "primary": "Primary",
+      "primaryLight": "Light Primary",
+      "primaryDark": "Dark Primary",
+      "secondary": "Secondary",
+      "secondaryLight": "Light Secondary",
+      "secondaryDark": "Dark Secondary",
+      "white": "White",
+      "lightGray": "Light Gray",
+      "mediumGray": "Medium Gray",
+      "darkGray": "Dark Gray",
+      "black": "Black",
+      "accent": "Accent {{number}}",
+      "gradient": "Gradient {{number}}"
+    }
+  },
+  "logoGenerator": {
+    "title": "Logo Generator - GPT-Image-1",
+    "generating": "Generating logo with GPT-Image-1...",
+    "logoAlt": "Generated logo",
+    "actions": {
+      "generate": "Generate Logo with GPT-Image-1 (10 credits)",
+      "new": "Generate New Logo",
+      "download": "Download Logo",
+      "generateName": "Generate Name",
+      "generating": "Generating..."
+    },
+    "sections": {
+      "creationMode": "Choose Creation Mode",
+      "ideaInfo": "Idea Information",
+      "nameOptions": "Logo Name Options",
+      "logoSettings": "Logo Settings",
+      "advancedOptions": "Advanced Options"
+    },
+    "modes": {
+      "ideaBased": "Based on Idea",
+      "freeCreation": "Free Creation"
+    },
+    "descriptions": {
+      "ideaBased": "Create a logo based on one of your analyzed ideas.",
+      "freeCreation": "Create a completely new logo by providing basic information."
+    },
+    "fields": {
+      "companyName": "Company/Project Name *",
+      "industry": "Industry/Sector",
+      "businessDescription": "Business Description *",
+      "targetAudience": "Target Audience",
+      "title": "Title",
+      "description": "Description",
+      "logoType": "Logo Type",
+      "logoStyle": "Logo Style",
+      "colorScheme": "Color Scheme",
+      "outputFormat": "Output Format",
+      "quality": "Quality",
+      "customPrompt": "Custom Prompt (Optional)"
+    },
+    "placeholders": {
+      "companyName": "Ex: TechStart, Aroma Cafe...",
+      "industry": "Ex: Technology, Food...",
+      "businessDescription": "Describe what your company/project does, its values, mission...",
+      "targetAudience": "Ex: Young professionals, families...",
+      "customName": "Enter a custom name for the logo",
+      "customPrompt": "Add specific details about how you want the logo to be..."
+    },
+    "nameOptions": {
+      "original": "Use original name",
+      "generated": "Use previously generated name",
+      "custom": "Use custom name"
+    },
+    "labels": {
+      "chooseName": "Choose the name to be used:",
+      "selected": "✓ Selected"
+    },
+    "options": {
+      "transparentBackground": "Transparent background"
+    },
+    "validations": {
+      "requiredField": "Required field when this option is selected"
+    },
+    "toast": {
+      "error": "Error",
+      "success": "Success!",
+      "nameGeneratedSuccess": "Name generated successfully!",
+      "nameGeneratedDescription": "\"{{name}}\" has been generated and is ready to use.",
+      "nameGenerationFailed": "Could not generate a name. Please try again.",
+      "connectionError": "Error generating name. Check your connection and try again.",
+      "selectIdea": "Select an idea to generate the logo",
+      "enterCustomName": "Enter a custom name for the logo",
+      "noGeneratedName": "This idea doesn't have a generated name. Use another name type or generate a new one.",
+      "requiredFieldsFree": "Name and description are required for free mode",
+      "logoGenerated": "Logo generated and saved in 'My Content'!",
+      "logoGenerationError": "Error generating logo"
+    }
+  },
+  "loading": {
+    "wait": "This may take a few seconds. Please wait...",
+    "tip1": "Tip: Focus on your customer's real problem!",
+    "tip2": "Motivation: Great businesses start with small ideas.",
+    "tip3": "Tip: Validate your idea with real people.",
+    "tip4": "Motivation: Persistence is the secret to success!",
+    "tip5": "Tip: Analyze your competitors to differentiate yourself.",
+    "tip6": "Motivation: Every step is progress towards your dream!"
+  },
   "testimonials": {
     "tagline": "Testimonials",
     "title": "What our users say",
@@ -21,6 +159,17 @@
     "mostPopular": "Most Popular",
     "monthly": "Monthly",
     "annually": "Annually",
+    "currentPlan": "Current Plan",
+    "yourCurrentPlan": "Your current plan",
+    "errors": {
+      "loginRequired": "You need to be logged in to select a plan",
+      "alreadySubscribed": "You are already on the {{planName}} plan!",
+      "downgradeContact": "To downgrade to the free plan, please contact support.",
+      "checkoutFailed": "Error creating payment session. Please try again."
+    },
+    "checkout": {
+      "redirecting": "Redirecting to checkout..."
+    },
     "free": {
       "name": "Free",
       "description": "For beginners who want to validate their first idea.",
@@ -438,6 +587,43 @@
       "description": "Thank you for sharing your story. Our team will review it and get back to you soon."
     }
   },
+  "guides": {
+    "tagline": "Practical Guides",
+    "title": "Resources for entrepreneurs",
+    "subtitle": "Detailed guides to help at every stage of your business",
+    "readGuide": "Read full guide",
+    "exploreAll": "Explore all guides",
+    "items": {
+      "guide1": {
+        "title": "Complete guide to idea validation",
+        "description": "A detailed step-by-step to test and validate your business idea",
+        "category": "Validation",
+        "level": "Beginner",
+        "content": "Detailed content of the idea validation guide"
+      },
+      "guide2": {
+        "title": "How to create an efficient MVP",
+        "description": "Learn to build a minimum viable product that truly validates your business",
+        "category": "Development",
+        "level": "Intermediate",
+        "content": "Detailed content of the MVP creation guide"
+      },
+      "guide3": {
+        "title": "Market analysis for startups",
+        "description": "Techniques and tools to understand your market and competitors",
+        "category": "Strategy",
+        "level": "Advanced",
+        "content": "Detailed content of the market analysis guide"
+      },
+      "guide4": {
+        "title": "Perfect pitch for investors",
+        "description": "How to structure and present your idea to attract investments",
+        "category": "Fundraising",
+        "level": "Intermediate",
+        "content": "Detailed content of the investor pitch guide"
+      }
+    }
+  },
   "webinars": {
     "tagline": "Webinars",
     "title": "Learn from Experts",
@@ -583,7 +769,8 @@
       "availableCredits": "Available Credits",
       "yourPlan": "Your Plan",
       "free": "Free",
-      "premium": "Premium",
+      "entrepreneur": "Entrepreneur",
+      "business": "Business",
       "addCredits": "Add credits",
       "upgrade": "Upgrade",
       "compared": "compared to last month",
@@ -652,12 +839,33 @@
     }
   },
   "ideas": {
+    "createValidation": "Create Validation",
+    "createValidationDescription": "Create a validation for your idea",
+    "createValidationButton": "Create Validation",
     "title": "My Ideas",
     "subtitle": "Manage and analyze your business ideas",
-    "newIdea": "New Idea",
-    "loading": "Loading ideas...",
-    "noIdeasFound": "No ideas found.",
-    "table": {
+    "savedIdeas": "Saved Ideas",
+    "customIdea": "Custom Idea",
+    "noIdeasFound": "No ideas found",
+    "createFirstIdea": "Create an idea first to use this tool",
+    "searchIdeas": "Search your ideas...",
+    "selected": "Selected",
+    "noMatchingIdeas": "No ideas found with this term",
+    "describeYourIdea": "Describe your idea",
+    "describeBusinessIdea": "Describe your business idea in detail...",
+    "tipsForDescription": "Tips for a good description:",
+    "tipProblem": "Explain the problem your idea solves",
+    "tipAudience": "Describe your target audience",
+    "tipMonetization": "Mention how you plan to monetize",
+    "tipCompetitive": "Include competitive advantages",
+    "selectIdea": "Select an idea:",
+    "savedIdeas": "Saved Ideas",
+    "customIdea": "Custom Idea",
+     "stats": {
+      "newIdea": "New Idea",
+      "loading": "Loading ideas...",
+      "noIdeasFound": "No ideas found.",
+      "table": {
       "name": "Name",
       "status": "Status",
       "score": "Score",
@@ -691,6 +899,9 @@
     "favoriteError": "Error updating favorite status",
     "noFavorites": "You don't have any favorite ideas",
     "viewDrafts": "View Drafts",
+    "createValidation": "Create Validation",
+    "createValidationDescription": "Create a validation for your idea",
+    "createValidationButton": "Create Validation",
     "reanalyze": {
       "button": "Reanalyze",
       "noCredits": "Not enough credits",
@@ -773,15 +984,30 @@
     }
   },
   "nav": {
-    "backToHome": "Back to home page",
-    "dashboard": "Dashboard",
-    "ideas": "Ideas",
-    "credits": "Credits",
+    "home": "Home",
+    "dashboard": "Dashboard", 
+    "settings": "Settings",
     "profile": "Profile",
-    "resources": "Resources",
     "logout": "Logout",
+    "login": "Login",
+    "signup": "Sign Up",
+    "credits": "Credits",
+    "ideas": "Ideas",
+    "metrics": "Metrics",
+    "resources": "Resources",
+    "history": "History",
     "drafts": "Drafts",
-    "tools": "Tools"
+    "tools": "Tools",
+    "backToHome": "Back to Home",
+    "backToDashboard": "Back to Dashboard",
+    "content": "My Content",
+    "gamification": "Gamification",
+    "marketplace": "Marketplace",
+    "earlyAdopter": "Dashboard Early Adopter",
+    "simulator": "Simulator",
+    "regulatoryAnalysis": "Regulatory Analysis",
+    "benchmarks": "Benchmarks",
+    "more": "See More"
   },
   "notifications": {
     "title": "Notifications",
@@ -793,19 +1019,127 @@
     "placeholder": "Search ideas..."
   },
   "common": {
-    "back": "Back",
-    "next": "Next",
-    "submit": "Submit",
-    "cancel": "Cancel",
+    "loading": "Loading...",
+    "welcome": "Welcome",
+    "error": "Error",
+    "success": "Success",
     "save": "Save",
+    "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
     "view": "View",
-    "loading": "Loading...",
-    "noResults": "No results found",
-    "max": "max",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "create": "Create",
+    "add": "Add",
+    "remove": "Remove",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "reset": "Reset",
+    "apply": "Apply",
+    "clear": "Clear",
+    "close": "Close",
+    "open": "Open",
+    "show": "Show",
+    "hide": "Hide",
+    "yes": "Yes",
+    "no": "No",
+    "all": "All",
+    "none": "None",
+    "or": "or",
+    "and": "and",
+    "with": "with",
+    "to": "to",
+    "of": "of",
+    "by": "by",
+    "on": "on",
+    "at": "at",
+    "in": "in",
+    "export": "Export",
+    "import": "Import",
+    "download": "Download",
+    "upload": "Upload",
+    "copy": "Copy",
+    "paste": "Paste",
+    "cut": "Cut",
+    "select": "Select",
+    "selectAll": "Select all",
+    "selectNone": "Deselect all",
+    "update": "Update",
+    "updated": "Updated",
+    "refresh": "Refresh",
+    "retry": "Try again",
+    "settings": "Settings",
+    "preferences": "Preferences",
+    "options": "Options",
+    "done": "Done",
+    "complete": "Complete",
+    "incomplete": "Incomplete",
+    "enable": "Enable",
+    "disable": "Disable",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "help": "Help",
+    "support": "Support",
+    "about": "About",
+    "contact": "Contact",
+    "language": "Language",
+    "theme": "Theme",
+    "layout": "Layout",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode",
+    "systemDefault": "System default",
+    "backToDashboard": "Back to Dashboard",
+    "more": "More",
+    "less": "Less",
+    "new": "New",
+    "share": "Share",
+    "info": "Information",
+    "details": "Details",
+    "summary": "Summary",
+    "confirm": "Confirm",
+    "max": "Maximum",
     "characters": "characters",
-    "dontKnow": "Don't know"
+    "dontKnow": "Don't know",
+    "analyzing": "Analyzing",
+    "preparing": "Preparing",
+    "shared": "Shared",
+    "copied": "Copied",
+    "saved": "Saved",
+    "notSpecified": "Not specified",
+    "pdf": "PDF",
+    "errorOccurred": "An error occurred",
+    "saving": "Saving",
+    "savingError": "Error saving",
+    "savingSuccess": "Saved successfully",
+    "savingInProgress": "Saving...",
+    "savingFailed": "Failed to save",
+    "savingCancelled": "Save cancelled",
+    "savingPaused": "Save paused",
+    "savingPending": "Save pending",
+    "savingQueued": "Save queued",
+    "savingSkipped": "Save skipped",
+    "savingAborted": "Save aborted",
+    "savingCompleted": "Save completed",
+    "savingTimedOut": "Save timed out",
+    "completed": "Completed",
+    "generating": "Generating",
+    "generatingError": "Error generating",
+    "generatingSuccess": "Generated successfully",
+    "generatingInProgress": "Generating...",
+    "generatingFailed": "Failed to generate",
+    "generatingCancelled": "Generation cancelled",
+    "generatingPaused": "Generation paused",
+    "generatingPending": "Generation pending",
+    "generatingSkipped": "Generation skipped",
+    "generatingAborted": "Generation aborted",
+    "generatingCompleted": "Generation completed",
+    "generatingTimedOut": "Generation timed out",
+    "noResults": "No results found",
+    "loadingIdeas": "Loading your ideas..."
   },
   "countries": {
     "global": "Global",
@@ -891,6 +1225,9 @@
     "freePlanDesc": "Basic access with limited features",
     "proPlan": "Pro Plan",
     "proPlanDesc": "Full access to all features",
+    "yourPlan": "Your plan",
+    "yourPlanDesc": "Details of your plan and subscription",
+    "planDesc": "Manage your plan and subscription",
     "free": "Free",
     "premium": "Premium",
     "currentCredits": "Available credits",
@@ -1047,6 +1384,11 @@
     "toolActivated": "Tool activated! Redirecting...",
     "noToolsFound": "No tools found",
     "noToolsFoundDesc": "Try a different category or come back later.",
+    "toolCost": "Tool Cost",
+    "toolCostDescription": "This tool consumes <strong>{{cost}} credits</strong> per use. You have <strong>{{available}} credits</strong> available.",
+    "notEnoughCredits": "Not enough credits.",
+    "buyMoreCredits": "Buy more credits",
+    "generating": "Generating...",
     "categories": {
       "all": "All",
       "publication": "Publication",
@@ -1261,6 +1603,162 @@
       "noNextStepsIdentified": "No next steps identified"
     }
   },
+  "gamification": {
+    "title": "Gamification System",
+    "subtitle": "Track your progress and achievements",
+    "currentLevel": {
+      "title": "Current Level",
+      "level": "Level",
+      "points": "total points",
+      "progress": "Progress to next level",
+      "pointsRemaining": "points remaining"
+    },
+    "earnPoints": {
+      "title": "How to Earn Points",
+      "subtitle": "Perform these actions to level up",
+      "createIdea": {
+        "title": "Create an idea",
+        "points": "+10 points"
+      },
+      "completeAnalysis": {
+        "title": "Complete analysis",
+        "points": "+25 points"
+      },
+      "useTools": {
+        "title": "Use tools",
+        "points": "+15 points"
+      },
+      "completeProfile": {
+        "title": "Complete profile",
+        "points": "+50 points"
+      }
+    },
+    "achievements": {
+      "title": "Achievements",
+      "subtitle": "Your achievements and unlocked badges",
+      "empty": {
+        "title": "No achievements yet",
+        "subtitle": "Start by creating your first idea!"
+      },
+      "earnedAt": "Earned on"
+    },
+    "loading": "Loading your progress..."
+  },
+  "successCases": {
+    "tagline": "Success Cases",
+    "title": "Inspiring success stories",
+    "subtitle": "Meet entrepreneurs who transformed their ideas into successful businesses with our platform",
+    "readFullCase": "Read full case",
+    "cta": {
+      "title": "Have a success story to share?",
+      "subtitle": "Tell us how our platform helped your business",
+      "button": "Submit my case"
+    },
+    "cases": {
+      "case1": {
+        "company": "PetDelivery",
+        "description": "Specialized transportation service for pets",
+        "result": "300% growth in 6 months"
+      },
+      "case2": {
+        "company": "EcoPackaging",
+        "description": "Sustainable packaging for e-commerce",
+        "result": "70% reduction in environmental impact"
+      },
+      "case3": {
+        "company": "TechLearn",
+        "description": "Programming learning platform for beginners",
+        "result": "Over 10,000 students in 3 months"
+      }
+    }
+  },
+  "webinars": {
+    "tagline": "Webinars",
+    "title": "Learn from experts",
+    "subtitle": "Free webinars on entrepreneurship, innovation and business management",
+    "pastWebinars": "Past webinars",
+    "upcomingWebinars": "Upcoming webinars",
+    "presenter": "Presenter",
+    "watchNow": "Watch now",
+    "registerNow": "Register now",
+    "cta": {
+      "title": "Want to suggest a webinar topic?",
+      "subtitle": "Send us your suggestion and we can create specific content for your needs",
+      "button": "Suggest topic"
+    },
+    "items": {
+      "webinar1": {
+        "title": "How to validate your business idea in 7 days",
+        "description": "Learn practical techniques to test your idea's viability quickly and with low investment",
+        "date": "06/10/2023",
+        "speaker": "Ana Silva",
+        "category": "Validation"
+      },
+      "webinar2": {
+        "title": "Pricing strategies for startups",
+        "description": "Discover how to set prices that maximize your profit without driving away customers",
+        "date": "05/25/2023",
+        "speaker": "Carlos Mendes",
+        "category": "Finance"
+      },
+      "webinar3": {
+        "title": "Digital marketing for small businesses",
+        "description": "Efficient and low-cost strategies to attract customers online",
+        "date": "04/12/2023",
+        "speaker": "Juliana Costa",
+        "category": "Marketing"
+      }
+    },
+    "upcoming": {
+      "webinar1": {
+        "title": "Investment fundraising for startups",
+        "date": "08/15/2023",
+        "speaker": "Ricardo Almeida",
+        "time": "7:00 PM"
+      },
+      "webinar2": {
+        "title": "Artificial Intelligence applied to business",
+        "date": "08/22/2023",
+        "speaker": "Fernanda Lima",
+        "time": "6:30 PM"
+      }
+    }
+  },
+  "drafts": {
+    "title": "Drafts",
+    "newDraft": "New Draft",
+    "empty": "No drafts found",
+    "emptyDesc": "You haven't created any drafts yet.",
+    "create": "Create Draft"
+  },
+  "errors": {
+    "fetchError": "Error fetching data",
+    "tryAgainLater": "Try again later",
+    "analysisNotFound": "Analysis not found",
+    "startNewAnalysis": "Start a new analysis",
+    "shareError": "Error sharing",
+    "tryAgain": "Try again",
+    "pdfError": "Error generating PDF",
+    "contentNotReady": "Content is not ready",
+    "pdfGenerationError": "Error in PDF generation",
+    "saveError": "Error saving",
+    "missingData": "Missing data",
+    "loadingError": "Error loading messages",
+    "chatError": "Sorry, an error occurred connecting to AI. Please try again.",
+    "chatErrorDetail": "Could not get a response from AI."
+  },
+  "share": {
+    "advancedAnalysisText": "Check out my advanced business idea analysis",
+    "linkShared": "Link shared successfully",
+    "linkCopied": "Link copied to clipboard"
+  },
+  "pdf": {
+    "page": "Page",
+    "of": "of",
+    "downloadComplete": "Download complete",
+    "pdfReady": "PDF ready for download",
+    "generating": "Generating PDF..."
+  },
   "exampleResult": {
     "title": "Idea Analysis Example",
     "ideaName": "Pet Delivery",
@@ -1273,5 +1771,6 @@
     "insight2": "Differential: focus on animal well-being and personalized logistics.",
     "loginToAnalyze": "Login to analyze your idea",
     "registerFree": "Register for free"
+  }
   }
 }

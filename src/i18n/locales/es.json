@@ -1,4 +1,50 @@
 {
+  "colorPalette": {
+    "title": "Generador de Paleta de Colores",
+    "generating": "Generando paleta...",
+    "actions": {
+      "generate": "Generar Paleta",
+      "new": "Nueva Paleta"
+    },
+    "errors": {
+      "loginRequired": "Necesitas iniciar sesión",
+      "selectIdea": "Selecciona una idea o ingresa una descripción",
+      "enterDescription": "Ingresa una descripción de tu idea",
+      "generation": "Error al generar paleta. Inténtalo de nuevo."
+    },
+    "success": {
+      "generated": "¡Paleta de colores generada con éxito!",
+      "colorCopied": "¡Color {{color}} copiado!"
+    },
+    "tooltips": {
+      "clickToCopy": "Haz clic para copiar: {{color}}"
+    },
+    "sections": {
+      "primaryColors": "Colores Primarios",
+      "secondaryColors": "Colores Secundarios",
+      "neutralColors": "Colores Neutros",
+      "accentColors": "Colores de Acento",
+      "gradients": "Gradientes Sugeridos",
+      "colorMeaning": "Significado de los Colores",
+      "brandPersonality": "Personalidad de la Marca",
+      "usageGuidelines": "Directrices de Uso"
+    },
+    "colors": {
+      "primary": "Primario",
+      "primaryLight": "Primario Claro",
+      "primaryDark": "Primario Oscuro",
+      "secondary": "Secundario",
+      "secondaryLight": "Secundario Claro",
+      "secondaryDark": "Secundario Oscuro",
+      "white": "Blanco",
+      "lightGray": "Gris Claro",
+      "mediumGray": "Gris Medio",
+      "darkGray": "Gris Oscuro",
+      "black": "Negro",
+      "accent": "Acento {{number}}",
+      "gradient": "Gradiente {{number}}"
+    }
+  },
   "common": {
     "welcome": "Bienvenido",
     "loading": "Cargando...",
@@ -80,7 +126,8 @@
     "share": "Compartir",
     "info": "Información",
     "details": "Detalles",
-    "summary": "Resumen"
+    "summary": "Resumen",
+    "loadingIdeas": "Cargando tus ideas..."
   },
   "nav": {
     "home": "Inicio",
@@ -232,7 +279,18 @@
       "recommendedFocus": "Enfoque recomendado"
     },
     "addedToFavorites": "Añadido a favoritos",
-    "removedFromFavorites": "Eliminado de favoritos"
+    "removedFromFavorites": "Eliminado de favoritos",
+    "savedIdeas": "Ideas Guardadas",
+    "customIdea": "Idea Personalizada",
+    "searchIdeas": "Buscar en tus ideas...",
+    "describeYourIdea": "Describe tu idea",
+    "describeBusinessIdea": "Describe tu idea de negocio en detalle...",
+    "tipsForDescription": "Consejos para una buena descripción:",
+    "tipProblem": "Explica el problema que resuelve tu idea",
+    "tipAudience": "Describe tu audiencia objetivo",
+    "tipMonetization": "Menciona cómo planeas monetizar",
+    "tipCompetitive": "Incluye ventajas competitivas",
+    "noMatchingIdeas": "No se encontraron ideas con este término"
   },
   "credits": {
     "title": "Créditos",

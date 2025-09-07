@@ -273,7 +273,7 @@ export const PRDMVPGeneratorModal = ({ open, onOpenChange }: PRDMVPGeneratorModa
                 Gerando {documentType.toUpperCase()}...
               </>
             ) : (
-              `Gerar ${documentType.toUpperCase()} (5 créditos)`
+              `Gerar ${documentType.toUpperCase()}`
             )}
           </Button>
 

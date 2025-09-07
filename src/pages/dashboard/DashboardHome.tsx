@@ -319,12 +319,22 @@ const DashboardHome = () => {
               {t('dashboard.statistics.yourPlan')}
             </CardTitle>
             <Badge variant={user?.plan === "free" ? "outline" : "default"} className={user?.plan === "free" ? "" : "bg-brand-purple"}>
-              {user?.plan === "free" ? t('dashboard.statistics.free') : t('dashboard.statistics.premium')}
+              {user?.plan === "free" ? 
+                t('dashboard.statistics.free') : 
+                user?.plan === "entrepreneur" ? 
+                  t('dashboard.statistics.entrepreneur') : 
+                  t('dashboard.statistics.business')
+              }
             </Badge>
           </CardHeader>
           <CardContent>
             <div className="text-xl md:text-2xl font-bold">
-              {user?.plan === "free" ? t('dashboard.statistics.free') : t('dashboard.statistics.premium')}
+              {user?.plan === "free" ? 
+                t('dashboard.statistics.free') : 
+                user?.plan === "entrepreneur" ? 
+                  t('dashboard.statistics.entrepreneur') : 
+                  t('dashboard.statistics.business')
+              }
             </div>
             {user?.plan === "free" && (
               <Link to="/planos" onClick={() => toast.info("Faça upgrade para um plano pago e desbloqueie todos os recursos!")}> 
