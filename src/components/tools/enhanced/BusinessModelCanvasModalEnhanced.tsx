@@ -128,23 +128,24 @@ export const BusinessModelCanvasModalEnhanced: React.FC<BusinessModelCanvasModal
 
       if (error) throw error;
       
-      // Save to generated content
-      const { error: saveError } = await supabase
-        .from('generated_content')
-        .insert({
-          user_id: user.id,
-          idea_id: useCustom ? null : selectedIdea?.id,
-          content_type: 'business-model-canvas',
-          title: `Business Model Canvas - ${ideaData.title}`,
-          content_data: data.canvas
-        });
-
-      if (saveError) {
-        console.error('Error saving canvas:', saveError);
-        // Don't block the UI for save errors
-      }
-      
+      // Set canvas data immediately to display content
       setCanvas(data.canvas);
+      
+      // Try to save to database, but don't let saving errors affect display
+      try {
+        await supabase
+          .from('generated_content')
+          .insert({
+            user_id: user.id,
+            idea_id: useCustom ? null : selectedIdea?.id,
+            content_type: 'business-model-canvas',
+            title: `Business Model Canvas - ${ideaData.title}`,
+            content_data: data.canvas
+          });
+      } catch (saveError) {
+        console.warn('Failed to save canvas to database:', saveError);
+        // Continue showing the content even if saving fails
+      }
       toast.success("Business Model Canvas gerado com sucesso!");
     } catch (error) {
       console.error('Error generating business model canvas:', error);
