@@ -35,152 +35,176 @@ serve(async (req)=>{
     let systemPrompt = '';
     let userPrompt = '';
     if (documentType === 'prd') {
-      systemPrompt = `Você é um Product Manager experiente especializado em criar Product Requirements Documents (PRDs) profissionais e detalhados. Crie PRDs que sejam claros, actionáveis e completos.`;
-      userPrompt = `
-Crie um PRD (Product Requirements Document) profissional e detalhado para a seguinte ideia de negócio:
+      systemPrompt = `Você é um Product Manager experiente. Crie um PRD profissional e detalhado em formato Markdown.`;
+      userPrompt = `Crie um PRD completo para: ${idea.title}
 
-**Título:** ${idea.title}
-**Descrição:** ${idea.description}
-**Público-alvo:** ${idea.audience || 'Não especificado'}
-**Problema:** ${idea.problem || 'Não especificado'}
-**Monetização:** ${idea.monetization || 'Não especificado'}
+DESCRIÇÃO: ${idea.description}
+PÚBLICO: ${idea.audience || 'Não especificado'}
+PROBLEMA: ${idea.problem || 'Não especificado'}
+MONETIZAÇÃO: ${idea.monetization || 'Não especificado'}
+${customRequirements ? `REQUISITOS: ${customRequirements}` : ''}
 
-${customRequirements ? `**Requisitos específicos:** ${customRequirements}` : ''}
+Estruture o PRD com as seguintes seções em Markdown:
 
-O PRD deve incluir:
+# PRD - ${idea.title}
 
-1. **VISÃO GERAL**
-   - Objetivo do produto
-   - Visão e missão
-   - Contexto de mercado
+## 1. VISÃO GERAL
+- Objetivo do produto
+- Visão e missão
+- Contexto de mercado
 
-2. **ANÁLISE DE MERCADO**
-   - Público-alvo detalhado
-   - Persona primária
-   - Análise competitiva
-   - Oportunidade de mercado
+## 2. ANÁLISE DE MERCADO
+- Público-alvo detalhado
+- Persona primária
+- Análise competitiva
 
-3. **REQUISITOS FUNCIONAIS**
-   - Features principais (MVP)
-   - Features secundárias
-   - User stories detalhadas
-   - Critérios de aceitação
+## 3. REQUISITOS FUNCIONAIS
+- Features principais (MVP)
+- User stories detalhadas
+- Critérios de aceitação
 
-4. **REQUISITOS NÃO-FUNCIONAIS**
-   - Performance
-   - Segurança
-   - Usabilidade
-   - Escalabilidade
+## 4. REQUISITOS NÃO-FUNCIONAIS
+- Performance, segurança, usabilidade
 
-5. **ARQUITETURA E TECNOLOGIA**
-   - Stack tecnológico recomendado
-   - Integrações necessárias
-   - Considerações de infraestrutura
+## 5. ARQUITETURA
+- Stack tecnológico recomendado
+- Integrações necessárias
 
-6. **ROADMAP E CRONOGRAMA**
-   - Fases de desenvolvimento
-   - Marcos importantes
-   - Timeline estimado
+## 6. ROADMAP
+- Fases de desenvolvimento
+- Timeline estimado
 
-7. **MÉTRICAS E KPIS**
-   - Métricas de sucesso
-   - KPIs principais
-   - Métodos de medição
+## 7. MÉTRICAS
+- KPIs principais
+- Métodos de medição
 
-8. **RISCOS E MITIGAÇÕES**
-   - Principais riscos identificados
-   - Estratégias de mitigação
+## 8. RISCOS
+- Principais riscos e mitigações
 
-Formate o documento em Markdown com seções bem estruturadas e detalhadas.
-`;
+Seja específico e detalhado em cada seção.`;
     } else {
-      systemPrompt = `Você é um empreendedor experiente e consultor de startups especializado em criar planos de MVP (Minimum Viable Product) práticos e executáveis. Foque em soluções simples, viáveis e de rápida implementação.`;
-      userPrompt = `
-Crie um plano de MVP (Minimum Viable Product) prático e executável para a seguinte ideia de negócio:
+      systemPrompt = `Você é um consultor de startups experiente. Crie um plano de MVP prático e executável em formato Markdown.`;
+      userPrompt = `Crie um plano de MVP completo para: ${idea.title}
 
-**Título:** ${idea.title}
-**Descrição:** ${idea.description}
-**Público-alvo:** ${idea.audience || 'Não especificado'}
-**Problema:** ${idea.problem || 'Não especificado'}
-**Monetização:** ${idea.monetization || 'Não especificado'}
+DESCRIÇÃO: ${idea.description}
+PÚBLICO: ${idea.audience || 'Não especificado'}
+PROBLEMA: ${idea.problem || 'Não especificado'}
+MONETIZAÇÃO: ${idea.monetization || 'Não especificado'}
+${customRequirements ? `REQUISITOS: ${customRequirements}` : ''}
 
-${customRequirements ? `**Requisitos específicos:** ${customRequirements}` : ''}
+Estruture o plano em Markdown:
 
-O plano de MVP deve incluir:
+# Plano MVP - ${idea.title}
 
-1. **DEFINIÇÃO DO MVP**
-   - Proposta de valor principal
-   - Funcionalidade core essencial
-   - O que NÃO incluir no MVP
+## 1. DEFINIÇÃO DO MVP
+- Proposta de valor principal
+- Funcionalidade core essencial
+- O que NÃO incluir
 
-2. **PÚBLICO-ALVO INICIAL**
-   - Segmento específico para testar
-   - Early adopters ideais
-   - Como alcançá-los
+## 2. PÚBLICO-ALVO INICIAL
+- Segmento específico para testar
+- Early adopters ideais
+- Como alcançá-los
 
-3. **FEATURES MÍNIMAS**
-   - Lista priorizada de funcionalidades
-   - User flow básico
-   - Interface essencial
+## 3. FEATURES MÍNIMAS
+- Lista priorizada de funcionalidades
+- User flow básico
+- Interface essencial
 
-4. **VALIDAÇÃO E TESTES**
-   - Hipóteses a validar
-   - Métodos de teste
-   - Métricas de validação
+## 4. VALIDAÇÃO E TESTES
+- Hipóteses a validar
+- Métodos de teste
+- Métricas de validação
 
-5. **DESENVOLVIMENTO**
-   - Abordagem técnica simples
-   - Tecnologias recomendadas
-   - Timeline de 2-3 meses
+## 5. DESENVOLVIMENTO
+- Abordagem técnica simples
+- Tecnologias recomendadas
+- Timeline de 2-3 meses
 
-6. **GO-TO-MARKET**
-   - Estratégia de lançamento
-   - Canais de distribuição
-   - Preço inicial
+## 6. GO-TO-MARKET
+- Estratégia de lançamento
+- Canais de distribuição
+- Preço inicial
 
-7. **ORÇAMENTO ESTIMADO**
-   - Custos de desenvolvimento
-   - Custos operacionais
-   - Investimento mínimo necessário
+## 7. ORÇAMENTO ESTIMADO
+- Custos de desenvolvimento
+- Custos operacionais
+- Investimento mínimo
 
-8. **PRÓXIMOS PASSOS**
-   - Ações imediatas
-   - Marcos de 30/60/90 dias
-   - Critérios para pivotar ou prosseguir
+## 8. PRÓXIMOS PASSOS
+- Ações imediatas
+- Marcos de 30/60/90 dias
+- Critérios para pivotar
 
-Formate o documento em Markdown com seções práticas e actionáveis, focando na viabilidade e execução rápida.
-`;
+Seja específico e prático em cada seção.`;
     }
     console.log(`Generating ${documentType} for idea: ${idea.title}`);
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'gpt-5-mini-2025-08-07',
-        messages: [
-          {
-            role: 'system',
-            content: systemPrompt
+    
+    // Try multiple models for better reliability
+    const models = ['gpt-4.1-2025-04-14', 'gpt-5-mini-2025-08-07', 'gpt-4o-mini'];
+    let response;
+    let lastError;
+    
+    for (const model of models) {
+      try {
+        console.log(`Trying model: ${model}`);
+        
+        const requestBody = {
+          model,
+          messages: [
+            {
+              role: 'system',
+              content: systemPrompt
+            },
+            {
+              role: 'user',
+              content: userPrompt
+            }
+          ]
+        };
+        
+        // Add correct token parameter based on model
+        if (model.includes('gpt-5') || model.includes('gpt-4.1') || model.includes('o3') || model.includes('o4')) {
+          requestBody.max_completion_tokens = 4000;
+        } else {
+          requestBody.max_tokens = 4000;
+          requestBody.temperature = 0.7;
+        }
+        
+        response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openAIApiKey}`,
+            'Content-Type': 'application/json'
           },
-          {
-            role: 'user',
-            content: userPrompt
-          }
-        ],
-        max_completion_tokens: 4000
-      })
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      console.error('OpenAI API error:', error);
-      throw new Error(error.error?.message || 'Failed to generate document');
+          body: JSON.stringify(requestBody)
+        });
+        
+        if (response.ok) {
+          console.log(`Successfully connected with model: ${model}`);
+          break;
+        } else {
+          const errorData = await response.json();
+          console.error(`Model ${model} failed:`, errorData);
+          lastError = errorData;
+        }
+      } catch (error) {
+        console.error(`Error with model ${model}:`, error);
+        lastError = error;
+      }
+    }
+    if (!response || !response.ok) {
+      const error = lastError || { error: { message: 'All models failed' } };
+      console.error('All OpenAI models failed:', error);
+      throw new Error(error.error?.message || 'Failed to generate document with any available model');
     }
     
     const data = await response.json();
-    console.log('OpenAI response data:', { hasChoices: !!data.choices, choicesLength: data.choices?.length });
+    console.log('OpenAI response data:', { 
+      hasChoices: !!data.choices, 
+      choicesLength: data.choices?.length,
+      fullResponse: JSON.stringify(data, null, 2).substring(0, 1000) + '...' 
+    });
     
     if (!data.choices || !data.choices[0] || !data.choices[0].message) {
       console.error('Invalid OpenAI response structure:', data);
@@ -188,11 +212,15 @@ Formate o documento em Markdown com seções práticas e actionáveis, focando n
     }
     
     const document = data.choices[0].message.content;
-    console.log('Generated document length:', document?.length || 0);
+    console.log('Generated document details:', { 
+      length: document?.length || 0,
+      preview: document?.substring(0, 200) || 'EMPTY',
+      type: typeof document
+    });
     
     if (!document || document.trim().length === 0) {
-      console.error('Empty document generated');
-      throw new Error('AI service returned empty document');
+      console.error('Empty document generated. Full response:', JSON.stringify(data, null, 2));
+      throw new Error('AI service returned empty document. Please try again.');
     }
     // Save to generated_content table
     const contentData = {
