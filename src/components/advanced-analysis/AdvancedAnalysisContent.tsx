@@ -378,7 +378,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                 </div>
                 <div>
                   <CardTitle className="text-lg md:text-xl">Análise de Mercado</CardTitle>
-                  <p className="text-xs md:text-sm text-gray-600">Tamanho, público-alvo e tendências</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Tamanho, público-alvo e tendências</p>
                 </div>
               </div>
             </CardHeader>
