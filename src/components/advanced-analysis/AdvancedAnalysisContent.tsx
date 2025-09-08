@@ -162,7 +162,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                   <TrendingUp className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                   Break-even: {break_even_months} meses
                 </Badge>
-                <Badge variant="outline" className="px-3 md:px-4 py-1 md:py-2 text-xs md:text-sm">
+                <Badge variant="secondary" className="px-3 md:px-4 py-1 md:py-2 text-xs md:text-sm text-foreground bg-muted border-border">
                   <Target className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                   Plano 30-90 dias
                 </Badge>
