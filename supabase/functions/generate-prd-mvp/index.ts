@@ -159,7 +159,7 @@ Formate o documento em Markdown com seções práticas e actionáveis, focando n
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'gpt-5-mini-2025-08-07',
         messages: [
           {
             role: 'system',
@@ -175,10 +175,25 @@ Formate o documento em Markdown com seções práticas e actionáveis, focando n
     });
     if (!response.ok) {
       const error = await response.json();
+      console.error('OpenAI API error:', error);
       throw new Error(error.error?.message || 'Failed to generate document');
     }
+    
     const data = await response.json();
+    console.log('OpenAI response data:', { hasChoices: !!data.choices, choicesLength: data.choices?.length });
+    
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Invalid OpenAI response structure:', data);
+      throw new Error('Invalid response from AI service');
+    }
+    
     const document = data.choices[0].message.content;
+    console.log('Generated document length:', document?.length || 0);
+    
+    if (!document || document.trim().length === 0) {
+      console.error('Empty document generated');
+      throw new Error('AI service returned empty document');
+    }
     // Save to generated_content table
     const contentData = {
       documentType,

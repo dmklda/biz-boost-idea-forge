@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
-import { FileText, Copy, Download, CheckCircle, Target, Users, Calendar, ChevronDown, FileDown } from "lucide-react";
+import { FileText, Copy, Download, CheckCircle, Target, Users, Calendar, ChevronDown, FileDown, AlertCircle, RotateCcw } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { ToolModalBase } from "@/components/shared/ToolModalBase";
 import { EnhancedIdeaSelector } from "@/components/shared/EnhancedIdeaSelector";
@@ -64,8 +64,17 @@ export const PRDMVPGeneratorModalEnhanced = ({ open, onOpenChange }: PRDMVPGener
 
       if (error) throw error;
 
-      // Handle the response - it should be markdown content
-      setGeneratedDocument(data.document || data);
+      // Handle the response - check if document is valid
+      if (!data || (!data.document && typeof data !== 'string')) {
+        throw new Error('Documento vazio recebido da API');
+      }
+
+      const document = data.document || data;
+      if (!document || (typeof document === 'string' && document.trim().length === 0)) {
+        throw new Error('Documento gerado está vazio');
+      }
+
+      setGeneratedDocument(document);
       toast.success(`${documentType.toUpperCase()} gerado com sucesso!`);
     } catch (error) {
       console.error('Error generating document:', error);
@@ -311,12 +320,26 @@ export const PRDMVPGeneratorModalEnhanced = ({ open, onOpenChange }: PRDMVPGener
       maxWidth={generatedDocument ? "4xl" : "2xl"}
     >
       {generatedDocument ? (
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-2">
-            <Button onClick={copyToClipboard} variant="outline" size="sm">
-              <Copy className="h-4 w-4 mr-2" />
-              Copiar
+        // Check if document is empty or null
+        !generatedDocument || (typeof generatedDocument === 'string' && generatedDocument.trim().length === 0) ? (
+          <div className="text-center py-8">
+            <AlertCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium mb-2">Documento não foi gerado</h3>
+            <p className="text-muted-foreground mb-4">
+              Ocorreu um erro ao gerar o documento. Tente novamente.
+            </p>
+            <Button onClick={handleReset} variant="outline">
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Tentar Novamente
             </Button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={copyToClipboard} variant="outline" size="sm">
+                <Copy className="h-4 w-4 mr-2" />
+                Copiar
+              </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
@@ -407,7 +430,8 @@ export const PRDMVPGeneratorModalEnhanced = ({ open, onOpenChange }: PRDMVPGener
                )}
             </div>
           </ScrollArea>
-        </div>
+          </div>
+        )
       ) : (
         <div className="space-y-6">
           <EnhancedIdeaSelector onSelect={handleIdeaSelect} />
