@@ -34,7 +34,7 @@ import {
 import { LogoGeneratorModal } from "@/components/tools/LogoGeneratorModal";
 import { BusinessNameGeneratorModal } from "@/components/tools/BusinessNameGeneratorModal";
 import { MarketAnalysisModal } from "@/components/tools/MarketAnalysisModal";
-import { BusinessModelCanvasModal } from "@/components/tools/BusinessModelCanvasModal";
+import { BusinessModelCanvasModalEnhanced } from "@/components/tools/enhanced";
 import { FinancialAnalysisModal } from "@/components/tools/FinancialAnalysisModal";
 import { PitchDeckModal } from "@/components/tools/PitchDeckModal";
 import { CompetitorAnalysisModal } from "@/components/tools/CompetitorAnalysisModal";
@@ -144,6 +144,17 @@ const ToolsPageEnhanced = () => {
       category: "analysis",
       credits: 7,
       status: "available"
+    },
+    {
+      title: "Business Model Canvas",
+      description: "Crie um canvas completo para seu modelo de negócio",
+      icon: Briefcase,
+      action: () => setIsBusinessModelCanvasModalOpen(true),
+      color: "from-orange-500 to-red-500",
+      category: "business",
+      credits: getFeatureCost('business-model-canvas'),
+      status: "available",
+      feature: "business-model-canvas"
     },
     // Ferramentas Melhoradas
     {
@@ -336,7 +347,7 @@ const ToolsPageEnhanced = () => {
         open={isMarketAnalysisModalOpen} 
         onOpenChange={setIsMarketAnalysisModalOpen} 
       />
-      <BusinessModelCanvasModal 
+      <BusinessModelCanvasModalEnhanced 
         open={isBusinessModelCanvasModalOpen} 
         onOpenChange={setIsBusinessModelCanvasModalOpen} 
       />

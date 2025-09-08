@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
+import { usePlanAccess } from "@/hooks/usePlanAccess";
 import { toast } from "sonner";
 import { Briefcase, Download, Maximize, Minimize } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ToolModalBase } from "@/components/shared/ToolModalBase";
 import { EnhancedIdeaSelector } from "@/components/shared/EnhancedIdeaSelector";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { CreditGuard } from "@/components/CreditGuard";
 
 interface BusinessModelCanvasModalProps {
   open: boolean;
@@ -39,7 +39,8 @@ export const BusinessModelCanvasModalEnhanced: React.FC<BusinessModelCanvasModal
   open,
   onOpenChange
 }) => {
-  const { authState } = useAuth();
+  const { authState, updateUserCredits } = useAuth();
+  const { canAccessFeature, hasCredits, getFeatureCost } = usePlanAccess();
   const user = authState.user;
   const [selectedIdea, setSelectedIdea] = useState<any>(null);
   const [customIdea, setCustomIdea] = useState("");
@@ -78,6 +79,12 @@ export const BusinessModelCanvasModalEnhanced: React.FC<BusinessModelCanvasModal
       return;
     }
 
+    // Check credits
+    if (!hasCredits('business-model-canvas')) {
+      toast.error(`Você precisa de ${getFeatureCost('business-model-canvas')} créditos para usar esta ferramenta`);
+      return;
+    }
+
     setIsGenerating(true);
     
     try {
@@ -85,11 +92,40 @@ export const BusinessModelCanvasModalEnhanced: React.FC<BusinessModelCanvasModal
         ? { title: "Ideia personalizada", description: customIdea }
         : selectedIdea;
 
+      // Deduct credits first
+      const { data: deductResult, error: deductError } = await supabase.rpc('deduct_credits_and_log', {
+        p_user_id: user.id,
+        p_amount: getFeatureCost('business-model-canvas'),
+        p_feature: 'business-model-canvas',
+        p_description: `Business Model Canvas gerado para: ${ideaData.title}`
+      });
+
+      if (deductError) throw deductError;
+
+      // Update local credits
+      updateUserCredits(deductResult);
+
       const { data, error } = await supabase.functions.invoke('generate-business-model-canvas', {
         body: { idea: ideaData }
       });
 
       if (error) throw error;
+      
+      // Save to generated content
+      const { error: saveError } = await supabase
+        .from('generated_content')
+        .insert({
+          user_id: user.id,
+          idea_id: useCustom ? null : selectedIdea?.id,
+          content_type: 'business-model-canvas',
+          title: `Business Model Canvas - ${ideaData.title}`,
+          content_data: data.canvas
+        });
+
+      if (saveError) {
+        console.error('Error saving canvas:', saveError);
+        // Don't block the UI for save errors
+      }
       
       setCanvas(data.canvas);
       toast.success("Business Model Canvas gerado com sucesso!");
@@ -233,7 +269,8 @@ ${canvas.costStructure}
       onReset={handleReset}
       showReset={!!canvas}
       maxWidth={isFullscreen ? "7xl" : "6xl"}
-      showCreditWarning={false}
+      showCreditWarning={true}
+      creditCost={getFeatureCost('business-model-canvas')}
     >
       <div className="space-y-6">
         {canvas ? (
@@ -402,14 +439,16 @@ ${canvas.costStructure}
             </div>
           </div>
         ) : (
-          <EnhancedIdeaSelector 
-            onSelect={handleIdeaSelect} 
-            allowCustomIdea={true}
-            customIdeaValue={customIdea}
-            onCustomIdeaChange={handleCustomIdeaChange}
-            useCustomIdea={useCustom}
-            onUseCustomIdeaChange={handleUseCustomIdeaChange}
-          />
+          <CreditGuard feature="business-model-canvas">
+            <EnhancedIdeaSelector 
+              onSelect={handleIdeaSelect} 
+              allowCustomIdea={true}
+              customIdeaValue={customIdea}
+              onCustomIdeaChange={handleCustomIdeaChange}
+              useCustomIdea={useCustom}
+              onUseCustomIdeaChange={handleUseCustomIdeaChange}
+            />
+          </CreditGuard>
         )}
       </div>
     </ToolModalBase>

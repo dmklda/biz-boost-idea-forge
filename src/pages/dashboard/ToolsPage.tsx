@@ -15,7 +15,7 @@ import { LogoGeneratorModal } from "@/components/tools/LogoGeneratorModal";
 import { PRDMVPGeneratorModalEnhanced as PRDMVPGeneratorModal } from "@/components/tools/enhanced";
 import { BusinessNameGeneratorModal } from "@/components/tools/BusinessNameGeneratorModal";
 import { MarketAnalysisModal } from "@/components/tools/MarketAnalysisModal";
-import { BusinessModelCanvasModal } from "@/components/tools/BusinessModelCanvasModal";
+import { BusinessModelCanvasModalEnhanced } from "@/components/tools/enhanced";
 import { FinancialAnalysisModal } from "@/components/tools/FinancialAnalysisModal";
 import { PitchDeckModal } from "@/components/tools/PitchDeckModal";
 import { CompetitorAnalysisModal } from "@/components/tools/CompetitorAnalysisModal";
@@ -151,8 +151,9 @@ const ToolsPage = () => {
       action: () => setIsBusinessModelCanvasModalOpen(true),
       color: "from-orange-500 to-red-500",
       category: "documentation",
-      credits: 6,
-      status: "available"
+      credits: getFeatureCost('business-model-canvas'),
+      status: "available",
+      feature: "business-model-canvas"
     },
     {
       title: "Pitch Deck Generator",
@@ -559,7 +560,7 @@ const ToolsPage = () => {
         open={isMarketAnalysisModalOpen} 
         onOpenChange={setIsMarketAnalysisModalOpen} 
       />
-      <BusinessModelCanvasModal 
+      <BusinessModelCanvasModalEnhanced 
         open={isBusinessModelCanvasModalOpen} 
         onOpenChange={setIsBusinessModelCanvasModalOpen} 
       />

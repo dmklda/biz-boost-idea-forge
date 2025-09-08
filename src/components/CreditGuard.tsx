@@ -9,7 +9,7 @@ import { CreditCard, Zap, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface CreditGuardProps {
-  feature: 'basic-analysis' | 'advanced-analysis' | 'regulatory-analysis' | 'simulator' | 'comparison' | 'reanalysis' | 'logo-generator' | 'prd-mvp' | 'pdf-export' | 'marketplace' | 'benchmarks';
+  feature: 'basic-analysis' | 'advanced-analysis' | 'regulatory-analysis' | 'simulator' | 'comparison' | 'reanalysis' | 'logo-generator' | 'prd-mvp' | 'pdf-export' | 'marketplace' | 'benchmarks' | 'business-model-canvas';
   onProceed?: () => void;
   children: React.ReactNode;
 }

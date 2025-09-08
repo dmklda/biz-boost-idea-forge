@@ -22,7 +22,8 @@ export type FeatureType =
   | 'revenue-forecast'
   | 'roadmap-generator'
   | 'startup-kit'
-  | 'investment-simulator';
+  | 'investment-simulator'
+  | 'business-model-canvas';
 
 const FEATURE_PLAN_REQUIREMENTS: Record<FeatureType, PlanType[]> = {
   'marketplace': ['entrepreneur', 'business'],
@@ -45,7 +46,8 @@ const FEATURE_PLAN_REQUIREMENTS: Record<FeatureType, PlanType[]> = {
   'revenue-forecast': ['entrepreneur', 'business'],
   'roadmap-generator': ['free', 'entrepreneur', 'business'],
   'startup-kit': ['entrepreneur', 'business'],
-  'investment-simulator': ['entrepreneur', 'business']
+  'investment-simulator': ['entrepreneur', 'business'],
+  'business-model-canvas': ['free', 'entrepreneur', 'business']
 };
 
 const PLAN_CREDITS: Record<PlanType, { initial: number; monthly: number }> = {
@@ -78,7 +80,8 @@ const FEATURE_COSTS: Record<FeatureType | 'basic-analysis' | 'reanalysis' | 'com
   'revenue-forecast': 9,
   'roadmap-generator': 7,
   'startup-kit': 15,
-  'investment-simulator': 10
+  'investment-simulator': 10,
+  'business-model-canvas': 6
 };
 
 export const usePlanAccess = () => {
