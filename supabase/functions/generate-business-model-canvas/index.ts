@@ -25,100 +25,110 @@ serve(async (req) => {
 
     console.log(`Generating Business Model Canvas for: ${idea.title}`);
 
-    // Try multiple models for better reliability
-    const models = ['gpt-4o-mini', 'gpt-4o', 'gpt-4.1-2025-04-14'];
-    let response;
-    let lastError;
-
-    for (const model of models) {
-      try {
-        console.log(`Trying model: ${model}`);
-        
-        response = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${openAIApiKey}`,
-            'Content-Type': 'application/json',
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: `Você é um consultor de negócios especializado em Business Model Canvas. 
+            Crie um Business Model Canvas completo e detalhado retornando APENAS um JSON válido com esta estrutura exata:
+            
+            {
+              "keyPartners": "Descrição detalhada dos parceiros-chave necessários",
+              "keyActivities": "Descrição das principais atividades do negócio",
+              "keyResources": "Recursos essenciais para o funcionamento",
+              "valuePropositions": "Propostas de valor únicas oferecidas",
+              "customerRelationships": "Como se relacionar com os clientes",
+              "channels": "Canais para alcançar e entregar valor aos clientes", 
+              "customerSegments": "Segmentos específicos de clientes-alvo",
+              "costStructure": "Principais custos e estrutura financeira",
+              "revenueStreams": "Fontes de receita e modelo de monetização"
+            }
+            
+            IMPORTANTE: 
+            - Retorne APENAS o JSON, sem markdown, sem explicações
+            - Cada campo deve ter pelo menos 100 caracteres de conteúdo substantivo
+            - Use informações específicas baseadas na ideia fornecida
+            - Todos os 9 campos são obrigatórios`
           },
-          body: JSON.stringify({
-            model: model,
-            messages: [
-              {
-                role: 'system',
-                content: `Você é um consultor de negócios especializado em Business Model Canvas. 
-                Crie um Business Model Canvas completo para a ideia fornecida e retorne em JSON com os 9 blocos:
-                - keyPartners: parceiros-chave
-                - keyActivities: atividades-chave
-                - keyResources: recursos-chave
-                - valuePropositions: propostas de valor
-                - customerRelationships: relacionamento com clientes
-                - channels: canais
-                - customerSegments: segmentos de clientes
-                - costStructure: estrutura de custos
-                - revenueStreams: fontes de receita
-                
-                Cada campo deve ter uma descrição detalhada e itens específicos.
-                Retorne apenas o JSON, sem explicações adicionais.`
-              },
-              {
-                role: 'user',
-                content: `Crie um Business Model Canvas para esta ideia:
-                
+          {
+            role: 'user',
+            content: `Crie um Business Model Canvas detalhado para esta ideia:
+
 Título: ${idea.title}
 Descrição: ${idea.description}
 ${idea.audience ? `Público-alvo: ${idea.audience}` : ''}
 ${idea.problem ? `Problema que resolve: ${idea.problem}` : ''}
 ${idea.monetization ? `Monetização: ${idea.monetization}` : ''}
+${idea.location ? `Localização: ${idea.location}` : ''}
+${idea.budget ? `Orçamento: ${idea.budget}` : ''}
 
-Retorne um Business Model Canvas completo em JSON.`
-              }
-            ],
-            max_tokens: 3000,
-            temperature: 0.7
-          })
-        });
-
-        if (response.ok) {
-          console.log(`Successfully connected with model: ${model}`);
-          break;
-        } else {
-          const errorData = await response.json();
-          lastError = new Error(errorData.error?.message || `Model ${model} failed`);
-          console.error(`Model ${model} failed:`, lastError.message);
-          continue;
-        }
-      } catch (error) {
-        lastError = error;
-        console.error(`Error with model ${model}:`, error.message);
-        continue;
-      }
-    }
-
-    if (!response || !response.ok) {
-      throw lastError || new Error('All models failed to generate Business Model Canvas');
-    }
+Gere um Business Model Canvas completo e específico para esta ideia.`
+          }
+        ],
+        max_tokens: 4000,
+        temperature: 0.7
+      })
+    });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error?.message || 'Failed to generate Business Model Canvas');
+      const errorData = await response.json();
+      console.error('OpenAI API error:', errorData);
+      throw new Error(errorData.error?.message || 'Failed to generate Business Model Canvas');
     }
 
     const data = await response.json();
+    console.log('OpenAI response received:', JSON.stringify(data, null, 2));
+    
     let canvasContent = data.choices[0].message.content.trim();
+    console.log('Raw canvas content:', canvasContent);
     
     // Remove code block markers if present
     if (canvasContent.startsWith('```json')) {
       canvasContent = canvasContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
     }
+    if (canvasContent.startsWith('```')) {
+      canvasContent = canvasContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
+    }
+    
+    console.log('Cleaned canvas content:', canvasContent);
     
     let canvas;
     try {
       canvas = JSON.parse(canvasContent);
+      console.log('Parsed canvas:', JSON.stringify(canvas, null, 2));
     } catch (parseError) {
       console.error('Failed to parse JSON response:', canvasContent);
-      throw new Error('Invalid response format from AI');
+      console.error('Parse error:', parseError);
+      throw new Error('Invalid JSON response from AI: ' + parseError.message);
     }
 
+    // Validate all required fields are present
+    const requiredFields = [
+      'keyPartners', 'keyActivities', 'keyResources', 'valuePropositions',
+      'customerRelationships', 'channels', 'customerSegments', 'costStructure', 'revenueStreams'
+    ];
+    
+    const missingFields = requiredFields.filter(field => !canvas[field]);
+    if (missingFields.length > 0) {
+      console.error('Missing required fields:', missingFields);
+      throw new Error(`Missing required canvas fields: ${missingFields.join(', ')}`);
+    }
+
+    // Add default content for empty fields
+    for (const field of requiredFields) {
+      if (!canvas[field] || canvas[field].trim().length < 10) {
+        canvas[field] = `Conteúdo específico para ${field} será definido com base na ideia apresentada.`;
+      }
+    }
+
+    console.log('Final canvas structure:', Object.keys(canvas));
     console.log('Business Model Canvas generated successfully');
 
     return new Response(JSON.stringify({
