@@ -5,7 +5,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlanAccess } from "@/hooks/usePlanAccess";
 import { toast } from "sonner";
-import { Briefcase, Download, Maximize, Minimize } from "lucide-react";
+import { 
+  Briefcase, 
+  Download, 
+  Maximize, 
+  Minimize,
+  Users,
+  Zap,
+  Target,
+  Gem,
+  Heart,
+  Megaphone,
+  UserCheck,
+  DollarSign,
+  TrendingUp
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ToolModalBase } from "@/components/shared/ToolModalBase";
 import { EnhancedIdeaSelector } from "@/components/shared/EnhancedIdeaSelector";
@@ -21,6 +35,9 @@ interface CanvasSection {
   content: string;
   key: string;
   description: string;
+  icon: React.ReactNode;
+  color: string;
+  bgColor: string;
 }
 
 interface BusinessModelCanvas {
@@ -193,61 +210,99 @@ ${canvas.costStructure}
     setIsFullscreen(!isFullscreen);
   };
 
+  // Format content with bullet points
+  const formatContent = (content: string) => {
+    if (!content) return "";
+    
+    return content
+      .split('\n')
+      .filter(line => line.trim())
+      .map(line => line.trim().startsWith('•') ? line : `• ${line.trim()}`)
+      .join('\n');
+  };
+
   // Canvas sections configuration
   const canvasSections: CanvasSection[] = [
     {
       title: "Parcerias Principais",
       key: "keyPartners",
-      content: canvas?.keyPartners || "",
-      description: "Quem são seus parceiros e fornecedores essenciais?"
+      content: formatContent(canvas?.keyPartners || ""),
+      description: "Quem são seus parceiros e fornecedores essenciais?",
+      icon: <Users className="h-5 w-5" />,
+      color: "text-blue-600 dark:text-blue-400",
+      bgColor: "bg-blue-50 dark:bg-blue-950/50 border-blue-200 dark:border-blue-800"
     },
     {
       title: "Atividades Principais",
       key: "keyActivities",
-      content: canvas?.keyActivities || "",
-      description: "Quais atividades são essenciais para entregar sua proposta de valor?"
+      content: formatContent(canvas?.keyActivities || ""),
+      description: "Quais atividades são essenciais para entregar sua proposta de valor?",
+      icon: <Zap className="h-5 w-5" />,
+      color: "text-purple-600 dark:text-purple-400",
+      bgColor: "bg-purple-50 dark:bg-purple-950/50 border-purple-200 dark:border-purple-800"
     },
     {
       title: "Recursos Principais",
       key: "keyResources",
-      content: canvas?.keyResources || "",
-      description: "Quais recursos são necessários para criar valor para seus clientes?"
+      content: formatContent(canvas?.keyResources || ""),
+      description: "Quais recursos são necessários para criar valor para seus clientes?",
+      icon: <Target className="h-5 w-5" />,
+      color: "text-green-600 dark:text-green-400",
+      bgColor: "bg-green-50 dark:bg-green-950/50 border-green-200 dark:border-green-800"
     },
     {
       title: "Proposta de Valor",
       key: "valuePropositions",
-      content: canvas?.valuePropositions || "",
-      description: "Que valor você entrega ao cliente? Que problema você resolve?"
+      content: formatContent(canvas?.valuePropositions || ""),
+      description: "Que valor você entrega ao cliente? Que problema você resolve?",
+      icon: <Gem className="h-5 w-5" />,
+      color: "text-orange-600 dark:text-orange-400",
+      bgColor: "bg-orange-50 dark:bg-orange-950/50 border-orange-200 dark:border-orange-800"
     },
     {
       title: "Relacionamento com Clientes",
       key: "customerRelationships",
-      content: canvas?.customerRelationships || "",
-      description: "Que tipo de relacionamento cada segmento de cliente espera?"
+      content: formatContent(canvas?.customerRelationships || ""),
+      description: "Que tipo de relacionamento cada segmento de cliente espera?",
+      icon: <Heart className="h-5 w-5" />,
+      color: "text-pink-600 dark:text-pink-400",
+      bgColor: "bg-pink-50 dark:bg-pink-950/50 border-pink-200 dark:border-pink-800"
     },
     {
       title: "Canais",
       key: "channels",
-      content: canvas?.channels || "",
-      description: "Como você alcança seus clientes e entrega sua proposta de valor?"
+      content: formatContent(canvas?.channels || ""),
+      description: "Como você alcança seus clientes e entrega sua proposta de valor?",
+      icon: <Megaphone className="h-5 w-5" />,
+      color: "text-indigo-600 dark:text-indigo-400",
+      bgColor: "bg-indigo-50 dark:bg-indigo-950/50 border-indigo-200 dark:border-indigo-800"
     },
     {
       title: "Segmentos de Clientes",
       key: "customerSegments",
-      content: canvas?.customerSegments || "",
-      description: "Para quem você está criando valor? Quem são seus clientes mais importantes?"
+      content: formatContent(canvas?.customerSegments || ""),
+      description: "Para quem você está criando valor? Quem são seus clientes mais importantes?",
+      icon: <UserCheck className="h-5 w-5" />,
+      color: "text-teal-600 dark:text-teal-400",
+      bgColor: "bg-teal-50 dark:bg-teal-950/50 border-teal-200 dark:border-teal-800"
     },
     {
       title: "Estrutura de Custos",
       key: "costStructure",
-      content: canvas?.costStructure || "",
-      description: "Quais são os custos mais importantes do seu modelo de negócio?"
+      content: formatContent(canvas?.costStructure || ""),
+      description: "Quais são os custos mais importantes do seu modelo de negócio?",
+      icon: <DollarSign className="h-5 w-5" />,
+      color: "text-red-600 dark:text-red-400",
+      bgColor: "bg-red-50 dark:bg-red-950/50 border-red-200 dark:border-red-800"
     },
     {
       title: "Fontes de Receita",
       key: "revenueStreams",
-      content: canvas?.revenueStreams || "",
-      description: "Como você gera receita? Qual o valor que os clientes estão dispostos a pagar?"
+      content: formatContent(canvas?.revenueStreams || ""),
+      description: "Como você gera receita? Qual o valor que os clientes estão dispostos a pagar?",
+      icon: <TrendingUp className="h-5 w-5" />,
+      color: "text-emerald-600 dark:text-emerald-400",
+      bgColor: "bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800"
     }
   ];
 
@@ -313,27 +368,31 @@ ${canvas.costStructure}
             {/* Mobile View - Tabs */}
             <div className="block md:hidden">
               <Tabs value={activeSection} onValueChange={setActiveSection}>
-                <TabsList className="grid grid-cols-3 mb-4">
-                  {canvasSections.map((section) => (
+                <TabsList className="grid grid-cols-3 mb-4 bg-muted/50">
+                  {canvasSections.slice(0, 9).map((section, index) => (
                     <TabsTrigger 
                       key={section.key} 
                       value={section.key}
-                      className="text-xs"
+                      className="text-xs flex items-center gap-1 data-[state=active]:bg-background"
                     >
-                      {section.title}
+                      <span className={section.color}>{section.icon}</span>
+                      <span className="hidden sm:inline">{section.title}</span>
                     </TabsTrigger>
                   ))}
                 </TabsList>
 
                 {canvasSections.map((section) => (
                   <TabsContent key={section.key} value={section.key}>
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-base">{section.title}</CardTitle>
+                    <Card className={section.bgColor}>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-base flex items-center gap-2">
+                          <span className={section.color}>{section.icon}</span>
+                          {section.title}
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground">{section.description}</p>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm text-muted-foreground mb-2">{section.description}</p>
-                        <div className="whitespace-pre-line text-sm">{section.content}</div>
+                        <div className="whitespace-pre-line text-sm leading-relaxed">{section.content}</div>
                       </CardContent>
                     </Card>
                   </TabsContent>
@@ -343,96 +402,114 @@ ${canvas.costStructure}
 
             {/* Desktop View - Grid */}
             <div className="hidden md:block">
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-5 gap-4 auto-rows-min">
                 {/* Top Row */}
-                <Card className="col-span-1">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">Parcerias Principais</CardTitle>
+                <Card className={`row-span-2 ${canvasSections[0].bgColor} shadow-sm hover:shadow-md transition-shadow`}>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <span className={canvasSections[0].color}>{canvasSections[0].icon}</span>
+                      Parcerias Principais
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="whitespace-pre-line text-sm">{canvas.keyPartners}</div>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.keyPartners)}</div>
                   </CardContent>
                 </Card>
 
-                <div className="col-span-1 space-y-3">
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm">Atividades Principais</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="whitespace-pre-line text-sm">{canvas.keyActivities}</div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm">Recursos Principais</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="whitespace-pre-line text-sm">{canvas.keyResources}</div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <Card className="col-span-1 bg-blue-50 dark:bg-blue-950">
+                <Card className={`${canvasSections[1].bgColor} shadow-sm hover:shadow-md transition-shadow`}>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">Proposta de Valor</CardTitle>
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <span className={canvasSections[1].color}>{canvasSections[1].icon}</span>
+                      Atividades Principais
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="whitespace-pre-line text-sm">{canvas.valuePropositions}</div>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.keyActivities)}</div>
                   </CardContent>
                 </Card>
 
-                {/* Middle Row */}
-                <div className="col-span-3 grid grid-cols-3 gap-3">
-                  <div className="col-span-1 space-y-3">
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-sm">Relacionamento com Clientes</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="whitespace-pre-line text-sm">{canvas.customerRelationships}</div>
-                      </CardContent>
-                    </Card>
-                  </div>
+                <Card className={`row-span-2 ${canvasSections[3].bgColor} shadow-lg border-2 hover:shadow-xl transition-all`}>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2 font-semibold">
+                      <span className={canvasSections[3].color}>{canvasSections[3].icon}</span>
+                      Proposta de Valor
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="whitespace-pre-line text-sm leading-relaxed font-medium">{formatContent(canvas.valuePropositions)}</div>
+                  </CardContent>
+                </Card>
 
-                  <div className="col-span-1 space-y-3">
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-sm">Canais</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="whitespace-pre-line text-sm">{canvas.channels}</div>
-                      </CardContent>
-                    </Card>
-                  </div>
+                <Card className={`${canvasSections[4].bgColor} shadow-sm hover:shadow-md transition-shadow`}>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <span className={canvasSections[4].color}>{canvasSections[4].icon}</span>
+                      Relacionamento
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.customerRelationships)}</div>
+                  </CardContent>
+                </Card>
 
-                  <Card className="col-span-1">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm">Segmentos de Clientes</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="whitespace-pre-line text-sm">{canvas.customerSegments}</div>
-                    </CardContent>
-                  </Card>
-                </div>
+                <Card className={`row-span-2 ${canvasSections[6].bgColor} shadow-sm hover:shadow-md transition-shadow`}>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <span className={canvasSections[6].color}>{canvasSections[6].icon}</span>
+                      Segmentos de Clientes
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.customerSegments)}</div>
+                  </CardContent>
+                </Card>
+
+                <Card className={`${canvasSections[2].bgColor} shadow-sm hover:shadow-md transition-shadow`}>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <span className={canvasSections[2].color}>{canvasSections[2].icon}</span>
+                      Recursos Principais
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.keyResources)}</div>
+                  </CardContent>
+                </Card>
+
+                <Card className={`${canvasSections[5].bgColor} shadow-sm hover:shadow-md transition-shadow`}>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <span className={canvasSections[5].color}>{canvasSections[5].icon}</span>
+                      Canais
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.channels)}</div>
+                  </CardContent>
+                </Card>
 
                 {/* Bottom Row */}
-                <Card className="col-span-3/2">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">Estrutura de Custos</CardTitle>
+                <Card className={`col-span-2 ${canvasSections[7].bgColor} shadow-sm hover:shadow-md transition-shadow`}>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <span className={canvasSections[7].color}>{canvasSections[7].icon}</span>
+                      Estrutura de Custos
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="whitespace-pre-line text-sm">{canvas.costStructure}</div>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.costStructure)}</div>
                   </CardContent>
                 </Card>
 
-                <Card className="col-span-3/2">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">Fontes de Receita</CardTitle>
+                <Card className={`col-span-3 ${canvasSections[8].bgColor} shadow-sm hover:shadow-md transition-shadow`}>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <span className={canvasSections[8].color}>{canvasSections[8].icon}</span>
+                      Fontes de Receita
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="whitespace-pre-line text-sm">{canvas.revenueStreams}</div>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.revenueStreams)}</div>
                   </CardContent>
                 </Card>
               </div>
