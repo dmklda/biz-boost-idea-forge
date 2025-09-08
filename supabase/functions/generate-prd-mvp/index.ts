@@ -140,8 +140,8 @@ Seja específico e prático em cada seção.`;
     }
     console.log(`Generating ${documentType} for idea: ${idea.title}`);
     
-    // Try multiple models for better reliability
-    const models = ['gpt-4.1-2025-04-14', 'gpt-5-mini-2025-08-07', 'gpt-4o-mini'];
+    // Try multiple models starting with most reliable ones
+    const models = ['gpt-4o-mini', 'gpt-4o', 'gpt-4.1-2025-04-14'];
     let response;
     let lastError;
     
@@ -160,16 +160,10 @@ Seja específico e prático em cada seção.`;
               role: 'user',
               content: userPrompt
             }
-          ]
+          ],
+          max_tokens: 4000,
+          temperature: 0.7
         };
-        
-        // Add correct token parameter based on model
-        if (model.includes('gpt-5') || model.includes('gpt-4.1') || model.includes('o3') || model.includes('o4')) {
-          requestBody.max_completion_tokens = 4000;
-        } else {
-          requestBody.max_tokens = 4000;
-          requestBody.temperature = 0.7;
-        }
         
         response = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
