@@ -211,8 +211,8 @@ ${canvas.costStructure}
   };
 
   // Format content with bullet points
-  const formatContent = (content: string) => {
-    if (!content) return "";
+  const formatContent = (content: string | null | undefined) => {
+    if (!content || typeof content !== 'string') return "";
     
     return content
       .split('\n')
