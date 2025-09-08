@@ -413,7 +413,7 @@ ${canvas.costStructure}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.keyPartners)}</div>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas?.keyPartners)}</div>
                   </CardContent>
                 </Card>
 
@@ -425,7 +425,7 @@ ${canvas.costStructure}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.keyActivities)}</div>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas?.keyActivities)}</div>
                   </CardContent>
                 </Card>
 
@@ -437,7 +437,7 @@ ${canvas.costStructure}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="whitespace-pre-line text-sm leading-relaxed font-medium">{formatContent(canvas.valuePropositions)}</div>
+                    <div className="whitespace-pre-line text-sm leading-relaxed font-medium">{formatContent(canvas?.valuePropositions)}</div>
                   </CardContent>
                 </Card>
 
@@ -449,7 +449,7 @@ ${canvas.costStructure}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.customerRelationships)}</div>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas?.customerRelationships)}</div>
                   </CardContent>
                 </Card>
 
@@ -461,7 +461,7 @@ ${canvas.costStructure}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.customerSegments)}</div>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas?.customerSegments)}</div>
                   </CardContent>
                 </Card>
 
@@ -473,7 +473,7 @@ ${canvas.costStructure}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.keyResources)}</div>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas?.keyResources)}</div>
                   </CardContent>
                 </Card>
 
@@ -485,7 +485,7 @@ ${canvas.costStructure}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.channels)}</div>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas?.channels)}</div>
                   </CardContent>
                 </Card>
 
@@ -498,7 +498,7 @@ ${canvas.costStructure}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.costStructure)}</div>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas?.costStructure)}</div>
                   </CardContent>
                 </Card>
 
@@ -510,7 +510,7 @@ ${canvas.costStructure}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas.revenueStreams)}</div>
+                    <div className="whitespace-pre-line text-sm leading-relaxed">{formatContent(canvas?.revenueStreams)}</div>
                   </CardContent>
                 </Card>
               </div>
