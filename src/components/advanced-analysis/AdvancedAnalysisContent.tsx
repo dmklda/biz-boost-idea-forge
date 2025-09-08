@@ -385,21 +385,21 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
             <CardContent className="space-y-6">
               <div>
                 <h4 className="font-semibold mb-2 text-sm md:text-base">Tamanho do Mercado</h4>
-                <p className="text-gray-700 text-sm md:text-base">{marketAnalysis?.size}</p>
+                <p className="text-foreground text-sm md:text-base">{marketAnalysis?.size}</p>
               </div>
               
                 <div>
                 <h4 className="font-semibold mb-2 text-sm md:text-base">Público-Alvo</h4>
-                <p className="text-gray-700 text-sm md:text-base">{marketAnalysis?.targetAudience}</p>
+                <p className="text-foreground text-sm md:text-base">{marketAnalysis?.targetAudience}</p>
               </div>
               
               <div>
                 <h4 className="font-semibold mb-2 text-sm md:text-base">Tendências de Mercado</h4>
                 <div className="grid gap-2">
                   {marketAnalysis?.trends?.map((trend: string, index: number) => (
-                    <div key={index} className="flex items-start gap-2 p-2 bg-yellow-50 rounded">
+                    <div key={index} className="flex items-start gap-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded">
                       <TrendingUp className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-700 text-sm md:text-base">{trend}</span>
+                      <span className="text-foreground text-sm md:text-base">{trend}</span>
                     </div>
                   ))}
                 </div>
@@ -409,9 +409,9 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                 <h4 className="font-semibold mb-2 text-sm md:text-base">Barreiras de Entrada</h4>
                 <div className="grid gap-2">
                   {marketAnalysis?.barriers?.map((barrier: string, index: number) => (
-                    <div key={index} className="flex items-start gap-2 p-2 bg-red-50 rounded">
+                    <div key={index} className="flex items-start gap-2 p-2 bg-red-50 dark:bg-red-900/20 rounded">
                       <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-700 text-sm md:text-base">{barrier}</span>
+                      <span className="text-foreground text-sm md:text-base">{barrier}</span>
                     </div>
                   ))}
                 </div>
