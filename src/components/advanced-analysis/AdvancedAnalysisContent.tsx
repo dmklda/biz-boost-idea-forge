@@ -423,8 +423,8 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                 <div className="grid gap-3">
                   {channels?.map((channel: any, index: number) => (
                     <div key={index} className="p-3 border rounded-lg">
-                      <h5 className="font-medium text-gray-900 mb-1 text-sm md:text-base">{channel.name}</h5>
-                      <p className="text-xs md:text-sm text-gray-600">{channel.description}</p>
+                      <h5 className="font-medium text-foreground mb-1 text-sm md:text-base">{channel.name}</h5>
+                      <p className="text-xs md:text-sm text-muted-foreground">{channel.description}</p>
                     </div>
                   ))}
                 </div>
@@ -444,7 +444,7 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
                 </div>
                 <div>
                   <CardTitle className="text-lg md:text-xl">Modelos de Monetização</CardTitle>
-                  <p className="text-xs md:text-sm text-gray-600">Estratégias de geração de receita</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Estratégias de geração de receita</p>
                 </div>
               </div>
             </CardHeader>
@@ -452,8 +452,8 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
               <div className="grid gap-4">
                 {monetization?.models?.map((model: any, index: number) => (
                   <div key={index} className="p-4 border rounded-lg">
-                    <h4 className="font-semibold text-gray-900 mb-2 text-sm md:text-base">{model.name}</h4>
-                    <p className="text-gray-600 mb-2 text-sm md:text-base">{model.description}</p>
+                    <h4 className="font-semibold text-foreground mb-2 text-sm md:text-base">{model.name}</h4>
+                    <p className="text-muted-foreground mb-2 text-sm md:text-base">{model.description}</p>
                     <div className="text-sm font-medium text-green-600">
                       Receita: {model.revenue}
                     </div>
@@ -466,17 +466,17 @@ export function AdvancedAnalysisContent({ analysis }: AdvancedAnalysisContentPro
               <div>
                 <h4 className="font-semibold mb-4 text-sm md:text-base">Projeções Financeiras</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-green-50 rounded-lg">
+                  <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
                     <div className="text-xl md:text-2xl font-bold text-green-600 mb-1">
                       {monetization?.projections?.firstYear}
                     </div>
-                    <div className="text-xs md:text-sm text-gray-600">Receita no 1º ano</div>
+                    <div className="text-xs md:text-sm text-muted-foreground">Receita no 1º ano</div>
                   </div>
-                  <div className="p-4 bg-blue-50 rounded-lg">
+                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                     <div className="text-xl md:text-2xl font-bold text-blue-600 mb-1">
                       {monetization?.projections?.thirdYear}
                     </div>
-                    <div className="text-xs md:text-sm text-gray-600">Receita no 3º ano</div>
+                    <div className="text-xs md:text-sm text-muted-foreground">Receita no 3º ano</div>
                   </div>
                   <div className="p-4 bg-yellow-50 rounded-lg">
                     <div className="text-xl md:text-2xl font-bold text-yellow-600 mb-1">
