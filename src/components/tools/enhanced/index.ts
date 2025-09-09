@@ -17,6 +17,8 @@ export { StartupKitModalEnhanced } from './StartupKitModalEnhanced';
 export { RevenueForecastModalEnhanced } from './RevenueForecastModalEnhanced';
 export { ColorPaletteModalEnhanced } from './ColorPaletteModalEnhanced';
 export { BusinessModelCanvasModalEnhanced } from './BusinessModelCanvasModalEnhanced';
+export { BusinessPlanModalEnhanced } from './BusinessPlanModalEnhanced';
+export { PitchDeckModalEnhanced } from './PitchDeckModalEnhanced';
 
 // Exemplo de como substituir as importações nas páginas:
 // 

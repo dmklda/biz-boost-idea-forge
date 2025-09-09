@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { supabase } from './integrations/supabase/client';
 import Index from './pages/Index';
@@ -17,6 +17,7 @@ import AdvancedMetricsPage from './pages/dashboard/AdvancedMetricsPage';
 import ResourceCenterPage from './pages/dashboard/ResourceCenterPage';
 import ResultsPage from './pages/dashboard/ResultsPage';
 import ToolsPage from './pages/dashboard/ToolsPage';
+const ToolsPageEnhanced = React.lazy(() => import('./pages/dashboard/ToolsPageEnhanced'));
 import DraftsPage from './pages/dashboard/DraftsPage';
 import GamificationPage from './pages/dashboard/GamificationPage';
 import MarketplacePage from './pages/dashboard/MarketplacePage';

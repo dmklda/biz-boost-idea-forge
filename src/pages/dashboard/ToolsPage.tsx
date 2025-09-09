@@ -17,13 +17,13 @@ import { BusinessNameGeneratorModal } from "@/components/tools/BusinessNameGener
 import { MarketAnalysisModal } from "@/components/tools/MarketAnalysisModal";
 import { BusinessModelCanvasModalEnhanced } from "@/components/tools/enhanced";
 import { FinancialAnalysisModal } from "@/components/tools/FinancialAnalysisModal";
-import { PitchDeckModal } from "@/components/tools/PitchDeckModal";
+import { PitchDeckModalEnhanced as PitchDeckModal } from "@/components/tools/enhanced";
 import { CompetitorAnalysisModal } from "@/components/tools/CompetitorAnalysisModal";
 import { ColorPaletteModalEnhanced as ColorPaletteModal } from "@/components/tools/enhanced";
 import { UserResearchModal } from "@/components/tools/UserResearchModal";
 import { ValuationCalculatorModal } from "@/components/tools/ValuationCalculatorModal";
 import { MarketingStrategyModal } from "@/components/tools/MarketingStrategyModal";
-import { BusinessPlanModal } from "@/components/tools/BusinessPlanModal";
+import { BusinessPlanModalEnhanced as BusinessPlanModal } from "@/components/tools/enhanced";
 import { SEOAnalyzerModal } from "@/components/tools/SEOAnalyzerModal";
 import { LandingPageGeneratorModal } from "@/components/tools/LandingPageGeneratorModal";
 import { ContentMarketingModal } from "@/components/tools/ContentMarketingModal";

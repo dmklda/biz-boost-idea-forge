@@ -27,22 +27,22 @@ import {
   PRDMVPGeneratorModalEnhanced,
   InvestmentSimulatorModalEnhanced,
   StartupKitModalEnhanced,
-  RevenueForecastModalEnhanced
+  RevenueForecastModalEnhanced,
+  BusinessPlanModalEnhanced,
+  PitchDeckModalEnhanced,
+  BusinessModelCanvasModalEnhanced
 } from "@/components/tools/enhanced";
 
 // Importando os modais originais para as ferramentas que ainda não foram melhoradas
 import { LogoGeneratorModal } from "@/components/tools/LogoGeneratorModal";
 import { BusinessNameGeneratorModal } from "@/components/tools/BusinessNameGeneratorModal";
 import { MarketAnalysisModal } from "@/components/tools/MarketAnalysisModal";
-import { BusinessModelCanvasModalEnhanced } from "@/components/tools/enhanced";
 import { FinancialAnalysisModal } from "@/components/tools/FinancialAnalysisModal";
-import { PitchDeckModal } from "@/components/tools/PitchDeckModal";
 import { CompetitorAnalysisModal } from "@/components/tools/CompetitorAnalysisModal";
 import { ColorPaletteModal } from "@/components/tools/ColorPaletteModal";
 import { UserResearchModal } from "@/components/tools/UserResearchModal";
 import { ValuationCalculatorModal } from "@/components/tools/ValuationCalculatorModal";
 import { MarketingStrategyModal } from "@/components/tools/MarketingStrategyModal";
-import { BusinessPlanModal } from "@/components/tools/BusinessPlanModal";
 import { SEOAnalyzerModal } from "@/components/tools/SEOAnalyzerModal";
 import { LandingPageGeneratorModal } from "@/components/tools/LandingPageGeneratorModal";
 import { ContentMarketingModal } from "@/components/tools/ContentMarketingModal";
@@ -355,7 +355,7 @@ const ToolsPageEnhanced = () => {
         open={isFinancialAnalysisModalOpen} 
         onOpenChange={setIsFinancialAnalysisModalOpen} 
       />
-      <PitchDeckModal 
+      <PitchDeckModalEnhanced 
         open={isPitchDeckModalOpen} 
         onOpenChange={setIsPitchDeckModalOpen} 
       />
@@ -379,7 +379,7 @@ const ToolsPageEnhanced = () => {
         open={isMarketingStrategyModalOpen} 
         onOpenChange={setIsMarketingStrategyModalOpen} 
       />
-      <BusinessPlanModal 
+      <BusinessPlanModalEnhanced 
         open={isBusinessPlanModalOpen} 
         onOpenChange={setIsBusinessPlanModalOpen} 
       />
@@ -453,8 +453,11 @@ const ToolsPageEnhanced = () => {
         open={isRevenueForecastModalOpen} 
         onOpenChange={setIsRevenueForecastModalOpen} 
       />
+      {/* Nota: BusinessModelCanvasModalEnhanced, PitchDeckModalEnhanced e BusinessPlanModalEnhanced 
+         já estão sendo usados acima na seção de modais originais */}
     </div>
   );
 };
 
+// Exportação padrão
 export default ToolsPageEnhanced;
