@@ -163,7 +163,7 @@ const ToolsPage = () => {
       color: "from-indigo-500 to-purple-500",
       category: "documentation",
       credits: 10,
-      status: "available"
+      status: "coming-soon"
     },
     {
       title: "Plano de Negócios",
@@ -173,7 +173,7 @@ const ToolsPage = () => {
       color: "from-teal-500 to-cyan-500",
       category: "documentation",
       credits: 12,
-      status: "available"
+      status: "coming-soon"
     },
 
     // Análise e Pesquisa
