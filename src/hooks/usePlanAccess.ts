@@ -23,7 +23,17 @@ export type FeatureType =
   | 'roadmap-generator'
   | 'startup-kit'
   | 'investment-simulator'
-  | 'business-model-canvas';
+  | 'business-model-canvas'
+  | 'market-analysis'
+  | 'financial-analysis'
+  | 'competitor-analysis'
+  | 'social-posts'
+  | 'social-media-planner'
+  | 'process-automation'
+  | 'invoice-generator'
+  | 'pricing-model'
+  | 'market-timing'
+  | 'cac-ltv';
 
 const FEATURE_PLAN_REQUIREMENTS: Record<FeatureType, PlanType[]> = {
   'marketplace': ['entrepreneur', 'business'],
@@ -47,7 +57,17 @@ const FEATURE_PLAN_REQUIREMENTS: Record<FeatureType, PlanType[]> = {
   'roadmap-generator': ['free', 'entrepreneur', 'business'],
   'startup-kit': ['entrepreneur', 'business'],
   'investment-simulator': ['entrepreneur', 'business'],
-  'business-model-canvas': ['free', 'entrepreneur', 'business']
+  'business-model-canvas': ['free', 'entrepreneur', 'business'],
+  'market-analysis': ['free', 'entrepreneur', 'business'],
+  'financial-analysis': ['free', 'entrepreneur', 'business'],
+  'competitor-analysis': ['free', 'entrepreneur', 'business'],
+  'social-posts': ['free', 'entrepreneur', 'business'],
+  'social-media-planner': ['free', 'entrepreneur', 'business'],
+  'process-automation': ['free', 'entrepreneur', 'business'],
+  'invoice-generator': ['free', 'entrepreneur', 'business'],
+  'pricing-model': ['entrepreneur', 'business'],
+  'market-timing': ['entrepreneur', 'business'],
+  'cac-ltv': ['free', 'entrepreneur', 'business']
 };
 
 const PLAN_CREDITS: Record<PlanType, { initial: number; monthly: number }> = {
@@ -79,9 +99,19 @@ const FEATURE_COSTS: Record<FeatureType | 'basic-analysis' | 'reanalysis' | 'com
   'trend-analysis': 8,
   'revenue-forecast': 9,
   'roadmap-generator': 7,
-  'startup-kit': 15,
+  'startup-kit': 25,
   'investment-simulator': 10,
-  'business-model-canvas': 6
+  'business-model-canvas': 6,
+  'market-analysis': 7,
+  'financial-analysis': 8,
+  'competitor-analysis': 9,
+  'social-posts': 3,
+  'social-media-planner': 6,
+  'process-automation': 9,
+  'invoice-generator': 4,
+  'pricing-model': 9,
+  'market-timing': 14,
+  'cac-ltv': 8
 };
 
 export const usePlanAccess = () => {

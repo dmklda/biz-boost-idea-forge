@@ -52,7 +52,7 @@ import { ProcessAutomationModal } from "@/components/tools/ProcessAutomationModa
 import { InvoiceGeneratorModal } from "@/components/tools/InvoiceGeneratorModal";
 import { PricingModelModal } from "@/components/tools/PricingModelModal";
 import { MarketTimingModal } from "@/components/tools/MarketTimingModal";
-import { CacLtvModal } from "@/components/tools/CacLtvModal";
+import { CacLtvModalEnhanced } from "@/components/tools/enhanced";
 import { AiImageEditorModal } from "@/components/tools/AiImageEditorModal";
 import { ReportCreatorModal } from "@/components/tools/ReportCreatorModal";
 import { toast } from "sonner";
@@ -419,7 +419,7 @@ const ToolsPageEnhanced = () => {
         open={isMarketTimingModalOpen} 
         onOpenChange={setIsMarketTimingModalOpen} 
       />
-      <CacLtvModal 
+      <CacLtvModalEnhanced 
         open={isCacLtvModalOpen} 
         onOpenChange={setIsCacLtvModalOpen} 
       />

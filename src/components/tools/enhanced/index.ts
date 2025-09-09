@@ -16,9 +16,26 @@ export { InvestmentSimulatorModalEnhanced } from './InvestmentSimulatorModalEnha
 export { StartupKitModalEnhanced } from './StartupKitModalEnhanced';
 export { RevenueForecastModalEnhanced } from './RevenueForecastModalEnhanced';
 export { ColorPaletteModalEnhanced } from './ColorPaletteModalEnhanced';
+export { LandingPageGeneratorModalEnhanced } from './LandingPageGeneratorModalEnhanced';
+export { MarketTimingModalEnhanced } from './MarketTimingModalEnhanced';
 export { BusinessModelCanvasModalEnhanced } from './BusinessModelCanvasModalEnhanced';
 export { BusinessPlanModalEnhanced } from './BusinessPlanModalEnhanced';
 export { PitchDeckModalEnhanced } from './PitchDeckModalEnhanced';
+export { MarketAnalysisModalEnhanced } from './MarketAnalysisModalEnhanced';
+export { FinancialAnalysisModalEnhanced } from './FinancialAnalysisModalEnhanced';
+export { CompetitorAnalysisModalEnhanced } from './CompetitorAnalysisModalEnhanced';
+export { UserResearchModalEnhanced } from './UserResearchModalEnhanced';
+export { MarketingStrategyModalEnhanced } from './MarketingStrategyModalEnhanced';
+export { ContentMarketingModalEnhanced } from './ContentMarketingModalEnhanced';
+export { PostGeneratorModalEnhanced } from './PostGeneratorModalEnhanced';
+export { SEOAnalyzerModalEnhanced } from './SEOAnalyzerModalEnhanced';
+export { SocialMediaPlannerModalEnhanced } from './SocialMediaPlannerModalEnhanced';
+export { ValuationCalculatorModalEnhanced } from './ValuationCalculatorModalEnhanced';
+export { ProcessAutomationModalEnhanced } from './ProcessAutomationModalEnhanced';
+export { InvoiceGeneratorModalEnhanced } from './InvoiceGeneratorModalEnhanced';
+export { TrendAnalysisModalEnhanced } from './TrendAnalysisModalEnhanced';
+export { PricingModelModalEnhanced } from './PricingModelModalEnhanced';
+export { CacLtvModalEnhanced } from './CacLtvModalEnhanced';
 
 // Exemplo de como substituir as importações nas páginas:
 // 
