@@ -32,7 +32,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -64,7 +64,8 @@ ${idea.budget ? `Orçamento: ${idea.budget}` : ''}
 Retorne um plano de negócios completo em JSON.`
           }
         ],
-        max_completion_tokens: 3000
+        max_tokens: 4000,
+        temperature: 0.7
       })
     });
 

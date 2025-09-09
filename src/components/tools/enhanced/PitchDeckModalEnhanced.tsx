@@ -115,33 +115,14 @@ export const PitchDeckModalEnhanced: React.FC<PitchDeckModalEnhancedProps> = ({
         if (error) throw error;
         
         // Se chegou aqui, use os dados reais
-        setSlides(data.pitchDeck.slides || []);
+        if (data?.pitchDeck?.slides) {
+          setSlides(data.pitchDeck.slides);
+        } else {
+          throw new Error('Dados inválidos recebidos da API');
+        }
       } catch (invokeError) {
-        console.warn('Erro ao invocar função do Supabase, usando dados simulados:', invokeError);
-        
-        // Dados simulados para desenvolvimento
-        const mockSlides = [
-          {
-            title: "Problema",
-            content: "Descrição do problema que estamos resolvendo...",
-            speakerNotes: "Falar sobre a dor do cliente",
-            slideNumber: 1
-          },
-          {
-            title: "Solução",
-            content: "Nossa solução inovadora...",
-            speakerNotes: "Destacar diferenciais",
-            slideNumber: 2
-          },
-          {
-            title: "Mercado",
-            content: "Tamanho do mercado e oportunidade...",
-            speakerNotes: "Mencionar TAM, SAM, SOM",
-            slideNumber: 3
-          }
-        ];
-        
-        setSlides(mockSlides);
+        console.error('Erro ao invocar função do Supabase:', invokeError);
+        throw invokeError;
       }
       
       // Slides já foram definidos no bloco try/catch acima
@@ -156,7 +137,7 @@ export const PitchDeckModalEnhanced: React.FC<PitchDeckModalEnhancedProps> = ({
             idea_id: useCustom ? null : selectedIdea?.id,
             content_type: 'pitch-deck',
             title: `Pitch Deck - ${ideaData.title}`,
-            content_data: data.pitchDeck
+            content_data: JSON.parse(JSON.stringify({ slides }))
           });
       } catch (saveError) {
         console.warn('Failed to save pitch deck to database:', saveError);
@@ -191,30 +172,38 @@ export const PitchDeckModalEnhanced: React.FC<PitchDeckModalEnhancedProps> = ({
     }
   };
 
-  const downloadPitchDeck = () => {
+  const downloadPitchDeck = async () => {
     if (slides.length === 0) return;
     
-    // Create a formatted text version of the pitch deck
-    let content = `# Pitch Deck - ${selectedIdea?.title || 'Ideia Personalizada'}\n\n`;
-    
-    slides.forEach((slide, index) => {
-      content += `## Slide ${index + 1}: ${slide.title}\n\n`;
-      content += `${slide.content}\n\n`;
-      if (slide.speakerNotes) {
-        content += `### Notas do Apresentador:\n${slide.speakerNotes}\n\n`;
-      }
-    });
-    
-    // Create a download link
-    const element = document.createElement('a');
-    const file = new Blob([content], {type: 'text/plain'});
-    element.href = URL.createObjectURL(file);
-    element.download = `pitch_deck_${selectedIdea?.title?.replace(/\s+/g, '_').toLowerCase() || 'ideia'}.txt`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-    URL.revokeObjectURL(element.href);
-    toast.success('Pitch deck baixado com sucesso!');
+    try {
+      // Import the PPTX generator
+      const { generatePptxFromSlides } = await import('@/utils/pptxGenerator');
+      await generatePptxFromSlides(slides, 'Pitch Deck');
+      toast.success("Arquivo PowerPoint baixado com sucesso!");
+    } catch (error) {
+      console.error('Error downloading PPTX:', error);
+      // Fallback to text download
+      let content = `# Pitch Deck - ${selectedIdea?.title || 'Ideia Personalizada'}\n\n`;
+      
+      slides.forEach((slide, index) => {
+        content += `## Slide ${index + 1}: ${slide.title}\n\n`;
+        content += `${slide.content}\n\n`;
+        if (slide.speakerNotes) {
+          content += `### Notas do Apresentador:\n${slide.speakerNotes}\n\n`;
+        }
+      });
+      
+      const element = document.createElement('a');
+      const file = new Blob([content], {type: 'text/plain'});
+      element.href = URL.createObjectURL(file);
+      element.download = `pitch_deck_${selectedIdea?.title?.replace(/\s+/g, '_').toLowerCase() || 'ideia'}.txt`;
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      URL.revokeObjectURL(element.href);
+      
+      toast.error("Erro ao gerar PowerPoint. Arquivo de texto baixado como alternativa.");
+    }
   };
 
   // Get slide icon based on title
@@ -274,7 +263,7 @@ export const PitchDeckModalEnhanced: React.FC<PitchDeckModalEnhancedProps> = ({
                 className="flex items-center gap-1"
               >
                 <Download className="h-4 w-4" />
-                <span className="hidden sm:inline">Baixar</span>
+                <span className="hidden sm:inline">Baixar PowerPoint</span>
               </Button>
             </div>
 

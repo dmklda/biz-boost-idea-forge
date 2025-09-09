@@ -120,25 +120,14 @@ export const BusinessPlanModalEnhanced: React.FC<BusinessPlanModalEnhancedProps>
         if (error) throw error;
         
         // Se chegou aqui, use os dados reais
-        setPlan(data.plan);
+        if (data?.plan) {
+          setPlan(data.plan);
+        } else {
+          throw new Error('Dados inválidos recebidos da API');
+        }
       } catch (invokeError) {
-        console.warn('Erro ao invocar função do Supabase, usando dados simulados:', invokeError);
-        
-        // Dados simulados para desenvolvimento
-        const mockPlan = {
-          executiveSummary: "Este é um resumo executivo simulado para desenvolvimento. Aqui descrevemos a visão geral do negócio, sua proposta de valor e objetivos principais.",
-          companyDescription: "Descrição detalhada da empresa, incluindo missão, visão e valores. Também abordamos a estrutura organizacional e o modelo de negócios.",
-          organizationManagement: "Detalhes sobre a equipe de gestão, suas competências e experiências. Também incluímos informações sobre a estrutura hierárquica e departamentos.",
-          serviceOffering: "Descrição dos produtos e serviços oferecidos, destacando seus diferenciais e benefícios para os clientes.",
-          marketAnalysis: "Análise detalhada do mercado, incluindo tamanho, tendências, concorrentes e oportunidades identificadas.",
-          marketingStrategy: "Estratégias de marketing para aquisição e retenção de clientes, incluindo canais de distribuição e comunicação.",
-          financialProjections: "Projeções financeiras para os próximos 5 anos, incluindo receitas, despesas, fluxo de caixa e ponto de equilíbrio.",
-          fundingRequest: "Detalhes sobre as necessidades de financiamento, incluindo valores, prazos e uso dos recursos.",
-          implementation: "Plano de implementação com cronograma, marcos e responsáveis por cada etapa do projeto.",
-          appendix: "Documentos complementares, incluindo pesquisas de mercado, análises técnicas e outros materiais de suporte."
-        };
-        
-        setPlan(mockPlan);
+        console.error('Erro ao invocar função do Supabase:', invokeError);
+        throw invokeError;
       }
       
       // Try to save to database, but don't let saving errors affect display
@@ -150,7 +139,7 @@ export const BusinessPlanModalEnhanced: React.FC<BusinessPlanModalEnhancedProps>
             idea_id: useCustom ? null : selectedIdea?.id,
             content_type: 'business-plan',
             title: `Plano de Negócios - ${ideaData.title}`,
-            content_data: data.plan
+            content_data: JSON.parse(JSON.stringify(plan))
           });
       } catch (saveError) {
         console.warn('Failed to save business plan to database:', saveError);
@@ -441,7 +430,7 @@ ${plan.appendix}
             </Tabs>
           </div>
         ) : (
-          <CreditGuard feature="business-plan">
+          <CreditGuard feature="basic-analysis">
             <EnhancedIdeaSelector 
               onSelect={handleIdeaSelect} 
               allowCustomIdea={true}
