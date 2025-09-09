@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlanAccess } from "@/hooks/usePlanAccess";
+import { useGenerationProgress } from "@/hooks/useGenerationProgress";
 import { toast } from "sonner";
 import { 
   BookOpen, 
@@ -15,13 +16,17 @@ import {
   Lightbulb,
   BarChart,
   Target,
-  Calendar
+  Calendar,
+  RefreshCw
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ToolModalBase } from "@/components/shared/ToolModalBase";
 import { EnhancedIdeaSelector } from "@/components/shared/EnhancedIdeaSelector";
 import { CreditGuard } from "@/components/CreditGuard";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { GenerationProgress } from "@/components/ui/generation-progress";
+import { withRetry, getErrorMessage } from "@/utils/retryHelper";
+import { Badge } from "@/components/ui/badge";
 
 interface BusinessPlanModalEnhancedProps {
   open: boolean;
@@ -48,6 +53,7 @@ export const BusinessPlanModalEnhanced: React.FC<BusinessPlanModalEnhancedProps>
   console.log('BusinessPlanModalEnhanced renderizado', { open });
   const { authState, updateUserCredits } = useAuth();
   const { hasCredits, getFeatureCost } = usePlanAccess();
+  const { steps, overallProgress, currentStep, initializeSteps, updateStepStatus, resetProgress } = useGenerationProgress();
   const user = authState.user;
   const [selectedIdea, setSelectedIdea] = useState<any>(null);
   const [customIdea, setCustomIdea] = useState("");
@@ -55,6 +61,7 @@ export const BusinessPlanModalEnhanced: React.FC<BusinessPlanModalEnhancedProps>
   const [isGenerating, setIsGenerating] = useState(false);
   const [plan, setPlan] = useState<BusinessPlan | null>(null);
   const [activeTab, setActiveTab] = useState<string>("executive");
+  const [retryCount, setRetryCount] = useState(0);
 
   const handleIdeaSelect = (idea: any) => {
     setSelectedIdea(idea);
@@ -86,51 +93,86 @@ export const BusinessPlanModalEnhanced: React.FC<BusinessPlanModalEnhancedProps>
     }
 
     // Check credits
-    if (!hasCredits('business-plan')) {
-      toast.error(`Você precisa de ${getFeatureCost('business-plan')} créditos para usar esta ferramenta`);
+    if (!hasCredits('basic-analysis')) {
+      toast.error(`Você precisa de ${getFeatureCost('basic-analysis')} créditos para usar esta ferramenta`);
       return;
     }
 
+    // Initialize progress steps
+    const progressSteps = [
+      { id: 'validate', title: 'Validando dados da ideia' },
+      { id: 'deduct', title: 'Processando créditos' },
+      { id: 'generate', title: 'Gerando plano de negócios com IA' },
+      { id: 'process', title: 'Processando seções do plano' },
+      { id: 'save', title: 'Salvando resultado' }
+    ];
+
+    initializeSteps(progressSteps);
     setIsGenerating(true);
+    setRetryCount(0);
     
     try {
+      // Step 1: Validate
+      updateStepStatus('validate', 'active');
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       const ideaData = useCustom 
         ? { title: "Ideia personalizada", description: customIdea }
         : selectedIdea;
+      updateStepStatus('validate', 'completed');
 
-      // Deduct credits first
+      // Step 2: Deduct credits
+      updateStepStatus('deduct', 'active');
       const { data: deductResult, error: deductError } = await supabase.rpc('deduct_credits_and_log', {
         p_user_id: user.id,
-        p_amount: getFeatureCost('business-plan'),
+        p_amount: getFeatureCost('basic-analysis'),
         p_feature: 'business-plan',
         p_description: `Plano de Negócios gerado para: ${ideaData.title}`
       });
 
       if (deductError) throw deductError;
-
-      // Update local credits
       updateUserCredits(deductResult);
+      updateStepStatus('deduct', 'completed');
 
-      // Simulação de dados para desenvolvimento
-      try {
+      // Step 3: Generate with retry
+      updateStepStatus('generate', 'active');
+      
+      const generateBusinessPlan = async () => {
         const { data, error } = await supabase.functions.invoke('generate-business-plan', {
           body: { idea: ideaData }
         });
 
-        if (error) throw error;
+        if (error) throw new Error(error.message || 'Erro ao gerar plano de negócios');
+        if (data?.error) throw new Error(data.error);
+        if (!data?.plan) throw new Error('Resposta inválida da API');
         
-        // Se chegou aqui, use os dados reais
-        if (data?.plan) {
-          setPlan(data.plan);
-        } else {
-          throw new Error('Dados inválidos recebidos da API');
+        return data;
+      };
+
+      const data = await withRetry(generateBusinessPlan, {
+        maxAttempts: 3,
+        delay: 2000,
+        onRetry: (attempt, error) => {
+          setRetryCount(attempt);
+          toast.info(`Tentativa ${attempt + 1}/3: ${getErrorMessage(error)}`);
         }
-      } catch (invokeError) {
-        console.error('Erro ao invocar função do Supabase:', invokeError);
-        throw invokeError;
-      }
+      });
+
+      updateStepStatus('generate', 'completed');
+
+      // Step 4: Process plan
+      updateStepStatus('process', 'active');
+      await new Promise(resolve => setTimeout(resolve, 300));
       
-      // Try to save to database, but don't let saving errors affect display
+      if (data.plan) {
+        setPlan(data.plan);
+      } else {
+        throw new Error('Dados do plano inválidos');
+      }
+      updateStepStatus('process', 'completed');
+
+      // Step 5: Save to database
+      updateStepStatus('save', 'active');
       try {
         await supabase
           .from('generated_content')
@@ -139,16 +181,25 @@ export const BusinessPlanModalEnhanced: React.FC<BusinessPlanModalEnhancedProps>
             idea_id: useCustom ? null : selectedIdea?.id,
             content_type: 'business-plan',
             title: `Plano de Negócios - ${ideaData.title}`,
-            content_data: JSON.parse(JSON.stringify(plan))
+            content_data: JSON.parse(JSON.stringify(data.plan))
           });
       } catch (saveError) {
         console.warn('Failed to save business plan to database:', saveError);
-        // Continue showing the content even if saving fails
       }
+      updateStepStatus('save', 'completed');
+
       toast.success("Plano de Negócios gerado com sucesso!");
     } catch (error) {
       console.error('Error generating business plan:', error);
-      toast.error("Erro ao gerar plano de negócios. Tente novamente.");
+      
+      // Update current step status to error
+      const currentActiveStep = steps.find(step => step.status === 'active');
+      if (currentActiveStep) {
+        updateStepStatus(currentActiveStep.id, 'error');
+      }
+      
+      const errorMessage = getErrorMessage(error as Error);
+      toast.error(errorMessage);
     } finally {
       setIsGenerating(false);
     }
@@ -160,6 +211,8 @@ export const BusinessPlanModalEnhanced: React.FC<BusinessPlanModalEnhancedProps>
     setPlan(null);
     setUseCustom(false);
     setActiveTab("executive");
+    setRetryCount(0);
+    resetProgress();
   };
 
   const downloadPlan = () => {
@@ -203,7 +256,7 @@ ${plan.appendix}
     const element = document.createElement('a');
     const file = new Blob([content], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
-    element.download = `plano_de_negocios_${selectedIdea?.title?.replace(/\s+/g, '_').toLowerCase() || 'ideia'}.txt`;
+    element.download = `plano_de_negocios_${selectedIdea?.title?.replace(/\\s+/g, '_').toLowerCase() || 'ideia'}.txt`;
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
@@ -230,7 +283,7 @@ ${plan.appendix}
       showReset={!!plan}
       maxWidth="4xl"
       showCreditWarning={true}
-      creditCost={getFeatureCost('business-plan')}
+      creditCost={getFeatureCost('basic-analysis')}
     >
       <div className="space-y-6">
         {plan ? (
@@ -239,15 +292,23 @@ ${plan.appendix}
               <h3 className="text-lg font-semibold">
                 Plano para: {selectedIdea?.title || "Ideia Personalizada"}
               </h3>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={downloadPlan}
-                className="flex items-center gap-1"
-              >
-                <Download className="h-4 w-4" />
-                <span className="hidden sm:inline">Baixar</span>
-              </Button>
+              <div className="flex items-center gap-2">
+                {retryCount > 0 && (
+                  <Badge variant="outline" className="text-xs">
+                    <RefreshCw className="h-3 w-3 mr-1" />
+                    {retryCount} tentativas
+                  </Badge>
+                )}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={downloadPlan}
+                  className="flex items-center gap-1"
+                >
+                  <Download className="h-4 w-4" />
+                  <span className="hidden sm:inline">Baixar</span>
+                </Button>
+              </div>
             </div>
 
             <Tabs defaultValue="executive" value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -430,16 +491,26 @@ ${plan.appendix}
             </Tabs>
           </div>
         ) : (
-          <CreditGuard feature="basic-analysis">
-            <EnhancedIdeaSelector 
-              onSelect={handleIdeaSelect} 
-              allowCustomIdea={true}
-              customIdeaValue={customIdea}
-              onCustomIdeaChange={handleCustomIdeaChange}
-              useCustomIdea={useCustom}
-              onUseCustomIdeaChange={handleUseCustomIdeaChange}
-            />
-          </CreditGuard>
+          <div className="space-y-4">
+            {isGenerating && steps.length > 0 && (
+              <GenerationProgress 
+                steps={steps}
+                overallProgress={overallProgress}
+                currentStep={currentStep}
+              />
+            )}
+            
+            <CreditGuard feature="basic-analysis">
+              <EnhancedIdeaSelector 
+                onSelect={handleIdeaSelect} 
+                allowCustomIdea={true}
+                customIdeaValue={customIdea}
+                onCustomIdeaChange={handleCustomIdeaChange}
+                useCustomIdea={useCustom}
+                onUseCustomIdeaChange={handleUseCustomIdeaChange}
+              />
+            </CreditGuard>
+          </div>
         )}
       </div>
     </ToolModalBase>

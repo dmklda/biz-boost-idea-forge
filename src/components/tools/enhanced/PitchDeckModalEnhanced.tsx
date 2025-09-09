@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlanAccess } from "@/hooks/usePlanAccess";
+import { useGenerationProgress } from "@/hooks/useGenerationProgress";
 import { toast } from "sonner";
 import { 
   Presentation, 
@@ -16,13 +17,16 @@ import {
   BarChart,
   DollarSign,
   TrendingUp,
-  Rocket
+  Rocket,
+  RefreshCw
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ToolModalBase } from "@/components/shared/ToolModalBase";
 import { EnhancedIdeaSelector } from "@/components/shared/EnhancedIdeaSelector";
 import { CreditGuard } from "@/components/CreditGuard";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { GenerationProgress } from "@/components/ui/generation-progress";
+import { withRetry, getErrorMessage } from "@/utils/retryHelper";
 
 interface PitchDeckModalEnhancedProps {
   open: boolean;
@@ -43,6 +47,7 @@ export const PitchDeckModalEnhanced: React.FC<PitchDeckModalEnhancedProps> = ({
   console.log('PitchDeckModalEnhanced renderizado', { open });
   const { authState, updateUserCredits } = useAuth();
   const { hasCredits, getFeatureCost } = usePlanAccess();
+  const { steps, overallProgress, currentStep, initializeSteps, updateStepStatus, resetProgress } = useGenerationProgress();
   const user = authState.user;
   const [selectedIdea, setSelectedIdea] = useState<any>(null);
   const [customIdea, setCustomIdea] = useState("");
@@ -50,6 +55,7 @@ export const PitchDeckModalEnhanced: React.FC<PitchDeckModalEnhancedProps> = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [slides, setSlides] = useState<Slide[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [retryCount, setRetryCount] = useState(0);
 
   const handleIdeaSelect = (idea: any) => {
     setSelectedIdea(idea);
@@ -81,54 +87,87 @@ export const PitchDeckModalEnhanced: React.FC<PitchDeckModalEnhancedProps> = ({
     }
 
     // Check credits
-    if (!hasCredits('prd-mvp')) { // Using prd-mvp as a placeholder, should be updated if there's a specific feature type for pitch deck
+    if (!hasCredits('prd-mvp')) {
       toast.error(`Você precisa de ${getFeatureCost('prd-mvp')} créditos para usar esta ferramenta`);
       return;
     }
 
+    // Initialize progress steps
+    const progressSteps = [
+      { id: 'validate', title: 'Validando dados da ideia' },
+      { id: 'deduct', title: 'Processando créditos' },
+      { id: 'generate', title: 'Gerando pitch deck com IA' },
+      { id: 'process', title: 'Processando slides' },
+      { id: 'save', title: 'Salvando resultado' }
+    ];
+
+    initializeSteps(progressSteps);
     setIsGenerating(true);
+    setRetryCount(0);
     
     try {
+      // Step 1: Validate
+      updateStepStatus('validate', 'active');
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       const ideaData = useCustom 
         ? { title: "Ideia personalizada", description: customIdea }
         : selectedIdea;
+      updateStepStatus('validate', 'completed');
 
-      // Deduct credits first
+      // Step 2: Deduct credits
+      updateStepStatus('deduct', 'active');
       const { data: deductResult, error: deductError } = await supabase.rpc('deduct_credits_and_log', {
         p_user_id: user.id,
-        p_amount: 10, // Cost for pitch deck generation
+        p_amount: 10,
         p_feature: 'pitch-deck',
         p_description: `Pitch Deck gerado para: ${ideaData.title}`
       });
 
       if (deductError) throw deductError;
-
-      // Update local credits
       updateUserCredits(deductResult);
+      updateStepStatus('deduct', 'completed');
 
-      // Simulação de dados para desenvolvimento
-      try {
+      // Step 3: Generate with retry
+      updateStepStatus('generate', 'active');
+      
+      const generatePitchDeck = async () => {
         const { data, error } = await supabase.functions.invoke('generate-pitch-deck', {
           body: { idea: ideaData }
         });
 
-        if (error) throw error;
+        if (error) throw new Error(error.message || 'Erro ao gerar pitch deck');
+        if (data?.error) throw new Error(data.error);
+        if (!data?.pitchDeck?.slides) throw new Error('Resposta inválida da API');
         
-        // Se chegou aqui, use os dados reais
-        if (data?.pitchDeck?.slides) {
-          setSlides(data.pitchDeck.slides);
-        } else {
-          throw new Error('Dados inválidos recebidos da API');
+        return data;
+      };
+
+      const data = await withRetry(generatePitchDeck, {
+        maxAttempts: 3,
+        delay: 2000,
+        onRetry: (attempt, error) => {
+          setRetryCount(attempt);
+          toast.info(`Tentativa ${attempt + 1}/3: ${getErrorMessage(error)}`);
         }
-      } catch (invokeError) {
-        console.error('Erro ao invocar função do Supabase:', invokeError);
-        throw invokeError;
+      });
+
+      updateStepStatus('generate', 'completed');
+
+      // Step 4: Process slides
+      updateStepStatus('process', 'active');
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      if (data.pitchDeck.slides && Array.isArray(data.pitchDeck.slides)) {
+        setSlides(data.pitchDeck.slides);
+        setCurrentSlide(0);
+      } else {
+        throw new Error('Dados dos slides inválidos');
       }
-      
-      // Slides já foram definidos no bloco try/catch acima
-      setCurrentSlide(0);
-      
-      // Try to save to database, but don't let saving errors affect display
+      updateStepStatus('process', 'completed');
+
+      // Step 5: Save to database
+      updateStepStatus('save', 'active');
       try {
         await supabase
           .from('generated_content')
@@ -137,16 +176,25 @@ export const PitchDeckModalEnhanced: React.FC<PitchDeckModalEnhancedProps> = ({
             idea_id: useCustom ? null : selectedIdea?.id,
             content_type: 'pitch-deck',
             title: `Pitch Deck - ${ideaData.title}`,
-            content_data: JSON.parse(JSON.stringify({ slides }))
+            content_data: JSON.parse(JSON.stringify({ slides: data.pitchDeck.slides }))
           });
       } catch (saveError) {
         console.warn('Failed to save pitch deck to database:', saveError);
-        // Continue showing the content even if saving fails
       }
+      updateStepStatus('save', 'completed');
+
       toast.success("Pitch Deck gerado com sucesso!");
     } catch (error) {
       console.error('Error generating pitch deck:', error);
-      toast.error("Erro ao gerar pitch deck. Tente novamente.");
+      
+      // Update current step status to error
+      const currentActiveStep = steps.find(step => step.status === 'active');
+      if (currentActiveStep) {
+        updateStepStatus(currentActiveStep.id, 'error');
+      }
+      
+      const errorMessage = getErrorMessage(error as Error);
+      toast.error(errorMessage);
     } finally {
       setIsGenerating(false);
     }
@@ -158,6 +206,8 @@ export const PitchDeckModalEnhanced: React.FC<PitchDeckModalEnhancedProps> = ({
     setSlides([]);
     setCurrentSlide(0);
     setUseCustom(false);
+    setRetryCount(0);
+    resetProgress();
   };
 
   const nextSlide = () => {
@@ -183,20 +233,20 @@ export const PitchDeckModalEnhanced: React.FC<PitchDeckModalEnhancedProps> = ({
     } catch (error) {
       console.error('Error downloading PPTX:', error);
       // Fallback to text download
-      let content = `# Pitch Deck - ${selectedIdea?.title || 'Ideia Personalizada'}\n\n`;
+      let content = `# Pitch Deck - ${selectedIdea?.title || 'Ideia Personalizada'}\\n\\n`;
       
       slides.forEach((slide, index) => {
-        content += `## Slide ${index + 1}: ${slide.title}\n\n`;
-        content += `${slide.content}\n\n`;
+        content += `## Slide ${index + 1}: ${slide.title}\\n\\n`;
+        content += `${slide.content}\\n\\n`;
         if (slide.speakerNotes) {
-          content += `### Notas do Apresentador:\n${slide.speakerNotes}\n\n`;
+          content += `### Notas do Apresentador:\\n${slide.speakerNotes}\\n\\n`;
         }
       });
       
       const element = document.createElement('a');
       const file = new Blob([content], {type: 'text/plain'});
       element.href = URL.createObjectURL(file);
-      element.download = `pitch_deck_${selectedIdea?.title?.replace(/\s+/g, '_').toLowerCase() || 'ideia'}.txt`;
+      element.download = `pitch_deck_${selectedIdea?.title?.replace(/\\s+/g, '_').toLowerCase() || 'ideia'}.txt`;
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);
@@ -247,7 +297,7 @@ export const PitchDeckModalEnhanced: React.FC<PitchDeckModalEnhancedProps> = ({
       showReset={slides.length > 0}
       maxWidth="6xl"
       showCreditWarning={true}
-      creditCost={10} // Cost for pitch deck generation
+      creditCost={10}
     >
       <div className="space-y-6">
         {slides.length > 0 ? (
@@ -256,15 +306,23 @@ export const PitchDeckModalEnhanced: React.FC<PitchDeckModalEnhancedProps> = ({
               <h3 className="text-lg font-semibold">
                 Pitch Deck para: {selectedIdea?.title || "Ideia Personalizada"}
               </h3>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={downloadPitchDeck}
-                className="flex items-center gap-1"
-              >
-                <Download className="h-4 w-4" />
-                <span className="hidden sm:inline">Baixar PowerPoint</span>
-              </Button>
+              <div className="flex items-center gap-2">
+                {retryCount > 0 && (
+                  <Badge variant="outline" className="text-xs">
+                    <RefreshCw className="h-3 w-3 mr-1" />
+                    {retryCount} tentativas
+                  </Badge>
+                )}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={downloadPitchDeck}
+                  className="flex items-center gap-1"
+                >
+                  <Download className="h-4 w-4" />
+                  <span className="hidden sm:inline">Baixar PowerPoint</span>
+                </Button>
+              </div>
             </div>
 
             {/* Slide Navigation */}
@@ -343,16 +401,26 @@ export const PitchDeckModalEnhanced: React.FC<PitchDeckModalEnhancedProps> = ({
             </ScrollArea>
           </div>
         ) : (
-          <CreditGuard feature="prd-mvp"> {/* Using prd-mvp as a placeholder */}
-            <EnhancedIdeaSelector 
-              onSelect={handleIdeaSelect} 
-              allowCustomIdea={true}
-              customIdeaValue={customIdea}
-              onCustomIdeaChange={handleCustomIdeaChange}
-              useCustomIdea={useCustom}
-              onUseCustomIdeaChange={handleUseCustomIdeaChange}
-            />
-          </CreditGuard>
+          <div className="space-y-4">
+            {isGenerating && steps.length > 0 && (
+              <GenerationProgress 
+                steps={steps}
+                overallProgress={overallProgress}
+                currentStep={currentStep}
+              />
+            )}
+            
+            <CreditGuard feature="prd-mvp">
+              <EnhancedIdeaSelector 
+                onSelect={handleIdeaSelect} 
+                allowCustomIdea={true}
+                customIdeaValue={customIdea}
+                onCustomIdeaChange={handleCustomIdeaChange}
+                useCustomIdea={useCustom}
+                onUseCustomIdeaChange={handleUseCustomIdeaChange}
+              />
+            </CreditGuard>
+          </div>
         )}
       </div>
     </ToolModalBase>
