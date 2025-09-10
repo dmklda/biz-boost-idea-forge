@@ -388,7 +388,7 @@ export const ValuationCalculatorModalEnhanced: React.FC<ValuationCalculatorModal
             idea_id: useCustom ? null : selectedIdea?.id,
             content_type: 'valuation-calculator',
             title: `Análise de Valuation - ${ideaData.title}`,
-            content_data: valuation
+            content_data: valuation as any
           });
       } catch (saveError) {
         console.warn('Failed to save valuation analysis to database:', saveError);

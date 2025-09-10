@@ -380,7 +380,7 @@ export const SEOAnalyzerModalEnhanced: React.FC<SEOAnalyzerModalEnhancedProps> =
             idea_id: useCustom ? null : selectedIdea?.id,
             content_type: 'seo-analysis',
             title: `Análise SEO - ${ideaData.title}`,
-            content_data: seoAnalysis
+            content_data: seoAnalysis as any
           });
       } catch (saveError) {
         console.warn('Failed to save SEO analysis to database:', saveError);

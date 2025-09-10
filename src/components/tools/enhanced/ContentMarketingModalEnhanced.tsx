@@ -240,7 +240,7 @@ export const ContentMarketingModalEnhanced: React.FC<ContentMarketingModalEnhanc
             idea_id: useCustom ? null : selectedIdea?.id,
             content_type: 'content-marketing',
             title: `Conteúdo de Marketing - ${ideaData.title}`,
-            content_data: generatedContent
+            content_data: generatedContent as any
           });
       } catch (saveError) {
         console.warn('Failed to save content marketing to database:', saveError);

@@ -388,7 +388,7 @@ export const SocialMediaPlannerModalEnhanced: React.FC<SocialMediaPlannerModalEn
             idea_id: useCustom ? null : selectedIdea?.id,
             content_type: 'social-media-plan',
             title: `Plano de Redes Sociais - ${ideaData.title}`,
-            content_data: results
+            content_data: results as any
           });
       } catch (saveError) {
         console.warn('Failed to save social media plan to database:', saveError);

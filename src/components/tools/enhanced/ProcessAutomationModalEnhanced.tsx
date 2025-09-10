@@ -419,7 +419,7 @@ export const ProcessAutomationModalEnhanced: React.FC<ProcessAutomationModalEnha
             idea_id: useCustom ? null : selectedIdea?.id,
             content_type: 'process-automation',
             title: `Análise de Automação de Processos - ${ideaData.title}`,
-            content_data: results
+            content_data: results as any
           });
       } catch (saveError) {
         console.warn('Failed to save process automation analysis to database:', saveError);

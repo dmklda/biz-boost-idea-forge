@@ -416,6 +416,7 @@ export const InvoiceGeneratorModalEnhanced: React.FC<InvoiceGeneratorModalEnhanc
                   checked={formData.include_qr_code}
                   onChange={(e) => handleInputChange('include_qr_code', e.target.checked)}
                   className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                  aria-label="Incluir QR Code para pagamento"
                 />
                 <Label htmlFor="include_qr_code" className="text-sm font-medium">Incluir QR Code para pagamento</Label>
               </div>

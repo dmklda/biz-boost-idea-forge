@@ -324,7 +324,6 @@ export const CacLtvModalEnhanced = ({
       showReset={!!results}
       creditCost={getFeatureCost('cac-ltv')}
       maxWidth={results ? "5xl" : "2xl"}
-      description="Calcule e otimize métricas essenciais para o sucesso da sua startup."
     >
       {results ? (
         <div className="space-y-6">

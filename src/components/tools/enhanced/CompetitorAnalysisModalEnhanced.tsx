@@ -199,7 +199,7 @@ export const CompetitorAnalysisModalEnhanced: React.FC<CompetitorAnalysisModalEn
             idea_id: useCustom ? null : selectedIdea?.id,
             content_type: 'competitor-analysis',
             title: `Análise de Concorrentes - ${ideaData.title}`,
-            content_data: analysis
+            content_data: analysis as any
           });
       } catch (saveError) {
         console.warn('Failed to save competitor analysis to database:', saveError);

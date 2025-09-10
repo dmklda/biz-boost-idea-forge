@@ -174,16 +174,14 @@ export const StartupKitModalEnhanced = ({ open, onOpenChange }: StartupKitModalP
       icon={kitIcon}
       isGenerating={isGenerating}
       generatingText="Gerando kit..."
-      actionText="Gerar Kit Completo"
+      actionText={useCustomIdea ? "Gerar Kit para Nova Startup" : "Gerar Kit Completo"}
       onAction={handleGenerate}
-      actionDisabled={!selectedIdea || isGenerating || !hasCredits('startup-kit')}
+      actionDisabled={isGenerating || (!selectedIdea && !useCustomIdea) || (useCustomIdea && (!customIdeaDetails.title || !customIdeaDetails.description)) || !hasCredits('startup-kit')}
       resetText="Novo Kit"
       onReset={handleReset}
       showReset={!!generatedKit}
       creditCost={getFeatureCost('startup-kit')}
       maxWidth={generatedKit ? "4xl" : "2xl"}
-      actionText={useCustomIdea ? "Gerar Kit para Nova Startup" : "Gerar Kit Completo"}
-      actionDisabled={isGenerating || (!selectedIdea && !useCustomIdea) || (useCustomIdea && (!customIdeaDetails.title || !customIdeaDetails.description)) || !hasCredits('startup-kit')}
     >
       {generatedKit ? (
         <div className="space-y-4">

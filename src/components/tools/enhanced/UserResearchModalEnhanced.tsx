@@ -250,7 +250,7 @@ export const UserResearchModalEnhanced: React.FC<UserResearchModalEnhancedProps>
             idea_id: useCustom ? null : selectedIdea?.id,
             content_type: 'user-research',
             title: `Pesquisa de Usuários - ${ideaData.title}`,
-            content_data: research
+            content_data: research as any
           });
       } catch (saveError) {
         console.warn('Failed to save user research to database:', saveError);

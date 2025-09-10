@@ -273,7 +273,6 @@ export const MarketTimingModalEnhanced = ({
       showReset={!!results}
       creditCost={getFeatureCost('market-timing')}
       maxWidth={results ? "4xl" : "2xl"}
-      description="Determine o momento ideal para lançar sua startup baseado em fatores de mercado."
     >
       {results ? (
         <div className="space-y-6">

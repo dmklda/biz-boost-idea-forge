@@ -9,7 +9,7 @@ import { CreditCard, Zap, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface CreditGuardProps {
-  feature: 'basic-analysis' | 'advanced-analysis' | 'regulatory-analysis' | 'simulator' | 'comparison' | 'reanalysis' | 'logo-generator' | 'prd-mvp' | 'pdf-export' | 'marketplace' | 'benchmarks' | 'business-model-canvas';
+  feature: 'basic-analysis' | 'advanced-analysis' | 'regulatory-analysis' | 'simulator' | 'comparison' | 'reanalysis' | 'logo-generator' | 'prd-mvp' | 'pdf-export' | 'marketplace' | 'benchmarks' | 'business-model-canvas' | 'cac-ltv' | 'competitor-analysis' | 'content-marketing' | 'seo-analyzer' | 'social-media-planner' | 'social-posts' | 'trend-analysis' | 'valuation-calculator' | 'business-plan' | 'marketing-strategy' | 'investment-simulator' | 'roadmap-generator' | 'startup-kit' | 'invoice-generator' | 'pricing-model' | 'market-timing' | 'market-analysis' | 'financial-analysis' | 'business-model-canvas' | 'business-plan' | 'market-analysis' | 'financial-analysis' | 'competitor-analysis' | 'social-posts' | 'social-media-planner' | 'process-automation' | 'invoice-generator' | 'pricing-model' | 'market-timing' | 'cac-ltv' | 'user-research';
   onProceed?: () => void;
   children: React.ReactNode;
 }

@@ -327,6 +327,7 @@ export const PricingModelModalEnhanced: React.FC<PricingModelModalEnhancedProps>
                   checked={formData.international_markets}
                   onChange={(e) => handleInputChange('international_markets', e.target.checked)}
                   className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                  aria-label="Considerar mercados internacionais"
                 />
                 <Label htmlFor="international_markets" className="text-sm font-medium">Considerar mercados internacionais</Label>
               </div>

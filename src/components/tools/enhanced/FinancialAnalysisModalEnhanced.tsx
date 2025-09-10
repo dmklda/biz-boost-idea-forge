@@ -171,7 +171,7 @@ export const FinancialAnalysisModalEnhanced: React.FC<FinancialAnalysisModalEnha
             idea_id: useCustom ? null : selectedIdea?.id,
             content_type: 'financial-analysis',
             title: `Análise Financeira - ${ideaData.title}`,
-            content_data: analysis
+            content_data: analysis as any
           });
       } catch (saveError) {
         console.warn('Failed to save financial analysis to database:', saveError);
@@ -422,7 +422,7 @@ ${analysis.keyMetrics?.map(metric => `- ${metric}`).join('\n')}
             </ScrollArea>
           </div>
         ) : (
-          <CreditGuard feature="financial-analysis">
+          <CreditGuard feature="financial-analysis"> //TODO: verificar se o feature está correto
             <EnhancedIdeaSelector 
               onSelect={handleIdeaSelect} 
               allowCustomIdea={true}
