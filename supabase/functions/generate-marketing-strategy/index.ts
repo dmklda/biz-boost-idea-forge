@@ -216,66 +216,86 @@ async function generateMarketingStrategy(idea) {
       throw new Error('OpenAI API key not configured');
     }
     const prompt = `
-Formate os seguintes dados de pesquisa de marketing e insights em um formato JSON estruturado:
+Baseado na ideia de negócio e nos dados de pesquisa real fornecidos, crie uma estratégia de marketing completa e específica.
 
-Dados de pesquisa:
-${JSON.stringify(marketingResearch, null, 2)}
+IDEIA DE NEGÓCIO:
+Título: ${idea.title}
+Descrição: ${idea.description}
+${idea.audience ? `Público-alvo: ${idea.audience}` : ''}
+${idea.budget ? `Orçamento: ${idea.budget}` : ''}
+${idea.location ? `Localização: ${idea.location}` : ''}
 
-Insights adicionais:
-${perplexityInsights}
+DADOS DE PESQUISA REAL (SerpAPI):
+Canais de Marketing: ${JSON.stringify(marketingResearch.marketingChannels, null, 2)}
+Estratégias de Conteúdo: ${JSON.stringify(marketingResearch.contentStrategies, null, 2)}
+Tendências de Marketing: ${JSON.stringify(marketingResearch.marketingTrends, null, 2)}
+Marketing de Concorrentes: ${JSON.stringify(marketingResearch.competitorMarketing, null, 2)}
+Táticas de Growth Hacking: ${JSON.stringify(marketingResearch.growthHackingTactics, null, 2)}
 
-Retorne um JSON com a seguinte estrutura:
+INSIGHTS PERPLEXITY AI:
+${perplexityInsights || 'Análise complementar não disponível'}
+
+INSTRUÇÕES CRÍTICAS:
+1. Use APENAS dados reais da pesquisa acima
+2. Adapte tudo especificamente para a ideia: "${idea.title}"
+3. JAMAIS use "undefined", "null" ou deixe campos vazios
+4. Seja específico e prático
+5. Use dados do Brasil se localização não especificada
+
+RETORNE EXATAMENTE este JSON (substitua TODOS os valores por dados reais e específicos):
+
 {
-  "marketingGoals": ["lista de objetivos SMART"],
-  "targetSegments": ["lista de segmentos priorizados"],
+  "marketingGoals": [
+    "Objetivo SMART específico 1 baseado na ideia",
+    "Objetivo SMART específico 2 baseado na ideia",
+    "Objetivo SMART específico 3 baseado na ideia"
+  ],
+  "targetSegments": [
+    "Segmento específico 1 baseado no público da ideia",
+    "Segmento específico 2 baseado no público da ideia"
+  ],
   "channels": [
     {
-      "name": "Nome do Canal",
-      "description": "Descrição detalhada",
-      "priority": "high/medium/low",
-      "tactics": ["lista de táticas"],
-      "budget": "porcentagem ou valor",
-      "expectedROI": "ROI esperado"
-    },
-    // mais canais
+      "name": "Nome do Canal Real",
+      "description": "Descrição específica para esta ideia",
+      "priority": "high",
+      "tactics": ["Tática 1 específica", "Tática 2 específica"],
+      "budget": "25%",
+      "expectedROI": "150%"
+    }
   ],
   "contentStrategy": {
-    "themes": ["temas de conteúdo"],
-    "formats": ["formatos de conteúdo"],
-    "distribution": ["canais de distribuição"],
-    "calendar": "frequência de publicação"
+    "themes": ["Tema 1 específico", "Tema 2 específico"],
+    "formats": ["Formato 1", "Formato 2"],
+    "distribution": ["Canal 1", "Canal 2"],
+    "calendar": "Frequência específica"
   },
   "budgetAllocation": [
     {
-      "channel": "nome do canal",
-      "percentage": "porcentagem do orçamento"
-    },
-    // mais alocações
+      "channel": "Nome do Canal",
+      "percentage": "25%"
+    }
   ],
   "timeline": [
     {
-      "period": "período (ex: Mês 1-3)",
-      "focus": "foco principal",
-      "activities": ["lista de atividades"]
-    },
-    // mais períodos
+      "period": "Mês 1-3",
+      "focus": "Foco específico desta fase",
+      "activities": ["Atividade 1", "Atividade 2"]
+    }
   ],
-  "kpis": ["lista de KPIs principais"],
+  "kpis": ["KPI 1 específico", "KPI 2 específico"],
   "campaigns": [
     {
-      "name": "Nome da Campanha",
-      "objective": "objetivo principal",
-      "channels": ["canais utilizados"],
-      "timing": "período de execução",
-      "budget": "orçamento estimado"
-    },
-    // mais campanhas
+      "name": "Nome da Campanha Específica",
+      "objective": "Objetivo específico",
+      "channels": ["Canal 1", "Canal 2"],
+      "timing": "3 meses",
+      "budget": "R$ 5.000"
+    }
   ],
-  "partnerships": ["lista de parcerias sugeridas"],
-  "growthHacks": ["lista de táticas de growth hacking"]
+  "partnerships": ["Parceria 1 específica", "Parceria 2 específica"],
+  "growthHacks": ["Growth hack 1 específico", "Growth hack 2 específico"]
 }
-
-Use os dados reais obtidos da pesquisa e insights. Não invente informações.
 `;
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -284,20 +304,23 @@ Use os dados reais obtidos da pesquisa e insights. Não invente informações.
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
             content: `Você é um especialista em marketing digital e growth hacking. 
-Formate os dados de pesquisa e insights no formato JSON solicitado.
-Retorne apenas o JSON, sem explicações adicionais.`
+Analise os dados de pesquisa fornecidos e crie uma estratégia de marketing detalhada e específica.
+OBRIGATÓRIO: Retorne APENAS um JSON válido seguindo EXATAMENTE a estrutura especificada.
+JAMAIS deixe campos como "undefined", "null" ou vazios.
+Use dados reais da pesquisa fornecida e crie conteúdo específico e relevante.`
           },
           {
             role: 'user',
             content: prompt
           }
         ],
-        max_completion_tokens: 2000
+        temperature: 0.7,
+        max_tokens: 2000
       })
     });
     if (!response.ok) {
