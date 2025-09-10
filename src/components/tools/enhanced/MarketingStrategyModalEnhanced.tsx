@@ -135,7 +135,9 @@ export const MarketingStrategyModalEnhanced: React.FC<MarketingStrategyModalEnha
       // Update local credits
       updateUserCredits(deductResult);
 
-      // Simulação de dados para desenvolvimento
+      // Try to generate marketing strategy via API
+      let generatedStrategy: MarketingStrategy | null = null;
+      
       try {
         const { data, error } = await supabase.functions.invoke('generate-marketing-strategy', {
           body: { idea: ideaData }
@@ -143,13 +145,31 @@ export const MarketingStrategyModalEnhanced: React.FC<MarketingStrategyModalEnha
 
         if (error) throw error;
         
-        // Se chegou aqui, use os dados reais
-        setStrategy(data.strategy);
+        // Validate API response structure
+        if (data && data.strategy && typeof data.strategy === 'object') {
+          const strategyData = data.strategy as MarketingStrategy;
+          
+          // Basic validation of required fields
+          if (strategyData.marketingGoals && 
+              strategyData.targetSegments && 
+              strategyData.kpis && 
+              strategyData.channels && 
+              strategyData.budgetAllocation && 
+              strategyData.timeline && 
+              strategyData.campaigns) {
+            generatedStrategy = strategyData;
+          } else {
+            console.warn('API response missing required fields, using fallback data');
+            throw new Error('Invalid API response structure');
+          }
+        } else {
+          throw new Error('Invalid API response format');
+        }
       } catch (invokeError) {
-        console.warn('Erro ao invocar função do Supabase, usando dados simulados:', invokeError);
+        console.warn('Error generating marketing strategy via API, using fallback data:', invokeError);
         
-        // Dados simulados para desenvolvimento
-        const mockStrategy = {
+        // Fallback data for development/error scenarios
+        generatedStrategy = {
           marketingGoals: [
             {
               title: "Aumentar Reconhecimento da Marca",
@@ -348,24 +368,29 @@ export const MarketingStrategyModalEnhanced: React.FC<MarketingStrategyModalEnha
             }
           ]
         };
-        
-        setStrategy(mockStrategy);
       }
       
-      // Try to save to database, but don't let saving errors affect display
-      try {
-        await supabase
-          .from('generated_content')
-          .insert({
-            user_id: user.id,
-            idea_id: useCustom ? null : selectedIdea?.id,
-            content_type: 'marketing-strategy',
-            title: `Estratégia de Marketing - ${ideaData.title}`,
-            content_data: strategy as any
-          });
-      } catch (saveError) {
-        console.warn('Failed to save marketing strategy to database:', saveError);
-        // Continue showing the content even if saving fails
+      // Set the strategy (either from API or fallback)
+      if (generatedStrategy) {
+        setStrategy(generatedStrategy);
+        
+        // Try to save to database, but don't let saving errors affect display
+        try {
+          await supabase
+            .from('generated_content')
+            .insert({
+              user_id: user.id,
+              idea_id: useCustom ? null : selectedIdea?.id,
+              content_type: 'marketing-strategy',
+              title: `Estratégia de Marketing - ${ideaData.title}`,
+              content_data: generatedStrategy as any
+            });
+        } catch (saveError) {
+          console.warn('Failed to save marketing strategy to database:', saveError);
+          // Continue showing the content even if saving fails
+        }
+      } else {
+        throw new Error('Failed to generate marketing strategy');
       }
       toast.success("Estratégia de marketing gerada com sucesso!");
     } catch (error) {
@@ -636,7 +661,7 @@ export const MarketingStrategyModalEnhanced: React.FC<MarketingStrategyModalEnha
                             <div className="flex items-center gap-2">
                               <div className="w-32 bg-secondary rounded-full h-2">
                                 <div 
-                                  className="bg-primary h-2 rounded-full" 
+                                  className="bg-primary h-2 rounded-full transition-all duration-300" 
                                   style={{ width: `${allocation.percentage}%` }}
                                 />
                               </div>
