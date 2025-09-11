@@ -246,13 +246,41 @@ RETORNE EXATAMENTE este JSON (substitua TODOS os valores por dados reais e espec
 
 {
   "marketingGoals": [
-    "Objetivo SMART específico 1 baseado na ideia",
-    "Objetivo SMART específico 2 baseado na ideia",
-    "Objetivo SMART específico 3 baseado na ideia"
+    {
+      "title": "Objetivo SMART específico 1 baseado na ideia",
+      "description": "Descrição detalhada do objetivo",
+      "target": "Meta mensurável específica",
+      "timeframe": "Prazo específico"
+    },
+    {
+      "title": "Objetivo SMART específico 2 baseado na ideia", 
+      "description": "Descrição detalhada do objetivo",
+      "target": "Meta mensurável específica",
+      "timeframe": "Prazo específico"
+    },
+    {
+      "title": "Objetivo SMART específico 3 baseado na ideia",
+      "description": "Descrição detalhada do objetivo", 
+      "target": "Meta mensurável específica",
+      "timeframe": "Prazo específico"
+    }
   ],
   "targetSegments": [
-    "Segmento específico 1 baseado no público da ideia",
-    "Segmento específico 2 baseado no público da ideia"
+    {
+      "name": "Segmento específico 1 baseado no público da ideia",
+      "description": "Descrição detalhada do segmento",
+      "priority": "high"
+    },
+    {
+      "name": "Segmento específico 2 baseado no público da ideia",
+      "description": "Descrição detalhada do segmento",
+      "priority": "medium"
+    }
+  ],
+  "kpis": [
+    "KPI 1 específico para medir sucesso",
+    "KPI 2 específico para medir sucesso",
+    "KPI 3 específico para medir sucesso"
   ],
   "channels": [
     {
@@ -260,41 +288,51 @@ RETORNE EXATAMENTE este JSON (substitua TODOS os valores por dados reais e espec
       "description": "Descrição específica para esta ideia",
       "priority": "high",
       "tactics": ["Tática 1 específica", "Tática 2 específica"],
-      "budget": "25%",
+      "budget": "25% do orçamento total",
       "expectedROI": "150%"
+    },
+    {
+      "name": "Segundo Canal Real",
+      "description": "Descrição específica para esta ideia",
+      "priority": "medium", 
+      "tactics": ["Tática 1 específica", "Tática 2 específica"],
+      "budget": "20% do orçamento total",
+      "expectedROI": "120%"
     }
   ],
-  "contentStrategy": {
-    "themes": ["Tema 1 específico", "Tema 2 específico"],
-    "formats": ["Formato 1", "Formato 2"],
-    "distribution": ["Canal 1", "Canal 2"],
-    "calendar": "Frequência específica"
-  },
   "budgetAllocation": [
     {
       "channel": "Nome do Canal",
-      "percentage": "25%"
+      "percentage": 25
+    },
+    {
+      "channel": "Segundo Canal",
+      "percentage": 20
     }
   ],
   "timeline": [
     {
-      "period": "Mês 1-3",
+      "period": "Meses 1-3",
       "focus": "Foco específico desta fase",
-      "activities": ["Atividade 1", "Atividade 2"]
+      "activities": ["Atividade 1 específica", "Atividade 2 específica"]
+    },
+    {
+      "period": "Meses 4-6", 
+      "focus": "Foco específico desta fase",
+      "activities": ["Atividade 1 específica", "Atividade 2 específica"]
     }
   ],
-  "kpis": ["KPI 1 específico", "KPI 2 específico"],
   "campaigns": [
     {
       "name": "Nome da Campanha Específica",
+      "description": "Descrição da campanha",
       "objective": "Objetivo específico",
+      "audience": "Público-alvo específico",
+      "duration": "3 meses",
       "channels": ["Canal 1", "Canal 2"],
-      "timing": "3 meses",
-      "budget": "R$ 5.000"
+      "metrics": ["Métrica 1", "Métrica 2"]
     }
-  ],
-  "partnerships": ["Parceria 1 específica", "Parceria 2 específica"],
-  "growthHacks": ["Growth hack 1 específico", "Growth hack 2 específico"]
+  ]
 }
 `;
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
