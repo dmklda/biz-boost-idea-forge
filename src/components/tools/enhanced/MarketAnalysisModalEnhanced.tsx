@@ -106,6 +106,7 @@ export const MarketAnalysisModalEnhanced: React.FC<MarketAnalysisModalEnhancedPr
       updateUserCredits(deductResult);
 
       // Simulação de dados para desenvolvimento
+      let generatedAnalysis;
       try {
         const { data, error } = await supabase.functions.invoke('generate-market-analysis', {
           body: { idea: ideaData }
@@ -114,7 +115,8 @@ export const MarketAnalysisModalEnhanced: React.FC<MarketAnalysisModalEnhancedPr
         if (error) throw error;
         
         // Se chegou aqui, use os dados reais
-        setAnalysis(data.analysis);
+        generatedAnalysis = data.analysis;
+        setAnalysis(generatedAnalysis);
       } catch (invokeError) {
         console.warn('Erro ao invocar função do Supabase, usando dados simulados:', invokeError);
         
@@ -161,6 +163,7 @@ export const MarketAnalysisModalEnhanced: React.FC<MarketAnalysisModalEnhancedPr
           ]
         };
         
+        generatedAnalysis = mockAnalysis;
         setAnalysis(mockAnalysis);
       }
       
@@ -173,7 +176,7 @@ export const MarketAnalysisModalEnhanced: React.FC<MarketAnalysisModalEnhancedPr
             idea_id: useCustom ? null : selectedIdea?.id,
             content_type: 'market-analysis',
             title: `Análise de Mercado - ${ideaData.title}`,
-            content_data: analysis
+            content_data: generatedAnalysis as any
           });
       } catch (saveError) {
         console.warn('Failed to save market analysis to database:', saveError);
