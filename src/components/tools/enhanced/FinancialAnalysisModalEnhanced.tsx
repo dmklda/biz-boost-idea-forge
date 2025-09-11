@@ -422,7 +422,7 @@ ${analysis.keyMetrics?.map(metric => `- ${metric}`).join('\n')}
             </ScrollArea>
           </div>
         ) : (
-          <CreditGuard feature="financial-analysis"> //TODO: verificar se o feature está correto
+          <CreditGuard feature="financial-analysis">
             <EnhancedIdeaSelector 
               onSelect={handleIdeaSelect} 
               allowCustomIdea={true}
