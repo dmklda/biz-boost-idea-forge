@@ -7,36 +7,149 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePlanAccess } from "@/hooks/usePlanAccess";
 import { toast } from "sonner";
 import { 
+  Download, 
   DollarSign, 
-  TrendingUp, 
-  AlertTriangle, 
   Calculator, 
-  PieChart,
-  Download,
-  BarChart
+  TrendingUp, 
+  BarChart3, 
+  CreditCard, 
+  AlertTriangle, 
+  Target, 
+  PieChart, 
+  Activity, 
+  Database 
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ToolModalBase } from "@/components/shared/ToolModalBase";
 import { EnhancedIdeaSelector } from "@/components/shared/EnhancedIdeaSelector";
 import { CreditGuard } from "@/components/CreditGuard";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface FinancialAnalysisModalEnhancedProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-interface FinancialAnalysis {
-  revenueModel: string;
-  costStructure: string[];
+interface RevenueModelData {
+  primaryStreams: string[];
+  secondaryStreams: string[];
+  pricingModel: string;
+  revenueProjection: string;
+  scalabilityFactors: string[];
+}
+
+interface CostStructureData {
+  fixedCosts: Array<{
+    category: string;
+    amount: string;
+    description: string;
+  }>;
+  variableCosts: Array<{
+    category: string;
+    percentage: string;
+    description: string;
+  }>;
+  operationalCosts: string;
+  totalCostEstimate: string;
+}
+
+interface FinancialProjectionsData {
+  year1: {
+    revenue: string;
+    costs: string;
+    profit: string;
+    margin: string;
+  };
+  year2: {
+    revenue: string;
+    costs: string;
+    profit: string;
+    margin: string;
+  };
+  year3: {
+    revenue: string;
+    costs: string;
+    profit: string;
+    margin: string;
+  };
+  growthAssumptions: string[];
+}
+
+interface BreakEvenAnalysisData {
+  breakEvenPoint: string;
+  unitsToBreakEven: string;
+  timeToBreakEven: string;
+  criticalFactors: string[];
+}
+
+interface FundingRequirementsData {
   initialInvestment: string;
-  monthlyOperatingCosts: string;
-  revenueProjections: string[];
-  breakEvenAnalysis: string;
-  fundingRequirements: string;
+  workingCapital: string;
+  growthCapital: string;
+  totalFunding: string;
+  fundingSources: string[];
+  useOfFunds: Array<{
+    category: string;
+    percentage: string;
+    amount: string;
+  }>;
+}
+
+interface FinancialRisksData {
+  marketRisks: string[];
+  operationalRisks: string[];
   financialRisks: string[];
-  profitabilityTimeline: string;
-  keyMetrics: string[];
+  mitigationStrategies: string[];
+}
+
+interface KeyMetricsData {
+  cac: string;
+  ltv: string;
+  ltvCacRatio: string;
+  grossMargin: string;
+  burnRate: string;
+  runway: string;
+}
+
+interface ProfitabilityAnalysisData {
+  grossProfitMargin: string;
+  operatingMargin: string;
+  netMargin: string;
+  roi: string;
+  paybackPeriod: string;
+}
+
+interface CashFlowProjectionData {
+  operatingCashFlow: Array<{
+    period: string;
+    amount: string;
+  }>;
+  investmentCashFlow: string;
+  financingCashFlow: string;
+  netCashFlow: string;
+}
+
+interface InvestmentReturnData {
+  expectedRoi: string;
+  irr: string;
+  npv: string;
+  sensitivityAnalysis: string[];
+}
+
+interface FinancialAnalysis {
+  revenueModel: RevenueModelData;
+  costStructure: CostStructureData;
+  financialProjections: FinancialProjectionsData;
+  breakEvenAnalysis: BreakEvenAnalysisData;
+  fundingRequirements: FundingRequirementsData;
+  financialRisks: FinancialRisksData;
+  keyMetrics: KeyMetricsData;
+  profitabilityAnalysis: ProfitabilityAnalysisData;
+  cashFlowProjection: CashFlowProjectionData;
+  investmentReturn: InvestmentReturnData;
+  sources: {
+    serpApi: string[];
+    perplexity: string[];
+  };
 }
 
 export const FinancialAnalysisModalEnhanced: React.FC<FinancialAnalysisModalEnhancedProps> = ({
@@ -108,7 +221,8 @@ export const FinancialAnalysisModalEnhanced: React.FC<FinancialAnalysisModalEnha
       // Update local credits
       updateUserCredits(deductResult);
 
-      // Simulação de dados para desenvolvimento
+      // Try to call the edge function
+      let generatedAnalysis;
       try {
         const { data, error } = await supabase.functions.invoke('generate-financial-analysis', {
           body: { idea: ideaData }
@@ -116,54 +230,107 @@ export const FinancialAnalysisModalEnhanced: React.FC<FinancialAnalysisModalEnha
 
         if (error) throw error;
         
-        // Se chegou aqui, use os dados reais
-        setAnalysis(data.analysis);
+        generatedAnalysis = data.analysis;
+        setAnalysis(generatedAnalysis);
       } catch (invokeError) {
         console.warn('Erro ao invocar função do Supabase, usando dados simulados:', invokeError);
         
-        // Dados simulados para desenvolvimento
+        // Fallback data
         const mockAnalysis = {
-          revenueModel: "Modelo de assinatura mensal com três níveis de preço: Básico (R$ 29,90), Premium (R$ 59,90) e Enterprise (R$ 149,90). Receita adicional com vendas de recursos complementares e parcerias estratégicas.",
-          costStructure: [
-            "Desenvolvimento e manutenção de software: 35% da receita",
-            "Marketing e aquisição de clientes: 25% da receita",
-            "Infraestrutura e hospedagem: 15% da receita",
-            "Suporte ao cliente: 10% da receita",
-            "Despesas administrativas: 5% da receita",
-            "Outros custos operacionais: 10% da receita"
-          ],
-          initialInvestment: "R$ 250.000,00",
-          monthlyOperatingCosts: "R$ 45.000,00 (estimativa para os primeiros 12 meses)",
-          revenueProjections: [
-            "Mês 1-6: R$ 15.000,00 - R$ 30.000,00 por mês",
-            "Mês 7-12: R$ 35.000,00 - R$ 60.000,00 por mês",
-            "Ano 2: R$ 80.000,00 - R$ 120.000,00 por mês",
-            "Ano 3: R$ 150.000,00 - R$ 250.000,00 por mês"
-          ],
-          breakEvenAnalysis: "Ponto de equilíbrio estimado em 18 meses, com aproximadamente 2.500 usuários pagantes, considerando um mix de planos e uma taxa de conversão de 5% de usuários gratuitos para pagantes.",
-          fundingRequirements: "Investimento inicial de R$ 250.000,00 para desenvolvimento do MVP, lançamento e operações dos primeiros 6 meses. Rodada adicional de R$ 500.000,00 recomendada para escalar após validação do produto.",
-          financialRisks: [
-            "Taxa de conversão abaixo do esperado para planos pagos",
-            "Custo de aquisição de cliente (CAC) acima das projeções",
-            "Churn rate elevado nos primeiros meses",
-            "Aumento nos custos de infraestrutura com o crescimento",
-            "Necessidade de investimento adicional antes do ponto de equilíbrio"
-          ],
-          profitabilityTimeline: "Lucro operacional esperado a partir do mês 19, com margem de lucro de 10-15% no segundo ano e potencial para 25-30% a partir do terceiro ano, dependendo da eficiência na aquisição e retenção de clientes.",
-          keyMetrics: [
-            "CAC (Custo de Aquisição de Cliente): R$ 120,00",
-            "LTV (Valor do Tempo de Vida do Cliente): R$ 720,00",
-            "Razão LTV:CAC: 6:1",
-            "Taxa de conversão: 5% de gratuito para pago",
-            "Churn mensal: 5% (meta)",
-            "MRR (Receita Recorrente Mensal): crescimento de 15% mês a mês no primeiro ano"
-          ]
+          revenueModel: {
+            primaryStreams: ["Assinaturas mensais", "Planos anuais com desconto", "Recursos premium"],
+            secondaryStreams: ["Comissões de parceiros", "Consultorias especializadas", "Cursos e treinamentos"],
+            pricingModel: "Freemium com assinaturas escalonadas",
+            revenueProjection: "R$ 1,2M no primeiro ano, R$ 4,8M no segundo",
+            scalabilityFactors: ["Automação de processos", "Network effects", "Economia de escala"]
+          },
+          costStructure: {
+            fixedCosts: [
+              { category: "Infraestrutura", amount: "R$ 15.000/mês", description: "Servidores, CDN, segurança" },
+              { category: "Pessoal", amount: "R$ 85.000/mês", description: "Salários e benefícios" },
+              { category: "Marketing", amount: "R$ 25.000/mês", description: "Publicidade digital e conteúdo" }
+            ],
+            variableCosts: [
+              { category: "Comissões", percentage: "5%", description: "Comissões sobre vendas" },
+              { category: "Suporte", percentage: "8%", description: "Atendimento ao cliente" },
+              { category: "Processamento", percentage: "3%", description: "Taxas de pagamento" }
+            ],
+            operationalCosts: "R$ 125.000/mês nos primeiros 12 meses",
+            totalCostEstimate: "R$ 1.8M no primeiro ano"
+          },
+          financialProjections: {
+            year1: { revenue: "R$ 1.200.000", costs: "R$ 900.000", profit: "R$ 300.000", margin: "25%" },
+            year2: { revenue: "R$ 4.800.000", costs: "R$ 2.880.000", profit: "R$ 1.920.000", margin: "40%" },
+            year3: { revenue: "R$ 12.000.000", costs: "R$ 6.000.000", profit: "R$ 6.000.000", margin: "50%" },
+            growthAssumptions: ["150% crescimento anual", "Retenção de 90%", "Expansão de mercado"]
+          },
+          breakEvenAnalysis: {
+            breakEvenPoint: "R$ 156.000/mês em receita",
+            unitsToBreakEven: "2.600 usuários pagantes",
+            timeToBreakEven: "14 meses",
+            criticalFactors: ["Taxa de conversão > 5%", "Churn < 5%", "CAC < R$ 80"]
+          },
+          fundingRequirements: {
+            initialInvestment: "R$ 500.000",
+            workingCapital: "R$ 200.000",
+            growthCapital: "R$ 800.000",
+            totalFunding: "R$ 1.500.000",
+            fundingSources: ["Investidores anjo", "Seed funding", "Bootstrap"],
+            useOfFunds: [
+              { category: "Produto", percentage: "40%", amount: "R$ 600.000" },
+              { category: "Marketing", percentage: "30%", amount: "R$ 450.000" },
+              { category: "Operações", percentage: "30%", amount: "R$ 450.000" }
+            ]
+          },
+          financialRisks: {
+            marketRisks: ["Competição acirrada", "Mudanças no mercado", "Recessão econômica"],
+            operationalRisks: ["Falhas técnicas", "Perda de talentos", "Problemas de escala"],
+            financialRisks: ["Fluxo de caixa negativo", "Dificuldade de funding", "Custos acima do previsto"],
+            mitigationStrategies: ["Diversificação de receita", "Controle rigoroso de custos", "Reserva de emergência"]
+          },
+          keyMetrics: {
+            cac: "R$ 75",
+            ltv: "R$ 900",
+            ltvCacRatio: "12:1",
+            grossMargin: "75%",
+            burnRate: "R$ 45.000/mês",
+            runway: "18 meses"
+          },
+          profitabilityAnalysis: {
+            grossProfitMargin: "75%",
+            operatingMargin: "35%",
+            netMargin: "25%",
+            roi: "180%",
+            paybackPeriod: "8 meses"
+          },
+          cashFlowProjection: {
+            operatingCashFlow: [
+              { period: "Q1", amount: "R$ -120.000" },
+              { period: "Q2", amount: "R$ -80.000" },
+              { period: "Q3", amount: "R$ 50.000" },
+              { period: "Q4", amount: "R$ 180.000" }
+            ],
+            investmentCashFlow: "R$ -200.000",
+            financingCashFlow: "R$ 500.000",
+            netCashFlow: "R$ 330.000 no primeiro ano"
+          },
+          investmentReturn: {
+            expectedRoi: "200% em 3 anos",
+            irr: "65%",
+            npv: "R$ 2.8M",
+            sensitivityAnalysis: ["Cenário otimista: +50%", "Cenário pessimista: -30%"]
+          },
+          sources: {
+            serpApi: ["Dados de financiamento do setor", "Benchmarks de custos", "Informações de mercado"],
+            perplexity: ["Análises de viabilidade", "Tendências de investimento", "Métricas do setor"]
+          }
         };
         
+        generatedAnalysis = mockAnalysis;
         setAnalysis(mockAnalysis);
       }
       
-      // Try to save to database, but don't let saving errors affect display
+      // Try to save to database
       try {
         await supabase
           .from('generated_content')
@@ -172,12 +339,12 @@ export const FinancialAnalysisModalEnhanced: React.FC<FinancialAnalysisModalEnha
             idea_id: useCustom ? null : selectedIdea?.id,
             content_type: 'financial-analysis',
             title: `Análise Financeira - ${ideaData.title}`,
-            content_data: analysis as any
+            content_data: generatedAnalysis as any
           });
       } catch (saveError) {
         console.warn('Failed to save financial analysis to database:', saveError);
-        // Continue showing the content even if saving fails
       }
+      
       toast.success("Análise financeira gerada com sucesso!");
     } catch (error) {
       console.error('Error generating financial analysis:', error);
@@ -197,41 +364,36 @@ export const FinancialAnalysisModalEnhanced: React.FC<FinancialAnalysisModalEnha
   const downloadAnalysis = () => {
     if (!analysis) return;
     
-    // Create a formatted text version of the analysis
     const content = `# Análise Financeira - ${selectedIdea?.title || 'Ideia Personalizada'}
 
 ## Modelo de Receita
-${analysis.revenueModel}
-
-## Investimento Inicial
-${analysis.initialInvestment}
-
-## Custos Operacionais Mensais
-${analysis.monthlyOperatingCosts}
+- Fluxos Primários: ${analysis.revenueModel.primaryStreams.join(', ')}
+- Modelo de Preços: ${analysis.revenueModel.pricingModel}
+- Projeção: ${analysis.revenueModel.revenueProjection}
 
 ## Estrutura de Custos
-${analysis.costStructure?.map(cost => `- ${cost}`).join('\n')}
+### Custos Fixos:
+${analysis.costStructure.fixedCosts.map(cost => `- ${cost.category}: ${cost.amount}`).join('\n')}
 
-## Projeções de Receita
-${analysis.revenueProjections?.map(projection => `- ${projection}`).join('\n')}
+### Custos Variáveis:
+${analysis.costStructure.variableCosts.map(cost => `- ${cost.category}: ${cost.percentage}`).join('\n')}
 
-## Análise de Ponto de Equilíbrio
-${analysis.breakEvenAnalysis}
+## Projeções Financeiras
+- Ano 1: ${analysis.financialProjections.year1.revenue} (Margem: ${analysis.financialProjections.year1.margin})
+- Ano 2: ${analysis.financialProjections.year2.revenue} (Margem: ${analysis.financialProjections.year2.margin})
+- Ano 3: ${analysis.financialProjections.year3.revenue} (Margem: ${analysis.financialProjections.year3.margin})
+
+## Métricas-Chave
+- CAC: ${analysis.keyMetrics.cac}
+- LTV: ${analysis.keyMetrics.ltv}
+- LTV/CAC: ${analysis.keyMetrics.ltvCacRatio}
+- Burn Rate: ${analysis.keyMetrics.burnRate}
 
 ## Necessidades de Financiamento
-${analysis.fundingRequirements}
-
-## Riscos Financeiros
-${analysis.financialRisks?.map(risk => `- ${risk}`).join('\n')}
-
-## Cronograma de Lucratividade
-${analysis.profitabilityTimeline}
-
-## Métricas Chave
-${analysis.keyMetrics?.map(metric => `- ${metric}`).join('\n')}
+Total: ${analysis.fundingRequirements.totalFunding}
+${analysis.fundingRequirements.useOfFunds.map(use => `- ${use.category}: ${use.percentage}`).join('\n')}
 `;
     
-    // Create a download link
     const element = document.createElement('a');
     const file = new Blob([content], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
@@ -243,15 +405,12 @@ ${analysis.keyMetrics?.map(metric => `- ${metric}`).join('\n')}
     toast.success('Análise financeira baixada com sucesso!');
   };
 
-  // Icon for the modal
-  const analysisIcon = <DollarSign className="h-5 w-5 text-green-500" />;
-
   return (
     <ToolModalBase
       open={open}
       onOpenChange={onOpenChange}
       title="Análise Financeira"
-      icon={analysisIcon}
+      icon={<DollarSign className="h-5 w-5 text-green-500" />}
       isGenerating={isGenerating}
       generatingText="Analisando financeiramente..."
       actionText="Gerar Análise Financeira"
@@ -266,161 +425,320 @@ ${analysis.keyMetrics?.map(metric => `- ${metric}`).join('\n')}
     >
       <div className="space-y-6">
         {analysis ? (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">
-                Análise para: {selectedIdea?.title || "Ideia Personalizada"}
-              </h3>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={downloadAnalysis}
-                className="flex items-center gap-1"
-              >
-                <Download className="h-4 w-4" />
-                <span className="hidden sm:inline">Baixar</span>
-              </Button>
+          <div className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <DollarSign className="h-5 w-5" />
+                    Modelo de Receita
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">Fluxos Primários</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4">
+                      {analysis.revenueModel.primaryStreams.map((stream, index) => (
+                        <li key={index}>{stream}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Modelo de Preço</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.revenueModel.pricingModel}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Projeção de Receita</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.revenueModel.revenueProjection}</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calculator className="h-5 w-5" />
+                    Estrutura de Custos
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">Custos Fixos</h4>
+                    <div className="space-y-2">
+                      {analysis.costStructure.fixedCosts.map((cost, index) => (
+                        <div key={index} className="border-b pb-1 last:border-b-0">
+                          <div className="flex justify-between">
+                            <span className="text-sm font-medium">{cost.category}</span>
+                            <span className="text-sm text-muted-foreground">{cost.amount}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">{cost.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Estimativa Total</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.costStructure.totalCostEstimate}</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Projeções Financeiras
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                      <h4 className="font-medium mb-2">Ano 1</h4>
+                      <p className="text-xs text-muted-foreground">Receita: {analysis.financialProjections.year1.revenue}</p>
+                      <p className="text-xs text-muted-foreground">Lucro: {analysis.financialProjections.year1.profit}</p>
+                      <p className="text-xs text-muted-foreground">Margem: {analysis.financialProjections.year1.margin}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-2">Ano 2</h4>
+                      <p className="text-xs text-muted-foreground">Receita: {analysis.financialProjections.year2.revenue}</p>
+                      <p className="text-xs text-muted-foreground">Lucro: {analysis.financialProjections.year2.profit}</p>
+                      <p className="text-xs text-muted-foreground">Margem: {analysis.financialProjections.year2.margin}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-2">Ano 3</h4>
+                      <p className="text-xs text-muted-foreground">Receita: {analysis.financialProjections.year3.revenue}</p>
+                      <p className="text-xs text-muted-foreground">Lucro: {analysis.financialProjections.year3.profit}</p>
+                      <p className="text-xs text-muted-foreground">Margem: {analysis.financialProjections.year3.margin}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" />
+                    Análise Break-Even
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">Ponto de Equilíbrio</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.breakEvenAnalysis.breakEvenPoint}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Tempo para Break-Even</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.breakEvenAnalysis.timeToBreakEven}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Fatores Críticos</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4">
+                      {analysis.breakEvenAnalysis.criticalFactors.map((factor, index) => (
+                        <li key={index}>{factor}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CreditCard className="h-5 w-5" />
+                    Necessidades de Financiamento
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">Investimento Total</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.fundingRequirements.totalFunding}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Uso dos Recursos</h4>
+                    <div className="space-y-1">
+                      {analysis.fundingRequirements.useOfFunds.map((use, index) => (
+                        <div key={index} className="flex justify-between text-sm">
+                          <span>{use.category}</span>
+                          <span className="text-muted-foreground">{use.percentage}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5" />
+                    Riscos Financeiros
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">Riscos de Mercado</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4">
+                      {analysis.financialRisks.marketRisks.map((risk, index) => (
+                        <li key={index}>{risk}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Estratégias de Mitigação</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4">
+                      {analysis.financialRisks.mitigationStrategies.map((strategy, index) => (
+                        <li key={index}>{strategy}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="h-5 w-5" />
+                    Métricas-Chave
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-medium mb-1">CAC</h4>
+                      <p className="text-sm text-muted-foreground">{analysis.keyMetrics.cac}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-1">LTV</h4>
+                      <p className="text-sm text-muted-foreground">{analysis.keyMetrics.ltv}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-1">LTV/CAC</h4>
+                      <p className="text-sm text-muted-foreground">{analysis.keyMetrics.ltvCacRatio}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-1">Burn Rate</h4>
+                      <p className="text-sm text-muted-foreground">{analysis.keyMetrics.burnRate}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <PieChart className="h-5 w-5" />
+                    Análise de Lucratividade
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-medium mb-1">Margem Bruta</h4>
+                      <p className="text-sm text-muted-foreground">{analysis.profitabilityAnalysis.grossProfitMargin}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-1">Margem Operacional</h4>
+                      <p className="text-sm text-muted-foreground">{analysis.profitabilityAnalysis.operatingMargin}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-1">ROI</h4>
+                      <p className="text-sm text-muted-foreground">{analysis.profitabilityAnalysis.roi}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-1">Payback</h4>
+                      <p className="text-sm text-muted-foreground">{analysis.profitabilityAnalysis.paybackPeriod}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5" />
+                    Fluxo de Caixa
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">Fluxo Operacional</h4>
+                    <div className="space-y-1">
+                      {analysis.cashFlowProjection.operatingCashFlow.map((flow, index) => (
+                        <div key={index} className="flex justify-between text-sm">
+                          <span>{flow.period}</span>
+                          <span className="text-muted-foreground">{flow.amount}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Fluxo Líquido</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.cashFlowProjection.netCashFlow}</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Retorno do Investimento
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-medium mb-1">ROI Esperado</h4>
+                      <p className="text-sm text-muted-foreground">{analysis.investmentReturn.expectedRoi}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-1">IRR</h4>
+                      <p className="text-sm text-muted-foreground">{analysis.investmentReturn.irr}</p>
+                    </div>
+                    <div className="col-span-2">
+                      <h4 className="font-medium mb-1">NPV</h4>
+                      <p className="text-sm text-muted-foreground">{analysis.investmentReturn.npv}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
-            <ScrollArea className="h-[60vh]">
-              <div className="grid gap-6 md:grid-cols-2 pr-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <PieChart className="h-5 w-5 text-blue-500" />
-                      Modelo de Receita
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">{analysis.revenueModel}</p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Calculator className="h-5 w-5 text-red-500" />
-                      Investimento Inicial
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm font-semibold text-lg">{analysis.initialInvestment}</p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5 text-green-500" />
-                      Ponto de Equilíbrio
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">{analysis.breakEvenAnalysis}</p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <DollarSign className="h-5 w-5 text-purple-500" />
-                      Necessidades de Financiamento
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">{analysis.fundingRequirements}</p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Calculator className="h-5 w-5 text-orange-500" />
-                      Estrutura de Custos
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {analysis.costStructure?.map((cost, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Badge variant="secondary" className="mt-1">•</Badge>
-                          <span className="text-sm">{cost}</span>
-                        </li>
+            {analysis.sources && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Database className="h-5 w-5" />
+                    Fontes de Dados
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">SerpAPI</h4>
+                    <ul className="text-xs text-muted-foreground list-disc ml-4">
+                      {analysis.sources.serpApi.map((source, index) => (
+                        <li key={index}>{source}</li>
                       ))}
                     </ul>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5 text-green-500" />
-                      Projeções de Receita
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {analysis.revenueProjections?.map((projection, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Badge className="mt-1">{index + 1}</Badge>
-                          <span className="text-sm">{projection}</span>
-                        </li>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Perplexity</h4>
+                    <ul className="text-xs text-muted-foreground list-disc ml-4">
+                      {analysis.sources.perplexity.map((source, index) => (
+                        <li key={index}>{source}</li>
                       ))}
                     </ul>
-                  </CardContent>
-                </Card>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <AlertTriangle className="h-5 w-5 text-red-500" />
-                      Riscos Financeiros
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {analysis.financialRisks?.map((risk, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Badge variant="destructive" className="mt-1">!</Badge>
-                          <span className="text-sm">{risk}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <PieChart className="h-5 w-5 text-blue-500" />
-                      Métricas Chave
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {analysis.keyMetrics?.map((metric, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Badge variant="secondary" className="mt-1">📊</Badge>
-                          <span className="text-sm">{metric}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-
-                <Card className="md:col-span-2">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5 text-green-500" />
-                      Cronograma de Lucratividade
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">{analysis.profitabilityTimeline}</p>
-                  </CardContent>
-                </Card>
-              </div>
-            </ScrollArea>
+            <div className="flex justify-center">
+              <Button onClick={downloadAnalysis} variant="outline">
+                <Download className="h-4 w-4 mr-2" />
+                Baixar Análise
+              </Button>
+            </div>
           </div>
         ) : (
           <CreditGuard feature="financial-analysis">

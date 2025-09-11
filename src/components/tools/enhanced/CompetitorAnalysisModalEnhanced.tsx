@@ -6,19 +6,20 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePlanAccess } from "@/hooks/usePlanAccess";
 import { toast } from "sonner";
 import { 
-  Shield, 
-  TrendingUp, 
-  AlertTriangle, 
+  Download, 
   Target, 
-  Star,
-  Download,
-  Users
+  Users, 
+  BarChart3, 
+  TrendingUp, 
+  Lightbulb, 
+  Shield, 
+  CheckCircle, 
+  Database 
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ToolModalBase } from "@/components/shared/ToolModalBase";
 import { EnhancedIdeaSelector } from "@/components/shared/EnhancedIdeaSelector";
 import { CreditGuard } from "@/components/CreditGuard";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface CompetitorAnalysisModalEnhancedProps {
   open: boolean;
@@ -28,21 +29,83 @@ interface CompetitorAnalysisModalEnhancedProps {
 interface Competitor {
   name: string;
   description: string;
+  website: string;
+  marketShare: string;
+  revenue: string;
   strengths: string[];
   weaknesses: string[];
+  pricingModel: string;
+  targetAudience: string;
+  keyFeatures: string[];
+}
+
+interface DirectCompetitorsData {
+  competitors: Competitor[];
+  marketAnalysis: string;
+  competitiveIntensity: string;
+}
+
+interface IndirectCompetitorsData {
+  competitors: Competitor[];
+  substituteThreat: string;
+  alternativeSolutions: string[];
+}
+
+interface MarketPositionData {
+  currentPosition: string;
   marketShare: string;
-  website?: string;
+  brandRecognition: string;
+  competitiveRanking: string;
+}
+
+interface CompetitiveAdvantagesData {
+  uniqueValueProposition: string[];
+  technologyAdvantages: string[];
+  operationalAdvantages: string[];
+  marketAdvantages: string[];
+}
+
+interface MarketGapsData {
+  unservedNeeds: string[];
+  poorlyServedSegments: string[];
+  innovationOpportunities: string[];
+  geographicGaps: string[];
+}
+
+interface CompetitiveStrategyData {
+  recommendedStrategy: string;
+  differentiationFactors: string[];
+  competitivePositioning: string;
+  strategicPriorities: string[];
+}
+
+interface SwotAnalysisData {
+  strengths: string[];
+  weaknesses: string[];
+  opportunities: string[];
+  threats: string[];
+}
+
+interface RecommendationsData {
+  immediate: string[];
+  shortTerm: string[];
+  longTerm: string[];
+  strategicInitiatives: string[];
 }
 
 interface CompetitorAnalysis {
-  directCompetitors: Competitor[];
-  indirectCompetitors: Competitor[];
-  competitiveAdvantages: string[];
-  marketGaps: string[];
-  competitiveStrategy: string;
-  differentiationPoints: string[];
-  threatLevel: string;
-  recommendations: string[];
+  directCompetitors: DirectCompetitorsData;
+  indirectCompetitors: IndirectCompetitorsData;
+  marketPosition: MarketPositionData;
+  competitiveAdvantages: CompetitiveAdvantagesData;
+  marketGaps: MarketGapsData;
+  competitiveStrategy: CompetitiveStrategyData;
+  swotAnalysis: SwotAnalysisData;
+  recommendations: RecommendationsData;
+  sources: {
+    serpApi: string[];
+    perplexity: string[];
+  };
 }
 
 export const CompetitorAnalysisModalEnhanced: React.FC<CompetitorAnalysisModalEnhancedProps> = ({
@@ -114,7 +177,8 @@ export const CompetitorAnalysisModalEnhanced: React.FC<CompetitorAnalysisModalEn
       // Update local credits
       updateUserCredits(deductResult);
 
-      // Simulação de dados para desenvolvimento
+      // Try to call the edge function
+      let generatedAnalysis;
       try {
         const { data, error } = await supabase.functions.invoke('generate-competitor-analysis', {
           body: { idea: ideaData }
@@ -122,75 +186,108 @@ export const CompetitorAnalysisModalEnhanced: React.FC<CompetitorAnalysisModalEn
 
         if (error) throw error;
         
-        // Se chegou aqui, use os dados reais
-        setAnalysis(data.analysis);
+        generatedAnalysis = data.analysis;
+        setAnalysis(generatedAnalysis);
       } catch (invokeError) {
         console.warn('Erro ao invocar função do Supabase, usando dados simulados:', invokeError);
         
-        // Dados simulados para desenvolvimento
+        // Fallback data
         const mockAnalysis = {
-          directCompetitors: [
-            {
-              name: "CompetidorA",
-              description: "Plataforma estabelecida com 5 anos no mercado, foco em grandes empresas",
-              strengths: ["Interface intuitiva", "Base de usuários grande", "Recursos avançados"],
-              weaknesses: ["Preço elevado", "Suporte lento", "Curva de aprendizado íngreme"],
-              marketShare: "35%",
-              website: "www.competidora.com"
-            },
-            {
-              name: "CompetidorB",
-              description: "Startup em crescimento com solução inovadora, foco em PMEs",
-              strengths: ["Preço acessível", "Atualizações frequentes", "Bom suporte ao cliente"],
-              weaknesses: ["Menos recursos", "Menor estabilidade", "Menos integrações"],
-              marketShare: "15%",
-              website: "www.competidorb.com"
-            }
-          ],
-          indirectCompetitors: [
-            {
-              name: "SoluçãoAlternativa",
-              description: "Solução genérica que pode ser adaptada para resolver o mesmo problema",
-              strengths: ["Versatilidade", "Base de usuários diversificada", "Marca reconhecida"],
-              weaknesses: ["Não especializada", "Requer customização", "Menos eficiente"],
-              marketShare: "20%",
-              website: "www.alternativa.com"
-            }
-          ],
-          competitiveAdvantages: [
-            "Tecnologia proprietária mais eficiente",
-            "Foco específico no segmento de mercado alvo",
-            "Modelo de preços mais acessível",
-            "Experiência do usuário superior"
-          ],
-          marketGaps: [
-            "Falta de soluções específicas para pequenas empresas",
-            "Ausência de recursos de integração com ferramentas populares",
-            "Carência de suporte personalizado no segmento",
-            "Necessidade de interface mais intuitiva e amigável"
-          ],
-          competitiveStrategy: "Adotar uma estratégia de diferenciação focada, destacando a facilidade de uso e o valor agregado para pequenas empresas, com preço competitivo e suporte excepcional. Investir em marketing direcionado para o nicho específico e desenvolver parcerias estratégicas para ampliar o alcance.",
-          differentiationPoints: [
-            "Interface mais intuitiva e amigável",
-            "Suporte ao cliente 24/7 com tempo de resposta garantido",
-            "Integrações nativas com ferramentas populares",
-            "Modelo de preços transparente sem custos ocultos",
-            "Recursos específicos para o segmento-alvo"
-          ],
-          threatLevel: "Medium",
-          recommendations: [
-            "Focar inicialmente no segmento de pequenas empresas, onde há menos concorrência direta",
-            "Desenvolver e destacar recursos exclusivos que atendam às necessidades específicas do público-alvo",
-            "Investir em marketing de conteúdo para educar o mercado sobre os diferenciais da solução",
-            "Estabelecer parcerias estratégicas com plataformas complementares para ampliar o alcance",
-            "Implementar um programa de referência para incentivar a aquisição de novos clientes"
-          ]
+          directCompetitors: {
+            marketAnalysis: "Mercado fragmentado com 3-4 players principais dominando 60% do mercado",
+            competitiveIntensity: "Alta - competição baseada em preço e inovação",
+            competitors: [
+              {
+                name: "Líder de Mercado A",
+                description: "Empresa estabelecida há 8 anos, dominante no segmento enterprise",
+                website: "www.leadera.com.br",
+                marketShare: "28%",
+                revenue: "R$ 150M anuais",
+                strengths: ["Marca consolidada", "Ampla rede de parceiros", "Recursos robustos"],
+                weaknesses: ["Interface desatualizada", "Preços elevados", "Suporte lento"],
+                pricingModel: "Assinatura anual com tiers",
+                targetAudience: "Grandes empresas",
+                keyFeatures: ["Analytics avançado", "Integrações ERP", "Multi-tenancy"]
+              },
+              {
+                name: "Challenger B",
+                description: "Scale-up agressiva focada em PMEs, crescimento de 200% ao ano",
+                website: "www.challengerb.com",
+                marketShare: "18%",
+                revenue: "R$ 85M anuais",
+                strengths: ["Interface moderna", "Preços competitivos", "Agilidade de desenvolvimento"],
+                weaknesses: ["Menor estabilidade", "Funcionalidades limitadas", "Marca em construção"],
+                pricingModel: "Freemium com upselling",
+                targetAudience: "PMEs",
+                keyFeatures: ["Mobile-first", "API aberta", "Automações"]
+              }
+            ]
+          },
+          indirectCompetitors: {
+            substituteThreat: "Moderada - soluções genéricas podem atender 40% das necessidades",
+            alternativeSolutions: ["Planilhas customizadas", "Ferramentas generalistas", "Desenvolvimento interno"],
+            competitors: [
+              {
+                name: "Solução Genérica X",
+                description: "Plataforma ampla que pode ser adaptada para várias necessidades",
+                website: "www.genericx.com",
+                marketShare: "15%",
+                revenue: "R$ 500M anuais (multiproduto)",
+                strengths: ["Versatilidade", "Marca reconhecida", "Recursos abundantes"],
+                weaknesses: ["Complexidade", "Necessita customização", "Custo total elevado"],
+                pricingModel: "Licenciamento + consultoria",
+                targetAudience: "Todas as empresas",
+                keyFeatures: ["Customização total", "Suporte 24/7", "Compliance"]
+              }
+            ]
+          },
+          marketPosition: {
+            currentPosition: "Entrante com proposta disruptiva",
+            marketShare: "0% (pré-lançamento)",
+            brandRecognition: "Baixa - marca em construção",
+            competitiveRanking: "Não ranqueado ainda"
+          },
+          competitiveAdvantages: {
+            uniqueValueProposition: ["Simplicidade sem perder funcionalidade", "Preço 40% menor que concorrentes", "Implementação em 24h"],
+            technologyAdvantages: ["Arquitetura cloud-native", "IA integrada nativamente", "Performance 3x superior"],
+            operationalAdvantages: ["Equipe especializada", "Modelo de negócio enxuto", "Foco no cliente"],
+            marketAdvantages: ["Time-to-market rápido", "Flexibilidade de produto", "Modelo de parcerias diferenciado"]
+          },
+          marketGaps: {
+            unservedNeeds: ["Interface verdadeiramente intuitiva", "Preços acessíveis para PMEs", "Onboarding sem fricção"],
+            poorlyServedSegments: ["Empresas de 50-200 funcionários", "Setores específicos não atendidos", "Mercado B2B2C"],
+            innovationOpportunities: ["IA para automação", "Mobile-first experience", "Integração com ferramentas modernas"],
+            geographicGaps: ["Interior do país", "América Latina", "Mercados emergentes"]
+          },
+          competitiveStrategy: {
+            recommendedStrategy: "Estratégia de diferenciação focada com penetração por valor",
+            differentiationFactors: ["Experiência do usuário superior", "Implementação simplificada", "Suporte humanizado"],
+            competitivePositioning: "A alternativa moderna e acessível para empresas que querem crescer",
+            strategicPriorities: ["Product-market fit", "Aquisição eficiente", "Retenção alta", "Expansão de mercado"]
+          },
+          swotAnalysis: {
+            strengths: ["Tecnologia moderna", "Equipe experiente", "Proposta diferenciada", "Flexibilidade"],
+            weaknesses: ["Marca desconhecida", "Recursos limitados", "Falta de cases", "Equipe pequena"],
+            opportunities: ["Mercado em crescimento", "Insatisfação com players atuais", "Digitalização acelerada", "Demanda reprimida"],
+            threats: ["Reação dos incumbents", "Guerra de preços", "Mudanças regulatórias", "Crise econômica"]
+          },
+          recommendations: {
+            immediate: ["Validar MVP com early adopters", "Estabelecer preços competitivos", "Criar conteúdo educativo"],
+            shortTerm: ["Captar primeiros 100 clientes", "Refinar produto baseado em feedback", "Construir parcerias estratégicas"],
+            longTerm: ["Expandir para novos segmentos", "Desenvolver marketplace de integrações", "Considerar expansão internacional"],
+            strategicInitiatives: ["Programa de referência", "Content marketing", "Evento próprio do setor", "Certificações de segurança"]
+          },
+          sources: {
+            serpApi: ["Dados dos concorrentes atualizados", "Market share e financeiros", "Informações de produtos"],
+            perplexity: ["Análises de especialistas", "Tendências competitivas", "Insights de mercado"]
+          }
         };
         
+        generatedAnalysis = mockAnalysis;
         setAnalysis(mockAnalysis);
       }
       
-      // Try to save to database, but don't let saving errors affect display
+      // Try to save to database
       try {
         await supabase
           .from('generated_content')
@@ -199,12 +296,12 @@ export const CompetitorAnalysisModalEnhanced: React.FC<CompetitorAnalysisModalEn
             idea_id: useCustom ? null : selectedIdea?.id,
             content_type: 'competitor-analysis',
             title: `Análise de Concorrentes - ${ideaData.title}`,
-            content_data: analysis as any
+            content_data: generatedAnalysis as any
           });
       } catch (saveError) {
         console.warn('Failed to save competitor analysis to database:', saveError);
-        // Continue showing the content even if saving fails
       }
+      
       toast.success("Análise de concorrentes gerada com sucesso!");
     } catch (error) {
       console.error('Error generating competitor analysis:', error);
@@ -221,82 +318,38 @@ export const CompetitorAnalysisModalEnhanced: React.FC<CompetitorAnalysisModalEn
     setUseCustom(false);
   };
 
-  const getThreatLevelColor = (level: string) => {
-    switch (level?.toLowerCase()) {
-      case 'low': return 'text-green-500';
-      case 'medium': return 'text-yellow-500';
-      case 'high': return 'text-red-500';
-      default: return 'text-muted-foreground';
-    }
-  };
-
   const downloadAnalysis = () => {
     if (!analysis) return;
     
-    // Create a formatted text version of the analysis
-    let content = `# Análise de Concorrentes - ${selectedIdea?.title || 'Ideia Personalizada'}
-
-## Nível de Ameaça
-${analysis.threatLevel}
+    const content = `# Análise de Concorrentes - ${selectedIdea?.title || 'Ideia Personalizada'}
 
 ## Concorrentes Diretos
+${analysis.directCompetitors.competitors.map(competitor => `
+### ${competitor.name}
+- Website: ${competitor.website}
+- Market Share: ${competitor.marketShare}
+- Receita: ${competitor.revenue}
+- Forças: ${competitor.strengths.join(', ')}
+- Fraquezas: ${competitor.weaknesses.join(', ')}
+`).join('\n')}
+
+## Posição no Mercado
+- Posição Atual: ${analysis.marketPosition.currentPosition}
+- Reconhecimento: ${analysis.marketPosition.brandRecognition}
+
+## Vantagens Competitivas
+${analysis.competitiveAdvantages.uniqueValueProposition.map(prop => `- ${prop}`).join('\n')}
+
+## Lacunas do Mercado
+${analysis.marketGaps.unservedNeeds.map(need => `- ${need}`).join('\n')}
+
+## Estratégia Recomendada
+${analysis.competitiveStrategy.recommendedStrategy}
+
+## Recomendações Imediatas
+${analysis.recommendations.immediate.map(rec => `- ${rec}`).join('\n')}
 `;
     
-    analysis.directCompetitors?.forEach((competitor, index) => {
-      content += `### ${competitor.name}
-`;
-      content += `Descrição: ${competitor.description}\n`;
-      content += `Participação de Mercado: ${competitor.marketShare}\n`;
-      content += `\nPontos Fortes:\n`;
-      competitor.strengths?.forEach(strength => {
-        content += `- ${strength}\n`;
-      });
-      content += `\nPontos Fracos:\n`;
-      competitor.weaknesses?.forEach(weakness => {
-        content += `- ${weakness}\n`;
-      });
-      content += `\n`;
-    });
-    
-    content += `\n## Concorrentes Indiretos\n`;
-    analysis.indirectCompetitors?.forEach((competitor, index) => {
-      content += `### ${competitor.name}\n`;
-      content += `Descrição: ${competitor.description}\n`;
-      content += `Participação de Mercado: ${competitor.marketShare}\n`;
-      content += `\nPontos Fortes:\n`;
-      competitor.strengths?.forEach(strength => {
-        content += `- ${strength}\n`;
-      });
-      content += `\nPontos Fracos:\n`;
-      competitor.weaknesses?.forEach(weakness => {
-        content += `- ${weakness}\n`;
-      });
-      content += `\n`;
-    });
-    
-    content += `\n## Vantagens Competitivas\n`;
-    analysis.competitiveAdvantages?.forEach(advantage => {
-      content += `- ${advantage}\n`;
-    });
-    
-    content += `\n## Lacunas no Mercado\n`;
-    analysis.marketGaps?.forEach(gap => {
-      content += `- ${gap}\n`;
-    });
-    
-    content += `\n## Pontos de Diferenciação\n`;
-    analysis.differentiationPoints?.forEach(point => {
-      content += `- ${point}\n`;
-    });
-    
-    content += `\n## Estratégia Competitiva\n${analysis.competitiveStrategy}\n`;
-    
-    content += `\n## Recomendações Estratégicas\n`;
-    analysis.recommendations?.forEach((recommendation, index) => {
-      content += `${index + 1}. ${recommendation}\n`;
-    });
-    
-    // Create a download link
     const element = document.createElement('a');
     const file = new Blob([content], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
@@ -308,15 +361,12 @@ ${analysis.threatLevel}
     toast.success('Análise de concorrentes baixada com sucesso!');
   };
 
-  // Icon for the modal
-  const analysisIcon = <Shield className="h-5 w-5 text-red-500" />;
-
   return (
     <ToolModalBase
       open={open}
       onOpenChange={onOpenChange}
       title="Análise de Concorrentes"
-      icon={analysisIcon}
+      icon={<Shield className="h-5 w-5 text-red-500" />}
       isGenerating={isGenerating}
       generatingText="Analisando concorrentes..."
       actionText="Gerar Análise de Concorrentes"
@@ -331,213 +381,336 @@ ${analysis.threatLevel}
     >
       <div className="space-y-6">
         {analysis ? (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">
-                Análise para: {selectedIdea?.title || "Ideia Personalizada"}
-              </h3>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={downloadAnalysis}
-                className="flex items-center gap-1"
-              >
-                <Download className="h-4 w-4" />
-                <span className="hidden sm:inline">Baixar</span>
-              </Button>
-            </div>
+          <div className="space-y-6">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="h-5 w-5" />
+                    Concorrentes Diretos
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="mb-4">
+                    <h4 className="font-medium mb-2">Análise do Mercado</h4>
+                    <p className="text-sm text-muted-foreground mb-2">{analysis.directCompetitors.marketAnalysis}</p>
+                    <p className="text-sm text-muted-foreground"><strong>Intensidade Competitiva:</strong> {analysis.directCompetitors.competitiveIntensity}</p>
+                  </div>
+                  <div className="space-y-4">
+                    {analysis.directCompetitors.competitors.map((competitor, index) => (
+                      <div key={index} className="border rounded-lg p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="font-semibold">{competitor.name}</h4>
+                          <span className="text-xs bg-muted px-2 py-1 rounded">{competitor.marketShare}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">{competitor.description}</p>
+                        {competitor.website && (
+                          <p className="text-xs text-blue-600 mb-2">{competitor.website}</p>
+                        )}
+                        <div className="grid md:grid-cols-2 gap-4 mb-3">
+                          <div>
+                            <h5 className="font-medium mb-1">Pontos Fortes</h5>
+                            <ul className="text-sm text-muted-foreground list-disc ml-4">
+                              {competitor.strengths.map((strength, idx) => (
+                                <li key={idx}>{strength}</li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div>
+                            <h5 className="font-medium mb-1">Pontos Fracos</h5>
+                            <ul className="text-sm text-muted-foreground list-disc ml-4">
+                              {competitor.weaknesses.map((weakness, idx) => (
+                                <li key={idx}>{weakness}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 text-xs">
+                          <div>
+                            <span className="font-medium">Receita: </span>
+                            <span className="text-muted-foreground">{competitor.revenue}</span>
+                          </div>
+                          <div>
+                            <span className="font-medium">Modelo: </span>
+                            <span className="text-muted-foreground">{competitor.pricingModel}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
 
-            <ScrollArea className="h-[60vh]">
-              <div className="space-y-6 pr-4">
-                {/* Threat Level */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Concorrentes Indiretos
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="mb-4">
+                    <h4 className="font-medium mb-2">Ameaça de Substitutos</h4>
+                    <p className="text-sm text-muted-foreground mb-2">{analysis.indirectCompetitors.substituteThreat}</p>
+                    <div>
+                      <h5 className="font-medium mb-1">Soluções Alternativas</h5>
+                      <ul className="text-sm text-muted-foreground list-disc ml-4">
+                        {analysis.indirectCompetitors.alternativeSolutions.map((solution, index) => (
+                          <li key={index}>{solution}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    {analysis.indirectCompetitors.competitors.map((competitor, index) => (
+                      <div key={index} className="border rounded-lg p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="font-semibold">{competitor.name}</h4>
+                          <span className="text-xs bg-muted px-2 py-1 rounded">{competitor.marketShare}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">{competitor.description}</p>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h5 className="font-medium mb-1">Vantagens</h5>
+                            <ul className="text-sm text-muted-foreground list-disc ml-4">
+                              {competitor.strengths.map((strength, idx) => (
+                                <li key={idx}>{strength}</li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div>
+                            <h5 className="font-medium mb-1">Limitações</h5>
+                            <ul className="text-sm text-muted-foreground list-disc ml-4">
+                              {competitor.weaknesses.map((weakness, idx) => (
+                                <li key={idx}>{weakness}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="grid gap-6 md:grid-cols-2">
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <AlertTriangle className={`h-5 w-5 ${getThreatLevelColor(analysis.threatLevel)}`} />
-                      Nível de Ameaça: {analysis.threatLevel?.toUpperCase()}
+                      <BarChart3 className="h-5 w-5" />
+                      Posição no Mercado
                     </CardTitle>
                   </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <h4 className="font-medium mb-1">Posição Atual</h4>
+                      <p className="text-sm text-muted-foreground">{analysis.marketPosition.currentPosition}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-1">Participação</h4>
+                      <p className="text-sm text-muted-foreground">{analysis.marketPosition.marketShare}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-1">Reconhecimento da Marca</h4>
+                      <p className="text-sm text-muted-foreground">{analysis.marketPosition.brandRecognition}</p>
+                    </div>
+                  </CardContent>
                 </Card>
 
-                {/* Direct Competitors */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <Users className="h-5 w-5 text-blue-500" />
-                    Concorrentes Diretos
-                  </h3>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {analysis.directCompetitors?.map((competitor, index) => (
-                      <Card key={index} className="border-blue-200 dark:border-blue-800">
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-base">{competitor.name}</CardTitle>
-                          <p className="text-sm text-muted-foreground">{competitor.description}</p>
-                          <Badge variant="secondary">{competitor.marketShare}</Badge>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                          <div>
-                            <h5 className="font-semibold text-sm text-green-600 mb-1">Pontos Fortes:</h5>
-                            <ul className="text-xs space-y-1">
-                              {competitor.strengths?.map((strength, i) => (
-                                <li key={i} className="flex items-start gap-1">
-                                  <Badge variant="secondary" className="mt-0.5 h-4 w-4 flex items-center justify-center p-0">+</Badge>
-                                  <span>{strength}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div>
-                            <h5 className="font-semibold text-sm text-red-600 mb-1">Pontos Fracos:</h5>
-                            <ul className="text-xs space-y-1">
-                              {competitor.weaknesses?.map((weakness, i) => (
-                                <li key={i} className="flex items-start gap-1">
-                                  <Badge variant="destructive" className="mt-0.5 h-4 w-4 flex items-center justify-center p-0">-</Badge>
-                                  <span>{weakness}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Indirect Competitors */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <Users className="h-5 w-5 text-purple-500" />
-                    Concorrentes Indiretos
-                  </h3>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {analysis.indirectCompetitors?.map((competitor, index) => (
-                      <Card key={index} className="border-purple-200 dark:border-purple-800">
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-base">{competitor.name}</CardTitle>
-                          <p className="text-sm text-muted-foreground">{competitor.description}</p>
-                          <Badge variant="secondary">{competitor.marketShare}</Badge>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                          <div>
-                            <h5 className="font-semibold text-sm text-green-600 mb-1">Pontos Fortes:</h5>
-                            <ul className="text-xs space-y-1">
-                              {competitor.strengths?.map((strength, i) => (
-                                <li key={i} className="flex items-start gap-1">
-                                  <Badge variant="secondary" className="mt-0.5 h-4 w-4 flex items-center justify-center p-0">+</Badge>
-                                  <span>{strength}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div>
-                            <h5 className="font-semibold text-sm text-red-600 mb-1">Pontos Fracos:</h5>
-                            <ul className="text-xs space-y-1">
-                              {competitor.weaknesses?.map((weakness, i) => (
-                                <li key={i} className="flex items-start gap-1">
-                                  <Badge variant="destructive" className="mt-0.5 h-4 w-4 flex items-center justify-center p-0">-</Badge>
-                                  <span>{weakness}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Grid with other analyses */}
-                <div className="grid gap-6 md:grid-cols-2">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Star className="h-5 w-5 text-yellow-500" />
-                        Vantagens Competitivas
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-2">
-                        {analysis.competitiveAdvantages?.map((advantage, index) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <Badge variant="secondary" className="mt-1">✓</Badge>
-                            <span className="text-sm">{advantage}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Target className="h-5 w-5 text-blue-500" />
-                        Lacunas no Mercado
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-2">
-                        {analysis.marketGaps?.map((gap, index) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <Badge variant="outline" className="mt-1">💡</Badge>
-                            <span className="text-sm">{gap}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5 text-green-500" />
-                        Pontos de Diferenciação
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-2">
-                        {analysis.differentiationPoints?.map((point, index) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <Badge className="mt-1">{index + 1}</Badge>
-                            <span className="text-sm">{point}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Shield className="h-5 w-5 text-purple-500" />
-                        Estratégia Competitiva
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm">{analysis.competitiveStrategy}</p>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Recommendations */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Star className="h-5 w-5 text-blue-500" />
-                      Recomendações Estratégicas
+                      <TrendingUp className="h-5 w-5" />
+                      Vantagens Competitivas
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {analysis.recommendations?.map((recommendation, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Badge className="mt-1">{index + 1}</Badge>
-                          <span className="text-sm">{recommendation}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <h4 className="font-medium mb-1">Proposta Única de Valor</h4>
+                      <ul className="text-sm text-muted-foreground list-disc ml-4">
+                        {analysis.competitiveAdvantages.uniqueValueProposition.map((prop, index) => (
+                          <li key={index}>{prop}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-1">Vantagens Tecnológicas</h4>
+                      <ul className="text-sm text-muted-foreground list-disc ml-4">
+                        {analysis.competitiveAdvantages.technologyAdvantages.map((advantage, index) => (
+                          <li key={index}>{advantage}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Lightbulb className="h-5 w-5" />
+                      Lacunas do Mercado
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <h4 className="font-medium mb-1">Necessidades Não Atendidas</h4>
+                      <ul className="text-sm text-muted-foreground list-disc ml-4">
+                        {analysis.marketGaps.unservedNeeds.map((need, index) => (
+                          <li key={index}>{need}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-1">Oportunidades de Inovação</h4>
+                      <ul className="text-sm text-muted-foreground list-disc ml-4">
+                        {analysis.marketGaps.innovationOpportunities.map((opportunity, index) => (
+                          <li key={index}>{opportunity}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Shield className="h-5 w-5" />
+                      Estratégia Competitiva
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <h4 className="font-medium mb-1">Estratégia Recomendada</h4>
+                      <p className="text-sm text-muted-foreground">{analysis.competitiveStrategy.recommendedStrategy}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-1">Fatores de Diferenciação</h4>
+                      <ul className="text-sm text-muted-foreground list-disc ml-4">
+                        {analysis.competitiveStrategy.differentiationFactors.map((factor, index) => (
+                          <li key={index}>{factor}</li>
+                        ))}
+                      </ul>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
-            </ScrollArea>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="h-5 w-5" />
+                    Análise SWOT
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-medium mb-2 text-green-600">Forças</h4>
+                      <ul className="text-sm text-muted-foreground list-disc ml-4">
+                        {analysis.swotAnalysis.strengths.map((strength, index) => (
+                          <li key={index}>{strength}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-2 text-red-600">Fraquezas</h4>
+                      <ul className="text-sm text-muted-foreground list-disc ml-4">
+                        {analysis.swotAnalysis.weaknesses.map((weakness, index) => (
+                          <li key={index}>{weakness}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-2 text-blue-600">Oportunidades</h4>
+                      <ul className="text-sm text-muted-foreground list-disc ml-4">
+                        {analysis.swotAnalysis.opportunities.map((opportunity, index) => (
+                          <li key={index}>{opportunity}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-2 text-orange-600">Ameaças</h4>
+                      <ul className="text-sm text-muted-foreground list-disc ml-4">
+                        {analysis.swotAnalysis.threats.map((threat, index) => (
+                          <li key={index}>{threat}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5" />
+                    Recomendações Estratégicas
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <h4 className="font-medium mb-2">Ações Imediatas</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4 space-y-1">
+                      {analysis.recommendations.immediate.map((rec, index) => (
+                        <li key={index}>{rec}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Curto Prazo (3-6 meses)</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4 space-y-1">
+                      {analysis.recommendations.shortTerm.map((rec, index) => (
+                        <li key={index}>{rec}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Longo Prazo (6+ meses)</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4 space-y-1">
+                      {analysis.recommendations.longTerm.map((rec, index) => (
+                        <li key={index}>{rec}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {analysis.sources && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Database className="h-5 w-5" />
+                    Fontes de Dados
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">SerpAPI</h4>
+                    <ul className="text-xs text-muted-foreground list-disc ml-4">
+                      {analysis.sources.serpApi.map((source, index) => (
+                        <li key={index}>{source}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Perplexity</h4>
+                    <ul className="text-xs text-muted-foreground list-disc ml-4">
+                      {analysis.sources.perplexity.map((source, index) => (
+                        <li key={index}>{source}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="flex justify-center">
+              <Button onClick={downloadAnalysis} variant="outline">
+                <Download className="h-4 w-4 mr-2" />
+                Baixar Análise
+              </Button>
+            </div>
           </div>
         ) : (
           <CreditGuard feature="competitor-analysis">

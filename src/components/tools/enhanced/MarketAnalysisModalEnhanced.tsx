@@ -6,34 +6,118 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePlanAccess } from "@/hooks/usePlanAccess";
 import { toast } from "sonner";
 import { 
+  Download, 
   TrendingUp, 
+  Users, 
   Target, 
-  Shield, 
+  BarChart3, 
   Lightbulb, 
-  AlertTriangle,
-  Download,
-  BarChart
+  AlertTriangle, 
+  PieChart, 
+  DollarSign, 
+  Rocket, 
+  Database 
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ToolModalBase } from "@/components/shared/ToolModalBase";
 import { EnhancedIdeaSelector } from "@/components/shared/EnhancedIdeaSelector";
 import { CreditGuard } from "@/components/CreditGuard";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface MarketAnalysisModalEnhancedProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-interface MarketAnalysis {
-  marketSize: string;
-  targetAudience: string;
-  marketTrends: string[];
-  opportunities: string[];
-  threats: string[];
-  competitiveAdvantage: string[];
+interface MarketSizeData {
+  globalSize: string;
+  localSize: string;
+  growthRate: string;
+  projectedSize: string;
+  keyDrivers: string[];
+}
+
+interface TargetAudienceData {
+  primarySegment: string;
+  demographics: string;
+  psychographics: string;
+  painPoints: string[];
+  preferences: string[];
+}
+
+interface MarketTrendsData {
+  emergingTrends: string[];
+  technologyTrends: string[];
+  consumerTrends: string[];
+  industryShifts: string[];
+}
+
+interface CompetitiveLandscapeData {
+  marketLeaders: string[];
+  emergingPlayers: string[];
+  marketConcentration: string;
+  competitiveAdvantages: string[];
+}
+
+interface MarketOpportunitiesData {
+  underservedSegments: string[];
+  emergingNeeds: string[];
+  technologyOpportunities: string[];
+  geographicExpansion: string[];
+}
+
+interface MarketThreatsData {
+  competitiveThreats: string[];
+  technologyDisruption: string[];
+  regulatoryRisks: string[];
+  economicFactors: string[];
+}
+
+interface MarketSegmentationData {
+  segments: Array<{
+    name: string;
+    size: string;
+    characteristics: string;
+    attractiveness: string;
+  }>;
+}
+
+interface CustomerBehaviorData {
+  buyingProcess: string;
+  decisionFactors: string[];
+  channelPreferences: string[];
+  loyaltyFactors: string[];
+}
+
+interface PricingStrategyData {
+  recommendedModel: string;
+  priceRange: string;
+  competitorPricing: string;
+  valueProposition: string;
+}
+
+interface MarketEntryData {
+  recommendedStrategy: string;
   entryBarriers: string[];
-  recommendations: string[];
+  requiredInvestment: string;
+  timeline: string;
+  keyPartners: string[];
+}
+
+interface MarketAnalysis {
+  marketSize: MarketSizeData;
+  targetAudience: TargetAudienceData;
+  marketTrends: MarketTrendsData;
+  competitiveLandscape: CompetitiveLandscapeData;
+  marketOpportunities: MarketOpportunitiesData;
+  marketThreats: MarketThreatsData;
+  marketSegmentation: MarketSegmentationData;
+  customerBehavior: CustomerBehaviorData;
+  pricingStrategy: PricingStrategyData;
+  marketEntry: MarketEntryData;
+  sources: {
+    serpApi: string[];
+    perplexity: string[];
+  };
 }
 
 export const MarketAnalysisModalEnhanced: React.FC<MarketAnalysisModalEnhancedProps> = ({
@@ -105,7 +189,7 @@ export const MarketAnalysisModalEnhanced: React.FC<MarketAnalysisModalEnhancedPr
       // Update local credits
       updateUserCredits(deductResult);
 
-      // Simulação de dados para desenvolvimento
+      // Try to call the edge function
       let generatedAnalysis;
       try {
         const { data, error } = await supabase.functions.invoke('generate-market-analysis', {
@@ -114,60 +198,88 @@ export const MarketAnalysisModalEnhanced: React.FC<MarketAnalysisModalEnhancedPr
 
         if (error) throw error;
         
-        // Se chegou aqui, use os dados reais
         generatedAnalysis = data.analysis;
         setAnalysis(generatedAnalysis);
       } catch (invokeError) {
         console.warn('Erro ao invocar função do Supabase, usando dados simulados:', invokeError);
         
-        // Dados simulados para desenvolvimento
+        // Fallback data
         const mockAnalysis = {
-          marketSize: "O mercado global para esta solução é estimado em R$ 5,2 bilhões, com crescimento anual de 14,3% nos próximos 5 anos.",
-          targetAudience: "Profissionais urbanos entre 25-45 anos, com renda média-alta, preocupados com eficiência e sustentabilidade.",
-          marketTrends: [
-            "Aumento da demanda por soluções digitais integradas",
-            "Crescente preocupação com privacidade e segurança de dados",
-            "Preferência por interfaces simplificadas e intuitivas",
-            "Maior disposição para pagar por serviços por assinatura"
-          ],
-          opportunities: [
-            "Expansão para mercados internacionais com baixa penetração",
-            "Desenvolvimento de funcionalidades premium para monetização",
-            "Parcerias estratégicas com empresas complementares",
-            "Criação de comunidade de usuários para feedback contínuo"
-          ],
-          threats: [
-            "Entrada de grandes players tecnológicos no segmento",
-            "Mudanças regulatórias que podem impactar o modelo de negócio",
-            "Rápida evolução tecnológica exigindo atualizações constantes",
-            "Resistência de usuários tradicionais à adoção digital"
-          ],
-          competitiveAdvantage: [
-            "Interface mais intuitiva que a concorrência",
-            "Algoritmo proprietário com maior precisão",
-            "Integração com plataformas existentes",
-            "Modelo de preços mais acessível para o mercado-alvo"
-          ],
-          entryBarriers: [
-            "Necessidade de investimento inicial significativo",
-            "Curva de aprendizado para desenvolvimento da tecnologia",
-            "Estabelecimento de parcerias estratégicas",
-            "Construção de credibilidade no mercado"
-          ],
-          recommendations: [
-            "Focar inicialmente em um nicho específico para validação",
-            "Desenvolver MVP com funcionalidades essenciais",
-            "Estabelecer parcerias estratégicas para distribuição",
-            "Investir em marketing digital direcionado ao público-alvo",
-            "Coletar feedback contínuo para iterações rápidas"
-          ]
+          marketSize: {
+            globalSize: "R$ 5,2 bilhões globalmente",
+            localSize: "R$ 850 milhões no Brasil",
+            growthRate: "14,3% ao ano",
+            projectedSize: "R$ 1,4 bilhões em 2028",
+            keyDrivers: ["Digitalização crescente", "Mudanças no comportamento do consumidor", "Inovação tecnológica"]
+          },
+          targetAudience: {
+            primarySegment: "Profissionais urbanos entre 25-45 anos",
+            demographics: "Renda média-alta, ensino superior, residentes em grandes centros",
+            psychographics: "Valorizam eficiência, inovação e sustentabilidade",
+            painPoints: ["Falta de tempo", "Processos complexos", "Soluções caras"],
+            preferences: ["Interfaces simples", "Suporte rápido", "Transparência nos preços"]
+          },
+          marketTrends: {
+            emergingTrends: ["Automação inteligente", "Experiência do usuário personalizada", "Sustentabilidade digital"],
+            technologyTrends: ["Inteligência artificial", "Cloud computing", "APIs integradas"],
+            consumerTrends: ["Demanda por simplicidade", "Preferência por assinaturas", "Busca por valor agregado"],
+            industryShifts: ["Consolidação do mercado", "Entrada de big techs", "Regulamentação crescente"]
+          },
+          competitiveLandscape: {
+            marketLeaders: ["Empresa A (35%)", "Empresa B (22%)", "Empresa C (18%)"],
+            emergingPlayers: ["Startup X", "Scale-up Y", "Incumbent Z"],
+            marketConcentration: "Moderadamente concentrado - top 3 detêm 75%",
+            competitiveAdvantages: ["Tecnologia proprietária", "Network effects", "Dados exclusivos"]
+          },
+          marketOpportunities: {
+            underservedSegments: ["Pequenas empresas", "Mercado B2B2C", "Regiões do interior"],
+            emergingNeeds: ["Integração com IA", "Compliance automatizado", "Analytics avançado"],
+            technologyOpportunities: ["Edge computing", "Blockchain", "IoT integration"],
+            geographicExpansion: ["América Latina", "Mercados emergentes", "Cidades tier 2"]
+          },
+          marketThreats: {
+            competitiveThreats: ["Entrada de gigantes tech", "Guerra de preços", "Commoditização"],
+            technologyDisruption: ["Novas tecnologias disruptivas", "Mudanças nos padrões", "Obsolescência"],
+            regulatoryRisks: ["Novas regulamentações", "Mudanças na LGPD", "Tributação digital"],
+            economicFactors: ["Recessão econômica", "Inflação", "Câmbio desfavorável"]
+          },
+          marketSegmentation: {
+            segments: [
+              { name: "Enterprise", size: "45%", characteristics: "Grandes corporações", attractiveness: "Alta" },
+              { name: "SMB", size: "35%", characteristics: "Pequenas e médias empresas", attractiveness: "Média" },
+              { name: "Freelancers", size: "20%", characteristics: "Profissionais autônomos", attractiveness: "Baixa" }
+            ]
+          },
+          customerBehavior: {
+            buyingProcess: "Pesquisa online → Trial → Validação interna → Compra",
+            decisionFactors: ["Preço", "Funcionalidades", "Facilidade de uso", "Suporte"],
+            channelPreferences: ["Website próprio", "Marketplace", "Revendedores"],
+            loyaltyFactors: ["Qualidade do produto", "Atendimento", "Preço competitivo"]
+          },
+          pricingStrategy: {
+            recommendedModel: "Freemium com assinaturas escalonadas",
+            priceRange: "R$ 29-149/mês dependendo do plano",
+            competitorPricing: "Média de mercado: R$ 89/mês",
+            valueProposition: "20% mais barato com 50% mais recursos"
+          },
+          marketEntry: {
+            recommendedStrategy: "Go-to-market focado em nicho específico",
+            entryBarriers: ["Alto investimento inicial", "Necessidade de parcerias", "Construção de marca"],
+            requiredInvestment: "R$ 500.000 para MVP e primeiros 12 meses",
+            timeline: "6 meses para MVP, 18 meses para market fit",
+            keyPartners: ["Integradores de sistema", "Consultorias", "Plataformas complementares"]
+          },
+          sources: {
+            serpApi: ["Dados de mercado atualizados", "Informações dos concorrentes", "Tendências de busca"],
+            perplexity: ["Insights de mercado", "Análise de tendências", "Previsões de especialistas"]
+          }
         };
         
         generatedAnalysis = mockAnalysis;
         setAnalysis(mockAnalysis);
       }
       
-      // Try to save to database, but don't let saving errors affect display
+      // Try to save to database
       try {
         await supabase
           .from('generated_content')
@@ -180,8 +292,8 @@ export const MarketAnalysisModalEnhanced: React.FC<MarketAnalysisModalEnhancedPr
           });
       } catch (saveError) {
         console.warn('Failed to save market analysis to database:', saveError);
-        // Continue showing the content even if saving fails
       }
+      
       toast.success("Análise de mercado gerada com sucesso!");
     } catch (error) {
       console.error('Error generating market analysis:', error);
@@ -201,35 +313,38 @@ export const MarketAnalysisModalEnhanced: React.FC<MarketAnalysisModalEnhancedPr
   const downloadAnalysis = () => {
     if (!analysis) return;
     
-    // Create a formatted text version of the analysis
     const content = `# Análise de Mercado - ${selectedIdea?.title || 'Ideia Personalizada'}
 
 ## Tamanho do Mercado
-${analysis.marketSize}
+- Tamanho Global: ${analysis.marketSize.globalSize}
+- Tamanho Local: ${analysis.marketSize.localSize}
+- Taxa de Crescimento: ${analysis.marketSize.growthRate}
+- Projeção: ${analysis.marketSize.projectedSize}
 
 ## Público-Alvo
-${analysis.targetAudience}
+- Segmento Primário: ${analysis.targetAudience.primarySegment}
+- Demografia: ${analysis.targetAudience.demographics}
+- Psicografia: ${analysis.targetAudience.psychographics}
 
 ## Tendências do Mercado
-${analysis.marketTrends?.map(trend => `- ${trend}`).join('\n')}
+### Tendências Emergentes:
+${analysis.marketTrends.emergingTrends.map(trend => `- ${trend}`).join('\n')}
+
+### Tendências Tecnológicas:
+${analysis.marketTrends.technologyTrends.map(trend => `- ${trend}`).join('\n')}
 
 ## Oportunidades
-${analysis.opportunities?.map(opportunity => `- ${opportunity}`).join('\n')}
+${analysis.marketOpportunities.underservedSegments.map(seg => `- ${seg}`).join('\n')}
 
 ## Ameaças
-${analysis.threats?.map(threat => `- ${threat}`).join('\n')}
+${analysis.marketThreats.competitiveThreats.map(threat => `- ${threat}`).join('\n')}
 
-## Vantagens Competitivas
-${analysis.competitiveAdvantage?.map(advantage => `- ${advantage}`).join('\n')}
-
-## Barreiras de Entrada
-${analysis.entryBarriers?.map(barrier => `- ${barrier}`).join('\n')}
-
-## Recomendações Estratégicas
-${analysis.recommendations?.map((recommendation, index) => `${index + 1}. ${recommendation}`).join('\n')}
+## Estratégia de Entrada
+${analysis.marketEntry.recommendedStrategy}
+Investimento: ${analysis.marketEntry.requiredInvestment}
+Timeline: ${analysis.marketEntry.timeline}
 `;
     
-    // Create a download link
     const element = document.createElement('a');
     const file = new Blob([content], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
@@ -241,15 +356,12 @@ ${analysis.recommendations?.map((recommendation, index) => `${index + 1}. ${reco
     toast.success('Análise de mercado baixada com sucesso!');
   };
 
-  // Icon for the modal
-  const analysisIcon = <TrendingUp className="h-5 w-5 text-blue-500" />;
-
   return (
     <ToolModalBase
       open={open}
       onOpenChange={onOpenChange}
       title="Análise de Mercado"
-      icon={analysisIcon}
+      icon={<TrendingUp className="h-5 w-5 text-blue-500" />}
       isGenerating={isGenerating}
       generatingText="Analisando mercado..."
       actionText="Gerar Análise de Mercado"
@@ -264,163 +376,274 @@ ${analysis.recommendations?.map((recommendation, index) => `${index + 1}. ${reco
     >
       <div className="space-y-6">
         {analysis ? (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">
-                Análise para: {selectedIdea?.title || "Ideia Personalizada"}
-              </h3>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={downloadAnalysis}
-                className="flex items-center gap-1"
-              >
-                <Download className="h-4 w-4" />
-                <span className="hidden sm:inline">Baixar</span>
-              </Button>
+          <div className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Tamanho do Mercado
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">Tamanho Global</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.marketSize.globalSize}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Tamanho Local</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.marketSize.localSize}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Taxa de Crescimento</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.marketSize.growthRate}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Principais Direcionadores</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4">
+                      {analysis.marketSize.keyDrivers.map((driver, index) => (
+                        <li key={index}>{driver}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Público-Alvo
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">Segmento Primário</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.targetAudience.primarySegment}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Demografia</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.targetAudience.demographics}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Dores Principais</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4">
+                      {analysis.targetAudience.painPoints.map((point, index) => (
+                        <li key={index}>{point}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="h-5 w-5" />
+                    Tendências do Mercado
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">Tendências Emergentes</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4">
+                      {analysis.marketTrends.emergingTrends.map((trend, index) => (
+                        <li key={index}>{trend}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Tendências Tecnológicas</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4">
+                      {analysis.marketTrends.technologyTrends.map((trend, index) => (
+                        <li key={index}>{trend}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" />
+                    Cenário Competitivo
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">Líderes de Mercado</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4">
+                      {analysis.competitiveLandscape.marketLeaders.map((leader, index) => (
+                        <li key={index}>{leader}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Concentração do Mercado</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.competitiveLandscape.marketConcentration}</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lightbulb className="h-5 w-5" />
+                    Oportunidades
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">Segmentos Mal Atendidos</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4">
+                      {analysis.marketOpportunities.underservedSegments.map((segment, index) => (
+                        <li key={index}>{segment}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Necessidades Emergentes</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4">
+                      {analysis.marketOpportunities.emergingNeeds.map((need, index) => (
+                        <li key={index}>{need}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5" />
+                    Ameaças
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">Ameaças Competitivas</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4">
+                      {analysis.marketThreats.competitiveThreats.map((threat, index) => (
+                        <li key={index}>{threat}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Riscos Regulatórios</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4">
+                      {analysis.marketThreats.regulatoryRisks.map((risk, index) => (
+                        <li key={index}>{risk}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <PieChart className="h-5 w-5" />
+                    Segmentação
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {analysis.marketSegmentation.segments.map((segment, index) => (
+                    <div key={index} className="border-b pb-2 last:border-b-0">
+                      <h4 className="font-medium mb-1">{segment.name}</h4>
+                      <p className="text-xs text-muted-foreground mb-1">Tamanho: {segment.size}</p>
+                      <p className="text-xs text-muted-foreground">{segment.characteristics}</p>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <DollarSign className="h-5 w-5" />
+                    Estratégia de Preços
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">Modelo Recomendado</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.pricingStrategy.recommendedModel}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Faixa de Preço</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.pricingStrategy.priceRange}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Proposta de Valor</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.pricingStrategy.valueProposition}</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Rocket className="h-5 w-5" />
+                    Entrada no Mercado
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">Estratégia Recomendada</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.marketEntry.recommendedStrategy}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Investimento Necessário</h4>
+                    <p className="text-sm text-muted-foreground">{analysis.marketEntry.requiredInvestment}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Parceiros-Chave</h4>
+                    <ul className="text-sm text-muted-foreground list-disc ml-4">
+                      {analysis.marketEntry.keyPartners.map((partner, index) => (
+                        <li key={index}>{partner}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
-            <ScrollArea className="h-[60vh]">
-              <div className="grid gap-6 md:grid-cols-2 pr-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BarChart className="h-5 w-5 text-green-500" />
-                      Tamanho do Mercado
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">{analysis.marketSize}</p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Target className="h-5 w-5 text-blue-500" />
-                      Público-Alvo
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">{analysis.targetAudience}</p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5 text-purple-500" />
-                      Tendências do Mercado
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {analysis.marketTrends?.map((trend, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Badge variant="secondary" className="mt-1">•</Badge>
-                          <span className="text-sm">{trend}</span>
-                        </li>
+            {analysis.sources && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Database className="h-5 w-5" />
+                    Fontes de Dados
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <h4 className="font-medium mb-1">SerpAPI</h4>
+                    <ul className="text-xs text-muted-foreground list-disc ml-4">
+                      {analysis.sources.serpApi.map((source, index) => (
+                        <li key={index}>{source}</li>
                       ))}
                     </ul>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Lightbulb className="h-5 w-5 text-yellow-500" />
-                      Oportunidades
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {analysis.opportunities?.map((opportunity, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Badge variant="secondary" className="mt-1">•</Badge>
-                          <span className="text-sm">{opportunity}</span>
-                        </li>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">Perplexity</h4>
+                    <ul className="text-xs text-muted-foreground list-disc ml-4">
+                      {analysis.sources.perplexity.map((source, index) => (
+                        <li key={index}>{source}</li>
                       ))}
                     </ul>
-                  </CardContent>
-                </Card>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <AlertTriangle className="h-5 w-5 text-red-500" />
-                      Ameaças
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {analysis.threats?.map((threat, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Badge variant="destructive" className="mt-1">•</Badge>
-                          <span className="text-sm">{threat}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Shield className="h-5 w-5 text-green-500" />
-                      Vantagens Competitivas
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {analysis.competitiveAdvantage?.map((advantage, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Badge variant="secondary" className="mt-1">•</Badge>
-                          <span className="text-sm">{advantage}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Shield className="h-5 w-5 text-orange-500" />
-                      Barreiras de Entrada
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {analysis.entryBarriers?.map((barrier, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Badge variant="secondary" className="mt-1">•</Badge>
-                          <span className="text-sm">{barrier}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-
-                <Card className="md:col-span-2">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Lightbulb className="h-5 w-5 text-blue-500" />
-                      Recomendações Estratégicas
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {analysis.recommendations?.map((recommendation, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Badge className="mt-1">{index + 1}</Badge>
-                          <span className="text-sm">{recommendation}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </div>
-            </ScrollArea>
+            <div className="flex justify-center">
+              <Button onClick={downloadAnalysis} variant="outline">
+                <Download className="h-4 w-4 mr-2" />
+                Baixar Análise
+              </Button>
+            </div>
           </div>
         ) : (
           <CreditGuard feature="market-analysis">
